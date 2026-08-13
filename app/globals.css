@@ -1,0 +1,204 @@
+@import 'tailwindcss';
+@import './styles/tw-animate.css';
+@import './styles/shadcn-tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    var(--font-ios), 'Inter', system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+
+  --color-elevated: var(--elevated);
+  --color-separator: var(--separator);
+  --color-fill: var(--fill);
+
+  --color-subject-1: var(--subject-1);
+  --color-subject-2: var(--subject-2);
+  --color-subject-3: var(--subject-3);
+  --color-subject-4: var(--subject-4);
+  --color-subject-5: var(--subject-5);
+  --color-warn: var(--warn);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Crisp neutral shadows for clean depth */
+  --shadow-ios: 0 1px 3px rgba(0, 0, 0, 0.06),
+    0 8px 24px -6px rgba(0, 0, 0, 0.12);
+  --shadow-ios-lg: 0 2px 5px rgba(0, 0, 0, 0.08),
+    0 18px 48px -12px rgba(0, 0, 0, 0.22);
+}
+
+:root {
+  color-scheme: light;
+  --radius: 0.75rem;
+
+  /* Framer: #f7f8f5 — soft off-white with a hint of green */
+  --background: oklch(0.972 0.005 150);
+  --foreground: oklch(0.165 0.015 158);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.165 0.015 158);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.165 0.015 158);
+
+  /* Framer: #1f6f50 — emerald green primary */
+  --primary: oklch(0.44 0.113 158);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --secondary: oklch(0.955 0.006 150);
+  --secondary-foreground: oklch(0.28 0.025 158);
+
+  --muted: oklch(0.955 0.006 150);
+  /* Framer: #7a8580 — warm muted green-gray */
+  --muted-foreground: oklch(0.558 0.018 158);
+
+  /* Framer: #1f6f5014 — subtle green tint accent */
+  --accent: oklch(0.95 0.03 158);
+  --accent-foreground: oklch(0.38 0.09 158);
+
+  --destructive: oklch(0.598 0.222 22);
+  --warn: oklch(0.75 0.16 72);
+
+  --border: oklch(0.912 0.007 150);
+  --input: oklch(0.912 0.007 150);
+  --ring: oklch(0.44 0.113 158);
+
+  --elevated: oklch(1 0 0);
+  --separator: oklch(0.9 0.007 150);
+  --fill: oklch(0.94 0.006 150);
+
+  /* Subject colors — keep variety for class color-coding */
+  --subject-1: oklch(0.58 0.2 268);
+  --subject-2: oklch(0.62 0.16 190);
+  --subject-3: oklch(0.65 0.17 40);
+  --subject-4: oklch(0.6 0.17 340);
+  --subject-5: oklch(0.44 0.113 158);
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* Premium True-Black / Deep Graphite Palette */
+  --background: oklch(0.13 0 0); /* ~#0F0F0F deep graphite base */
+  --foreground: oklch(0.97 0 0); /* ~#F5F5F5 clean off-white */
+
+  --card: oklch(0.18 0 0); /* ~#181818 surface 1 step lighter */
+  --card-foreground: oklch(0.97 0 0);
+  --popover: oklch(0.18 0 0);
+  --popover-foreground: oklch(0.97 0 0);
+
+  /* Confident emerald green accent */
+  --primary: oklch(0.62 0.14 158);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --secondary: oklch(0.22 0 0);
+  --secondary-foreground: oklch(0.96 0 0);
+
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.68 0 0); /* High-contrast mid-gray helper text */
+
+  --accent: oklch(0.24 0 0);
+  --accent-foreground: oklch(0.97 0 0);
+
+  --destructive: oklch(0.64 0.22 22); /* High-contrast warning red */
+  --warn: oklch(0.78 0.16 75);
+
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.62 0.14 158);
+
+  --elevated: oklch(0.20 0 0);
+  --separator: oklch(1 0 0 / 10%);
+  --fill: oklch(1 0 0 / 7%);
+
+  --subject-1: oklch(0.68 0.18 268);
+  --subject-2: oklch(0.72 0.14 190);
+  --subject-3: oklch(0.74 0.15 40);
+  --subject-4: oklch(0.7 0.15 340);
+  --subject-5: oklch(0.62 0.14 158);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@utility ios-large-title {
+  font-size: clamp(2rem, 6vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.028em;
+  line-height: 1.08;
+}
+
+@utility ios-title-1 {
+  font-size: clamp(1.5rem, 4vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+@utility ios-title-2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+@utility ios-body {
+  font-size: 0.96875rem;
+  line-height: 1.5;
+}
+
+@utility ios-caption {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+@utility ios-glass {
+  background-color: color-mix(in oklab, var(--card) 88%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
