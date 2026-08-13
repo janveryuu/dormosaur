@@ -130,14 +130,16 @@ export function TemplatePickerView({
             </div>
 
             {/* Rendered Live Template */}
-            <div className="w-full overflow-hidden rounded-2xl border border-border/40 shadow-inner bg-muted/20 p-2">
-              <TemplateRenderer
-                templateId={selectedTemplate}
-                classes={classes}
-                name={profile.name}
-                school={profile.school}
-                presetSize="desktop"
-              />
+            <div className="w-full overflow-hidden rounded-2xl border border-border/40 shadow-inner bg-muted/20 p-2 flex justify-center">
+              <div className="w-full max-w-full overflow-hidden">
+                <TemplateRenderer
+                  templateId={selectedTemplate}
+                  classes={classes}
+                  name={profile.name}
+                  school={profile.school}
+                  presetSize="phone"
+                />
+              </div>
             </div>
           </div>
         </div>

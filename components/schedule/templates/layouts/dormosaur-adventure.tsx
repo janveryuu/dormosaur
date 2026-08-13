@@ -55,13 +55,13 @@ export function DormosaurAdventureTemplate({
       </div>
 
       {/* ── Day Cards Grid ── */}
-      <div className="relative z-10 flex-1 grid grid-cols-2 gap-3.5 sm:grid-cols-4 lg:grid-cols-7 min-h-0 overflow-y-auto">
+      <div className="relative z-10 flex-1 grid grid-cols-2 gap-2.5 sm:gap-3.5 sm:grid-cols-4 lg:grid-cols-7 min-h-[240px] sm:min-h-0 overflow-y-auto">
         {DAYS.map((dayName) => {
           const dayClasses = grouped[dayName as keyof typeof grouped] || []
           return (
             <div
               key={dayName}
-              className="flex flex-col overflow-hidden rounded-2xl bg-[#F7F8F5] p-3 text-[#1F6F50] shadow-md border border-white/40 transition-all hover:shadow-lg"
+              className="flex min-h-[90px] flex-col overflow-hidden rounded-2xl bg-[#F7F8F5] p-2.5 sm:p-3 text-[#1F6F50] shadow-md border border-white/40 transition-all hover:shadow-lg"
             >
               {/* Day Header Pill */}
               <div className="mb-2 flex items-center justify-between rounded-xl bg-[#1F6F50] px-2.5 py-1.5 text-white">

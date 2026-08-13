@@ -117,15 +117,15 @@ export function WeekGrid() {
 
   return (
     <div className="overflow-hidden rounded-3xl bg-card shadow-ios">
-      <div className="no-scrollbar overflow-x-auto">
-        <div className="min-w-[680px]">
+      <div className="no-scrollbar overflow-x-auto snap-x snap-mandatory">
+        <div className="min-w-[720px] sm:min-w-[760px]">
           {/* Header Row */}
-          <div className="sticky top-0 z-10 flex border-b border-separator bg-card/95 backdrop-blur-md">
-            <div className="w-14 shrink-0" />
+          <div className="sticky top-0 z-20 flex border-b border-separator bg-card/95 backdrop-blur-md">
+            <div className="sticky left-0 z-30 w-12 sm:w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40" />
             {weekDays.map((day) => (
               <div
                 key={day}
-                className="flex-1 py-3 text-center text-[12.5px] font-semibold tracking-[0.03em] text-muted-foreground uppercase"
+                className="flex-1 snap-start py-3 text-center text-[12.5px] font-semibold tracking-[0.03em] text-muted-foreground uppercase"
               >
                 {day}
               </div>
@@ -133,14 +133,15 @@ export function WeekGrid() {
           </div>
 
           <div className="relative flex">
-            <div className="w-14 shrink-0">
+            {/* Sticky Time Column */}
+            <div className="sticky left-0 z-20 w-12 sm:w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40">
               {hours.map((hour) => (
                 <div
                   key={hour}
                   style={{ height: HOUR_HEIGHT }}
                   className="relative pr-2 text-right"
                 >
-                  <span className="absolute -top-2 right-2 text-[11px] font-medium text-muted-foreground">
+                  <span className="absolute -top-2 right-1.5 text-[10.5px] sm:text-[11px] font-semibold text-muted-foreground">
                     {hour % 12 === 0 ? 12 : hour % 12}
                     {hour >= 12 ? 'p' : 'a'}
                   </span>
@@ -163,7 +164,7 @@ export function WeekGrid() {
                 return (
                   <div
                     key={day}
-                    className="relative flex-1 border-l border-separator px-1"
+                    className="relative flex-1 snap-start border-l border-separator px-1"
                     style={{ height: hours.length * HOUR_HEIGHT }}
                   >
                     {dayClasses.map((entry, index) => {
@@ -193,22 +194,39 @@ export function WeekGrid() {
                         >
                           <span
                             className={`absolute inset-y-1.5 left-1 w-[3px] rounded-full ${color.bg}`}
-                            aria-hidden="true"
                           />
-                          <div className="pl-2.5 min-w-0">
-                            <p
-                              className={`truncate text-[11.5px] leading-tight font-semibold ${color.text}`}
-                            >
-                              {entry.code}
-                            </p>
-                            {!isVeryShort && (!isShort || blockHeight >= 58) && entry.room && (
-                              <p className="mt-0.5 truncate text-[10.5px] leading-tight text-muted-foreground">
-                                {entry.room}
-                              </p>
+                          <div className="pl-2 pr-1">
+                            {isVeryShort ? (
+                              <div className="flex items-baseline justify-between gap-1">
+                                <span className={`truncate text-[11px] font-bold ${color.text}`}>
+                                  {entry.code}
+                                </span>
+                                <span className="shrink-0 text-[9.5px] font-semibold text-muted-foreground">
+                                  {entry.start}
+                                </span>
+                              </div>
+                            ) : isShort ? (
+                              <>
+                                <p className={`truncate text-[12px] font-bold leading-tight ${color.text}`}>
+                                  {entry.code}
+                                </p>
+                                <p className="truncate text-[10px] font-semibold text-muted-foreground mt-0.5">
+                                  {timeRangeStr}
+                                </p>
+                              </>
+                            ) : (
+                              <>
+                                <p className={`truncate text-[12.5px] font-bold leading-tight ${color.text}`}>
+                                  {entry.code}
+                                </p>
+                                <p className="truncate text-[10.5px] font-semibold text-muted-foreground mt-0.5">
+                                  {entry.room}
+                                </p>
+                                <p className="truncate text-[10px] font-semibold text-muted-foreground/90 mt-0.5">
+                                  {timeRangeStr}
+                                </p>
+                              </>
                             )}
-                            <p className="mt-0.5 truncate text-[10px] leading-tight font-semibold text-muted-foreground">
-                              {timeRangeStr}
-                            </p>
                           </div>
                         </motion.div>
                       )

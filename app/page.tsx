@@ -195,14 +195,7 @@ function NavBar() {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: IOS_EASE }}
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-        display: 'flex',
-        justifyContent: 'center',
-        padding: '18px 40px 0',
-      }}
+      className="sticky top-0 z-20 flex justify-center px-4 sm:px-8 md:px-10 pt-3 sm:pt-4"
     >
       <motion.nav
         style={{
@@ -211,7 +204,7 @@ function NavBar() {
           justifyContent: 'space-between',
           width: '100%',
           maxWidth: 1160,
-          padding: '10px 12px 10px 20px',
+          padding: '8px 12px 8px 16px',
           borderRadius: 100,
           border: '1px solid rgba(26,31,28,0.07)',
           backgroundColor: bgAlpha,
@@ -229,13 +222,15 @@ function NavBar() {
           <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em', color: '#1a1f1c' }}>Dormosaur</span>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-          {[
-            { label: 'How it works', href: '#how-it-works' },
-            { label: 'Open app', href: '/sign-in' },
-          ].map(l => (
-            <NavLink key={l.label} href={l.href}>{l.label}</NavLink>
-          ))}
+        <div className="flex items-center gap-3 sm:gap-5">
+          <div className="hidden sm:flex items-center gap-4 sm:gap-6">
+            {[
+              { label: 'How it works', href: '#how-it-works' },
+              { label: 'Open app', href: '/sign-in' },
+            ].map(l => (
+              <NavLink key={l.label} href={l.href}>{l.label}</NavLink>
+            ))}
+          </div>
           <NavCTA href="/sign-up">Get started</NavCTA>
         </div>
       </motion.nav>
@@ -251,7 +246,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
         href={href}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        style={{ fontSize: 15, fontWeight: 400, color: 'inherit', textDecoration: 'none' }}
+        style={{ fontSize: 14, fontWeight: 400, color: 'inherit', textDecoration: 'none' }}
       >
         {children}
       </Link>
@@ -270,15 +265,15 @@ function NavCTA({ href, children }: { href: string; children: React.ReactNode })
         href={href}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
-          padding: '8px 16px', borderRadius: 100,
+          padding: '7px 14px', borderRadius: 100,
           backgroundColor: '#1f6f50', color: '#fff',
-          fontSize: 15, fontWeight: 500, letterSpacing: '-0.005em',
+          fontSize: 13.5, fontWeight: 500, letterSpacing: '-0.005em',
           textDecoration: 'none',
           boxShadow: 'rgba(31,111,80,0.22) 0px 8px 20px 0px, rgba(255,255,255,0.12) 0px 1px 0px 0px',
         }}
       >
         {children}
-        <ArrowRight size={14} strokeWidth={2} />
+        <ArrowRight size={13} strokeWidth={2} />
       </Link>
     </motion.div>
   )
@@ -326,14 +321,11 @@ export default function LandingPage() {
       <NavBar />
 
       {/* HERO */}
-      <section style={{ display: 'flex', justifyContent: 'center', padding: '96px 40px 88px' }}>
-        <div style={{
-          display: 'flex', flexWrap: 'wrap', alignItems: 'center',
-          gap: 64, width: '100%', maxWidth: 1160,
-        }}>
+      <section className="flex justify-center px-4 sm:px-8 md:px-10 py-12 sm:py-20 md:py-24">
+        <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16 w-full max-w-[1160px]">
 
           {/* LEFT — Text */}
-          <div style={{ flex: '1 0 0', minWidth: 380, display: 'flex', flexDirection: 'column', gap: 26 }}>
+          <div className="flex-1 w-full min-w-0 md:min-w-[340px] flex flex-col gap-5 sm:gap-6">
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
@@ -359,7 +351,7 @@ export default function LandingPage() {
               transition={{ duration: 0.8, ease: IOS_EASE, delay: 0.08 }}
             >
               <h1 style={{
-                fontSize: 'clamp(40px, 5.5vw, 66px)',
+                fontSize: 'clamp(36px, 5.5vw, 66px)',
                 fontWeight: 600,
                 letterSpacing: '-0.035em',
                 lineHeight: '1.03em',
@@ -375,10 +367,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: IOS_EASE, delay: 0.18 }}
-              style={{
-                fontSize: 'clamp(16px, 1.5vw, 19px)', lineHeight: '1.55em',
-                color: '#7a8580', margin: 0, maxWidth: 470,
-              }}
+              className="w-full max-w-lg text-[15px] sm:text-[17px] md:text-[19px] leading-relaxed text-[#7a8580] m-0"
             >
               Paste your schedule as-is. We'll turn it into a timetable, set your
               alarms, and even suggest what to cook between classes.
@@ -388,10 +377,10 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: IOS_EASE, delay: 0.28 }}
-              style={{ display: 'flex', alignItems: 'center', gap: 14, paddingTop: 6 }}
+              className="flex items-center gap-3.5 pt-1.5"
             >
               <CTAButton href="/sign-up">Get started</CTAButton>
-              <span style={{ fontSize: 14, color: '#7a8580', whiteSpace: 'nowrap' }}>
+              <span className="text-[13px] sm:text-[14px] text-[#7a8580]">
                 Takes about ninety seconds.
               </span>
             </motion.div>
@@ -402,28 +391,14 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.97, y: 34 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.9, ease: IOS_EASE, delay: 0.36 }}
-            style={{
-              flex: '1 0 0', minWidth: 400,
-              display: 'flex', flexDirection: 'column', gap: 12,
-              overflow: 'visible',
-            }}
+            className="flex-1 w-full min-w-0 md:min-w-[360px] flex flex-col gap-3 overflow-visible"
           >
             <motion.div
               initial={{ rotate: -1.4 }}
               animate={{ rotate: -1.4 }}
               whileHover={{ rotate: 0, y: -4, boxShadow: '0 16px 40px rgba(26,31,28,0.1)' }}
               transition={IOS_SPRING}
-              style={{
-                width: '82%',
-                padding: '18px 20px',
-                borderRadius: 20,
-                border: '1px solid rgba(26,31,28,0.07)',
-                backgroundColor: 'rgba(255,255,255,0.65)',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
-                boxShadow: '0 6px 18px rgba(26,31,28,0.06)',
-                cursor: 'default',
-              }}
+              className="w-full sm:w-[88%] md:w-[82%] p-4 sm:p-5 rounded-2xl border border-[rgba(26,31,28,0.07)] bg-[rgba(255,255,255,0.65)] backdrop-blur-md shadow-xs cursor-default"
             >
               <p style={{
                 fontSize: 11, fontWeight: 500, letterSpacing: '0.12em',
@@ -446,7 +421,7 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            <div style={{ paddingLeft: 34, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div className="pl-4 sm:pl-8 flex items-center gap-2.5">
               <motion.div
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
@@ -486,7 +461,7 @@ export default function LandingPage() {
             >
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '22px 22px 14px',
+                padding: '18px 18px 12px',
               }}>
                 <h3 style={{
                   fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em',
@@ -505,7 +480,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '0 22px 22px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '0 18px 18px' }}>
                 {scheduleItems.map((item, i) => (
                   <ScheduleRow
                     key={item.subject}
@@ -525,20 +500,16 @@ export default function LandingPage() {
       {/* HOW IT WORKS */}
       <section
         id="how-it-works"
-        style={{ display: 'flex', justifyContent: 'center', padding: '20px 40px 100px', scrollMarginTop: 90 }}
+        className="flex justify-center px-4 sm:px-8 md:px-10 py-8 sm:py-16 md:py-24 scroll-mt-24"
       >
-        <div style={{ width: '100%', maxWidth: 1160, display: 'flex', flexDirection: 'column', gap: 28 }}>
+        <div className="w-full max-w-[1160px] flex flex-col gap-7 sm:gap-10">
           <div style={{ width: '100%', height: 1, backgroundColor: 'rgba(26,31,28,0.07)' }} />
           <motion.div
             initial={{ opacity: 0, y: 0 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.6, ease: IOS_EASE }}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, minmax(240px, 1fr))',
-              gap: 48,
-            }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12"
           >
             {featureItems.map((feat, i) => (
               <motion.div
@@ -566,28 +537,16 @@ export default function LandingPage() {
       </section>
 
       {/* CTA CARD */}
-      <section style={{ display: 'flex', justifyContent: 'center', padding: '0 40px 96px', scrollMarginTop: 100 }}>
+      <section className="flex justify-center px-4 sm:px-8 md:px-10 pb-16 sm:pb-24 scroll-mt-24">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: IOS_EASE }}
-          style={{
-            width: '100%', maxWidth: 1160,
-            display: 'flex', flexWrap: 'wrap',
-            alignItems: 'center', justifyContent: 'space-between',
-            gap: 32, padding: '46px 48px',
-            borderRadius: 30,
-            border: '1px solid rgba(26,31,28,0.07)',
-            backgroundColor: '#fff',
-            boxShadow: '0 24px 50px -24px rgba(26,31,28,0.14)',
-          }}
+          className="w-full max-w-[1160px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 sm:p-10 md:p-12 rounded-3xl border border-[rgba(26,31,28,0.07)] bg-white shadow-lg"
         >
-          <div style={{ flex: '1 0 0', minWidth: 280, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <h2 style={{
-              fontSize: 32, fontWeight: 600, letterSpacing: '-0.03em',
-              lineHeight: '1.12em', color: '#1a1f1c', margin: 0, maxWidth: 440,
-            }}>
+          <div className="flex-1 min-w-0 flex flex-col gap-3">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-[#1a1f1c] m-0 max-w-md">
               One setup. Zero maintenance.
             </h2>
             <p style={{ fontSize: 15, lineHeight: '1.55em', color: '#7a8580', margin: 0 }}>
@@ -599,20 +558,12 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{
-        display: 'flex', justifyContent: 'center',
-        borderTop: '1px solid rgba(26,31,28,0.07)',
-        padding: '26px 40px 34px',
-      }}>
-        <div style={{
-          display: 'flex', flexWrap: 'wrap',
-          alignItems: 'center', justifyContent: 'space-between',
-          width: '100%', maxWidth: 1160,
-        }}>
-          <p style={{ fontSize: 15, lineHeight: '1.55em', color: '#7a8580', margin: 0 }}>
+      <footer className="flex justify-center border-t border-[rgba(26,31,28,0.07)] px-4 sm:px-8 md:px-10 py-6 sm:py-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 w-full max-w-[1160px] text-center sm:text-left">
+          <p style={{ fontSize: 14, lineHeight: '1.55em', color: '#7a8580', margin: 0 }}>
             Dormosaur — less scrambling, more sleeping.
           </p>
-          <p style={{ fontSize: 15, lineHeight: '1.55em', color: '#7a8580', margin: 0 }}>
+          <p style={{ fontSize: 14, lineHeight: '1.55em', color: '#7a8580', margin: 0 }}>
             © 2026
           </p>
         </div>

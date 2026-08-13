@@ -134,19 +134,19 @@ export function DormosaurAiChat() {
   return (
     <>
       {/* ── Floating AI Trigger Button (Bottom-Right) ── */}
-      <div className="fixed bottom-20 right-4 z-50 sm:bottom-6 sm:right-6">
+      <div className="fixed bottom-22 right-3.5 z-30 sm:bottom-6 sm:right-6">
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="relative flex items-center gap-2.5 rounded-full bg-[#1f6f50] px-4.5 py-2.5 text-white shadow-[0_10px_30px_rgba(31,111,80,0.4)] transition-all hover:bg-[#1a6148]"
+          className="relative flex items-center gap-2 rounded-full bg-[#1f6f50] px-3.5 py-2 sm:px-4.5 sm:py-2.5 text-white shadow-[0_10px_30px_rgba(31,111,80,0.4)] transition-all hover:bg-[#1a6148]"
         >
           <span className="relative flex size-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex size-2.5 rounded-full bg-white" />
           </span>
-          <Sparkles className="size-5" strokeWidth={2.2} />
-          <span className="text-[14px] font-semibold tracking-tight">Dormosaur AI</span>
+          <Sparkles className="size-4.5 sm:size-5" strokeWidth={2.2} />
+          <span className="text-[13px] sm:text-[14px] font-semibold tracking-tight">Dormosaur AI</span>
         </motion.button>
       </div>
 
