@@ -1,25 +1,47 @@
 'use client'
 
+import * as React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Calendar, Plus, UploadCloud } from 'lucide-react'
 import { useSchedule } from '@/components/schedule-provider'
+import type { ClassEntry } from '@/lib/data'
 import { formatTimeRange, minutesOf, subjectColorClass, weekDays } from '@/lib/data'
 import { getDynamicGridTimeRange } from '@/lib/template-helper'
+import { ClassDetailModal } from '@/components/schedule/class-detail-modal'
 
-const HOUR_HEIGHT = 62
+const HOUR_HEIGHT_DESKTOP = 62
+const HOUR_HEIGHT_MOBILE = 54
+
+const shortMobileDayMap: Record<string, string> = {
+  Mon: 'M',
+  Tue: 'T',
+  Wed: 'W',
+  Thu: 'T',
+  Fri: 'F',
+  Sat: 'S',
+  Sun: 'S',
+}
 
 export function WeekGrid() {
   const { classes, isHydrated, isSyncing } = useSchedule()
+  const [selectedClass, setSelectedClass] = React.useState<ClassEntry | null>(null)
+  const desktopScrollRef = React.useRef<HTMLDivElement | null>(null)
 
   const isLoading = !isHydrated || isSyncing
+
+  React.useEffect(() => {
+    if (desktopScrollRef.current) {
+      desktopScrollRef.current.scrollLeft = 0
+    }
+  }, [classes])
 
   if (isLoading) {
     const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
     return (
       <div className="overflow-hidden rounded-3xl bg-card shadow-ios">
         <div className="no-scrollbar overflow-x-auto">
-          <div className="min-w-[680px]">
+          <div className="w-full min-w-[700px]">
             <div className="sticky top-0 z-10 flex border-b border-separator bg-card/95 backdrop-blur-md">
               <div className="w-14 shrink-0" />
               {weekDays.map((day) => (
@@ -33,11 +55,11 @@ export function WeekGrid() {
             </div>
 
             <div className="relative flex">
-              <div className="w-14 shrink-0">
+              <div className="w-14 shrink-0 border-r border-separator/40">
                 {hours.map((hour) => (
                   <div
                     key={hour}
-                    style={{ height: HOUR_HEIGHT }}
+                    style={{ height: HOUR_HEIGHT_DESKTOP }}
                     className="relative pr-2 text-right"
                   >
                     <span className="absolute -top-2 right-2 text-[11px] font-medium text-muted-foreground/60">
@@ -52,7 +74,7 @@ export function WeekGrid() {
                 {hours.map((hour, i) => (
                   <div
                     key={hour}
-                    style={{ top: i * HOUR_HEIGHT }}
+                    style={{ top: i * HOUR_HEIGHT_DESKTOP }}
                     className="pointer-events-none absolute inset-x-0 border-t border-separator/40"
                     aria-hidden="true"
                   />
@@ -62,9 +84,8 @@ export function WeekGrid() {
                   <div
                     key={day}
                     className="relative flex-1 border-l border-separator/40 px-1 py-2"
-                    style={{ height: hours.length * HOUR_HEIGHT }}
+                    style={{ height: hours.length * HOUR_HEIGHT_DESKTOP }}
                   >
-                    {/* Pulsing Skeleton Blocks */}
                     {dayIndex % 2 === 0 && (
                       <div className="animate-pulse absolute inset-x-1 top-6 h-20 rounded-2xl bg-muted/60" />
                     )}
@@ -111,133 +132,230 @@ export function WeekGrid() {
   const endHour = range.endHour
   const hours = Array.from({ length: endHour - startHour }, (_, i) => startHour + i)
 
-  const top = (time: string) => ((minutesOf(time) - startHour * 60) / 60) * HOUR_HEIGHT
-  const height = (start: string, end: string) =>
-    ((minutesOf(end) - minutesOf(start)) / 60) * HOUR_HEIGHT
+  const topDesktop = (time: string) => ((minutesOf(time) - startHour * 60) / 60) * HOUR_HEIGHT_DESKTOP
+  const heightDesktop = (start: string, end: string) =>
+    ((minutesOf(end) - minutesOf(start)) / 60) * HOUR_HEIGHT_DESKTOP
+
+  const topMobile = (time: string) => ((minutesOf(time) - startHour * 60) / 60) * HOUR_HEIGHT_MOBILE
+  const heightMobile = (start: string, end: string) =>
+    ((minutesOf(end) - minutesOf(start)) / 60) * HOUR_HEIGHT_MOBILE
 
   return (
-    <div className="overflow-hidden rounded-3xl bg-card shadow-ios">
-      <div className="no-scrollbar overflow-x-auto snap-x snap-mandatory">
-        <div className="min-w-[720px] sm:min-w-[760px]">
-          {/* Header Row */}
-          <div className="sticky top-0 z-20 flex border-b border-separator bg-card/95 backdrop-blur-md">
-            <div className="sticky left-0 z-30 w-12 sm:w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40" />
+    <>
+      <ClassDetailModal entry={selectedClass} onClose={() => setSelectedClass(null)} />
+
+      {/* ── MOBILE 7-DAY WEEK-AT-A-GLANCE (ZERO HORIZONTAL SCROLL) ── */}
+      <div className="block sm:hidden overflow-hidden rounded-3xl bg-card shadow-ios border border-border/60">
+        {/* Mobile Header Row (7 Columns) */}
+        <div className="flex border-b border-separator bg-card/95 backdrop-blur-md">
+          <div className="w-8 shrink-0 py-2.5 text-center text-[10px] font-bold text-muted-foreground border-r border-separator/40">
+            HR
+          </div>
+          <div className="grid flex-1 grid-cols-7">
             {weekDays.map((day) => (
               <div
                 key={day}
-                className="flex-1 snap-start py-3 text-center text-[12.5px] font-semibold tracking-[0.03em] text-muted-foreground uppercase"
+                className="py-2.5 text-center text-[11px] font-black text-foreground uppercase border-l first:border-l-0 border-separator/40"
               >
-                {day}
+                {shortMobileDayMap[day] || day}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile Body Grid */}
+        <div className="relative flex">
+          {/* Mobile Time Column */}
+          <div className="w-8 shrink-0 border-r border-separator/40 bg-card/50">
+            {hours.map((hour) => (
+              <div
+                key={hour}
+                style={{ height: HOUR_HEIGHT_MOBILE }}
+                className="relative pr-1 text-right"
+              >
+                <span className="absolute -top-2 right-1 text-[9.5px] font-bold text-muted-foreground">
+                  {hour % 12 === 0 ? 12 : hour % 12}
+                  {hour >= 12 ? 'p' : 'a'}
+                </span>
               </div>
             ))}
           </div>
 
-          <div className="relative flex">
-            {/* Sticky Time Column */}
-            <div className="sticky left-0 z-20 w-12 sm:w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40">
-              {hours.map((hour) => (
+          {/* 7 Columns Mobile Grid Area */}
+          <div className="relative grid flex-1 grid-cols-7">
+            {/* Background Hour Divider Lines */}
+            {hours.map((hour, i) => (
+              <div
+                key={hour}
+                style={{ top: i * HOUR_HEIGHT_MOBILE }}
+                className="pointer-events-none absolute inset-x-0 border-t border-separator/40"
+                aria-hidden="true"
+              />
+            ))}
+
+            {/* 7 Day Columns */}
+            {weekDays.map((day) => {
+              const dayClasses = classes.filter((c) => c.days.includes(day))
+              return (
                 <div
-                  key={hour}
-                  style={{ height: HOUR_HEIGHT }}
-                  className="relative pr-2 text-right"
+                  key={day}
+                  className="relative border-l first:border-l-0 border-separator/40 px-0.5"
+                  style={{ height: hours.length * HOUR_HEIGHT_MOBILE }}
                 >
-                  <span className="absolute -top-2 right-1.5 text-[10.5px] sm:text-[11px] font-semibold text-muted-foreground">
-                    {hour % 12 === 0 ? 12 : hour % 12}
-                    {hour >= 12 ? 'p' : 'a'}
-                  </span>
+                  {dayClasses.map((entry) => {
+                    const color = subjectColorClass[entry.color]
+                    const blockHeight = Math.max(heightMobile(entry.start, entry.end) - 2, 26)
+
+                    return (
+                      <motion.div
+                        key={entry.id}
+                        onClick={() => setSelectedClass(entry)}
+                        whileTap={{ scale: 0.95 }}
+                        style={{
+                          top: Math.max(0, topMobile(entry.start)),
+                          height: blockHeight,
+                        }}
+                        className={`absolute inset-x-0.5 overflow-hidden rounded-xl ${color.soft} border border-black/5 dark:border-white/10 px-0.5 py-0.5 shadow-2xs flex flex-col justify-center items-center text-center cursor-pointer transition-all hover:brightness-105`}
+                      >
+                        <span className={`w-full truncate text-[9.5px] font-extrabold leading-none ${color.text}`}>
+                          {entry.code}
+                        </span>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── DESKTOP / TABLET FULL WEEK GRID (CORRECTED LEFTMOST COLUMN ALIGNMENT) ── */}
+      <div className="hidden sm:block overflow-hidden rounded-3xl bg-card shadow-ios border border-border/60">
+        <div ref={desktopScrollRef} className="no-scrollbar overflow-x-auto">
+          <div className="w-full min-w-[760px]">
+            {/* Header Row */}
+            <div className="sticky top-0 z-20 flex border-b border-separator bg-card/95 backdrop-blur-md">
+              <div className="sticky left-0 z-30 w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40" />
+              {weekDays.map((day) => (
+                <div
+                  key={day}
+                  className="flex-1 py-3 text-center text-[12.5px] font-semibold tracking-[0.03em] text-muted-foreground uppercase"
+                >
+                  {day}
                 </div>
               ))}
             </div>
 
-            <div className="relative flex flex-1">
-              {hours.map((hour, i) => (
-                <div
-                  key={hour}
-                  style={{ top: i * HOUR_HEIGHT }}
-                  className="pointer-events-none absolute inset-x-0 border-t border-separator"
-                  aria-hidden="true"
-                />
-              ))}
-
-              {weekDays.map((day) => {
-                const dayClasses = classes.filter((c) => c.days.includes(day))
-                return (
+            <div className="relative flex">
+              {/* Sticky Time Column */}
+              <div className="sticky left-0 z-20 w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40">
+                {hours.map((hour) => (
                   <div
-                    key={day}
-                    className="relative flex-1 snap-start border-l border-separator px-1"
-                    style={{ height: hours.length * HOUR_HEIGHT }}
+                    key={hour}
+                    style={{ height: HOUR_HEIGHT_DESKTOP }}
+                    className="relative pr-2 text-right"
                   >
-                    {dayClasses.map((entry, index) => {
-                      const color = subjectColorClass[entry.color]
-                      const blockHeight = Math.max(height(entry.start, entry.end) - 4, 34)
-                      const isVeryShort = blockHeight < 50
-                      const isShort = blockHeight >= 50 && blockHeight < 68
-                      const timeRangeStr = formatTimeRange(entry.start, entry.end)
-
-                      return (
-                        <motion.div
-                          key={entry.id}
-                          initial={{ opacity: 0, scale: 0.94 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{
-                            type: 'spring',
-                            stiffness: 320,
-                            damping: 28,
-                            delay: index * 0.04,
-                          }}
-                          whileHover={{ scale: 1.02 }}
-                          style={{
-                            top: Math.max(0, top(entry.start)),
-                            height: blockHeight,
-                          }}
-                          className={`absolute inset-x-1 overflow-hidden rounded-2xl ${color.soft} border border-black/5 dark:border-white/10 px-2 py-1.5 shadow-xs flex flex-col justify-center`}
-                        >
-                          <span
-                            className={`absolute inset-y-1.5 left-1 w-[3px] rounded-full ${color.bg}`}
-                          />
-                          <div className="pl-2 pr-1">
-                            {isVeryShort ? (
-                              <div className="flex items-baseline justify-between gap-1">
-                                <span className={`truncate text-[11px] font-bold ${color.text}`}>
-                                  {entry.code}
-                                </span>
-                                <span className="shrink-0 text-[9.5px] font-semibold text-muted-foreground">
-                                  {entry.start}
-                                </span>
-                              </div>
-                            ) : isShort ? (
-                              <>
-                                <p className={`truncate text-[12px] font-bold leading-tight ${color.text}`}>
-                                  {entry.code}
-                                </p>
-                                <p className="truncate text-[10px] font-semibold text-muted-foreground mt-0.5">
-                                  {timeRangeStr}
-                                </p>
-                              </>
-                            ) : (
-                              <>
-                                <p className={`truncate text-[12.5px] font-bold leading-tight ${color.text}`}>
-                                  {entry.code}
-                                </p>
-                                <p className="truncate text-[10.5px] font-semibold text-muted-foreground mt-0.5">
-                                  {entry.room}
-                                </p>
-                                <p className="truncate text-[10px] font-semibold text-muted-foreground/90 mt-0.5">
-                                  {timeRangeStr}
-                                </p>
-                              </>
-                            )}
-                          </div>
-                        </motion.div>
-                      )
-                    })}
+                    <span className="absolute -top-2 right-2 text-[11px] font-semibold text-muted-foreground">
+                      {hour % 12 === 0 ? 12 : hour % 12}
+                      {hour >= 12 ? 'p' : 'a'}
+                    </span>
                   </div>
-                )
-              })}
+                ))}
+              </div>
+
+              <div className="relative flex flex-1">
+                {hours.map((hour, i) => (
+                  <div
+                    key={hour}
+                    style={{ top: i * HOUR_HEIGHT_DESKTOP }}
+                    className="pointer-events-none absolute inset-x-0 border-t border-separator"
+                    aria-hidden="true"
+                  />
+                ))}
+
+                {weekDays.map((day) => {
+                  const dayClasses = classes.filter((c) => c.days.includes(day))
+                  return (
+                    <div
+                      key={day}
+                      className="relative flex-1 border-l first:border-l-0 border-separator px-1"
+                      style={{ height: hours.length * HOUR_HEIGHT_DESKTOP }}
+                    >
+                      {dayClasses.map((entry, index) => {
+                        const color = subjectColorClass[entry.color]
+                        const blockHeight = Math.max(heightDesktop(entry.start, entry.end) - 4, 34)
+                        const isVeryShort = blockHeight < 50
+                        const isShort = blockHeight >= 50 && blockHeight < 68
+                        const timeRangeStr = formatTimeRange(entry.start, entry.end)
+
+                        return (
+                          <motion.div
+                            key={entry.id}
+                            onClick={() => setSelectedClass(entry)}
+                            initial={{ opacity: 0, scale: 0.94 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{
+                              type: 'spring',
+                              stiffness: 320,
+                              damping: 28,
+                              delay: index * 0.04,
+                            }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            style={{
+                              top: Math.max(0, topDesktop(entry.start)),
+                              height: blockHeight,
+                            }}
+                            className={`absolute inset-x-1 overflow-hidden rounded-2xl ${color.soft} border border-black/5 dark:border-white/10 px-2 py-1.5 shadow-xs flex flex-col justify-center cursor-pointer transition-all hover:brightness-105`}
+                          >
+                            <span
+                              className={`absolute inset-y-1.5 left-1 w-[3px] rounded-full ${color.bg}`}
+                            />
+                            <div className="pl-2 pr-1">
+                              {isVeryShort ? (
+                                <div className="flex items-baseline justify-between gap-1">
+                                  <span className={`truncate text-[11px] font-bold ${color.text}`}>
+                                    {entry.code}
+                                  </span>
+                                  <span className="shrink-0 text-[9.5px] font-semibold text-muted-foreground">
+                                    {entry.start}
+                                  </span>
+                                </div>
+                              ) : isShort ? (
+                                <>
+                                  <p className={`truncate text-[12px] font-bold leading-tight ${color.text}`}>
+                                    {entry.code}
+                                  </p>
+                                  <p className="truncate text-[10px] font-semibold text-muted-foreground mt-0.5">
+                                    {timeRangeStr}
+                                  </p>
+                                </>
+                              ) : (
+                                <>
+                                  <p className={`truncate text-[12.5px] font-bold leading-tight ${color.text}`}>
+                                    {entry.code}
+                                  </p>
+                                  <p className="truncate text-[10.5px] font-semibold text-muted-foreground mt-0.5">
+                                    {entry.room}
+                                  </p>
+                                  <p className="truncate text-[10px] font-semibold text-muted-foreground/90 mt-0.5">
+                                    {timeRangeStr}
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
