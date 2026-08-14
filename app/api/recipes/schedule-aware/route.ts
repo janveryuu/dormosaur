@@ -50,19 +50,25 @@ Return ONLY a valid JSON object matching this schema without any markdown format
 
     // 1. Call Groq Llama 3 if API Key is configured
     if (groq) {
-      const completion = await groq.chat.completions.create({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: 'Suggest schedule-aware meals for today.' },
-        ],
-        model: 'llama-3.3-70b-versatile',
-        response_format: { type: 'json_object' },
-        temperature: 0.3,
-      })
+      try {
+        const completion = await groq.chat.completions.create({
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: 'Suggest schedule-aware meals for today.' },
+          ],
+          model: 'llama-3.3-70b-versatile',
+          response_format: { type: 'json_object' },
+          temperature: 0.3,
+        })
 
-      const rawContent = completion.choices[0]?.message?.content || '{}'
-      const aiData = JSON.parse(rawContent)
-      return NextResponse.json({ ...aiData, analysis, source: 'groq/llama-3.3-70b' })
+        const rawContent = completion.choices[0]?.message?.content || '{}'
+        const aiData = JSON.parse(rawContent)
+        if (aiData && Array.isArray(aiData.recommendedSlugs)) {
+          return NextResponse.json({ ...aiData, analysis, source: 'groq/llama-3.3-70b' })
+        }
+      } catch (groqErr: any) {
+        console.warn('[Schedule-Aware Recipe API Notice] Groq call failed, falling back to local engine:', groqErr?.message || groqErr)
+      }
     }
 
     // 2. Local Fallback Engine

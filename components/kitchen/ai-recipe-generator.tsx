@@ -49,15 +49,18 @@ export function AiRecipeGenerator() {
   }, [initialAppliances])
   const [customPrompt, setCustomPrompt] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
   const [generatedRecipe, setGeneratedRecipe] = React.useState<GeneratedRecipe | null>(null)
 
   const toggleIngredient = (name: string) => {
+    setError(null)
     setSelectedIngredients((prev) =>
       prev.includes(name) ? prev.filter((i) => i !== name) : [...prev, name]
     )
   }
 
   const toggleAppliance = (name: string) => {
+    setError(null)
     setSelectedAppliances((prev) =>
       prev.includes(name) ? prev.filter((a) => a !== name) : [...prev, name]
     )
@@ -66,6 +69,7 @@ export function AiRecipeGenerator() {
   const handleGenerate = async (queryText?: string) => {
     if (loading) return
     setLoading(true)
+    setError(null)
 
     try {
       const res = await fetch('/api/recipes/generate', {
@@ -79,11 +83,14 @@ export function AiRecipeGenerator() {
       })
 
       const data = await res.json()
-      if (data.recipe) {
+      if (res.ok && data.recipe) {
         setGeneratedRecipe(data.recipe as GeneratedRecipe)
+      } else {
+        setError(data.error || 'Unable to generate recipe right now. Please try again.')
       }
     } catch (err) {
       console.error('Failed to generate AI recipe:', err)
+      setError('Connection error — please check network connection and try again.')
     } finally {
       setLoading(false)
     }
@@ -169,14 +176,30 @@ export function AiRecipeGenerator() {
           </div>
         </div>
 
-        {/* Custom Prompt Input or Generate Button */}
+        {/* Custom Prompt Input & Error Banner */}
         <div className="flex flex-col gap-2 pt-1">
           <input
             value={customPrompt}
-            onChange={(e) => setCustomPrompt(e.target.value)}
+            onChange={(e) => {
+              setError(null)
+              setCustomPrompt(e.target.value)
+            }}
             placeholder='Or type custom: "I have eggs, kimchi, and leftover rice..."'
             className="w-full rounded-2xl border border-border bg-fill px-4 py-2.5 text-[13px] outline-none placeholder:text-muted-foreground/60 focus-visible:ring-2 focus-visible:ring-ring"
           />
+
+          {error && (
+            <div className="flex items-center justify-between gap-2 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-[12.5px] font-medium text-rose-800 dark:text-rose-200">
+              <span>{error}</span>
+              <button
+                type="button"
+                onClick={() => handleGenerate()}
+                className="shrink-0 rounded-full bg-rose-600 px-3 py-1 text-[11.5px] font-bold text-white shadow-xs hover:bg-rose-700 transition-all"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
 
           <motion.button
             whileHover={{ scale: 1.015 }}
@@ -188,7 +211,7 @@ export function AiRecipeGenerator() {
             {loading ? (
               <>
                 <Activity className="size-4 animate-spin" />
-                Generating Recipe with Llama 3...
+                Chef Dormosaur is cooking your recipe...
               </>
             ) : (
               <>

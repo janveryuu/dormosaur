@@ -49,20 +49,26 @@ RULES:
 
     // 1. Call Groq Llama 3 if API Key is configured
     if (groq) {
-      const completion = await groq.chat.completions.create({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: inputContext },
-        ],
-        model: 'llama-3.3-70b-versatile',
-        response_format: { type: 'json_object' },
-        temperature: 0.5,
-      })
+      try {
+        const completion = await groq.chat.completions.create({
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: inputContext },
+          ],
+          model: 'llama-3.3-70b-versatile',
+          response_format: { type: 'json_object' },
+          temperature: 0.5,
+        })
 
-      const rawContent = completion.choices[0]?.message?.content || '{}'
-      const recipeData = JSON.parse(rawContent)
-      recipeData.slug = `ai-${Date.now()}`
-      return NextResponse.json({ recipe: recipeData, source: 'groq/llama-3.3-70b' })
+        const rawContent = completion.choices[0]?.message?.content || '{}'
+        const recipeData = JSON.parse(rawContent)
+        if (recipeData && recipeData.title && Array.isArray(recipeData.steps)) {
+          recipeData.slug = `ai-${Date.now()}`
+          return NextResponse.json({ recipe: recipeData, source: 'groq/llama-3.3-70b' })
+        }
+      } catch (groqErr: any) {
+        console.warn('[Recipe Generate API Notice] Groq LLM call failed, falling back to local engine:', groqErr?.message || groqErr)
+      }
     }
 
     // 2. Intelligent Fallback Recipe Generator (if GROQ_API_KEY is not configured)
