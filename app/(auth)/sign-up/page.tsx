@@ -145,6 +145,46 @@ export default function SignUpPage() {
     }
   }
 
+  const [resendCooldown, setResendCooldown] = React.useState(0)
+  const [resendLoading, setResendLoading] = React.useState(false)
+  const [resendMessage, setResendMessage] = React.useState<string | null>(null)
+  const [resendError, setResendError] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    if (resendCooldown <= 0) return
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => prev - 1)
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [resendCooldown])
+
+  async function handleResendEmail() {
+    if (resendCooldown > 0 || resendLoading) return
+    setResendLoading(true)
+    setResendMessage(null)
+    setResendError(null)
+
+    try {
+      const res = await fetch('/api/auth/resend-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json()
+
+      if (res.ok && data.success) {
+        setResendMessage('Confirmation email sent! Please check your inbox or spam folder.')
+        setResendCooldown(60)
+      } else {
+        setResendError(data.error || 'Failed to resend confirmation email. Please try again.')
+      }
+    } catch (err) {
+      setResendError('Network error — please check your connection and try again.')
+    } finally {
+      setResendLoading(false)
+    }
+  }
+
   // Verification Screen
   if (step === 'verify') {
     return (
@@ -166,7 +206,51 @@ export default function SignUpPage() {
             <span className="font-semibold text-foreground">{email}</span>. Click
             it to activate your account and turn the semester scramble into a plan.
           </p>
-          <div className="mt-8">
+
+          {/* Success / Error Banners */}
+          <AnimatePresence>
+            {resendMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                className="mt-4 rounded-2xl bg-emerald-500/10 p-3.5 text-[13px] font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
+              >
+                {resendMessage}
+              </motion.div>
+            )}
+            {resendError && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                className="mt-4 rounded-2xl bg-rose-500/10 p-3.5 text-[13px] font-semibold text-rose-700 dark:text-rose-300 border border-rose-500/20"
+              >
+                {resendError}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="mt-8 flex flex-col gap-3">
+            <PillButton
+              type="button"
+              onClick={handleResendEmail}
+              disabled={resendCooldown > 0 || resendLoading}
+              full
+              size="lg"
+            >
+              {resendLoading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="size-4 animate-spin" />
+                  Sending email…
+                </span>
+              ) : resendCooldown > 0 ? (
+                `Resend email in ${resendCooldown}s`
+              ) : (
+                'Resend confirmation email'
+              )}
+            </PillButton>
+
             <Link href="/sign-in">
               <PillButton variant="secondary" full size="lg">
                 Back to Sign In
