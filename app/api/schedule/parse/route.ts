@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { parseScheduleImageWithGemini } from '@/lib/gemini'
+import { parseScheduleImageWithGemini, parseScheduleTextWithGemini } from '@/lib/gemini'
 import { parseRawSchedule } from '@/lib/parser'
 
 export async function POST(req: Request) {
@@ -23,15 +23,30 @@ export async function POST(req: Request) {
       }
     }
 
-    // 2. Text-based parsing fallback (or for Paste Text mode)
+    // 2. Text-based parsing (AI text model first, local parser fallback)
     const textToParse = text || body.content || ''
     if (textToParse.trim()) {
-      const classes = parseRawSchedule(textToParse)
-      if (classes && classes.length > 0) {
+      // Try AI Text Parsing first
+      try {
+        const aiClasses = await parseScheduleTextWithGemini(textToParse)
+        if (Array.isArray(aiClasses) && aiClasses.length > 0) {
+          return NextResponse.json({
+            success: true,
+            provider: 'gemini-text',
+            classes: aiClasses,
+          })
+        }
+      } catch (aiErr: any) {
+        console.warn('[Schedule Parse API Notice] AI text attempt:', aiErr?.message || aiErr)
+      }
+
+      // Fallback to stateful local parser
+      const localClasses = parseRawSchedule(textToParse)
+      if (localClasses && localClasses.length > 0) {
         return NextResponse.json({
           success: true,
           provider: 'parser-local',
-          classes,
+          classes: localClasses,
         })
       }
     }
@@ -39,7 +54,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         success: false,
-        error: "We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.",
+        error: "We couldn't read this schedule clearly — try a clearer photo, better lighting, or paste the raw schedule text instead.",
       },
       { status: 400 }
     )

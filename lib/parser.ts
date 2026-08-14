@@ -105,12 +105,13 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
 
   // 1. Course code detection (e.g. FE 407, ENGG 409, Fili 102, ChE 434, MATH 101, CS150)
   const codeMatch = trimmed.match(/([A-Za-z]{2,5})\s*[-_]?\s*(\d{2,4}[A-Za-z]?)/)
-  const code = codeMatch ? `${codeMatch[1].toUpperCase()} ${codeMatch[2]}` : `COURSE ${index + 1}`
+  const detectedCode = codeMatch ? `${codeMatch[1].toUpperCase()} ${codeMatch[2]}` : ''
 
   // Clean unit notes like "(1 units)" or "(3 units)"
   trimmed = trimmed.replace(/\(\s*\d+\s*(?:units?|credits?)\s*\)/gi, '').trim()
 
   // 2. Times
+  const timeRegex = /(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:-|to|–)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/gi
   const hasExplicitTime = /(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:-|to|–)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i.test(trimmed)
   let { start, end } = parseTimeRange(trimmed)
 
@@ -129,29 +130,35 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
     end = slot.end
   }
 
+  // Strip time strings out before attempting room or subject extraction
+  const textWithoutTime = trimmed.replace(timeRegex, '').trim()
+
   // 3. Days
   const hasExplicitDays = /\b(mon|tue|wed|thu|fri|sat|sun|mwf|tth|mw)\b/i.test(trimmed)
   const days = parseDays(trimmed)
 
-  // 4. Room
-  const roomMatch = trimmed.match(/(?:sci hall|hall|lab|tech center|west wing|humanities|room|bldg|building)?\s*([A-Za-z0-9\s-]+\s*\d{1,4}[A-Za-z]?)/i)
-  const room = roomMatch ? roomMatch[0].trim() : 'Room TBA'
+  // 4. Room (must not be a time fragment like "00pm-5")
+  const roomMatch = textWithoutTime.match(/(?:sci hall|hall|lab|tech center|west wing|humanities|room|bldg|building)\s*([A-Za-z0-9\s-]+\s*\d{1,4}[A-Za-z]?)/i)
+  let room = roomMatch ? roomMatch[0].trim() : 'Room TBA'
+  if (/(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)|00pm/i.test(room) && !/hall|lab|room|bldg/i.test(room)) {
+    room = 'Room TBA'
+  }
 
   // 5. Instructor
-  const instructorMatch = trimmed.match(/(?:dr\.?|prof\.?|coach)?\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/)
+  const instructorMatch = textWithoutTime.match(/(?:dr\.?|prof\.?|coach)?\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/)
   const instructor = instructorMatch && instructorMatch[0].length > 2 ? instructorMatch[0].trim() : 'TBA'
 
   // 6. Subject Title
-  let subject = trimmed
+  let subject = textWithoutTime
     .replace(codeMatch ? codeMatch[0] : '', '')
-    .replace(/(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:-|to|–)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/gi, '')
     .replace(/\b(mon|tue|wed|thu|fri|sat|sun|mwf|tth|mw)\b/gi, '')
     .replace(/^[-_\s:]+/, '')
     .replace(/[-_\s:]+$/, '')
     .trim()
 
+  const finalCode = detectedCode || subject.toUpperCase() || 'Untitled Class'
   if (!subject || subject.length < 2) {
-    subject = code
+    subject = finalCode
   }
 
   const color = ((index % 5) + 1) as SubjectColor
@@ -165,7 +172,7 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
   return {
     id: `parsed-${Date.now()}-${index}`,
     subject: subject.charAt(0).toUpperCase() + subject.slice(1),
-    code,
+    code: finalCode,
     instructor,
     room,
     days,
@@ -178,17 +185,95 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
 }
 
 export function parseRawSchedule(text: string): ClassEntry[] {
-  const lines = text
+  const rawLines = text
     .split(/\r?\n/)
     .map((l) => l.trim())
-    .filter((l) => l.length > 3)
+    .filter((l) => l.length > 0)
     .filter((l) => !/^(first|second|third|fourth|fifth)\s+(year|semester|sem)(\s*[-–]\s*(first|second)\s+semester)?$/i.test(l))
+    .filter((l) => !/^[A-Za-z0-9\s-]+[-_]\s*CLASS SCHEDULE$/i.test(l))
 
-  if (lines.length === 0) return []
+  if (rawLines.length === 0) return []
 
-  const parsed = lines
-    .map((line, idx) => parseRawScheduleLine(line, idx))
-    .filter(Boolean)
+  const DAY_NAME_MAP: Record<string, string> = {
+    m: 'Mon', mon: 'Mon', monday: 'Mon',
+    tu: 'Tue', tue: 'Tue', tues: 'Tue', tuesday: 'Tue',
+    w: 'Wed', wed: 'Wed', wednesday: 'Wed',
+    th: 'Thu', thu: 'Thu', thur: 'Thu', thurs: 'Thu', thursday: 'Thu',
+    f: 'Fri', fri: 'Fri', friday: 'Fri',
+    sa: 'Sat', sat: 'Sat', saturday: 'Sat',
+    su: 'Sun', sun: 'Sun', sunday: 'Sun',
+  }
 
-  return parsed
+  const result: ClassEntry[] = []
+  let currentDay: string = 'Mon'
+  let index = 0
+
+  for (const line of rawLines) {
+    const cleanLine = line.trim()
+    const cleanLower = cleanLine.toLowerCase().replace(/[:\s]+$/, '')
+
+    // Check if standalone line is purely a Day Header (e.g. "MON", "MON:", "THURS", "TUESDAY")
+    if (DAY_NAME_MAP[cleanLower]) {
+      currentDay = DAY_NAME_MAP[cleanLower]
+      continue // Skip creating a class entry for day headers!
+    }
+
+    // Check if line matches parenthetical entry: e.g. "7:00am - 10:00am (Food Chem/Even-Lab 2)"
+    const parentheticalMatch = cleanLine.match(/(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:-|to|–)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*\(([^)]+)\)/i)
+    if (parentheticalMatch) {
+      const startStr = parentheticalMatch[1]
+      const endStr = parentheticalMatch[2]
+      const insideParen = parentheticalMatch[3].trim()
+
+      const { start, end } = parseTimeRange(`${startStr} - ${endStr}`)
+
+      let subject = insideParen
+      let room = 'Room TBA'
+
+      if (insideParen.includes('/')) {
+        const parts = insideParen.split('/')
+        subject = parts[0].trim()
+        room = parts[1].trim()
+      }
+
+      const code = subject.toUpperCase()
+      const color = ((index % 5) + 1) as SubjectColor
+
+      result.push({
+        id: `parsed-${Date.now()}-${index}`,
+        subject: subject.charAt(0).toUpperCase() + subject.slice(1),
+        code,
+        instructor: 'TBA',
+        room,
+        days: [currentDay],
+        start,
+        end,
+        color,
+        confidence: 'high',
+      })
+      index++
+      continue
+    }
+
+    // Fallback to single line parser
+    const entry = parseRawScheduleLine(cleanLine, index)
+    if (entry) {
+      // Ensure day headers aren't subject titles
+      const cleanSubj = (entry.subject || '').trim().toLowerCase()
+      if (DAY_NAME_MAP[cleanSubj]) {
+        currentDay = DAY_NAME_MAP[cleanSubj]
+        continue
+      }
+
+      // Inherit currentDay if line didn't explicitly specify multiple days
+      if (entry.lowFields?.includes('days') && currentDay) {
+        entry.days = [currentDay]
+      }
+
+      result.push(entry)
+      index++
+    }
+  }
+
+  return result
 }
