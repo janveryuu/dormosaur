@@ -134,7 +134,7 @@ export function DormosaurAiChat() {
   return (
     <>
       {/* ── Floating AI Trigger Button (Bottom-Right) ── */}
-      <div className="fixed bottom-22 right-3.5 z-30 sm:bottom-6 sm:right-6">
+      <div className="fixed bottom-24 right-4 z-50 lg:bottom-6 lg:right-6">
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
           whileHover={{ scale: 1.05 }}
@@ -158,7 +158,7 @@ export function DormosaurAiChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 40, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-            className="fixed inset-x-4 bottom-24 z-50 mx-auto flex max-h-[82vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-border/80 bg-card/95 shadow-[0_24px_60px_rgba(0,0,0,0.22)] backdrop-blur-2xl sm:bottom-20 sm:right-6 sm:inset-x-auto sm:w-[420px]"
+            className="fixed inset-x-4 bottom-24 z-50 mx-auto flex max-h-[82vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-border/80 bg-card/95 shadow-[0_24px_60px_rgba(0,0,0,0.22)] backdrop-blur-2xl lg:bottom-6 lg:right-6 lg:inset-x-auto lg:w-[420px]"
           >
             {/* Drawer Header */}
             <div className="flex items-center justify-between border-b border-border/60 bg-fill/50 px-4 py-3">
