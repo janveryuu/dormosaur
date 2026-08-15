@@ -38,6 +38,8 @@ import { parseRawSchedule } from '@/lib/parser'
 import { useSchedule } from '@/components/schedule-provider'
 import { createClient } from '@/lib/supabase/client'
 import { upsertUserProfile } from '@/lib/db'
+import { compressImageForOcr } from '@/lib/image-utils'
+import { ScheduleScanProgress } from '@/components/schedule/scan-progress'
 import { COUNTRIES, getCountryByCode, type CountryInfo } from '@/lib/countries-data'
 import { APPLIANCE_OPTIONS, type ApplianceType, type DietaryPreference } from '@/lib/appliances-data'
 import { requestAndSubscribePush } from '@/lib/push-notifications'
@@ -247,33 +249,46 @@ export default function OnboardingPage() {
   const [isOcrScanning, setIsOcrScanning] = React.useState(false)
   const [ocrError, setOcrError] = React.useState<string | null>(null)
   const [parsedClasses, setParsedClasses] = React.useState<any[] | null>(null)
+  const activeScanPromiseRef = React.useRef<Promise<any> | null>(null)
 
-  const processImageWithGemini = async (imageDataUrl: string) => {
+  const processImageWithGemini = async (rawImageInput: File | string) => {
     setIsOcrScanning(true)
     setOcrError(null)
     setParsedClasses(null)
     setRaw('')
+
     try {
-      const res = await fetch('/api/schedule/parse', {
+      // 1. Client-side compression & downscaling to ~1800px (< 400KB)
+      const compressedDataUrl = await compressImageForOcr(rawImageInput, 1800, 0.85)
+      setCapturedImage(compressedDataUrl)
+
+      // 2. Perform Single-Pass Gemini Vision Extraction
+      const scanPromise = fetch('/api/schedule/parse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageDataUrl, mode }),
-      })
-      const data = await res.json()
+        body: JSON.stringify({ image: compressedDataUrl, mode }),
+      }).then((res) => res.json())
+
+      activeScanPromiseRef.current = scanPromise
+      const data = await scanPromise
 
       if (data.success && Array.isArray(data.classes) && data.classes.length > 0) {
         setParsedClasses(data.classes)
         setOcrError(null)
+        return data.classes
       } else {
         setParsedClasses(null)
         setOcrError(data.error || "We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.")
+        return null
       }
     } catch (err) {
       console.warn('Gemini vision processing error:', err)
       setParsedClasses(null)
       setOcrError("We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.")
+      return null
     } finally {
       setIsOcrScanning(false)
+      activeScanPromiseRef.current = null
     }
   }
 
@@ -285,7 +300,7 @@ export default function OnboardingPage() {
     const ctx = canvas.getContext('2d')
     if (ctx) {
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height)
-      const dataUrl = canvas.toDataURL('image/png')
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85)
       setCapturedImage(dataUrl)
       stopCamera()
       processImageWithGemini(dataUrl)
@@ -295,27 +310,15 @@ export default function OnboardingPage() {
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result as string
-        setCapturedImage(dataUrl)
-        processImageWithGemini(dataUrl)
-      }
-      reader.readAsDataURL(file)
+      processImageWithGemini(file)
     }
   }
 
   const handleFileSelect = (file: File) => {
     const sizeKb = (file.size / 1024).toFixed(1) + ' KB'
     if (file.type.startsWith('image/')) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result as string
-        setUploadedFile({ name: file.name, size: sizeKb })
-        setCapturedImage(dataUrl)
-        processImageWithGemini(dataUrl)
-      }
-      reader.readAsDataURL(file)
+      setUploadedFile({ name: file.name, size: sizeKb })
+      processImageWithGemini(file)
     } else {
       const reader = new FileReader()
       reader.onload = (event) => {
@@ -1110,12 +1113,11 @@ export default function OnboardingPage() {
 
         {step === 5 && (
           <div className="mb-3 flex flex-col gap-2">
-            {isOcrScanning && (
-              <div className="flex items-center gap-2 rounded-2xl bg-accent/80 p-3.5 text-[13px] font-medium text-foreground">
-                <Sparkles className="size-4 animate-spin text-primary" />
-                <span>Scanning image text with AI OCR...</span>
-              </div>
-            )}
+            <ScheduleScanProgress
+              isScanning={isOcrScanning}
+              isCompleted={Boolean(parsedClasses && parsedClasses.length > 0)}
+              error={ocrError}
+            />
             {ocrError && (
               <div className="rounded-2xl bg-destructive/10 border border-destructive/20 p-3.5 text-[13px] font-semibold text-destructive">
                 {ocrError}
@@ -1134,8 +1136,19 @@ export default function OnboardingPage() {
               size="lg"
               full
               onClick={async () => {
-                if (isOcrScanning) return
                 setOcrError(null)
+
+                // If a scan is currently in progress, await its completion
+                if (activeScanPromiseRef.current) {
+                  const data = await activeScanPromiseRef.current
+                  if (data?.success && Array.isArray(data.classes) && data.classes.length > 0) {
+                    try {
+                      sessionStorage.setItem('dormosaur_parsed_draft', JSON.stringify(data.classes))
+                    } catch (_) {}
+                    go(6)
+                    return
+                  }
+                }
 
                 let classesToSave: any[] = []
 
@@ -1152,22 +1165,9 @@ export default function OnboardingPage() {
                   } else if (raw.trim()) {
                     classesToSave = parseRawSchedule(raw.trim())
                   } else if (capturedImage) {
-                    setIsOcrScanning(true)
-                    try {
-                      const res = await fetch('/api/schedule/parse', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ image: capturedImage, mode }),
-                      })
-                      const data = await res.json()
-                      if (data.success && Array.isArray(data.classes) && data.classes.length > 0) {
-                        classesToSave = data.classes
-                        setParsedClasses(data.classes)
-                      }
-                    } catch (e) {
-                      console.error('Scan error:', e)
-                    } finally {
-                      setIsOcrScanning(false)
+                    const scanned = await processImageWithGemini(capturedImage)
+                    if (scanned && scanned.length > 0) {
+                      classesToSave = scanned
                     }
                   }
                 }

@@ -16,9 +16,10 @@ import {
 } from 'lucide-react'
 import { ScreenHeader } from '@/components/ios/screen-header'
 import { PillButton } from '@/components/ios/pill-button'
-import { ActivityIndicator } from '@/components/ios/activity-indicator'
 import { parseRawSchedule } from '@/lib/parser'
 import { rawScheduleSample } from '@/lib/data'
+import { compressImageForOcr } from '@/lib/image-utils'
+import { ScheduleScanProgress } from '@/components/schedule/scan-progress'
 
 type ImportMode = 'text' | 'camera' | 'photo' | 'file'
 
@@ -94,33 +95,46 @@ export default function ImportSchedulePage() {
   const [isOcrScanning, setIsOcrScanning] = React.useState(false)
   const [ocrError, setOcrError] = React.useState<string | null>(null)
   const [parsedClasses, setParsedClasses] = React.useState<ClassEntry[] | null>(null)
+  const activeScanPromiseRef = React.useRef<Promise<any> | null>(null)
 
-  const processImageWithGemini = async (imageDataUrl: string) => {
+  const processImageWithGemini = async (rawImageInput: File | string) => {
     setIsOcrScanning(true)
     setOcrError(null)
     setParsedClasses(null)
     setRaw('')
+
     try {
-      const res = await fetch('/api/schedule/parse', {
+      // 1. Client-side compression & downscaling to ~1800px (< 400KB)
+      const compressedDataUrl = await compressImageForOcr(rawImageInput, 1800, 0.85)
+      setCapturedImage(compressedDataUrl)
+
+      // 2. Perform Single-Pass Gemini Vision Extraction
+      const scanPromise = fetch('/api/schedule/parse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageDataUrl, mode }),
-      })
-      const data = await res.json()
+        body: JSON.stringify({ image: compressedDataUrl, mode }),
+      }).then((res) => res.json())
+
+      activeScanPromiseRef.current = scanPromise
+      const data = await scanPromise
 
       if (data.success && Array.isArray(data.classes) && data.classes.length > 0) {
         setParsedClasses(data.classes)
         setOcrError(null)
+        return data.classes
       } else {
         setParsedClasses(null)
         setOcrError(data.error || "We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.")
+        return null
       }
     } catch (err) {
       console.warn('Gemini vision processing error:', err)
       setParsedClasses(null)
       setOcrError("We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.")
+      return null
     } finally {
       setIsOcrScanning(false)
+      activeScanPromiseRef.current = null
     }
   }
 
@@ -128,12 +142,12 @@ export default function ImportSchedulePage() {
   const capturePhoto = () => {
     if (!videoRef.current) return
     const canvas = document.createElement('canvas')
-    canvas.width = videoRef.current.videoWidth || 640
-    canvas.height = videoRef.current.videoHeight || 480
+    canvas.width = videoRef.current.videoWidth || 1280
+    canvas.height = videoRef.current.videoHeight || 720
     const ctx = canvas.getContext('2d')
     if (ctx) {
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height)
-      const dataUrl = canvas.toDataURL('image/png')
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85)
       setCapturedImage(dataUrl)
       stopCamera()
       processImageWithGemini(dataUrl)
@@ -144,13 +158,7 @@ export default function ImportSchedulePage() {
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result as string
-        setCapturedImage(dataUrl)
-        processImageWithGemini(dataUrl)
-      }
-      reader.readAsDataURL(file)
+      processImageWithGemini(file)
     }
   }
 
@@ -158,13 +166,8 @@ export default function ImportSchedulePage() {
   const handleFileSelect = (file: File) => {
     const sizeKb = (file.size / 1024).toFixed(1) + ' KB'
     if (file.type.startsWith('image/')) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result as string
-        setUploadedFile({ name: file.name, size: sizeKb, previewUrl: dataUrl })
-        processImageWithGemini(dataUrl)
-      }
-      reader.readAsDataURL(file)
+      setUploadedFile({ name: file.name, size: sizeKb })
+      processImageWithGemini(file)
     } else {
       const reader = new FileReader()
       reader.onload = (event) => {
@@ -183,8 +186,21 @@ export default function ImportSchedulePage() {
   }
 
   // Process Schedule Import
-  const handleStartImport = () => {
+  const handleStartImport = async () => {
     setOcrError(null)
+
+    // If active background scan is running, await its completion
+    if (activeScanPromiseRef.current) {
+      const data = await activeScanPromiseRef.current
+      if (data?.success && Array.isArray(data.classes) && data.classes.length > 0) {
+        try {
+          sessionStorage.setItem('dormosaur_parsed_draft', JSON.stringify(data.classes))
+        } catch (e) {}
+        setLoading(true)
+        return
+      }
+    }
+
     let classesToSave: ClassEntry[] = []
 
     if (mode === 'text') {
@@ -199,6 +215,11 @@ export default function ImportSchedulePage() {
         classesToSave = parsedClasses
       } else if (raw.trim()) {
         classesToSave = parseRawSchedule(raw.trim())
+      } else if (capturedImage) {
+        const scanned = await processImageWithGemini(capturedImage)
+        if (scanned && scanned.length > 0) {
+          classesToSave = scanned
+        }
       }
     }
 
@@ -493,12 +514,11 @@ export default function ImportSchedulePage() {
         </div>
 
         {/* ── OCR Scan Status or Error Feedback ── */}
-        {isOcrScanning && (
-          <div className="flex items-center gap-3 rounded-2xl bg-accent p-4 text-[14px] font-medium text-accent-foreground shadow-xs">
-            <ActivityIndicator />
-            <span>Scanning image text with AI OCR...</span>
-          </div>
-        )}
+        <ScheduleScanProgress
+          isScanning={isOcrScanning}
+          isCompleted={Boolean(parsedClasses && parsedClasses.length > 0)}
+          error={ocrError}
+        />
 
         {ocrError && (
           <div className="flex items-start gap-3 rounded-2xl bg-destructive/10 p-4 text-[13.5px] font-medium text-destructive dark:bg-destructive/20 shadow-xs">
