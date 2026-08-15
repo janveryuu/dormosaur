@@ -101,3 +101,92 @@ export function getGoogleCalendarUrl(cls: ClassEntry): string {
 
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${datesStr}&details=${details}&location=${location}&recur=${recur}`
 }
+
+const REVERSE_DAY_MAP: Record<string, string> = {
+  MO: 'Mon',
+  TU: 'Tue',
+  WE: 'Wed',
+  TH: 'Thu',
+  FR: 'Fri',
+  SA: 'Sat',
+  SU: 'Sun',
+}
+
+export function parseIcsContent(icsText: string): ClassEntry[] {
+  if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) {
+    return []
+  }
+
+  const events = icsText.split('BEGIN:VEVENT')
+  const classes: ClassEntry[] = []
+
+  events.slice(1).forEach((eventBlock, index) => {
+    const lines = eventBlock.split(/\r?\n/)
+    let summary = ''
+    let location = ''
+    let description = ''
+    let start = ''
+    let end = ''
+    let days: string[] = []
+
+    lines.forEach((line) => {
+      const trimmed = line.trim()
+      if (trimmed.startsWith('SUMMARY:')) {
+        summary = trimmed.replace('SUMMARY:', '').trim()
+      } else if (trimmed.startsWith('LOCATION:')) {
+        location = trimmed.replace('LOCATION:', '').trim()
+      } else if (trimmed.startsWith('DESCRIPTION:')) {
+        description = trimmed.replace('DESCRIPTION:', '').trim()
+      } else if (trimmed.startsWith('DTSTART')) {
+        const timeMatch = trimmed.match(/T(\d{2})(\d{2})/)
+        if (timeMatch) start = `${timeMatch[1]}:${timeMatch[2]}`
+      } else if (trimmed.startsWith('DTEND')) {
+        const timeMatch = trimmed.match(/T(\d{2})(\d{2})/)
+        if (timeMatch) end = `${timeMatch[1]}:${timeMatch[2]}`
+      } else if (trimmed.startsWith('RRULE:')) {
+        const byDayMatch = trimmed.match(/BYDAY=([A-Z,]+)/)
+        if (byDayMatch) {
+          const rawDays = byDayMatch[1].split(',')
+          days = rawDays
+            .map((d) => REVERSE_DAY_MAP[d.trim().toUpperCase()] || d.trim())
+            .filter(Boolean)
+        }
+      }
+    })
+
+    if (summary || start) {
+      let code = summary
+      let subject = summary
+      if (summary.includes(' - ')) {
+        const parts = summary.split(' - ')
+        code = parts[0].trim()
+        subject = parts.slice(1).join(' - ').trim()
+      } else if (summary.includes(':')) {
+        const parts = summary.split(':')
+        code = parts[0].trim()
+        subject = parts.slice(1).join(':').trim()
+      }
+
+      let instructor = ''
+      if (description.includes('Instructor:')) {
+        instructor = description.split('Instructor:')[1].split('|')[0].trim()
+      }
+
+      classes.push({
+        id: `ics-${Date.now()}-${index}`,
+        code: code || 'COURSE',
+        subject: subject || code || 'Untitled Course',
+        instructor: instructor || '',
+        room: location || '',
+        days: days.length > 0 ? days : ['Mon'],
+        start: start || '08:00',
+        end: end || '09:00',
+        color: (((index % 5) + 1) as 1 | 2 | 3 | 4 | 5),
+        confidence: 'high',
+      })
+    }
+  })
+
+  return classes
+}
+

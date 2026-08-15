@@ -7,8 +7,8 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { image, text, mode } = body
 
-    // 1. Image-based parsing via Gemini 1.5 Flash Vision
-    if ((mode === 'camera' || mode === 'photo' || mode === 'file' || image) && image?.startsWith('data:image/')) {
+    // 1. Image / PDF Vision-based parsing via Gemini Vision
+    if ((mode === 'camera' || mode === 'photo' || mode === 'file' || image) && (image?.startsWith('data:image/') || image?.startsWith('data:application/pdf'))) {
       try {
         const classes = await parseScheduleImageWithGemini(image)
         if (Array.isArray(classes) && classes.length > 0) {

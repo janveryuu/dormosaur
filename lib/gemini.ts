@@ -66,7 +66,7 @@ Output ONLY strict, valid JSON matching this schema:
 }`
 
 function parseDataUrl(dataUrl: string): { inlineData: { data: string; mimeType: string } } | null {
-  const match = dataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/)
+  const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+_-]+|application\/pdf);base64,(.+)$/)
   if (!match) return null
   return {
     inlineData: {

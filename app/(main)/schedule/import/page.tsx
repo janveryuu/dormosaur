@@ -20,6 +20,7 @@ import { parseRawSchedule } from '@/lib/parser'
 import { rawScheduleSample } from '@/lib/data'
 import { compressImageForOcr } from '@/lib/image-utils'
 import { ScheduleScanProgress } from '@/components/schedule/scan-progress'
+import { parseIcsContent } from '@/lib/ical'
 
 type ImportMode = 'text' | 'camera' | 'photo' | 'file'
 
@@ -162,27 +163,96 @@ export default function ImportSchedulePage() {
     }
   }
 
-  // Handle File Select (PDF / Document / ICS / TXT)
+  // Handle File Select (PDF / Document / ICS / TXT / Image)
   const handleFileSelect = (file: File) => {
     const sizeKb = (file.size / 1024).toFixed(1) + ' KB'
+    const fileName = file.name.toLowerCase()
+    setOcrError(null)
+    setParsedClasses(null)
+
+    // 1. Image Files (.png, .jpg, .jpeg, .webp, .heic)
     if (file.type.startsWith('image/')) {
       setUploadedFile({ name: file.name, size: sizeKb })
       processImageWithGemini(file)
-    } else {
+      return
+    }
+
+    // 2. ICS Calendar Files (.ics)
+    if (fileName.endsWith('.ics') || file.type.includes('calendar')) {
       const reader = new FileReader()
       reader.onload = (event) => {
         const textContent = (event.target?.result as string) || ''
         setUploadedFile({ name: file.name, size: sizeKb })
-        if (textContent.trim()) {
-          setRaw(textContent.trim())
-          setOcrError(null)
-        } else {
-          setRaw('')
-          setOcrError('The uploaded text file appears to be empty.')
+        try {
+          const icsClasses = parseIcsContent(textContent)
+          if (icsClasses.length > 0) {
+            setParsedClasses(icsClasses)
+            setOcrError(null)
+          } else {
+            setOcrError('No recurring classes or events found in this calendar file.')
+          }
+        } catch (err: any) {
+          setOcrError('Could not parse calendar file. Please try another file or paste text.')
         }
       }
       reader.readAsText(file)
+      return
     }
+
+    // 3. PDF Documents (.pdf) -> Native Gemini PDF Vision
+    if (fileName.endsWith('.pdf') || file.type === 'application/pdf') {
+      setUploadedFile({ name: file.name, size: sizeKb })
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const pdfDataUrl = (event.target?.result as string) || ''
+        processImageWithGemini(pdfDataUrl)
+      }
+      reader.readAsDataURL(file)
+      return
+    }
+
+    // 4. Plain Text / Notes (.txt, .csv, .tsv, etc.)
+    const reader = new FileReader()
+    reader.onload = async (event) => {
+      const textContent = (event.target?.result as string) || ''
+      setUploadedFile({ name: file.name, size: sizeKb })
+      if (textContent.trim()) {
+        setRaw(textContent.trim())
+        setIsOcrScanning(true)
+        try {
+          const res = await fetch('/api/schedule/parse', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: textContent.trim(), mode: 'file' }),
+          })
+          const data = await res.json()
+          if (data.success && Array.isArray(data.classes) && data.classes.length > 0) {
+            setParsedClasses(data.classes)
+            setOcrError(null)
+          } else {
+            const fallback = parseRawSchedule(textContent.trim())
+            if (fallback && fallback.length > 0) {
+              setParsedClasses(fallback)
+              setOcrError(null)
+            } else {
+              setOcrError('Could not find class schedule data in this text file.')
+            }
+          }
+        } catch (e) {
+          const fallback = parseRawSchedule(textContent.trim())
+          if (fallback && fallback.length > 0) {
+            setParsedClasses(fallback)
+            setOcrError(null)
+          }
+        } finally {
+          setIsOcrScanning(false)
+        }
+      } else {
+        setRaw('')
+        setOcrError('The uploaded file appears to be empty.')
+      }
+    }
+    reader.readAsText(file)
   }
 
   // Process Schedule Import
@@ -224,7 +294,7 @@ export default function ImportSchedulePage() {
     }
 
     if (!classesToSave || classesToSave.length === 0) {
-      setOcrError("We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.")
+      setOcrError("We couldn't read this schedule file — please try another file format or paste the text.")
       return
     }
 

@@ -11,10 +11,32 @@ import { subjectColorClass, weekDays, type ClassEntry, type SubjectColor } from 
 
 type Field = 'subject' | 'code' | 'start' | 'end' | 'room' | 'instructor'
 
+function sanitizeClassEntry(e: any, index: number): ClassEntry {
+  const safeColor = (e && e.color && subjectColorClass[e.color as SubjectColor])
+    ? (e.color as SubjectColor)
+    : ((((index % 5) + 1)) as SubjectColor)
+
+  return {
+    id: e?.id || `draft-${Date.now()}-${index}`,
+    subject: e?.subject || e?.code || 'Untitled Course',
+    code: e?.code || e?.subject || 'COURSE',
+    instructor: e?.instructor || '',
+    room: e?.room || '',
+    days: Array.isArray(e?.days) && e.days.length > 0 ? e.days : ['Mon'],
+    start: e?.start || '08:00',
+    end: e?.end || '09:00',
+    color: safeColor,
+    confidence: e?.confidence === 'low' ? 'low' : 'high',
+    lowFields: Array.isArray(e?.lowFields) ? e.lowFields : [],
+  }
+}
+
 export default function ReviewSchedulePage() {
   const router = useRouter()
   const { classes, addClasses } = useSchedule()
-  const [entries, setEntries] = React.useState<ClassEntry[]>(classes)
+  const [entries, setEntries] = React.useState<ClassEntry[]>(
+    classes.map((c, i) => sanitizeClassEntry(c, i))
+  )
   const [confirmed, setConfirmed] = React.useState(false)
 
   // Hydrate from draft if available
@@ -22,9 +44,10 @@ export default function ReviewSchedulePage() {
     try {
       const rawDraft = sessionStorage.getItem('dormosaur_parsed_draft') || sessionStorage.getItem('dormly_parsed_draft')
       if (rawDraft) {
-        const parsed = JSON.parse(rawDraft) as ClassEntry[]
+        const parsed = JSON.parse(rawDraft)
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setEntries(parsed)
+          const sanitized = parsed.map((item, idx) => sanitizeClassEntry(item, idx))
+          setEntries(sanitized)
         }
       }
     } catch (e) {
@@ -54,18 +77,18 @@ export default function ReviewSchedulePage() {
 
   const toggleDay = (id: string, day: string) => {
     setEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id
-          ? {
-              ...entry,
-              days: entry.days.includes(day)
-                ? entry.days.filter((d) => d !== day)
-                : [...entry.days, day].sort(
-                    (a, b) => weekDays.indexOf(a) - weekDays.indexOf(b),
-                  ),
-            }
-          : entry,
-      ),
+      prev.map((entry) => {
+        if (entry.id !== id) return entry
+        const safeDays = Array.isArray(entry.days) ? entry.days : []
+        return {
+          ...entry,
+          days: safeDays.includes(day)
+            ? safeDays.filter((d) => d !== day)
+            : [...safeDays, day].sort(
+                (a, b) => weekDays.indexOf(a) - weekDays.indexOf(b),
+              ),
+        }
+      }),
     )
   }
 
@@ -114,7 +137,7 @@ export default function ReviewSchedulePage() {
 
       <div className="flex flex-col gap-3 pb-28">
         {entries.map((entry, index) => {
-          const color = subjectColorClass[entry.color]
+          const color = subjectColorClass[entry.color] || subjectColorClass[1]
           const isLow = (field: Field) => entry.lowFields?.includes(field)
 
           return (
@@ -129,14 +152,14 @@ export default function ReviewSchedulePage() {
                 <span className={`mt-1.5 h-8 w-1 shrink-0 rounded-full ${color.bg}`} />
                 <div className="min-w-0 flex-1">
                   <EditableField
-                    value={entry.subject}
+                    value={entry.subject || ''}
                     onChange={(v) => update(entry.id, 'subject', v)}
                     label="Subject"
                     flagged={isLow('subject')}
                     className="text-[18px] font-semibold tracking-[-0.02em]"
                   />
                   <EditableField
-                    value={entry.code}
+                    value={entry.code || ''}
                     onChange={(v) => update(entry.id, 'code', v)}
                     label="Course code"
                     flagged={isLow('code')}
