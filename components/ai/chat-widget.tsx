@@ -85,18 +85,33 @@ export function DormosaurAiChat() {
     setIsTyping(true)
 
     try {
+      const now = new Date()
+      const clientPayload = {
+        profile: {
+          name: profile.name,
+          school: profile.school,
+          program: profile.program,
+          year: profile.year,
+          dorm: profile.dorm,
+          dietary: profile.dietary,
+          appliances: profile.appliances,
+        },
+        classes,
+        alarms,
+        deadlines,
+        clientTime: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+        clientDay: now.toLocaleDateString('en-US', { weekday: 'short' }),
+        clientFullDate: now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Manila',
+      }
+
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [...messages, userMessage].map((m) => ({ role: m.role, content: m.content })),
-          userContext: {
-            name: profile.name,
-            school: profile.school,
-            classes,
-            alarms,
-            deadlines,
-          },
+          context: clientPayload,
+          userContext: clientPayload,
         }),
       })
 
