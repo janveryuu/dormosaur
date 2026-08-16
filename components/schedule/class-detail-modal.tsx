@@ -2,13 +2,14 @@
 
 import * as React from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Calendar, Clock, MapPin, User, X } from 'lucide-react'
+import { Calendar, Clock, Edit2, MapPin, User, X } from 'lucide-react'
 import type { ClassEntry } from '@/lib/data'
 import { formatTimeRange, subjectColorClass } from '@/lib/data'
 
 interface ClassDetailModalProps {
   entry: ClassEntry | null
   onClose: () => void
+  onEdit?: (entry: ClassEntry) => void
 }
 
 const fullDayMap: Record<string, string> = {
@@ -21,10 +22,10 @@ const fullDayMap: Record<string, string> = {
   Sun: 'Sunday',
 }
 
-export function ClassDetailModal({ entry, onClose }: ClassDetailModalProps) {
+export function ClassDetailModal({ entry, onClose, onEdit }: ClassDetailModalProps) {
   if (!entry) return null
 
-  const color = subjectColorClass[entry.color]
+  const color = subjectColorClass[entry.color] || subjectColorClass[1]
   const daysFormatted = entry.days.map((d) => fullDayMap[d] || d).join(', ')
   const timeRange = formatTimeRange(entry.start, entry.end)
 
@@ -60,13 +61,17 @@ export function ClassDetailModal({ entry, onClose }: ClassDetailModalProps) {
           </button>
 
           {/* Course Code & Title */}
-          <div className="mt-2 pr-8">
-            <span className={`inline-block rounded-full ${color.soft} px-3 py-1 text-[11px] font-black tracking-wider uppercase ${color.text} border border-black/5 dark:border-white/10`}>
-              {entry.code}
-            </span>
-            <h3 className="mt-2 text-[20px] font-black tracking-tight text-foreground">
-              {entry.subject}
-            </h3>
+          <div className="mt-2 pr-8 flex items-start justify-between">
+            <div>
+              <span
+                className={`inline-block rounded-full ${color.soft} px-3 py-1 text-[11px] font-black tracking-wider uppercase ${color.text} border border-black/5 dark:border-white/10`}
+              >
+                {entry.code}
+              </span>
+              <h3 className="mt-2 text-[20px] font-black tracking-tight text-foreground">
+                {entry.subject}
+              </h3>
+            </div>
           </div>
 
           {/* Detail Cards List */}
@@ -77,7 +82,9 @@ export function ClassDetailModal({ entry, onClose }: ClassDetailModalProps) {
                 <Clock className="size-5" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Time Slot</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Time Slot
+                </span>
                 <span className="text-[14.5px] font-bold text-foreground mt-0.5">{timeRange}</span>
               </div>
             </div>
@@ -88,8 +95,12 @@ export function ClassDetailModal({ entry, onClose }: ClassDetailModalProps) {
                 <Calendar className="size-5" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Schedule Days</span>
-                <span className="text-[14.5px] font-bold text-foreground mt-0.5">{daysFormatted}</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Schedule Days
+                </span>
+                <span className="text-[14.5px] font-bold text-foreground mt-0.5">
+                  {daysFormatted}
+                </span>
               </div>
             </div>
 
@@ -99,8 +110,12 @@ export function ClassDetailModal({ entry, onClose }: ClassDetailModalProps) {
                 <MapPin className="size-5" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Room / Location</span>
-                <span className="text-[14.5px] font-bold text-foreground mt-0.5">{entry.room || 'Room TBA'}</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Room / Location
+                </span>
+                <span className="text-[14.5px] font-bold text-foreground mt-0.5">
+                  {entry.room || 'Room TBA'}
+                </span>
               </div>
             </div>
 
@@ -110,11 +125,31 @@ export function ClassDetailModal({ entry, onClose }: ClassDetailModalProps) {
                 <User className="size-5" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Instructor</span>
-                <span className="text-[14.5px] font-bold text-foreground mt-0.5">{entry.instructor || 'TBA'}</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Instructor
+                </span>
+                <span className="text-[14.5px] font-bold text-foreground mt-0.5">
+                  {entry.instructor || 'TBA'}
+                </span>
               </div>
             </div>
           </div>
+
+          {/* Edit Action Button */}
+          {onEdit && (
+            <div className="mt-5 border-t border-separator pt-4 flex justify-end">
+              <button
+                onClick={() => {
+                  onClose()
+                  onEdit(entry)
+                }}
+                className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[13px] font-bold text-primary-foreground shadow-sm hover:scale-105 transition-all"
+              >
+                <Edit2 className="size-3.5" />
+                <span>Edit Course</span>
+              </button>
+            </div>
+          )}
         </motion.div>
       </div>
     </AnimatePresence>

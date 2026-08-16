@@ -7,8 +7,8 @@ import { Calendar, Plus, UploadCloud } from 'lucide-react'
 import { useSchedule } from '@/components/schedule-provider'
 import type { ClassEntry } from '@/lib/data'
 import { formatTimeRange, minutesOf, subjectColorClass, weekDays } from '@/lib/data'
-import { getDynamicGridTimeRange } from '@/lib/template-helper'
 import { ClassDetailModal } from '@/components/schedule/class-detail-modal'
+import { ClassEditModal } from '@/components/schedule/class-edit-modal'
 
 const HOUR_HEIGHT_DESKTOP = 62
 const HOUR_HEIGHT_MOBILE = 54
@@ -24,8 +24,9 @@ const shortMobileDayMap: Record<string, string> = {
 }
 
 export function WeekGrid() {
-  const { classes, isHydrated, isSyncing } = useSchedule()
+  const { classes, isHydrated, isSyncing, addClass, updateClass, deleteClass } = useSchedule()
   const [selectedClass, setSelectedClass] = React.useState<ClassEntry | null>(null)
+  const [editClass, setEditClass] = React.useState<ClassEntry | null>(null)
   const desktopScrollRef = React.useRef<HTMLDivElement | null>(null)
 
   const isLoading = !isHydrated || isSyncing
@@ -142,7 +143,25 @@ export function WeekGrid() {
 
   return (
     <>
-      <ClassDetailModal entry={selectedClass} onClose={() => setSelectedClass(null)} />
+      <ClassDetailModal
+        entry={selectedClass}
+        onClose={() => setSelectedClass(null)}
+        onEdit={(entry) => setEditClass(entry)}
+      />
+
+      <ClassEditModal
+        open={Boolean(editClass)}
+        onClose={() => setEditClass(null)}
+        initialData={editClass}
+        onSave={(classData) => {
+          if (editClass) {
+            updateClass(editClass.id, classData)
+          } else {
+            addClass(classData)
+          }
+        }}
+        onDelete={(id) => deleteClass(id)}
+      />
 
       {/* ── MOBILE 7-DAY WEEK-AT-A-GLANCE (ZERO HORIZONTAL SCROLL) ── */}
       <div className="block sm:hidden overflow-hidden rounded-3xl bg-card shadow-ios border border-border/60">

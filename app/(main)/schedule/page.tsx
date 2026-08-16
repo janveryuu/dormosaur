@@ -13,6 +13,7 @@ import { ExportModal } from '@/components/schedule/export-modal'
 import { AddDeadlineModal } from '@/components/schedule/add-deadline-modal'
 import { TemplateModal } from '@/components/schedule/templates/template-modal'
 import { DeadlineCard } from '@/components/schedule/deadline-card'
+import { ClassEditModal } from '@/components/schedule/class-edit-modal'
 import { useSchedule } from '@/components/schedule-provider'
 import { subjectColorClass } from '@/lib/data'
 
@@ -23,7 +24,8 @@ export default function SchedulePage() {
   const [exportOpen, setExportOpen] = React.useState(false)
   const [templateOpen, setTemplateOpen] = React.useState(false)
   const [addDeadlineOpen, setAddDeadlineOpen] = React.useState(false)
-  const { classes, deadlines } = useSchedule()
+  const [addClassOpen, setAddClassOpen] = React.useState(false)
+  const { classes, deadlines, addClass } = useSchedule()
 
   const pendingDeadlines = deadlines.filter((d) => !d.completed)
 
@@ -32,6 +34,11 @@ export default function SchedulePage() {
       <ExportModal open={exportOpen} onClose={() => setExportOpen(false)} />
       <TemplateModal open={templateOpen} onClose={() => setTemplateOpen(false)} />
       <AddDeadlineModal open={addDeadlineOpen} onClose={() => setAddDeadlineOpen(false)} />
+      <ClassEditModal
+        open={addClassOpen}
+        onClose={() => setAddClassOpen(false)}
+        onSave={(classData) => addClass(classData)}
+      />
 
       <PullAffordance />
       <ScreenHeader
@@ -63,14 +70,15 @@ export default function SchedulePage() {
               <Download className="size-4.5" strokeWidth={2} />
             </button>
 
-            <Link
-              href="/schedule/import"
-              aria-label="Import a schedule"
-              title="Import schedule"
+            <button
+              type="button"
+              onClick={() => setAddClassOpen(true)}
+              aria-label="Add a course"
+              title="Add course"
               className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:scale-105"
             >
               <Plus className="size-4.5" strokeWidth={2.4} />
-            </Link>
+            </button>
           </div>
         }
       />

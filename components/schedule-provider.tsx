@@ -79,6 +79,7 @@ interface ScheduleContextType {
   setProfile: React.Dispatch<React.SetStateAction<UserProfile>>
   setDeadlines: React.Dispatch<React.SetStateAction<DeadlineItem[]>>
   addClasses: (newClasses: ClassEntry[]) => void
+  addClass: (newClass: ClassEntry) => void
   updateClass: (id: string, updated: Partial<ClassEntry>) => void
   deleteClass: (id: string) => void
   toggleAlarm: (id: string, enabled?: boolean) => void
@@ -313,6 +314,38 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
     })
   }
 
+  const addClass = (newClass: ClassEntry) => {
+    setClassesState((prev) => {
+      const next = [...prev, newClass]
+      syncToCloud(async () => {
+        const supabase = createClient()
+        await setClasses(supabase, userId!, next)
+      })
+      return next
+    })
+
+    const newAlarm: Alarm = {
+      id: `alarm-${newClass.id}-${Date.now()}`,
+      classId: newClass.id,
+      subject: newClass.subject,
+      code: newClass.code,
+      time: newClass.start,
+      day: 'Today',
+      lead: 30,
+      enabled: true,
+      color: newClass.color,
+    }
+
+    setAlarmsState((prev) => {
+      const nextAlarms = [...prev, newAlarm]
+      syncToCloud(async () => {
+        const supabase = createClient()
+        await setAlarms(supabase, userId!, nextAlarms)
+      })
+      return nextAlarms
+    })
+  }
+
   const updateClass = (id: string, updated: Partial<ClassEntry>) => {
     setClassesState((prev) => {
       const next = prev.map((c) => (c.id === id ? { ...c, ...updated } : c))
@@ -322,8 +355,8 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
       })
       return next
     })
-    setAlarmsState((prev) =>
-      prev.map((a) =>
+    setAlarmsState((prev) => {
+      const nextAlarms = prev.map((a) =>
         a.classId === id
           ? {
               ...a,
@@ -333,8 +366,13 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
               color: updated.color ?? a.color,
             }
           : a,
-      ),
-    )
+      )
+      syncToCloud(async () => {
+        const supabase = createClient()
+        await setAlarms(supabase, userId!, nextAlarms)
+      })
+      return nextAlarms
+    })
   }
 
   const deleteClass = (id: string) => {
@@ -346,7 +384,14 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
       })
       return next
     })
-    setAlarmsState((prev) => prev.filter((a) => a.classId !== id))
+    setAlarmsState((prev) => {
+      const nextAlarms = prev.filter((a) => a.classId !== id)
+      syncToCloud(async () => {
+        const supabase = createClient()
+        await setAlarms(supabase, userId!, nextAlarms)
+      })
+      return nextAlarms
+    })
   }
 
   const toggleAlarm = (id: string, enabled?: boolean) => {
@@ -537,6 +582,7 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
         setProfile,
         setDeadlines,
         addClasses,
+        addClass,
         updateClass,
         deleteClass,
         toggleAlarm,
