@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { ScreenHeader } from '@/components/ios/screen-header'
 import { PillButton } from '@/components/ios/pill-button'
+import { ActivityIndicator } from '@/components/ios/activity-indicator'
 import { parseRawSchedule } from '@/lib/parser'
 import { rawScheduleSample } from '@/lib/data'
 import { compressImageForOcr } from '@/lib/image-utils'
