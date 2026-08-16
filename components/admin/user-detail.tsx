@@ -51,9 +51,17 @@ export function UserDetail({ userDetail }: { userDetail: AdminUserDetail }) {
 
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-center gap-4">
-          <span className="flex size-16 shrink-0 items-center justify-center rounded-3xl bg-primary text-[22px] font-black text-primary-foreground shadow-ios-sm">
-            {profile.initials}
-          </span>
+          {profile.avatar_url ? (
+            <img
+              src={profile.avatar_url}
+              alt={profile.name}
+              className="size-16 shrink-0 rounded-3xl object-cover shadow-ios-sm"
+            />
+          ) : (
+            <span className="flex size-16 shrink-0 items-center justify-center rounded-3xl bg-primary text-[22px] font-black text-primary-foreground shadow-ios-sm">
+              {profile.initials}
+            </span>
+          )}
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-[24px] font-extrabold tracking-[-0.02em]">{profile.name}</h1>

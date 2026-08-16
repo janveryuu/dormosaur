@@ -89,3 +89,76 @@ function processDataUrl(
 
   img.src = dataUrl
 }
+
+/**
+ * Crops an input image to a 1:1 square centered on the subject and resizes it to a compact, crisp avatar (e.g. 320x320, < 25KB).
+ */
+export async function cropAndCompressAvatar(
+  input: File | string,
+  targetSize = 320,
+  quality = 0.88
+): Promise<{ dataUrl: string; blob: Blob | null }> {
+  return new Promise((resolve, reject) => {
+    const handleDataUrl = (dataUrl: string) => {
+      if (typeof window === 'undefined' || typeof document === 'undefined') {
+        return resolve({ dataUrl, blob: null })
+      }
+
+      const img = new Image()
+      img.onload = () => {
+        try {
+          const width = img.width
+          const height = img.height
+          const minDim = Math.min(width, height)
+          const sx = (width - minDim) / 2
+          const sy = (height - minDim) / 2
+
+          const canvas = document.createElement('canvas')
+          canvas.width = targetSize
+          canvas.height = targetSize
+
+          const ctx = canvas.getContext('2d')
+          if (!ctx) {
+            return resolve({ dataUrl, blob: null })
+          }
+
+          ctx.imageSmoothingEnabled = true
+          ctx.imageSmoothingQuality = 'high'
+
+          // Draw center square crop
+          ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, targetSize, targetSize)
+
+          const croppedDataUrl = canvas.toDataURL('image/webp', quality) || canvas.toDataURL('image/jpeg', quality)
+
+          canvas.toBlob(
+            (blob) => {
+              resolve({ dataUrl: croppedDataUrl, blob })
+            },
+            'image/webp',
+            quality
+          )
+        } catch (err) {
+          console.warn('[Avatar Crop Notice] Falling back to original:', err)
+          resolve({ dataUrl, blob: null })
+        }
+      }
+
+      img.onerror = (err) => {
+        console.warn('[Avatar Load Notice] Falling back:', err)
+        resolve({ dataUrl, blob: null })
+      }
+
+      img.src = dataUrl
+    }
+
+    if (typeof input !== 'string') {
+      const reader = new FileReader()
+      reader.onload = (e) => handleDataUrl(e.target?.result as string)
+      reader.onerror = (err) => reject(err)
+      reader.readAsDataURL(input)
+    } else {
+      handleDataUrl(input)
+    }
+  })
+}
+

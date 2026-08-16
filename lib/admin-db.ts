@@ -29,6 +29,7 @@ export type AdminUserRow = {
   email: string
   school: string
   country: string
+  avatar_url?: string | null
   is_dorm_student: boolean
   created_at: string
   last_sign_in_at: string
@@ -39,6 +40,7 @@ export type AdminUserDetail = {
   profile: AdminUserRow & {
     dorm: string
     year: string
+    avatar_url?: string | null
     initials: string
     timezone: string
     appliances: string[]

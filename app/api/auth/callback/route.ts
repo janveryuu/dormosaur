@@ -62,7 +62,8 @@ export async function GET(request: Request) {
               name: fullName,
               school: '',
               dorm: 'Dorm Room',
-              year: 'Freshman',
+              year: '',
+              avatar_url: meta?.avatar_url || meta?.picture || '',
               initials,
               onboarding_completed: false,
             }).catch((e) => console.error('seed error:', e))

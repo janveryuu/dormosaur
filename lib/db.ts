@@ -20,6 +20,7 @@ export type DbProfile = {
   school: string
   dorm: string
   year: string
+  avatar_url?: string | null
   initials: string
   is_dorm_student: boolean
   onboarding_completed: boolean
@@ -157,6 +158,7 @@ export async function upsertUserProfile(
     'school',
     'dorm',
     'year',
+    'avatar_url',
     'initials',
     'is_dorm_student',
     'onboarding_completed',

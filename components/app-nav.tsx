@@ -121,9 +121,17 @@ export function AppNav() {
           href="/profile"
           className="mt-auto flex items-center gap-3 rounded-3xl bg-fill p-3 transition-opacity hover:opacity-85"
         >
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-[13px] font-semibold text-primary-foreground">
-            {profile.initials}
-          </span>
+          {profile.avatar_url ? (
+            <img
+              src={profile.avatar_url}
+              alt={profile.name}
+              className="size-9 shrink-0 rounded-full object-cover shadow-xs"
+            />
+          ) : (
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-[13px] font-semibold text-primary-foreground">
+              {profile.initials || 'ST'}
+            </span>
+          )}
           <span className="min-w-0">
             <span className="block truncate text-[14px] font-semibold tracking-[-0.01em]">
               {profile.name}

@@ -7,11 +7,13 @@ import {
   BedDouble,
   Bell,
   BellRing,
+  Camera,
   Check,
   ChevronRight,
   CookingPot,
   Globe,
   GraduationCap,
+  Image as ImageIcon,
   Loader2,
   LogOut,
   Moon,
@@ -21,6 +23,7 @@ import {
   ShieldCheck,
   Smartphone,
   Sun,
+  Trash2,
   UtensilsCrossed,
   X,
   Zap,
@@ -48,6 +51,7 @@ import {
 import { requestAndSubscribePush, unsubscribePush, getCurrentEndpoint } from '@/lib/push-notifications'
 import { getDeviceLabel } from '@/lib/ua-parser'
 import { IosToast, type ToastMessage } from '@/components/ios/toast'
+import { cropAndCompressAvatar } from '@/lib/image-utils'
 import { cn } from '@/lib/utils'
 
 const spring = { type: 'spring' as const, stiffness: 500, damping: 30 }
@@ -205,6 +209,15 @@ export default function ProfilePage() {
     (profile.dietary_preference as DietaryPreference) || 'none'
   )
   const [tempDietaryNote, setTempDietaryNote] = React.useState(profile.dietary_note || '')
+
+  const YEAR_OPTIONS = ['Freshman', 'Sophomore', 'Junior', 'Senior'] as const
+
+  // Dedicated Year Level Modal
+  const [isYearModalOpen, setIsYearModalOpen] = React.useState(false)
+
+  // Profile Avatar Upload & File Ref
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+  const [isUploadingAvatar, setIsUploadingAvatar] = React.useState(false)
 
   // Full Edit Profile Modal
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
@@ -540,7 +553,7 @@ export default function ProfilePage() {
       name: 'Full Name',
       school: 'School',
       dorm: 'Dorm / Room',
-      year: 'Year level',
+      year: 'Year Level',
       country: 'Country Code',
       timezone: 'Time Zone',
     }
@@ -548,7 +561,108 @@ export default function ProfilePage() {
     setToast({
       type: 'success',
       title: `${fieldLabels[field] || 'Profile'} updated`,
-      message: `Saved as "${trimmed}".`,
+      message: trimmed ? `Saved as "${trimmed}".` : 'Field updated.',
+    })
+  }
+
+  // Avatar Upload Handler
+  const handleAvatarFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // 1. Validate type and size (max 5MB)
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic']
+    if (!validTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|webp|heic)$/i)) {
+      setToast({
+        type: 'error',
+        title: 'Unsupported File Format',
+        message: 'Please upload a JPG, PNG, or WEBP image.',
+      })
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setToast({
+        type: 'error',
+        title: 'File Too Large',
+        message: 'Please choose an image under 5MB.',
+      })
+      return
+    }
+
+    setIsUploadingAvatar(true)
+
+    try {
+      // 2. Crop to square & compress to lightweight WebP (< 30KB)
+      const { dataUrl, blob } = await cropAndCompressAvatar(file, 320, 0.88)
+      let avatarUrl = dataUrl
+
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (user) {
+        // 3. Try upload to Supabase Storage 'avatars' bucket
+        try {
+          const filePath = `${user.id}/avatar_${Date.now()}.webp`
+          const uploadPayload = blob || file
+          const { error: uploadErr } = await supabase.storage
+            .from('avatars')
+            .upload(filePath, uploadPayload, {
+              upsert: true,
+              contentType: 'image/webp',
+            })
+
+          if (!uploadErr) {
+            const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath)
+            if (urlData?.publicUrl) {
+              avatarUrl = urlData.publicUrl
+            }
+          }
+        } catch (storageErr) {
+          console.warn('[Avatar Storage Notice] Using compressed base64 profile image:', storageErr)
+        }
+
+        // 4. Save to user profile in Supabase DB
+        await upsertUserProfile(supabase, user.id, { avatar_url: avatarUrl })
+      }
+
+      // 5. Update local state immediately
+      setProfile((prev) => ({ ...prev, avatar_url: avatarUrl }))
+      setToast({
+        type: 'success',
+        title: 'Profile Picture Updated',
+        message: 'Your new avatar is saved across Dormosaur.',
+      })
+    } catch (err) {
+      console.error('Avatar upload failed:', err)
+      setToast({
+        type: 'error',
+        title: 'Upload Failed',
+        message: 'Unable to process image. Please try again.',
+      })
+    } finally {
+      setIsUploadingAvatar(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  // Remove Avatar Handler
+  const handleRemoveAvatar = async () => {
+    setProfile((prev) => ({ ...prev, avatar_url: '' }))
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await upsertUserProfile(supabase, user.id, { avatar_url: null })
+      }
+    } catch (e) {
+      console.warn('Remove avatar notice:', e)
+    }
+
+    setToast({
+      type: 'info',
+      title: 'Profile Picture Removed',
+      message: 'Reverted to your initials avatar.',
     })
   }
 
@@ -566,7 +680,7 @@ export default function ProfilePage() {
       name: trimmedName,
       school: modalDraft.school.trim() || profile.school,
       dorm: modalDraft.dorm.trim() || profile.dorm,
-      year: modalDraft.year.trim() || profile.year,
+      year: modalDraft.year.trim(),
       initials: calculatedInitials,
       country: modalDraft.country.trim().toUpperCase() || 'PH',
       timezone: modalDraft.timezone.trim() || 'Asia/Manila',
@@ -628,6 +742,15 @@ export default function ProfilePage() {
         )}
       </div>
 
+      {/* Hidden Avatar File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/heic"
+        onChange={handleAvatarFileSelect}
+        className="hidden"
+      />
+
       <div className="flex flex-col gap-7 pb-4">
 
         {/* ─── Avatar + Name Header Card ─────────────────────────────────────── */}
@@ -637,23 +760,50 @@ export default function ProfilePage() {
           onClick={() => setIsEditModalOpen(true)}
           className="group relative flex cursor-pointer items-center gap-4.5 rounded-4xl bg-card p-5 shadow-ios-lg border border-border/50 hover:border-primary/40 transition-all"
         >
-          <span className="flex size-16 shrink-0 items-center justify-center rounded-full bg-primary text-[22px] font-bold text-primary-foreground shadow-ios-sm group-hover:scale-105 transition-transform">
-            {profile.initials}
-          </span>
+          {/* Avatar Container with Camera Overlay */}
+          <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
+            {profile.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt={profile.name || 'User Avatar'}
+                className="size-16 rounded-full object-cover shadow-ios-sm ring-2 ring-primary/20 transition-transform group-hover:scale-105"
+              />
+            ) : (
+              <span className="flex size-16 items-center justify-center rounded-full bg-primary text-[22px] font-bold text-primary-foreground shadow-ios-sm transition-transform group-hover:scale-105">
+                {profile.initials || 'ST'}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploadingAvatar}
+              className="absolute -bottom-1 -right-1 flex size-6.5 items-center justify-center rounded-full bg-card border border-border/80 shadow-ios-sm text-foreground hover:bg-primary hover:text-white active:scale-90 transition-all"
+              title="Upload profile photo"
+            >
+              {isUploadingAvatar ? (
+                <Loader2 className="size-3.5 animate-spin text-primary" />
+              ) : (
+                <Camera className="size-3.5" />
+              )}
+            </button>
+          </div>
+
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h2 className="text-[22px] leading-tight font-bold tracking-[-0.03em] text-foreground">
-                {profile.name}
+              <h2 className="text-[22px] leading-tight font-bold tracking-[-0.03em] text-foreground truncate">
+                {profile.name || 'Student'}
               </h2>
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold uppercase text-primary">
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold uppercase text-primary shrink-0">
                 Edit
               </span>
             </div>
-            <p className="mt-1 text-[14px] font-medium text-muted-foreground">
-              {profile.year} · {profile.school}
+            <p className="mt-1 text-[14px] font-medium text-muted-foreground truncate">
+              {profile.year
+                ? `${profile.year} · ${profile.school || 'Batangas State University'}`
+                : profile.school || 'Batangas State University'}
             </p>
             {userEmail && (
-              <p className="text-[13px] text-muted-foreground/70">{userEmail}</p>
+              <p className="text-[13px] text-muted-foreground/70 truncate">{userEmail}</p>
             )}
           </div>
           <ChevronRight className="size-5 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -691,12 +841,28 @@ export default function ProfilePage() {
             onSave={(v) => updateProfileField('dorm', v)}
             placeholder="e.g. Dorm Room 312"
           />
-          <EditableField
-            label="Year"
-            value={profile.year}
-            onSave={(v) => updateProfileField('year', v)}
-            placeholder="Freshman"
-          />
+          {/* Dedicated Year Level Row */}
+          <div
+            onClick={() => setIsYearModalOpen(true)}
+            className="group flex cursor-pointer items-center justify-between px-5 py-3.5 hover:bg-accent/40 transition-colors"
+          >
+            <div className="min-w-0 flex-1">
+              <p className="mb-0.5 text-[11.5px] font-bold uppercase tracking-wider text-muted-foreground">
+                Year Level
+              </p>
+              <p
+                className={cn(
+                  'text-[16px] font-semibold',
+                  profile.year ? 'text-foreground' : 'text-muted-foreground/70 font-normal italic'
+                )}
+              >
+                {profile.year || 'Not set (Select year level)'}
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 text-muted-foreground group-hover:text-primary transition-colors">
+              <Pencil className="size-4 opacity-50 group-hover:opacity-100" />
+            </div>
+          </div>
           <EditableField
             label="Country Code"
             value={profile.country || 'PH'}
@@ -1340,6 +1506,102 @@ export default function ProfilePage() {
         )}
       </AnimatePresence>
 
+      {/* ─── DEDICATED YEAR LEVEL MODAL ────────────────────────────────────── */}
+      <AnimatePresence>
+        {isYearModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsYearModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 14 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 14 }}
+              transition={spring}
+              className="relative z-10 w-full max-w-md overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-border">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex size-9 items-center justify-center rounded-2xl bg-primary/15 text-primary font-bold">
+                    <GraduationCap className="size-5" />
+                  </span>
+                  <div>
+                    <h3 className="text-[18px] font-bold">Year Level</h3>
+                    <p className="text-[12px] text-muted-foreground">Select your current academic standing</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsYearModalOpen(false)}
+                  className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              <div className="my-4 space-y-2 max-h-[50vh] overflow-y-auto pr-1">
+                {YEAR_OPTIONS.map((opt) => {
+                  const isSelected = profile.year === opt
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={async () => {
+                        await updateProfileField('year', opt)
+                        setIsYearModalOpen(false)
+                      }}
+                      className={cn(
+                        'flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all',
+                        isSelected
+                          ? 'border-primary/40 bg-primary/10 font-semibold text-foreground ring-1 ring-primary/30'
+                          : 'border-border/60 bg-fill text-foreground hover:bg-accent/40'
+                      )}
+                    >
+                      <span className="text-[14.5px] font-medium">{opt}</span>
+                      <div
+                        className={cn(
+                          'flex size-5 items-center justify-center rounded-full border transition-all',
+                          isSelected ? 'border-primary bg-primary text-white' : 'border-muted-foreground/30'
+                        )}
+                      >
+                        {isSelected && <Check className="size-3" strokeWidth={3} />}
+                      </div>
+                    </button>
+                  )
+                })}
+
+                {profile.year && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await updateProfileField('year', '')
+                      setIsYearModalOpen(false)
+                    }}
+                    className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-2xl border border-dashed border-border/80 p-3 text-[13px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all"
+                  >
+                    <RotateCcw className="size-3.5" />
+                    Clear / Leave Unset
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+                <button
+                  type="button"
+                  onClick={() => setIsYearModalOpen(false)}
+                  className="rounded-full px-4 py-2 text-[13.5px] font-semibold text-muted-foreground hover:bg-muted"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* ─── FULL EDIT PROFILE MODAL ────────────────────────────────────────── */}
       <AnimatePresence>
         {isEditModalOpen && (
@@ -1377,6 +1639,57 @@ export default function ProfilePage() {
               </div>
 
               <div className="my-5 flex flex-col gap-4 max-h-[60vh] overflow-y-auto pr-1">
+                {/* Avatar Affordance inside Modal */}
+                <div className="flex items-center gap-4 rounded-3xl bg-muted/40 p-3.5 border border-border/50">
+                  <div className="relative shrink-0">
+                    {profile.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt={modalDraft.name || 'User Avatar'}
+                        className="size-14 rounded-full object-cover shadow-xs"
+                      />
+                    ) : (
+                      <span className="flex size-14 items-center justify-center rounded-full bg-primary text-[18px] font-bold text-primary-foreground shadow-xs">
+                        {profile.initials || 'ST'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[13px] font-bold text-foreground">Profile Picture</p>
+                    <p className="text-[11.5px] text-muted-foreground">JPG, PNG, or WEBP up to 5MB</p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingAvatar}
+                        className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-[12px] font-bold text-primary-foreground shadow-xs hover:bg-primary/90 transition-all"
+                      >
+                        {isUploadingAvatar ? (
+                          <>
+                            <Loader2 className="size-3 animate-spin" />
+                            Uploading…
+                          </>
+                        ) : (
+                          <>
+                            <Camera className="size-3" />
+                            Change Photo
+                          </>
+                        )}
+                      </button>
+                      {profile.avatar_url && (
+                        <button
+                          type="button"
+                          onClick={handleRemoveAvatar}
+                          className="flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[12px] font-medium text-rose-800 dark:text-rose-400 hover:bg-rose-500/10 transition-all"
+                        >
+                          <Trash2 className="size-3" />
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <label className="mb-1 block text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
                     Full Name
@@ -1386,7 +1699,7 @@ export default function ProfilePage() {
                     value={modalDraft.name}
                     onChange={(e) => setModalDraft({ ...modalDraft, name: e.target.value })}
                     className="w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-[15px] font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                    placeholder="Janver Pogi"
+                    placeholder="Janver Manlapaz"
                   />
                 </div>
 
@@ -1420,13 +1733,21 @@ export default function ProfilePage() {
                     <label className="mb-1 block text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
                       Year Level
                     </label>
-                    <input
-                      type="text"
-                      value={modalDraft.year}
-                      onChange={(e) => setModalDraft({ ...modalDraft, year: e.target.value })}
-                      className="w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-[15px] font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                      placeholder="Freshman"
-                    />
+                    <div className="relative">
+                      <select
+                        value={modalDraft.year}
+                        onChange={(e) => setModalDraft({ ...modalDraft, year: e.target.value })}
+                        className="w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-[15px] font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer text-foreground"
+                      >
+                        <option value="">Select year level</option>
+                        {YEAR_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronRight className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 size-4 rotate-90 text-muted-foreground" />
+                    </div>
                   </div>
                 </div>
 
