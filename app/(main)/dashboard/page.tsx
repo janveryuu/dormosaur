@@ -12,6 +12,7 @@ import { WeeklyDigestCard } from '@/components/dashboard/weekly-digest-card'
 import { NotificationBanner } from '@/components/ios/notification-banner'
 import { useSchedule } from '@/components/schedule-provider'
 import { formatTime, recipes, subjectColorClass } from '@/lib/data'
+import { getNextUpcomingClass } from '@/lib/schedule-engine'
 import { DeadlineCard } from '@/components/schedule/deadline-card'
 
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -21,6 +22,11 @@ export default function DashboardPage() {
   const [banner, setBanner] = React.useState(false)
 
   const currentDayName = dayNames[new Date().getDay()]
+
+  // 1. Pure deterministic next class calculation
+  const nextClassResult = React.useMemo(() => {
+    return getNextUpcomingClass(classes, new Date(), profile.timezone || 'Asia/Manila')
+  }, [classes, profile.timezone])
 
   React.useEffect(() => {
     const show = setTimeout(() => setBanner(true), 1200)
@@ -32,8 +38,13 @@ export default function DashboardPage() {
   }, [])
 
   const today = classes.filter((c) => c.days.includes(currentDayName))
-  const next = today[0] || classes[0]
-  const remaining = today.length > 1 ? today.slice(1) : classes.slice(1, 4)
+  const remainingToday = nextClassResult
+    ? today.filter(
+        (c) =>
+          c.id !== nextClassResult.entry.id &&
+          (c.start || '00:00') >= (nextClassResult.entry.start || '00:00')
+      )
+    : today
   const activeAlarms = alarms.filter((a) => a.enabled).length
   const pendingDeadlines = deadlines.filter((d) => !d.completed).slice(0, 2)
   const featured = recipes.slice(0, 3)
@@ -47,17 +58,23 @@ export default function DashboardPage() {
   return (
     <>
       <NotificationBanner
-        open={banner && Boolean(next)}
+        open={banner && Boolean(nextClassResult?.entry)}
         onClose={() => setBanner(false)}
-        title={`${next?.subject || 'Class'} starts soon`}
-        body={`${next?.room || 'Dorm'} · ${next?.instructor || 'Professor'}`}
+        title={`${nextClassResult?.entry.subject || nextClassResult?.entry.code || 'Class'} ${
+          nextClassResult?.status === 'in_progress' ? 'is in session' : 'starts soon'
+        }`}
+        body={`${nextClassResult?.entry.room || 'Online'}${
+          nextClassResult?.entry.instructor && nextClassResult?.entry.instructor !== 'TBA'
+            ? ` · ${nextClassResult?.entry.instructor}`
+            : ''
+        }`}
       />
 
       <PullAffordance />
       <ScreenHeader
         title="Today"
         eyebrow={dateLabel}
-        subtitle={`Good morning, ${profile.name.split(' ')[0]}. You have ${today.length} classes and ${activeAlarms} alarms set.`}
+        subtitle={`Good morning, ${profile.name.split(' ')[0] || 'Student'}. You have ${today.length} classes and ${activeAlarms} alarms set.`}
         headerGraphic={
           <motion.div
             initial={{ scale: 0.85, opacity: 0 }}
@@ -75,8 +92,8 @@ export default function DashboardPage() {
       />
 
       <div className="flex flex-col gap-8">
-        {next ? (
-          <NextClassCard entry={next} />
+        {nextClassResult ? (
+          <NextClassCard entry={nextClassResult.entry} nextMeta={nextClassResult} />
         ) : (
           <section className="flex flex-col items-center justify-center gap-3.5 rounded-3xl border border-dashed border-border/80 bg-card/60 py-10 px-5 text-center shadow-xs">
             <div className="flex size-12 items-center justify-center rounded-full bg-primary/15 text-primary">
@@ -124,7 +141,7 @@ export default function DashboardPage() {
           </section>
         )}
 
-        {remaining.length > 0 && (
+        {remainingToday.length > 0 && (
           <section>
             <div className="mb-3 flex items-baseline justify-between">
               <h2 className="text-[21px] font-bold tracking-[-0.025em]">Later today</h2>
@@ -133,7 +150,7 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0">
-              {remaining.map((entry) => {
+              {remainingToday.map((entry) => {
                 const color = subjectColorClass[entry.color]
                 return (
                   <motion.article
