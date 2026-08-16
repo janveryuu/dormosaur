@@ -51,6 +51,24 @@ export function AiRecipeGenerator() {
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [generatedRecipe, setGeneratedRecipe] = React.useState<GeneratedRecipe | null>(null)
+  const [loadingStage, setLoadingStage] = React.useState(0)
+
+  React.useEffect(() => {
+    if (!loading) {
+      setLoadingStage(0)
+      return
+    }
+    const interval = setInterval(() => {
+      setLoadingStage((prev) => (prev + 1) % 3)
+    }, 600)
+    return () => clearInterval(interval)
+  }, [loading])
+
+  const loadingMessages = [
+    'Chef Dormosaur is inspecting your ingredients...',
+    'Matching appliances & dorm cooking techniques...',
+    'Crafting easy step-by-step instructions...',
+  ]
 
   const toggleIngredient = (name: string) => {
     setError(null)
@@ -206,17 +224,17 @@ export function AiRecipeGenerator() {
             whileTap={{ scale: 0.985 }}
             onClick={() => handleGenerate()}
             disabled={loading}
-            className="mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-[14.5px] font-semibold text-white shadow-ios hover:bg-[#1a6148] disabled:opacity-50"
+            className="mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-[14.5px] font-semibold text-white shadow-ios hover:bg-[#1a6148] disabled:opacity-75 transition-all"
           >
             {loading ? (
               <>
                 <Activity className="size-4 animate-spin" />
-                Chef Dormosaur is cooking your recipe...
+                <span>{loadingMessages[loadingStage]}</span>
               </>
             ) : (
               <>
                 <Sparkles className="size-4.5" />
-                Generate Dorm Recipe
+                <span>Generate Dorm Recipe</span>
               </>
             )}
           </motion.button>
