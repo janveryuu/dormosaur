@@ -6,28 +6,29 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Banknote, Plus, Trash2, X } from 'lucide-react'
 import { PillButton } from '@/components/ios/pill-button'
 import { useSchedule, type MealPlanEntry } from '@/components/schedule-provider'
+import { formatRecipeCost } from '@/lib/currency'
 import { recipes, weekDays } from '@/lib/data'
 
 const meals: MealPlanEntry['meal'][] = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
 
 export function MealPlanner() {
-  const { mealPlan, setMealPlanItem, removeMealPlanItem } = useSchedule()
+  const { mealPlan, setMealPlanItem, removeMealPlanItem, profile } = useSchedule()
   const [selectedSlot, setSelectedSlot] = React.useState<{
     day: string
     meal: MealPlanEntry['meal']
   } | null>(null)
 
-  // Calculate estimated total weekly budget
-  const totalCost = React.useMemo(() => {
+  // Calculate estimated total weekly budget in USD numeric value first
+  const totalCostUSD = React.useMemo(() => {
     let sum = 0
     mealPlan.forEach((plan) => {
       const r = recipes.find((item) => item.slug === plan.recipeSlug)
       if (r) {
-        const val = parseFloat(r.cost.replace('$', ''))
+        const val = typeof r.costUSD === 'number' ? r.costUSD : parseFloat(r.cost.replace('$', ''))
         if (!isNaN(val)) sum += val
       }
     })
-    return sum.toFixed(2)
+    return sum
   }, [mealPlan])
 
   return (
@@ -39,8 +40,9 @@ export function MealPlanner() {
             Estimated cost for {mealPlan.length} planned meals
           </p>
         </div>
-        <div className="flex items-center gap-1.5 rounded-2xl bg-accent px-4 py-2 text-[20px] font-bold tracking-[-0.02em] text-accent-foreground">
-          <Banknote className="size-5 text-primary" strokeWidth={2.2} />=${totalCost}
+        <div className="flex items-center gap-2 rounded-2xl bg-accent px-4 py-2 text-[20px] font-bold tracking-[-0.02em] text-accent-foreground">
+          <Banknote className="size-5 text-primary" strokeWidth={2.2} />
+          <span>{formatRecipeCost(totalCostUSD, profile?.country)}</span>
         </div>
       </div>
 
@@ -77,7 +79,7 @@ export function MealPlanner() {
                           <button
                             onClick={() => removeMealPlanItem(day, meal)}
                             aria-label={`Remove ${meal} for ${day}`}
-                            className="text-muted-foreground hover:text-destructive"
+                            className="text-muted-foreground hover:text-destructive transition-colors"
                           >
                             <Trash2 className="size-3.5" />
                           </button>
@@ -99,14 +101,14 @@ export function MealPlanner() {
                               {recipe.title}
                             </p>
                             <p className="text-[12px] text-muted-foreground">
-                              {recipe.minutes}m · {recipe.cost}
+                              {recipe.minutes}m · {formatRecipeCost(recipe.costUSD, profile?.country)}
                             </p>
                           </div>
                         </div>
                       ) : (
                         <button
                           onClick={() => setSelectedSlot({ day, meal })}
-                          className="mt-3 flex h-11 items-center justify-center gap-1.5 rounded-xl border border-dashed border-border bg-card text-[13px] font-medium text-muted-foreground hover:border-primary hover:text-primary"
+                          className="mt-3 flex h-11 items-center justify-center gap-1.5 rounded-xl border border-dashed border-border bg-card text-[13px] font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                         >
                           <Plus className="size-4" />
                           Plan Recipe
@@ -149,7 +151,7 @@ export function MealPlanner() {
                 </div>
                 <button
                   onClick={() => setSelectedSlot(null)}
-                  className="flex size-8 items-center justify-center rounded-full bg-fill text-muted-foreground"
+                  className="flex size-8 items-center justify-center rounded-full bg-fill text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="size-4" />
                 </button>
@@ -164,7 +166,7 @@ export function MealPlanner() {
                         setMealPlanItem(selectedSlot.day, selectedSlot.meal, r.slug)
                         setSelectedSlot(null)
                       }}
-                      className="flex items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-ios hover:ring-2 hover:ring-primary focus-visible:outline-none"
+                      className="flex items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-ios hover:ring-2 hover:ring-primary focus-visible:outline-none transition-all"
                     >
                       <div className="relative size-12 shrink-0 overflow-hidden rounded-xl">
                         <Image src={r.image} alt={r.title} fill className="object-cover" />
@@ -172,7 +174,7 @@ export function MealPlanner() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-[14px] font-semibold">{r.title}</p>
                         <p className="text-[12px] text-muted-foreground">
-                          {r.minutes} min · {r.cost}
+                          {r.minutes} min · {formatRecipeCost(r.costUSD, profile?.country)}
                         </p>
                       </div>
                     </button>
