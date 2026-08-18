@@ -7,6 +7,7 @@ import { Calendar, Plus, UploadCloud } from 'lucide-react'
 import { useSchedule } from '@/components/schedule-provider'
 import type { ClassEntry } from '@/lib/data'
 import { formatTimeRange, minutesOf, subjectColorClass, weekDays } from '@/lib/data'
+import { getDynamicGridTimeRange } from '@/lib/template-helper'
 import { ClassDetailModal } from '@/components/schedule/class-detail-modal'
 import { ClassEditModal } from '@/components/schedule/class-edit-modal'
 

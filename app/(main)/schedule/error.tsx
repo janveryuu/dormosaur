@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { AlertCircle, RotateCcw, ArrowLeft, CalendarDays } from 'lucide-react'
+import { AlertCircle, RotateCcw, CalendarDays, LayoutDashboard } from 'lucide-react'
 import { PillButton } from '@/components/ios/pill-button'
 
 export default function ScheduleErrorBoundary({
@@ -29,10 +29,10 @@ export default function ScheduleErrorBoundary({
         </div>
 
         <h2 className="text-[20px] font-bold tracking-tight text-foreground">
-          Schedule Processing Notice
+          Schedule Display Notice
         </h2>
         <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
-          We encountered an issue displaying this schedule view. Your existing schedule and saved data are completely safe.
+          We encountered a display issue while rendering the timetable layout. Your saved classes and cloud schedule data are unaffected.
         </p>
 
         {error?.message && (
@@ -44,13 +44,13 @@ export default function ScheduleErrorBoundary({
         <div className="mt-6 flex flex-col gap-3">
           <PillButton size="lg" full onClick={() => reset()}>
             <RotateCcw className="size-4 mr-2" />
-            Try Again
+            Reload Timetable
           </PillButton>
 
-          <Link href="/schedule" className="w-full">
+          <Link href="/dashboard" className="w-full">
             <PillButton variant="secondary" size="lg" full>
-              <CalendarDays className="size-4 mr-2" />
-              Back to Schedule
+              <LayoutDashboard className="size-4 mr-2" />
+              Go to Dashboard
             </PillButton>
           </Link>
         </div>
