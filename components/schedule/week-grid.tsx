@@ -11,33 +11,32 @@ import { getDynamicGridTimeRange } from '@/lib/template-helper'
 import { ClassDetailModal } from '@/components/schedule/class-detail-modal'
 import { ClassEditModal } from '@/components/schedule/class-edit-modal'
 
-// ─── Premium muted color palette (Notion / Linear inspired) ─────────────────
-// Each color slot has: bg gradient, text, soft background, border accent, now-dot
+// ─── Premium Muted Color Palette (Notion / Linear inspired) ─────────────────
 const GRID_COLORS = [
   // 0 – Indigo
-  { dot: 'bg-indigo-500', text: 'text-indigo-700 dark:text-indigo-300', soft: 'bg-indigo-50 dark:bg-indigo-950/60', border: 'border-indigo-200 dark:border-indigo-800/60', accent: 'bg-indigo-400' },
+  { dot: 'bg-indigo-500', text: 'text-indigo-700 dark:text-indigo-300', soft: 'bg-indigo-50 dark:bg-indigo-950/60', border: 'border-indigo-200 dark:border-indigo-800/60', accent: 'bg-indigo-500' },
   // 1 – Sky
-  { dot: 'bg-sky-500', text: 'text-sky-700 dark:text-sky-300', soft: 'bg-sky-50 dark:bg-sky-950/60', border: 'border-sky-200 dark:border-sky-800/60', accent: 'bg-sky-400' },
+  { dot: 'bg-sky-500', text: 'text-sky-700 dark:text-sky-300', soft: 'bg-sky-50 dark:bg-sky-950/60', border: 'border-sky-200 dark:border-sky-800/60', accent: 'bg-sky-500' },
   // 2 – Violet
-  { dot: 'bg-violet-500', text: 'text-violet-700 dark:text-violet-300', soft: 'bg-violet-50 dark:bg-violet-950/60', border: 'border-violet-200 dark:border-violet-800/60', accent: 'bg-violet-400' },
+  { dot: 'bg-violet-500', text: 'text-violet-700 dark:text-violet-300', soft: 'bg-violet-50 dark:bg-violet-950/60', border: 'border-violet-200 dark:border-violet-800/60', accent: 'bg-violet-500' },
   // 3 – Emerald
-  { dot: 'bg-emerald-500', text: 'text-emerald-700 dark:text-emerald-300', soft: 'bg-emerald-50 dark:bg-emerald-950/60', border: 'border-emerald-200 dark:border-emerald-800/60', accent: 'bg-emerald-400' },
+  { dot: 'bg-emerald-500', text: 'text-emerald-700 dark:text-emerald-300', soft: 'bg-emerald-50 dark:bg-emerald-950/60', border: 'border-emerald-200 dark:border-emerald-800/60', accent: 'bg-emerald-500' },
   // 4 – Rose
-  { dot: 'bg-rose-500', text: 'text-rose-700 dark:text-rose-300', soft: 'bg-rose-50 dark:bg-rose-950/60', border: 'border-rose-200 dark:border-rose-800/60', accent: 'bg-rose-400' },
+  { dot: 'bg-rose-500', text: 'text-rose-700 dark:text-rose-300', soft: 'bg-rose-50 dark:bg-rose-950/60', border: 'border-rose-200 dark:border-rose-800/60', accent: 'bg-rose-500' },
   // 5 – Amber
-  { dot: 'bg-amber-500', text: 'text-amber-700 dark:text-amber-300', soft: 'bg-amber-50 dark:bg-amber-950/60', border: 'border-amber-200 dark:border-amber-800/60', accent: 'bg-amber-400' },
+  { dot: 'bg-amber-500', text: 'text-amber-700 dark:text-amber-300', soft: 'bg-amber-50 dark:bg-amber-950/60', border: 'border-amber-200 dark:border-amber-800/60', accent: 'bg-amber-500' },
   // 6 – Teal
-  { dot: 'bg-teal-500', text: 'text-teal-700 dark:text-teal-300', soft: 'bg-teal-50 dark:bg-teal-950/60', border: 'border-teal-200 dark:border-teal-800/60', accent: 'bg-teal-400' },
+  { dot: 'bg-teal-500', text: 'text-teal-700 dark:text-teal-300', soft: 'bg-teal-50 dark:bg-teal-950/60', border: 'border-teal-200 dark:border-teal-800/60', accent: 'bg-teal-500' },
   // 7 – Pink
-  { dot: 'bg-pink-500', text: 'text-pink-700 dark:text-pink-300', soft: 'bg-pink-50 dark:bg-pink-950/60', border: 'border-pink-200 dark:border-pink-800/60', accent: 'bg-pink-400' },
+  { dot: 'bg-pink-500', text: 'text-pink-700 dark:text-pink-300', soft: 'bg-pink-50 dark:bg-pink-950/60', border: 'border-pink-200 dark:border-pink-800/60', accent: 'bg-pink-500' },
   // 8 – Orange
-  { dot: 'bg-orange-500', text: 'text-orange-700 dark:text-orange-300', soft: 'bg-orange-50 dark:bg-orange-950/60', border: 'border-orange-200 dark:border-orange-800/60', accent: 'bg-orange-400' },
+  { dot: 'bg-orange-500', text: 'text-orange-700 dark:text-orange-300', soft: 'bg-orange-50 dark:bg-orange-950/60', border: 'border-orange-200 dark:border-orange-800/60', accent: 'bg-orange-500' },
   // 9 – Cyan
-  { dot: 'bg-cyan-500', text: 'text-cyan-700 dark:text-cyan-300', soft: 'bg-cyan-50 dark:bg-cyan-950/60', border: 'border-cyan-200 dark:border-cyan-800/60', accent: 'bg-cyan-400' },
+  { dot: 'bg-cyan-500', text: 'text-cyan-700 dark:text-cyan-300', soft: 'bg-cyan-50 dark:bg-cyan-950/60', border: 'border-cyan-200 dark:border-cyan-800/60', accent: 'bg-cyan-500' },
   // 10 – Purple
-  { dot: 'bg-purple-500', text: 'text-purple-700 dark:text-purple-300', soft: 'bg-purple-50 dark:bg-purple-950/60', border: 'border-purple-200 dark:border-purple-800/60', accent: 'bg-purple-400' },
+  { dot: 'bg-purple-500', text: 'text-purple-700 dark:text-purple-300', soft: 'bg-purple-50 dark:bg-purple-950/60', border: 'border-purple-200 dark:border-purple-800/60', accent: 'bg-purple-500' },
   // 11 – Lime
-  { dot: 'bg-lime-500', text: 'text-lime-700 dark:text-lime-300', soft: 'bg-lime-50 dark:bg-lime-950/60', border: 'border-lime-200 dark:border-lime-800/60', accent: 'bg-lime-400' },
+  { dot: 'bg-lime-500', text: 'text-lime-700 dark:text-lime-300', soft: 'bg-lime-50 dark:bg-lime-950/60', border: 'border-lime-200 dark:border-lime-800/60', accent: 'bg-lime-500' },
 ]
 
 /** Deterministically map a course code → GRID_COLORS index (stable, never random) */
@@ -49,8 +48,52 @@ function codeToColorIndex(code: string): number {
   return hash % GRID_COLORS.length
 }
 
+/**
+ * Intelligent Mobile Course Code Formatter
+ * Splits course codes into a prefix (e.g. "CPE", "ENGG", "FILI") and distinguishing
+ * number (e.g. "411", "416", "102") for zero-truncation 2-line stacked rendering.
+ */
+export function formatMobileCourseCode(code: string): {
+  prefix: string
+  number: string
+  single: string
+} {
+  if (!code) return { prefix: '', number: '', single: '' }
+  const clean = code.trim()
+
+  // Match letter prefix and number suffix: e.g. "CPE 411", "CPE-411", "ENGG 416", "CS 150", "FILI 102", "MATH101"
+  const match = clean.match(/^([A-Za-z\s]+)[\s\-_/]*(\d+[A-Za-z]?.*)$/)
+  if (match) {
+    let prefix = match[1].trim()
+    if (prefix.length > 5) {
+      prefix = prefix.slice(0, 4)
+    }
+    const number = match[2].trim()
+    return {
+      prefix: prefix.toUpperCase(),
+      number: number,
+      single: `${prefix}${number}`,
+    }
+  }
+
+  // If no digits found (e.g. "ETHICS", "SEMINAR")
+  if (clean.length > 5) {
+    return {
+      prefix: clean.slice(0, 4).toUpperCase(),
+      number: '',
+      single: clean.slice(0, 5).toUpperCase(),
+    }
+  }
+
+  return {
+    prefix: clean.toUpperCase(),
+    number: '',
+    single: clean.toUpperCase(),
+  }
+}
+
 const HOUR_HEIGHT_DESKTOP = 72
-const HOUR_HEIGHT_MOBILE = 54
+const HOUR_HEIGHT_MOBILE = 56
 
 const shortDayFull: Record<string, string> = {
   Mon: 'Mon',
@@ -61,6 +104,7 @@ const shortDayFull: Record<string, string> = {
   Sat: 'Sat',
   Sun: 'Sun',
 }
+
 const shortMobileDayMap: Record<string, string> = {
   Mon: 'M',
   Tue: 'T',
@@ -88,7 +132,7 @@ export function WeekGrid() {
   const [todayKey, setTodayKey] = React.useState(() => JS_DAY_TO_KEY[new Date().getDay()])
   const desktopScrollRef = React.useRef<HTMLDivElement | null>(null)
 
-  // Live clock – update every 30 s
+  // Live clock – update every 30s
   React.useEffect(() => {
     const tick = () => {
       setNowMins(nowMinutes())
@@ -106,7 +150,7 @@ export function WeekGrid() {
     }
   }, [classes])
 
-  // ─── Loading skeleton ──────────────────────────────────────────────────────
+  // ─── Loading Skeleton ──────────────────────────────────────────────────────
   if (isLoading) {
     const skeletonHours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
     return (
@@ -116,7 +160,10 @@ export function WeekGrid() {
             <div className="sticky top-0 z-10 flex border-b border-separator bg-card/95 backdrop-blur-md">
               <div className="w-14 shrink-0 border-r border-separator/40" />
               {weekDays.map((day) => (
-                <div key={day} className="flex-1 py-3 text-center text-[12.5px] font-semibold tracking-[0.03em] text-muted-foreground uppercase">
+                <div
+                  key={day}
+                  className="flex-1 py-3 text-center text-[12.5px] font-semibold tracking-[0.03em] text-muted-foreground uppercase"
+                >
                   {day}
                 </div>
               ))}
@@ -133,12 +180,19 @@ export function WeekGrid() {
               </div>
               <div className="relative flex flex-1">
                 {skeletonHours.map((hour, i) => (
-                  <div key={hour} style={{ top: i * HOUR_HEIGHT_DESKTOP }}
-                    className="pointer-events-none absolute inset-x-0 border-t border-separator/30" aria-hidden="true" />
+                  <div
+                    key={hour}
+                    style={{ top: i * HOUR_HEIGHT_DESKTOP }}
+                    className="pointer-events-none absolute inset-x-0 border-t border-separator/30"
+                    aria-hidden="true"
+                  />
                 ))}
                 {weekDays.map((day, dayIndex) => (
-                  <div key={day} className="relative flex-1 border-l first:border-l-0 border-separator/30 px-1.5"
-                    style={{ height: skeletonHours.length * HOUR_HEIGHT_DESKTOP }}>
+                  <div
+                    key={day}
+                    className="relative flex-1 border-l first:border-l-0 border-separator/30 px-1.5"
+                    style={{ height: skeletonHours.length * HOUR_HEIGHT_DESKTOP }}
+                  >
                     {dayIndex % 2 === 0 && (
                       <div className="animate-pulse absolute inset-x-1.5 top-8 h-[68px] rounded-2xl bg-muted/60" />
                     )}
@@ -155,7 +209,7 @@ export function WeekGrid() {
     )
   }
 
-  // ─── Empty state ───────────────────────────────────────────────────────────
+  // ─── Empty State ───────────────────────────────────────────────────────────
   if (classes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-3.5 rounded-3xl border border-dashed border-border/80 bg-card/60 py-16 text-center shadow-xs">
@@ -179,7 +233,7 @@ export function WeekGrid() {
     )
   }
 
-  // ─── Compute grid range ────────────────────────────────────────────────────
+  // ─── Compute Grid Range ────────────────────────────────────────────────────
   const range = getDynamicGridTimeRange(classes)
   const startHour = range.startHour
   const endHour = range.endHour
@@ -225,7 +279,7 @@ export function WeekGrid() {
         onDelete={(id) => deleteClass(id)}
       />
 
-      {/* ── MOBILE 7-DAY COMPACT GRID ── */}
+      {/* ── MOBILE 7-DAY COMPACT GRID (ZERO HORIZONTAL SCROLL + UN-TRUNCATED 2-LINE BADGES) ── */}
       <div className="block sm:hidden overflow-hidden rounded-3xl bg-card shadow-ios border border-border/60">
         {/* Header */}
         <div className="flex border-b border-separator bg-card/95 backdrop-blur-md">
@@ -236,9 +290,11 @@ export function WeekGrid() {
               return (
                 <div
                   key={day}
-                  className={`py-2.5 text-center text-[11px] font-black uppercase border-l first:border-l-0 border-separator/40 ${isToday ? 'text-primary' : 'text-foreground'}`}
+                  className={`py-2 text-center text-[11px] font-black uppercase border-l first:border-l-0 border-separator/40 ${
+                    isToday ? 'text-primary' : 'text-foreground'
+                  }`}
                 >
-                  {shortMobileDayMap[day] || day}
+                  <span>{shortMobileDayMap[day] || day}</span>
                   {isToday && <div className="mx-auto mt-0.5 size-1 rounded-full bg-primary" />}
                 </div>
               )
@@ -252,7 +308,7 @@ export function WeekGrid() {
           <div className="w-8 shrink-0 border-r border-separator/40 bg-card/50">
             {hours.map((hour) => (
               <div key={hour} style={{ height: HOUR_HEIGHT_MOBILE }} className="relative pr-1 text-right">
-                <span className="absolute -top-2 right-1 text-[9px] font-semibold text-muted-foreground/60">
+                <span className="absolute -top-2 right-1 text-[9px] font-bold text-muted-foreground/70 select-none">
                   {hour % 12 === 0 ? 12 : hour % 12}{hour >= 12 ? 'p' : 'a'}
                 </span>
               </div>
@@ -262,8 +318,12 @@ export function WeekGrid() {
           <div className="relative grid flex-1 grid-cols-7">
             {/* Hour grid lines */}
             {hours.map((hour, i) => (
-              <div key={hour} style={{ top: i * HOUR_HEIGHT_MOBILE }}
-                className="pointer-events-none absolute inset-x-0 border-t border-separator/25" aria-hidden="true" />
+              <div
+                key={hour}
+                style={{ top: i * HOUR_HEIGHT_MOBILE }}
+                className="pointer-events-none absolute inset-x-0 border-t border-separator/25"
+                aria-hidden="true"
+              />
             ))}
 
             {/* Today column tint */}
@@ -271,7 +331,7 @@ export function WeekGrid() {
               day === todayKey ? (
                 <div
                   key={`today-tint-mobile-${di}`}
-                  className="pointer-events-none absolute inset-y-0 bg-primary/[0.035]"
+                  className="pointer-events-none absolute inset-y-0 bg-primary/[0.04]"
                   style={{
                     left: `${(di / 7) * 100}%`,
                     width: `${(1 / 7) * 100}%`,
@@ -283,11 +343,11 @@ export function WeekGrid() {
             {/* Now indicator line (mobile) */}
             {nowVisible && (
               <div
-                className="pointer-events-none absolute inset-x-0 z-10 flex items-center"
-                style={{ top: nowTopMobile }}
+                className="pointer-events-none absolute inset-x-0 z-20 flex items-center"
+                style={{ top: nowTopMobile - 1 }}
               >
-                <div className="h-[2px] flex-1 bg-rose-500/80" />
-                <div className="size-2 shrink-0 rounded-full bg-rose-500" style={{ marginLeft: -1 }} />
+                <div className="size-2 shrink-0 rounded-full bg-rose-500 shadow-xs" style={{ marginLeft: -1 }} />
+                <div className="h-[1.5px] flex-1 bg-rose-500/80" />
               </div>
             )}
 
@@ -296,25 +356,54 @@ export function WeekGrid() {
               return (
                 <div
                   key={day}
-                  className="relative border-l first:border-l-0 border-separator/25 px-[2px]"
+                  className="relative border-l first:border-l-0 border-separator/25 px-[1.5px]"
                   style={{ height: hours.length * HOUR_HEIGHT_MOBILE }}
                 >
                   {dayClasses.map((entry) => {
                     const colorIdx = codeToColorIndex(entry.code)
                     const color = GRID_COLORS[colorIdx]
-                    const blockHeight = Math.max(heightMobile(entry.start, entry.end) - 2, 28)
+                    // Floor of 34px ensures ample room for stacked 2-line label
+                    const blockHeight = Math.max(heightMobile(entry.start, entry.end) - 2, 34)
+                    const { prefix, number } = formatMobileCourseCode(entry.code)
+                    const showTime = blockHeight >= 72
 
                     return (
                       <motion.div
                         key={entry.id}
                         onClick={() => setSelectedClass(entry)}
                         whileTap={{ scale: 0.93 }}
-                        style={{ top: Math.max(0, topMobile(entry.start)), height: blockHeight }}
-                        className={`absolute inset-x-[2px] overflow-hidden rounded-lg ${color.soft} border ${color.border} flex flex-col justify-center items-center text-center cursor-pointer`}
+                        style={{
+                          top: Math.max(0, topMobile(entry.start)),
+                          height: blockHeight,
+                        }}
+                        className={`absolute inset-x-[1.5px] overflow-hidden rounded-xl ${color.soft} border ${color.border} flex flex-col justify-center items-center text-center cursor-pointer shadow-2xs transition-transform active:scale-95`}
                       >
-                        <span className={`w-full px-[2px] text-[8.5px] font-extrabold leading-tight text-center truncate ${color.text}`}>
-                          {entry.code}
-                        </span>
+                        {/* Micro Left Accent Indicator */}
+                        <span className={`absolute inset-y-1 left-0.5 w-[2.5px] rounded-full ${color.accent}`} />
+
+                        {/* Un-truncated Stacked Course Label */}
+                        <div className="flex flex-col items-center justify-center leading-none pl-1.5 pr-0.5 py-0.5">
+                          {number ? (
+                            <>
+                              <span className={`text-[8px] font-black uppercase tracking-tight opacity-80 leading-none ${color.text}`}>
+                                {prefix}
+                              </span>
+                              <span className={`text-[10.5px] font-black tracking-tight leading-none mt-0.5 ${color.text}`}>
+                                {number}
+                              </span>
+                            </>
+                          ) : (
+                            <span className={`text-[9px] font-black uppercase tracking-tight leading-none ${color.text}`}>
+                              {prefix}
+                            </span>
+                          )}
+
+                          {showTime && (
+                            <span className="text-[7.5px] font-bold text-muted-foreground/75 mt-1 tabular-nums leading-none">
+                              {entry.start}
+                            </span>
+                          )}
+                        </div>
                       </motion.div>
                     )
                   })}
@@ -329,7 +418,6 @@ export function WeekGrid() {
       <div className="hidden sm:block overflow-hidden rounded-3xl bg-card shadow-ios border border-border/60">
         <div ref={desktopScrollRef} className="no-scrollbar overflow-x-auto">
           <div className="w-full min-w-[800px]">
-
             {/* ── Header Row ── */}
             <div className="sticky top-0 z-20 flex border-b border-separator bg-card/95 backdrop-blur-md">
               {/* Time column spacer */}
@@ -360,7 +448,6 @@ export function WeekGrid() {
 
             {/* ── Grid Body ── */}
             <div className="relative flex">
-
               {/* Sticky time column */}
               <div className="sticky left-0 z-20 w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40">
                 {hours.map((hour) => (
@@ -374,36 +461,25 @@ export function WeekGrid() {
 
               {/* Day columns area */}
               <div className="relative flex flex-1">
-
                 {/* Hour gridlines */}
                 {hours.map((hour, i) => (
-                  <div key={hour} style={{ top: i * HOUR_HEIGHT_DESKTOP }}
-                    className="pointer-events-none absolute inset-x-0 border-t border-separator/25" aria-hidden="true" />
+                  <div
+                    key={hour}
+                    style={{ top: i * HOUR_HEIGHT_DESKTOP }}
+                    className="pointer-events-none absolute inset-x-0 border-t border-separator/25"
+                    aria-hidden="true"
+                  />
                 ))}
 
                 {/* Half-hour subtle lines */}
                 {hours.map((hour, i) => (
-                  <div key={`half-${hour}`}
+                  <div
+                    key={`half-${hour}`}
                     style={{ top: i * HOUR_HEIGHT_DESKTOP + HOUR_HEIGHT_DESKTOP / 2 }}
-                    className="pointer-events-none absolute inset-x-0 border-t border-separator/12" aria-hidden="true" />
+                    className="pointer-events-none absolute inset-x-0 border-t border-separator/12"
+                    aria-hidden="true"
+                  />
                 ))}
-
-                {/* Today column tint */}
-                {weekDays.map((day, di) => {
-                  if (day !== todayKey) return null
-                  // Calculate left offset from flex (approximate using index / count)
-                  return (
-                    <div
-                      key={`today-tint-${di}`}
-                      className="pointer-events-none absolute inset-y-0 bg-primary/[0.03] z-0"
-                      style={{
-                        // We can't easily get exact flex-position; use a data- hook instead
-                        // This will be handled by the column's own background below
-                        display: 'none',
-                      }}
-                    />
-                  )
-                })}
 
                 {/* "Now" indicator line */}
                 {nowVisible && (
@@ -425,7 +501,9 @@ export function WeekGrid() {
                   return (
                     <div
                       key={day}
-                      className={`relative border-l first:border-l-0 border-separator/25 px-1.5 ${isToday ? 'bg-primary/[0.025]' : ''}`}
+                      className={`relative border-l first:border-l-0 border-separator/25 px-1.5 ${
+                        isToday ? 'bg-primary/[0.025]' : ''
+                      }`}
                       style={{
                         flex: getDesktopFlex(count),
                         height: hours.length * HOUR_HEIGHT_DESKTOP,
@@ -437,12 +515,11 @@ export function WeekGrid() {
                         const rawH = heightDesktop(entry.start, entry.end)
                         // Min height floor = 36px so content always has room
                         const blockHeight = Math.max(rawH - 4, 36)
-                        const durationMins = minutesOf(entry.end) - minutesOf(entry.start)
 
-                        // Info tier based on block height AND column flex
-                        // Tier A (≥80px): code + room + time   (full detail)
-                        // Tier B (≥56px): code + start time     (medium)
-                        // Tier C (<56px):  code only            (compact)
+                        // Info tier based on block height
+                        // Tier A (≥80px): code + room + time (full detail)
+                        // Tier B (≥52px): code + start time   (medium)
+                        // Tier C (<52px):  code only          (compact)
                         const tierA = blockHeight >= 80
                         const tierB = blockHeight >= 52 && !tierA
                         const timeStart = (() => {
@@ -480,9 +557,11 @@ export function WeekGrid() {
 
                             {/* Content */}
                             <div className="pl-[14px] pr-2 py-[5px] flex flex-col justify-center h-full min-h-0">
-                              {/* Course code — NEVER truncated, always first priority */}
-                              <p className={`text-[11.5px] font-black leading-none tracking-tight whitespace-nowrap overflow-hidden ${color.text}`}
-                                style={{ textOverflow: 'clip' }}>
+                              {/* Course code — NEVER truncated */}
+                              <p
+                                className={`text-[11.5px] font-black leading-none tracking-tight whitespace-nowrap overflow-hidden ${color.text}`}
+                                style={{ textOverflow: 'clip' }}
+                              >
                                 {entry.code}
                               </p>
 
