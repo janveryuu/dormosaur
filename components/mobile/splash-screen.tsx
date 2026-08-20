@@ -28,7 +28,7 @@ export function MobileSplashScreen() {
       {/* Mascot & Tagline Section */}
       <div className="relative flex flex-1 flex-col items-center justify-center pb-6">
         <motion.div
-          className="relative size-60"
+          className="relative h-64 w-60"
           initial={reduceMotion ? false : { opacity: 0, y: 18, scale: 0.84 }}
           animate={
             reduceMotion
@@ -48,10 +48,10 @@ export function MobileSplashScreen() {
           {/* Soft mascot floor shadow with zero artifacts */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-10 bottom-3 h-8 rounded-full bg-primary/15 blur-xl"
+            className="absolute inset-x-8 bottom-2 h-7 rounded-full bg-primary/15 blur-xl"
           />
           <Image
-            src="/dormosaur-mascot-transparent.png"
+            src="/dormosaur-hi.png"
             alt="Dormosaur baby dinosaur mascot"
             fill
             priority
