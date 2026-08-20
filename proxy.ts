@@ -50,8 +50,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // 3. Fully onboarded user trying to access sign-in/sign-up -> /dashboard
-  if (isAuthRoute && user && isOnboarded) {
+  // 3. Fully onboarded user trying to access sign-in/sign-up or root route on mobile/desktop -> /dashboard
+  if ((isAuthRoute || pathname === '/') && user && isOnboarded) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)

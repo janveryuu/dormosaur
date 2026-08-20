@@ -2,8 +2,11 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Check, Sparkles } from 'lucide-react'
+import { MobileSplashScreen } from '@/components/mobile/splash-screen'
+import { createClient } from '@/lib/supabase/client'
 
 // ─── Exact easing from Framer source ─────────────────────────────────────────
 const IOS_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -307,17 +310,45 @@ function CTAButton({ href, children, large }: { href: string; children: React.Re
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function LandingPage() {
+  const router = useRouter()
+
+  React.useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', user.id)
+          .single()
+          .then(({ data: profile }) => {
+            if (profile && profile.onboarding_completed) {
+              router.replace('/dashboard')
+            } else {
+              router.replace('/onboarding')
+            }
+          })
+          .catch(() => {
+            router.replace('/onboarding')
+          })
+      }
+    })
+  }, [router])
+
   return (
-    <div
-      style={{
-        minHeight: '100dvh',
-        overflowX: 'hidden',
-        backgroundColor: '#f7f8f5',
-        fontFamily: '"Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-        WebkitFontSmoothing: 'antialiased',
-        MozOsxFontSmoothing: 'grayscale',
-      }}
-    >
+    <>
+      <MobileSplashScreen />
+      <div
+        className="hidden md:block"
+        style={{
+          minHeight: '100dvh',
+          overflowX: 'hidden',
+          backgroundColor: '#f7f8f5',
+          fontFamily: '"Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+          WebkitFontSmoothing: 'antialiased',
+          MozOsxFontSmoothing: 'grayscale',
+        }}
+      >
       <NavBar />
 
       {/* HERO */}
@@ -569,5 +600,6 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+    </>
   )
 }
