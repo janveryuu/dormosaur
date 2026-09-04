@@ -1,2 +1,0 @@
-# FramerExporter — nested folders (e.g. journey/index.html) serve /journey and /journey/
-# No rewrite rules required for multi-page static hosting.
