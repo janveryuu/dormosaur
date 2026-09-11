@@ -59,6 +59,14 @@ export function DayView() {
     return () => clearInterval(id)
   }, [])
 
+  // Sync to today's day on initial client mount
+  React.useEffect(() => {
+    const today = JS_DAY_TO_KEY[new Date().getDay()]
+    if (weekDays.includes(today)) {
+      setSelectedDay(today)
+    }
+  }, [])
+
   // Format current time
   const nowHours = Math.floor(nowMins / 60)
   const nowMinutesRem = nowMins % 60
@@ -228,9 +236,9 @@ export function DayView() {
                     )}
                   </div>
 
-                  {/* "Today" marker dot */}
+                  {/* "Today" subtle indicator pill */}
                   {isToday && !active && (
-                    <span className="absolute bottom-0.5 size-1 rounded-full bg-primary" />
+                    <span className="absolute bottom-1 h-0.5 w-2.5 rounded-full bg-primary" />
                   )}
                 </button>
               )
@@ -241,23 +249,40 @@ export function DayView() {
         {/* ── Day Header Summary ── */}
         <div className="flex items-center justify-between px-1">
           <div>
-            <h3 className="text-lg font-bold tracking-tight text-foreground">
-              {fullDayMap[selectedDay]}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-bold tracking-tight text-foreground">
+                {fullDayMap[selectedDay]}
+              </h3>
+              {!isTodaySelected ? (
+                <button
+                  type="button"
+                  onClick={() => setSelectedDay(todayKey)}
+                  className="flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-2 py-0.5 text-[11px] font-bold text-primary hover:bg-primary/20 transition-all active:scale-95 cursor-pointer"
+                >
+                  <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+                  Jump to Today
+                </button>
+              ) : (
+                <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10.5px] font-bold text-emerald-700 dark:text-emerald-400">
+                  <span className="size-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  Live Today
+                </span>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               {dayClasses.length === 0
                 ? 'No classes scheduled'
                 : `${dayClasses.length} ${
                     dayClasses.length === 1 ? 'class' : 'classes'
                   } scheduled`}
-              {isTodaySelected && ' · Today'}
+              {isTodaySelected && ' · Real-time schedule active'}
             </p>
           </div>
 
           <button
             type="button"
             onClick={() => setAddClassOpen(true)}
-            className="flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+            className="flex items-center gap-1 text-xs font-semibold text-primary hover:underline cursor-pointer"
           >
             <Plus className="size-3.5" />
             <span>Add Class</span>
