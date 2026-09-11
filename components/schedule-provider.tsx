@@ -126,7 +126,7 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const [classes, setClassesState] = React.useState<ClassEntry[]>([])
   const [alarms, setAlarmsState] = React.useState<Alarm[]>([])
   const [profile, setProfileState] = React.useState<UserProfile>(defaultProfile)
-  const [mealPlan, setMealPlanState] = React.useState<MealPlanDay[]>(defaultMealPlan)
+  const [mealPlan, setMealPlanState] = React.useState<MealPlanEntry[]>([])
   const [groceryItems, setGroceryItemsState] = React.useState<GroceryItem[]>([])
   const [deadlines, setDeadlinesState] = React.useState<DeadlineItem[]>([])
   const [isHydrated, setIsHydrated] = React.useState(false)
@@ -135,30 +135,24 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
 
   // ─── Sync grocery items automatically when meal plan changes ───────────────
   const syncGroceryFromMealPlan = React.useCallback(
-    (currentMealPlan: MealPlanDay[], currentGrocery: GroceryItem[] = []) => {
+    (currentMealPlan: MealPlanEntry[], currentGrocery: GroceryItem[] = []) => {
       const existingMap = new Map(currentGrocery.map((g) => [g.name.toLowerCase(), g.checked]))
-      const aggregated: Record<string, { category: GroceryCategory; amount: string }> = {}
+      const aggregated = new Set<string>()
 
-      currentMealPlan.forEach((day) => {
-        const types: (keyof MealPlanDay)[] = ['breakfast', 'lunch', 'dinner', 'snack']
-        types.forEach((type) => {
-          const recipe = day[type] as Recipe | undefined
-          if (recipe) {
-            recipe.ingredients.forEach((ing) => {
-              const nameKey = ing.name.trim()
-              if (!aggregated[nameKey]) {
-                aggregated[nameKey] = { category: ing.category, amount: ing.amount }
-              }
-            })
-          }
-        })
+      currentMealPlan.forEach((plan) => {
+        const recipe = recipes.find((r) => r.slug === plan.recipeSlug)
+        if (recipe && Array.isArray(recipe.ingredients)) {
+          recipe.ingredients.forEach((ing) => {
+            if (typeof ing === 'string') {
+              aggregated.add(ing.trim())
+            }
+          })
+        }
       })
 
-      return Object.entries(aggregated).map(([name, data], idx) => ({
+      return Array.from(aggregated).map((name, idx) => ({
         id: `groc-${idx}-${name.replace(/\s+/g, '-').toLowerCase()}`,
         name,
-        amount: data.amount,
-        category: data.category,
         checked: existingMap.get(name.toLowerCase()) ?? false,
       }))
     },
@@ -522,9 +516,9 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
     setClassesState(defaultClasses)
     setAlarmsState(defaultAlarms)
     setProfileState(defaultProfile)
-    setMealPlanState(defaultMealPlan)
-    setDeadlinesState(defaultDeadlines)
-    setGroceryItemsState(syncGroceryFromMealPlan(defaultMealPlan))
+    setMealPlanState([])
+    setDeadlinesState([])
+    setGroceryItemsState([])
     localStorage.clear()
     if (userId) {
       const supabase = createClient()

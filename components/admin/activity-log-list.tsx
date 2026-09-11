@@ -49,7 +49,8 @@ export function ActivityLogList({ logs }: { logs: ActivityLogItem[] }) {
   const currentFilter = searchParams.get('type') || 'all'
   const [filter, setFilter] = useState(currentFilter)
 
-  const handleFilterChange = (val: string) => {
+  const handleFilterChange = (val: string | null) => {
+    if (!val) return
     setFilter(val)
     const params = new URLSearchParams(searchParams.toString())
     if (val && val !== 'all') params.set('type', val)

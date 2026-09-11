@@ -14,6 +14,7 @@ import { useSchedule } from '@/components/schedule-provider'
 import { formatTime, recipes, subjectColorClass } from '@/lib/data'
 import { getNextUpcomingClass } from '@/lib/schedule-engine'
 import { DeadlineCard } from '@/components/schedule/deadline-card'
+import { IOS_SPRING_SNAPPY } from '@/lib/springs'
 
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -23,7 +24,6 @@ export default function DashboardPage() {
 
   const currentDayName = dayNames[new Date().getDay()]
 
-  // 1. Pure deterministic next class calculation
   const nextClassResult = React.useMemo(() => {
     return getNextUpcomingClass(classes, new Date(), profile.timezone || 'Asia/Manila')
   }, [classes, profile.timezone])
@@ -84,8 +84,9 @@ export default function DashboardPage() {
           >
             <img
               src="/dormosaur-hi.png"
-              alt="Dormosaur Hi"
-              className="h-36 sm:h-44 md:h-48 w-auto object-contain filter drop-shadow-md hover:scale-105 transition-transform"
+              alt=""
+              aria-hidden="true"
+              className="h-36 sm:h-44 md:h-48 w-auto object-contain filter drop-shadow-md"
             />
           </motion.div>
         }
@@ -95,29 +96,29 @@ export default function DashboardPage() {
         {nextClassResult ? (
           <NextClassCard entry={nextClassResult.entry} nextMeta={nextClassResult} />
         ) : (
-          <section className="flex flex-col items-center justify-center gap-3.5 rounded-3xl border border-dashed border-border/80 bg-card/60 py-10 px-5 text-center shadow-xs">
-            <div className="flex size-12 items-center justify-center rounded-full bg-primary/15 text-primary">
-              <CalendarDays className="size-6" />
-            </div>
+          /* Empty state — directional, not generic icon badge */
+          <section className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-dashed border-border/80 bg-card/60 py-10 px-5 text-center shadow-ios-sm">
             <div>
-              <h3 className="text-[16.5px] font-bold text-foreground">No classes scheduled</h3>
-              <p className="text-[13px] text-muted-foreground mt-1 max-w-sm">
-                Import your schedule to get color-coded timetables, automatic alarms, and AI smart nudges.
+              <h3 className="text-[17px] font-bold tracking-[-0.02em] text-foreground">
+                No classes imported yet
+              </h3>
+              <p className="text-[13.5px] text-muted-foreground mt-1.5 max-w-[22rem] leading-snug">
+                Paste your schedule from your registrar — we'll turn it into a clean timetable with automatic alarms.
               </p>
             </div>
             <Link
               href="/schedule/import"
-              className="mt-1 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-[13px] font-bold text-primary-foreground shadow-sm transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[13.5px] font-semibold text-primary-foreground shadow-[0_8px_20px_-6px_rgba(31,111,80,0.4)] transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
-              Import Schedule
+              Import schedule
             </Link>
           </section>
         )}
 
-        {/* Feature 5: Weekly Digest / Semester Insights (Proactive AI Companion) */}
+        {/* Weekly digest / semester insights */}
         <WeeklyDigestCard />
 
-        {/* Feature 3: Schedule-Aware Meal Suggestions (Cross-Feature Intelligence) */}
+        {/* Schedule-aware meal suggestions */}
         <ScheduleMealBanner />
 
         {pendingDeadlines.length > 0 && (
@@ -125,10 +126,10 @@ export default function DashboardPage() {
             <div className="mb-3 flex items-baseline justify-between">
               <h2 className="text-[21px] font-bold tracking-[-0.025em]">Upcoming deadlines</h2>
               <div className="flex items-center gap-3">
-                <Link href="/deadlines/import" className="text-[13px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+                <Link href="/deadlines/import" className="text-[13px] font-semibold text-primary hover:underline">
                   + Import
                 </Link>
-                <Link href="/deadlines" className="text-[15px] font-medium text-primary">
+                <Link href="/deadlines" className="text-[14px] font-medium text-primary">
                   View all
                 </Link>
               </div>
@@ -145,18 +146,18 @@ export default function DashboardPage() {
           <section>
             <div className="mb-3 flex items-baseline justify-between">
               <h2 className="text-[21px] font-bold tracking-[-0.025em]">Later today</h2>
-              <Link href="/schedule" className="text-[15px] font-medium text-primary">
+              <Link href="/schedule" className="text-[14px] font-medium text-primary">
                 See all
               </Link>
             </div>
-            <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0">
+            <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 lg:mx-0 lg:px-0">
               {remainingToday.map((entry) => {
                 const color = subjectColorClass[entry.color]
                 return (
                   <motion.article
                     key={entry.id}
                     whileTap={{ scale: 0.97 }}
-                    transition={{ type: 'spring', stiffness: 520, damping: 30 }}
+                    transition={IOS_SPRING_SNAPPY}
                     className="w-[240px] shrink-0 snap-start rounded-3xl bg-card p-5 shadow-ios"
                   >
                     <span
@@ -167,13 +168,15 @@ export default function DashboardPage() {
                       {entry.subject}
                     </h3>
                     <p className="mt-0.5 text-[13px] text-muted-foreground">{entry.code}</p>
-                    <div className="mt-4 flex flex-col gap-1.5 text-[13.5px] text-muted-foreground">
+                    <div className="mt-4 flex flex-col gap-1.5 text-[13px] text-muted-foreground">
                       <span className="flex items-center gap-1.5">
-                        <Clock className="size-4" strokeWidth={1.9} />
-                        {formatTime(entry.start)} – {formatTime(entry.end)}
+                        <Clock className="size-3.5 shrink-0" strokeWidth={2} />
+                        <span className="tabular-nums">
+                          {formatTime(entry.start)} – {formatTime(entry.end)}
+                        </span>
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <MapPin className="size-4" strokeWidth={1.9} />
+                        <MapPin className="size-3.5 shrink-0" strokeWidth={2} />
                         {entry.room}
                       </span>
                     </div>
@@ -184,22 +187,23 @@ export default function DashboardPage() {
           </section>
         )}
 
-        <section className="grid gap-3 sm:grid-cols-3">
+        {/* Quick-access tiles — clean, no colored icon badge */}
+        <section className="grid gap-2.5 sm:grid-cols-3">
           <QuickTile
             href="/schedule"
-            icon={<CalendarDays className="size-5" strokeWidth={1.9} />}
+            icon={<CalendarDays className="size-4.5 text-primary" strokeWidth={2} />}
             title="Schedule"
             detail={`${classes.length} classes this week`}
           />
           <QuickTile
             href="/alarms"
-            icon={<BellRing className="size-5" strokeWidth={1.9} />}
+            icon={<BellRing className="size-4.5 text-primary" strokeWidth={2} />}
             title="Alarms"
             detail={`${activeAlarms} active today`}
           />
           <QuickTile
             href="/kitchen"
-            icon={<CookingPot className="size-5" strokeWidth={1.9} />}
+            icon={<CookingPot className="size-4.5 text-primary" strokeWidth={2} />}
             title="Kitchen"
             detail={`${recipes.length} dorm recipes`}
           />
@@ -207,12 +211,12 @@ export default function DashboardPage() {
 
         <section>
           <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="text-[21px] font-bold tracking-[-0.025em]">Eat between classes</h2>
-            <Link href="/kitchen" className="text-[15px] font-medium text-primary">
+            <h2 className="text-[21px] font-bold tracking-[-0.025em]">Quick bites</h2>
+            <Link href="/kitchen" className="text-[14px] font-medium text-primary">
               Kitchen
             </Link>
           </div>
-          <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0">
+          <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 lg:mx-0 lg:px-0">
             {featured.map((recipe) => (
               <Link
                 key={recipe.slug}
@@ -221,7 +225,7 @@ export default function DashboardPage() {
               >
                 <motion.div
                   whileTap={{ scale: 0.97 }}
-                  transition={{ type: 'spring', stiffness: 520, damping: 30 }}
+                  transition={IOS_SPRING_SNAPPY}
                   className="overflow-hidden rounded-3xl bg-card shadow-ios"
                 >
                   <div className="relative aspect-[4/3]">
@@ -233,11 +237,11 @@ export default function DashboardPage() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="p-4">
-                    <h3 className="text-[15.5px] leading-snug font-semibold tracking-[-0.015em]">
+                  <div className="p-3.5">
+                    <h3 className="text-[15px] leading-snug font-semibold tracking-[-0.015em]">
                       {recipe.title}
                     </h3>
-                    <p className="mt-1 text-[13px] text-muted-foreground">
+                    <p className="mt-1 text-[12.5px] text-muted-foreground tabular-nums">
                       {recipe.minutes} min · {recipe.appliance}
                     </p>
                   </div>
@@ -251,6 +255,7 @@ export default function DashboardPage() {
   )
 }
 
+// ─── Quick Tile — clean, no generic icon-in-badge ─────────────────────────────
 function QuickTile({
   href,
   icon,
@@ -263,20 +268,19 @@ function QuickTile({
   detail: string
 }) {
   return (
-    <Link href={href}>
+    <Link href={href} className="block">
       <motion.div
         whileTap={{ scale: 0.97 }}
-        transition={{ type: 'spring', stiffness: 520, damping: 30 }}
-        className="flex items-center gap-3 rounded-3xl bg-card p-4 shadow-ios"
+        transition={IOS_SPRING_SNAPPY}
+        className="flex items-center gap-3.5 rounded-3xl bg-card px-4 py-3.5 shadow-ios border border-separator/40 hover:shadow-ios-lg transition-shadow"
       >
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
-          {icon}
-        </span>
+        {/* Icon sits flush — no colored rounded square container */}
+        {icon}
         <span className="min-w-0 flex-1">
-          <span className="block text-[15.5px] font-semibold tracking-[-0.015em]">{title}</span>
-          <span className="block truncate text-[13px] text-muted-foreground">{detail}</span>
+          <span className="block text-[15px] font-semibold tracking-[-0.015em]">{title}</span>
+          <span className="block truncate text-[12.5px] text-muted-foreground">{detail}</span>
         </span>
-        <ChevronRight className="size-4.5 shrink-0 text-muted-foreground" />
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground/60" />
       </motion.div>
     </Link>
   )

@@ -5,10 +5,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
-    var(--font-ios), 'Inter', system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* ── Typography ──────────────────────────────────────────────── */
+  --font-sans: var(--font-geist), -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+    'SF Pro Text', system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
+  /* ── Semantic color tokens ────────────────────────────────────── */
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -39,26 +41,38 @@
   --color-subject-5: var(--subject-5);
   --color-warn: var(--warn);
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  /* ── Concentric radius system ─────────────────────────────────── */
+  /* Rule: outer-radius = inner-radius + padding                     */
+  /* button (pill) = full | input = 12px | icon = 8px               */
+  /* card interior = 12px + 16px pad → card = 28px (rounded-3xl)    */
+  --radius-sm: calc(var(--radius) * 0.5);   /* 6px  — small chips   */
+  --radius-md: calc(var(--radius) * 0.75);  /* 9px  — inputs        */
+  --radius-lg: var(--radius);               /* 12px — base          */
+  --radius-xl: calc(var(--radius) * 1.5);   /* 18px — cards inner   */
+  --radius-2xl: calc(var(--radius) * 2);    /* 24px — cards         */
+  --radius-3xl: calc(var(--radius) * 2.5);  /* 30px — large cards   */
+  --radius-4xl: calc(var(--radius) * 3);    /* 36px — hero elements */
 
-  /* Crisp neutral shadows for clean depth */
-  --shadow-ios: 0 1px 3px rgba(0, 0, 0, 0.06),
-    0 8px 24px -6px rgba(0, 0, 0, 0.12);
-  --shadow-ios-lg: 0 2px 5px rgba(0, 0, 0, 0.08),
-    0 18px 48px -12px rgba(0, 0, 0, 0.22);
+  /* ── Brand-tinted shadow tokens (no generic black shadows) ─────── */
+  /* Tinted to primary emerald for depth that feels on-brand         */
+  --shadow-ios:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 16px -4px rgba(31, 111, 80, 0.08),
+    0 1px 0px rgba(255, 255, 255, 0.6) inset;
+  --shadow-ios-lg:
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 16px 40px -8px rgba(31, 111, 80, 0.12),
+    0 1px 0px rgba(255, 255, 255, 0.5) inset;
+  --shadow-ios-sm:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 2px 8px -2px rgba(31, 111, 80, 0.06);
 }
 
 :root {
   color-scheme: light;
   --radius: 0.75rem;
 
-  /* Framer: #f7f8f5 — soft off-white with a hint of green */
+  /* Soft off-white with a hint of green — brand-warmth background */
   --background: oklch(0.972 0.005 150);
   --foreground: oklch(0.165 0.015 158);
 
@@ -67,7 +81,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.165 0.015 158);
 
-  /* Framer: #1f6f50 — emerald green primary */
+  /* Emerald green primary — the brand anchor */
   --primary: oklch(0.44 0.113 158);
   --primary-foreground: oklch(0.99 0 0);
 
@@ -75,10 +89,10 @@
   --secondary-foreground: oklch(0.28 0.025 158);
 
   --muted: oklch(0.955 0.006 150);
-  /* Framer: #7a8580 — warm muted green-gray */
+  /* Warm muted green-gray for secondary text */
   --muted-foreground: oklch(0.558 0.018 158);
 
-  /* Framer: #1f6f5014 — subtle green tint accent */
+  /* Subtle green tint accent */
   --accent: oklch(0.95 0.03 158);
   --accent-foreground: oklch(0.38 0.09 158);
 
@@ -104,16 +118,16 @@
 .dark {
   color-scheme: dark;
 
-  /* Premium True-Black / Deep Graphite Palette */
-  --background: oklch(0.13 0 0); /* ~#0F0F0F deep graphite base */
-  --foreground: oklch(0.97 0 0); /* ~#F5F5F5 clean off-white */
+  /* Premium deep-graphite dark mode */
+  --background: oklch(0.13 0 0);       /* ~#0F0F0F */
+  --foreground: oklch(0.97 0 0);       /* ~#F5F5F5 */
 
-  --card: oklch(0.18 0 0); /* ~#181818 surface 1 step lighter */
+  --card: oklch(0.18 0 0);             /* ~#181818 */
   --card-foreground: oklch(0.97 0 0);
   --popover: oklch(0.18 0 0);
   --popover-foreground: oklch(0.97 0 0);
 
-  /* Confident emerald green accent */
+  /* Slightly lighter emerald for dark mode legibility */
   --primary: oklch(0.62 0.14 158);
   --primary-foreground: oklch(0.99 0 0);
 
@@ -121,12 +135,12 @@
   --secondary-foreground: oklch(0.96 0 0);
 
   --muted: oklch(0.22 0 0);
-  --muted-foreground: oklch(0.68 0 0); /* High-contrast mid-gray helper text */
+  --muted-foreground: oklch(0.68 0 0);
 
   --accent: oklch(0.24 0 0);
   --accent-foreground: oklch(0.97 0 0);
 
-  --destructive: oklch(0.64 0.22 22); /* High-contrast warning red */
+  --destructive: oklch(0.64 0.22 22);
   --warn: oklch(0.78 0.16 75);
 
   --border: oklch(1 0 0 / 12%);
@@ -142,20 +156,38 @@
   --subject-3: oklch(0.74 0.15 40);
   --subject-4: oklch(0.7 0.15 340);
   --subject-5: oklch(0.62 0.14 158);
+
+  /* Dark mode shadows — tinted to primary emerald */
+  --shadow-ios:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 4px 16px -4px rgba(31, 111, 80, 0.15),
+    0 1px 0px rgba(255, 255, 255, 0.04) inset;
+  --shadow-ios-lg:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 16px 40px -8px rgba(31, 111, 80, 0.2),
+    0 1px 0px rgba(255, 255, 255, 0.03) inset;
+  --shadow-ios-sm:
+    0 1px 2px rgba(0, 0, 0, 0.16),
+    0 2px 8px -2px rgba(31, 111, 80, 0.1);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    /* Remove iOS tap highlight — replaced by motion feedback */
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   html {
     scroll-behavior: smooth;
   }
 }
+
+/* ── iOS-matched typographic utilities ────────────────────────── */
 
 @utility ios-large-title {
   font-size: clamp(2rem, 6vw, 2.5rem);
@@ -189,11 +221,31 @@
   line-height: 1.4;
 }
 
+/* ── Glass surface — iOS-style frosted backdrop ───────────────── */
+
 @utility ios-glass {
   background-color: color-mix(in oklab, var(--card) 88%, transparent);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
+
+/* Solid fallback for reduced transparency preference */
+@media (prefers-reduced-transparency: reduce) {
+  .ios-glass {
+    background-color: var(--card);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* ── Tabular numerals — apply to all time/metric displays ─────── */
+
+@utility tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+/* ── Scroll utilities ─────────────────────────────────────────── */
 
 @utility no-scrollbar {
   scrollbar-width: none;

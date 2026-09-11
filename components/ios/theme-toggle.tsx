@@ -22,7 +22,7 @@ export function ThemeToggle({ value, onChange, className = '' }: ThemeToggleProp
   const springTransition = shouldReduceMotion
     ? { duration: 0.15 }
     : {
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 480,
         damping: 26,
         mass: 0.7,
@@ -31,7 +31,7 @@ export function ThemeToggle({ value, onChange, className = '' }: ThemeToggleProp
   const iconTransition = shouldReduceMotion
     ? { duration: 0.12 }
     : {
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 400,
         damping: 24,
       }

@@ -77,12 +77,10 @@ export function DormosaurAdventureTemplate({
               <div className="flex-1 overflow-y-auto">
                 <DayCardClassList
                   classList={dayClasses}
-                  themeColors={{
-                    cardBg: 'bg-[#E8EFEA]/80 border-l-3 border-[#1F6F50]',
-                    titleColor: 'text-[#1F6F50]',
-                    subtitleColor: 'text-[#278260]',
-                    timeColor: 'text-[#1F6F50]/80 font-bold',
-                  }}
+                  cardBg="bg-[#E8EFEA]/80"
+                  textColor="text-[#1F6F50]"
+                  subColor="text-[#278260]"
+                  borderColor="border-[#1F6F50]/30"
                 />
               </div>
             </div>

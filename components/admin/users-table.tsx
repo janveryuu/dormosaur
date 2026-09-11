@@ -71,7 +71,8 @@ export function UsersTable({
     updateQueryParams(val, filter, 1)
   }
 
-  const handleFilterChange = (val: string) => {
+  const handleFilterChange = (val: string | null) => {
+    if (!val) return
     setFilter(val)
     updateQueryParams(query, val, 1)
   }

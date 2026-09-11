@@ -90,10 +90,10 @@ export function DormosaurAiChat() {
         profile: {
           name: profile.name,
           school: profile.school,
-          program: profile.program,
           year: profile.year,
           dorm: profile.dorm,
-          dietary: profile.dietary,
+          dietary: profile.dietary_preference || 'none',
+          dietaryNote: profile.dietary_note || '',
           appliances: profile.appliances,
         },
         classes,

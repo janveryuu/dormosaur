@@ -93,8 +93,9 @@ export async function POST(req: NextRequest) {
     let authUser: any = null
     let userName = 'Student'
 
+    let supabase: any = null
     try {
-      const supabase = await createClient()
+      supabase = await createClient()
       const {
         data: { user },
       } = await supabase.auth.getUser()
@@ -119,13 +120,13 @@ export async function POST(req: NextRequest) {
     let deadlinesList: DeadlineItem[] = Array.isArray(context?.deadlines) ? context.deadlines : []
 
     // 2. Server-Side Supabase Hydration (if client context was empty but user is logged in)
-    if (authUser && classesList.length === 0) {
+    if (authUser && supabase && classesList.length === 0) {
       try {
         const [cloudClasses, cloudAlarms, cloudDeadlines, cloudProfile] = await Promise.all([
-          getClasses(authUser.id),
-          getAlarms(authUser.id),
-          getDeadlines(authUser.id),
-          getUserProfile(authUser.id),
+          getClasses(supabase, authUser.id),
+          getAlarms(supabase, authUser.id),
+          getDeadlines(supabase, authUser.id),
+          getUserProfile(supabase, authUser.id),
         ])
         if (cloudClasses && cloudClasses.length > 0) classesList = cloudClasses
         if (cloudAlarms && cloudAlarms.length > 0) alarmsList = cloudAlarms

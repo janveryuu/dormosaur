@@ -2,9 +2,10 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useMotionValueEvent, useReducedMotion } from 'framer-motion'
 import { ChevronLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { LAYOUT_SPRING } from '@/lib/springs'
 
 export function ScreenHeader({
   title,
@@ -22,13 +23,13 @@ export function ScreenHeader({
   headerGraphic?: React.ReactNode
 }) {
   const [collapsed, setCollapsed] = React.useState(false)
+  const reduce = useReducedMotion()
 
-  React.useEffect(() => {
-    const onScroll = () => setCollapsed(window.scrollY > 52)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  // Use Motion's useScroll instead of window.addEventListener — no jank, no cleanup needed
+  const { scrollY } = useScroll()
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    setCollapsed(latest > 52)
+  })
 
   return (
     <>
@@ -42,7 +43,7 @@ export function ScreenHeader({
           {backHref && (
             <Link
               href={backHref}
-              className="-ml-2 flex items-center gap-0.5 rounded-full py-1 pr-2 pl-1 text-[16px] font-medium text-primary"
+              className="-ml-2 flex items-center gap-0.5 rounded-full py-1 pr-2 pl-1 text-[16px] font-medium text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               <ChevronLeft className="size-5" strokeWidth={2.2} />
               Back
@@ -51,10 +52,10 @@ export function ScreenHeader({
           <AnimatePresence>
             {collapsed && (
               <motion.span
-                initial={{ opacity: 0, y: 8 }}
+                initial={reduce ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 8 }}
-                transition={{ type: 'spring', stiffness: 460, damping: 34 }}
+                exit={reduce ? undefined : { opacity: 0, y: 8 }}
+                transition={LAYOUT_SPRING}
                 className="truncate text-[17px] font-semibold tracking-[-0.02em]"
               >
                 {title}
@@ -68,13 +69,13 @@ export function ScreenHeader({
       <div className="pt-1 pb-6 flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
           {eyebrow && (
-            <p className="mb-1 text-[13px] font-semibold tracking-[0.06em] text-primary uppercase">
+            <p className="mb-1 text-[12px] font-semibold tracking-[0.08em] text-primary uppercase">
               {eyebrow}
             </p>
           )}
           <h1 className="ios-large-title text-balance">{title}</h1>
           {subtitle && (
-            <p className="mt-2 max-w-lg text-[16px] leading-relaxed text-muted-foreground">
+            <p className="mt-2 max-w-lg text-[15px] leading-relaxed text-muted-foreground">
               {subtitle}
             </p>
           )}
