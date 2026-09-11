@@ -70,6 +70,20 @@ export function DormosaurAiChat() {
     }
   }, [messages, isOpen])
 
+  React.useEffect(() => {
+    const handleOpen = () => setIsOpen(true)
+    const handleToggle = () => setIsOpen((prev) => !prev)
+    const handleClose = () => setIsOpen(false)
+    window.addEventListener('open-dormosaur-ai', handleOpen)
+    window.addEventListener('toggle-dormosaur-ai', handleToggle)
+    window.addEventListener('close-dormosaur-ai', handleClose)
+    return () => {
+      window.removeEventListener('open-dormosaur-ai', handleOpen)
+      window.removeEventListener('toggle-dormosaur-ai', handleToggle)
+      window.removeEventListener('close-dormosaur-ai', handleClose)
+    }
+  }, [])
+
   const handleSend = async (textToSend?: string) => {
     const query = (textToSend || input).trim()
     if (!query || isTyping) return
@@ -148,33 +162,42 @@ export function DormosaurAiChat() {
 
   return (
     <>
-      {/* ── Floating AI Trigger Button (Bottom-Right) ── */}
-      <div className="fixed bottom-24 right-4 z-50 lg:bottom-6 lg:right-6">
+      {/* ── Floating AI Trigger Button (Desktop Only — on mobile accessed via dock '+' menu) ── */}
+      <div className="fixed bottom-6 right-6 z-40 hidden lg:flex">
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="relative flex items-center gap-2 rounded-full bg-[#1f6f50] px-3.5 py-2 sm:px-4.5 sm:py-2.5 text-white shadow-[0_10px_30px_rgba(31,111,80,0.4)] transition-all hover:bg-[#1a6148]"
+          className="relative flex items-center gap-2 rounded-full bg-[#1f6f50] px-4.5 py-2.5 text-white shadow-[0_10px_30px_rgba(31,111,80,0.4)] transition-all hover:bg-[#1a6148]"
         >
           <span className="relative flex size-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex size-2.5 rounded-full bg-white" />
           </span>
-          <Sparkles className="size-4.5 sm:size-5" strokeWidth={2.2} />
-          <span className="text-[13px] sm:text-[14px] font-semibold tracking-tight">Dormosaur AI</span>
+          <Sparkles className="size-4.5" strokeWidth={2.2} />
+          <span className="text-[14px] font-semibold tracking-tight">Dormosaur AI</span>
         </motion.button>
       </div>
 
       {/* ── AI Drawer / Sheet ── */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 40, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-            className="fixed inset-x-4 bottom-24 z-50 mx-auto flex max-h-[82vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-border/80 bg-card/95 shadow-[0_24px_60px_rgba(0,0,0,0.22)] backdrop-blur-2xl lg:bottom-6 lg:right-6 lg:inset-x-auto lg:w-[420px]"
-          >
+          <>
+            {/* Mobile backdrop overlay to easily dismiss */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs lg:hidden"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 40, scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+              className="fixed inset-x-3 bottom-5 z-50 mx-auto flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-border/80 bg-card/95 shadow-[0_24px_60px_rgba(0,0,0,0.3)] backdrop-blur-2xl lg:bottom-6 lg:right-6 lg:inset-x-auto lg:w-[420px]"
+            >
             {/* Drawer Header */}
             <div className="flex items-center justify-between border-b border-border/60 bg-fill/50 px-4 py-3">
               <div className="flex items-center gap-2.5">
@@ -296,8 +319,9 @@ export function DormosaurAiChat() {
               </form>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </>
+      )}
+    </AnimatePresence>
     </>
   )
 }
