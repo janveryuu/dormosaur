@@ -26,8 +26,8 @@ import {
 const mainViews = [
   { value: 'recipes', label: 'Recipes' },
   { value: 'schedule-aware', label: 'Fits Schedule' },
-  { value: 'planner', label: 'Meal Planner' },
-  { value: 'grocery', label: 'Grocery List' },
+  { value: 'planner', label: 'Meal Plan' },
+  { value: 'grocery', label: 'Grocery' },
 ] as const
 
 const meals = [
@@ -95,26 +95,12 @@ export default function KitchenPage() {
   return (
     <div className="pb-4">
       <ScreenHeader
-        eyebrow="Dorm kitchen"
-        title="Cook something in the gap between classes"
-        subtitle="Every recipe here fits a dorm: one appliance, few ingredients, under an hour."
-        headerGraphic={
-          <motion.div
-            initial={{ scale: 0.85, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-            className="relative flex items-center justify-center shrink-0"
-          >
-            <img
-              src="/chef-dormosaur.png"
-              alt="Chef Dormosaur"
-              className="h-24 sm:h-32 md:h-36 w-auto object-contain filter drop-shadow-md hover:scale-105 transition-transform"
-            />
-          </motion.div>
-        }
+        eyebrow="Micro-Cooking"
+        title="Dorm Kitchen"
+        subtitle="Student-tested recipes for microwaves, electric kettles & rice cookers."
       />
 
-      <div className="mb-6">
+      <div className="mb-5">
         <SegmentedControl
           options={[...mainViews]}
           value={view}

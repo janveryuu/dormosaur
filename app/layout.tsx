@@ -39,7 +39,7 @@ export const viewport: Viewport = {
   themeColor: '#F9F9FB',
   width: 'device-width',
   initialScale: 1,
-  // userScalable removed — blocking pinch-zoom is an accessibility violation
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({

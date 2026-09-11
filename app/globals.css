@@ -277,3 +277,21 @@
     transition-duration: 0.06s;
   }
 }
+
+/* ── Mobile Safe Area Utilities ───────────────────────────────── */
+@utility pt-safe {
+  padding-top: max(1rem, env(safe-area-inset-top, 0px));
+}
+
+@utility pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+@utility h-safe-top {
+  height: env(safe-area-inset-top, 0px);
+}
+
+@utility h-safe-bottom {
+  height: env(safe-area-inset-bottom, 0px);
+}
+

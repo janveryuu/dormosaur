@@ -192,12 +192,27 @@ export function DormosaurAiChat() {
               className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs lg:hidden"
             />
             <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 40, scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-              className="fixed inset-x-3 bottom-5 z-50 mx-auto flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-border/80 bg-card/95 shadow-[0_24px_60px_rgba(0,0,0,0.3)] backdrop-blur-2xl lg:bottom-6 lg:right-6 lg:inset-x-auto lg:w-[420px]"
+              initial={{ opacity: 0, y: '100%' }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: '100%' }}
+              transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.6 }}
+              onDragEnd={(_, info) => {
+                if (info.offset.y > 100 || info.velocity.y > 400) {
+                  setIsOpen(false)
+                }
+              }}
+              className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl border-t border-border/80 bg-card/95 shadow-[0_-12px_40px_rgba(0,0,0,0.25)] backdrop-blur-2xl lg:bottom-6 lg:right-6 lg:inset-x-auto lg:w-[420px] lg:max-h-[85vh] lg:rounded-3xl lg:border"
             >
+              {/* Mobile Drag/Grab Indicator with swipe dismiss */}
+              <div
+                className="flex w-full cursor-grab justify-center py-2.5 active:cursor-grabbing lg:hidden select-none"
+                aria-label="Drag down to dismiss"
+              >
+                <div className="h-1.5 w-10 rounded-full bg-muted-foreground/30 transition-colors hover:bg-muted-foreground/50" />
+              </div>
             {/* Drawer Header */}
             <div className="flex items-center justify-between border-b border-border/60 bg-fill/50 px-4 py-3">
               <div className="flex items-center gap-2.5">
@@ -294,7 +309,7 @@ export function DormosaurAiChat() {
             </div>
 
             {/* Input Bar */}
-            <div className="p-3 border-t border-border/60 bg-card">
+            <div className="p-3 border-t border-border/60 bg-card pb-[max(0.75rem,env(safe-area-inset-bottom,0.75rem))]">
               <form
                 onSubmit={(e) => {
                   e.preventDefault()

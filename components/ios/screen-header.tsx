@@ -25,7 +25,7 @@ export function ScreenHeader({
   const [collapsed, setCollapsed] = React.useState(false)
   const reduce = useReducedMotion()
 
-  // Use Motion's useScroll instead of window.addEventListener — no jank, no cleanup needed
+  // Use Motion's useScroll — desktop sticky title collapse
   const { scrollY } = useScroll()
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setCollapsed(latest > 52)
@@ -33,9 +33,10 @@ export function ScreenHeader({
 
   return (
     <>
+      {/* Desktop Sticky Header Bar */}
       <div
         className={cn(
-          'sticky top-0 z-30 -mx-5 px-5 transition-all duration-300 lg:-mx-8 lg:px-8',
+          'hidden lg:block sticky top-0 z-20 -mx-8 px-8 transition-all duration-300',
           collapsed ? 'ios-glass border-b border-separator' : 'border-b border-transparent',
         )}
       >
@@ -43,7 +44,7 @@ export function ScreenHeader({
           {backHref && (
             <Link
               href={backHref}
-              className="-ml-2 flex items-center gap-0.5 rounded-full py-1 pr-2 pl-1 text-[16px] font-medium text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="-ml-2 flex items-center gap-0.5 rounded-full py-1 pr-2 pl-1 text-[15px] font-medium text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               <ChevronLeft className="size-5" strokeWidth={2.2} />
               Back
@@ -66,23 +67,42 @@ export function ScreenHeader({
         </div>
       </div>
 
-      <div className="pt-1 pb-6 flex items-center justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          {eyebrow && (
-            <p className="mb-1 text-[12px] font-semibold tracking-[0.08em] text-primary uppercase">
-              {eyebrow}
-            </p>
-          )}
-          <h1 className="ios-large-title text-balance">{title}</h1>
-          {subtitle && (
-            <p className="mt-2 max-w-lg text-[15px] leading-relaxed text-muted-foreground">
-              {subtitle}
-            </p>
-          )}
+      {/* Main Page Title & Intro Area */}
+      <div className="pt-2 pb-5 sm:pb-6">
+        <div className="flex items-start justify-between gap-3 sm:gap-6">
+          <div className="flex-1 min-w-0">
+            {eyebrow && (
+              <p className="mb-1 text-[11px] sm:text-[12px] font-semibold tracking-wider text-primary uppercase">
+                {eyebrow}
+              </p>
+            )}
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground text-balance leading-tight">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="mt-1.5 max-w-xl text-[13.5px] sm:text-[15px] leading-relaxed text-muted-foreground">
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          {/* Right actions or graphic */}
+          <div className="flex items-center gap-2 shrink-0 self-start pt-1">
+            {trailing && <div className="flex items-center gap-1.5">{trailing}</div>}
+            {headerGraphic && (
+              <div className="hidden sm:block shrink-0">
+                {headerGraphic}
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* On mobile, if header graphic exists, show a refined compact version below if needed */}
         {headerGraphic && (
-          <div className="shrink-0 self-center">
-            {headerGraphic}
+          <div className="sm:hidden mt-2 flex justify-end">
+            <div className="max-h-16 max-w-20 overflow-hidden">
+              {headerGraphic}
+            </div>
           </div>
         )}
       </div>
@@ -90,10 +110,7 @@ export function ScreenHeader({
   )
 }
 
+/** Deprecated fake modal handle — returns null to eliminate artificial desktop-on-mobile cues */
 export function PullAffordance() {
-  return (
-    <div className="flex justify-center pt-1 pb-3" aria-hidden="true">
-      <div className="h-1 w-9 rounded-full bg-separator" />
-    </div>
-  )
+  return null
 }

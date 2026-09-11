@@ -3,17 +3,24 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ChevronRight, Clock, MapPin, User } from 'lucide-react'
+import { ArrowUpRight, Clock, MapPin, Navigation, User } from 'lucide-react'
 import { formatTime, subjectColorClass, type ClassEntry } from '@/lib/data'
 import type { NextClassResult } from '@/lib/schedule-engine'
 
 function useLiveCountdown(remainingMinutes: number, targetTimeStr: string) {
-  const [countdownLabel, setCountdownLabel] = React.useState<string>('')
+  const [countdownLabel, setCountdownLabel] = React.useState<string>(() => {
+    if (!remainingMinutes || remainingMinutes <= 0) return '0m 00s'
+    const days = Math.floor(remainingMinutes / (24 * 60))
+    const hours = Math.floor((remainingMinutes % (24 * 60)) / 60)
+    const mins = remainingMinutes % 60
+    if (days > 0) return `${days}d ${hours}h ${String(mins).padStart(2, '0')}m`
+    if (hours > 0) return `${hours}h ${String(mins).padStart(2, '0')}m 00s`
+    return `${mins}m 00s`
+  })
 
   React.useEffect(() => {
-    // Record baseline timestamp when component received remainingMinutes
     const startTime = Date.now()
-    const totalTargetSeconds = remainingMinutes * 60
+    const totalTargetSeconds = Math.max(0, remainingMinutes * 60)
 
     const tick = () => {
       const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000)
@@ -28,7 +35,7 @@ function useLiveCountdown(remainingMinutes: number, targetTimeStr: string) {
       if (days > 0) {
         setCountdownLabel(`${days}d ${hours}h ${String(mins).padStart(2, '0')}m`)
       } else if (hours > 0) {
-        setCountdownLabel(`${hours}h ${String(mins).padStart(2, '0')}m`)
+        setCountdownLabel(`${hours}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`)
       } else {
         setCountdownLabel(`${mins}m ${String(secs).padStart(2, '0')}s`)
       }
@@ -60,7 +67,6 @@ export function NextClassCard({
 
   const color = subjectColorClass[entry.color] || subjectColorClass[1]
 
-  // Intelligent display mapping to prevent duplicate codes and "TBA" confusion
   const hasDistinctCode =
     Boolean(entry.code) &&
     Boolean(entry.subject) &&
@@ -75,7 +81,6 @@ export function NextClassCard({
       subtitleParts.push(entry.instructor)
     }
   } else {
-    // If subject and code are identical, don't duplicate code
     if (entry.instructor && entry.instructor !== 'TBA' && entry.instructor !== 'None') {
       subtitleParts.push(entry.instructor)
     } else if (entry.room && entry.room !== 'TBA') {
@@ -86,91 +91,115 @@ export function NextClassCard({
   const subtitle = subtitleParts.join(' · ')
 
   return (
-    <Link href="/schedule" className="block group">
+    <Link href="/schedule" className="block group select-none">
       <motion.article
         whileTap={{ scale: 0.985 }}
         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-        className="relative overflow-hidden rounded-4xl bg-card p-6 shadow-ios-lg border border-border/40 hover:border-primary/40 transition-colors"
+        className="relative overflow-hidden rounded-3xl bg-card p-5 sm:p-6 shadow-ios border border-border/80 ring-1 ring-black/[0.03] dark:ring-white/[0.05] hover:border-primary/40 transition-all"
       >
-        <span className={`absolute inset-x-0 top-0 h-1 ${color.bg}`} aria-hidden="true" />
-        <div className="flex items-start gap-3">
-          <div className="min-w-0 flex-1">
-            <p
-              className={`flex items-center gap-2 text-[13px] font-bold tracking-[0.06em] uppercase ${
-                isHappeningNow ? 'text-amber-800 dark:text-amber-300' : 'text-primary'
+        {/* Color bar indicator on the left */}
+        <span
+          className={`absolute top-0 left-0 bottom-0 w-1.5 ${color.bg}`}
+          aria-hidden="true"
+        />
+
+        {/* Live Status Header */}
+        <div className="flex items-center justify-between pl-1">
+          <div className="flex items-center gap-2">
+            <span className="relative flex size-2.5">
+              <span
+                className={`absolute inset-0 animate-ping rounded-full opacity-75 ${
+                  isHappeningNow ? 'bg-amber-500' : 'bg-emerald-500'
+                }`}
+              />
+              <span
+                className={`relative size-2.5 rounded-full ${
+                  isHappeningNow ? 'bg-amber-500' : 'bg-emerald-500'
+                }`}
+              />
+            </span>
+            <span
+              className={`text-[12px] font-bold tracking-wider uppercase ${
+                isHappeningNow
+                  ? 'text-amber-700 dark:text-amber-400'
+                  : 'text-primary'
               }`}
             >
-              <span className="relative flex size-2">
-                <span
-                  className={`absolute inset-0 animate-ping rounded-full opacity-75 ${
-                    isHappeningNow ? 'bg-amber-500' : 'bg-primary'
-                  }`}
-                />
-                <span
-                  className={`relative size-2 rounded-full ${
-                    isHappeningNow ? 'bg-amber-500' : 'bg-primary'
-                  }`}
-                />
-              </span>
               {isHappeningNow
-                ? 'Happening now'
+                ? 'Happening Now'
                 : isFutureDay && nextMeta?.dayLabel
-                ? `Up next · ${nextMeta.dayLabel}`
-                : 'Up next'}
-            </p>
-
-            <h2 className="mt-2 text-[26px] sm:text-[28px] leading-tight font-extrabold tracking-[-0.03em] text-foreground text-balance">
-              {title}
-            </h2>
-
-            {subtitle && (
-              <p className="mt-1 text-[14.5px] font-semibold text-muted-foreground truncate">
-                {subtitle}
-              </p>
-            )}
+                ? `Next Class · ${nextMeta.dayLabel}`
+                : 'Next Class Today'}
+            </span>
           </div>
-          <ChevronRight className="mt-1 size-5 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
+
+          <span className="flex items-center gap-1 text-[12px] font-semibold text-muted-foreground group-hover:text-primary transition-colors">
+            <span>Schedule</span>
+            <ArrowUpRight className="size-3.5" />
+          </span>
         </div>
 
-        {/* Info Badges */}
-        <div className="mt-6 flex flex-wrap items-center gap-2">
-          <span className="flex items-center gap-1.5 rounded-full bg-fill px-3.5 py-1.5 text-[13px] font-semibold text-foreground">
-            <Clock className="size-3.5 text-muted-foreground" strokeWidth={2} />
-            {formatTime(entry.start)} – {formatTime(entry.end)}
+        {/* Primary Subject & Details */}
+        <div className="mt-3 pl-1">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground text-balance">
+              {title}
+            </h2>
+            {entry.code && hasDistinctCode && (
+              <span className="rounded-md bg-fill px-2 py-0.5 text-[11px] font-bold text-muted-foreground">
+                {entry.code}
+              </span>
+            )}
+          </div>
+
+          {subtitle && (
+            <p className="mt-0.5 text-[13.5px] font-medium text-muted-foreground">
+              {subtitle}
+            </p>
+          )}
+        </div>
+
+        {/* Time, Room & Instructor Pills */}
+        <div className="mt-4 flex flex-wrap items-center gap-2 pl-1">
+          <span className="flex items-center gap-1.5 rounded-full bg-fill/80 border border-border/40 px-3 py-1.5 text-[12.5px] font-semibold text-foreground">
+            <Clock className="size-3.5 text-muted-foreground shrink-0" strokeWidth={2} />
+            <span className="tabular-nums">
+              {formatTime(entry.start)} – {formatTime(entry.end)}
+            </span>
           </span>
 
-          <span className="flex items-center gap-1.5 rounded-full bg-fill px-3.5 py-1.5 text-[13px] font-semibold text-foreground">
-            <MapPin className="size-3.5 text-muted-foreground" strokeWidth={2} />
-            {entry.room || 'Online'}
+          <span className="flex items-center gap-1.5 rounded-full bg-fill/80 border border-border/40 px-3 py-1.5 text-[12.5px] font-semibold text-foreground">
+            <MapPin className="size-3.5 text-muted-foreground shrink-0" strokeWidth={2} />
+            <span>{entry.room || 'Online'}</span>
           </span>
 
           {entry.instructor &&
             entry.instructor !== 'TBA' &&
             entry.instructor !== 'None' &&
             !subtitle.includes(entry.instructor) && (
-              <span className="flex items-center gap-1.5 rounded-full bg-fill px-3.5 py-1.5 text-[13px] font-semibold text-muted-foreground">
-                <User className="size-3.5 text-muted-foreground" strokeWidth={2} />
-                {entry.instructor}
+              <span className="flex items-center gap-1.5 rounded-full bg-fill/80 border border-border/40 px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground">
+                <User className="size-3.5 text-muted-foreground shrink-0" strokeWidth={2} />
+                <span>{entry.instructor}</span>
               </span>
             )}
         </div>
 
-        {/* Countdown Footer */}
-        <div className="mt-5 flex items-baseline gap-2 border-t border-separator pt-4.5">
-          <span className="text-[13.5px] font-medium text-muted-foreground">
-            {isHappeningNow
-              ? 'Ends in'
-              : isFutureDay && nextMeta?.dayLabel
-              ? `Starts ${nextMeta.dayLabel} in`
-              : 'Starts in'}
-          </span>
-          <span
-            className={`font-mono text-[26px] leading-none font-bold tracking-[-0.02em] tabular-nums ${
-              isHappeningNow ? 'text-amber-800 dark:text-amber-300' : 'text-primary'
+        {/* Live Activity Digital Countdown Ticker */}
+        <div className="mt-4.5 flex items-center justify-between border-t border-border/60 pt-3.5 pl-1">
+          <div className="flex items-center gap-2">
+            <Navigation className="size-3.5 text-muted-foreground" />
+            <span className="text-[12.5px] font-medium text-muted-foreground">
+              {isHappeningNow ? 'Ends in' : 'Starts in'}
+            </span>
+          </div>
+
+          <div
+            className={`font-mono text-2xl font-black tracking-tight tabular-nums ${
+              isHappeningNow ? 'text-amber-600 dark:text-amber-400' : 'text-primary'
             }`}
           >
             {countdown || '—'}
-          </span>
+          </div>
         </div>
       </motion.article>
     </Link>

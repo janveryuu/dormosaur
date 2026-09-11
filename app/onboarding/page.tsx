@@ -443,44 +443,60 @@ export default function OnboardingPage() {
   )
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
-      <header className="flex h-14 shrink-0 items-center gap-2 px-5">
-        {step > 0 ? (
-          <button
-            onClick={() => go(step - 1)}
-            className="-ml-2 flex items-center gap-0.5 py-1 pr-2 pl-1 text-[16px] font-medium text-primary"
-          >
-            <ChevronLeft className="size-5" strokeWidth={2.2} />
-            Back
-          </button>
-        ) : (
-          <Link
-            href="/"
-            className="-ml-2 flex items-center gap-0.5 py-1 pr-2 pl-1 text-[16px] font-medium text-primary"
-          >
-            <ChevronLeft className="size-5" strokeWidth={2.2} />
-            Exit
-          </Link>
-        )}
-
-        <div className="mx-auto flex items-center gap-2" aria-label={`Step ${step + 1} of ${totalSteps}`}>
-          {Array.from({ length: totalSteps }).map((_, i) => (
-            <motion.span
-              key={i}
-              animate={{
-                width: i === step ? 22 : 7,
-                opacity: i <= step ? 1 : 0.3,
-              }}
-              transition={{ type: 'spring', stiffness: 480, damping: 34 }}
-              className={cn('h-[7px] rounded-full', i <= step ? 'bg-primary' : 'bg-separator')}
-            />
-          ))}
+    <div className="flex min-h-[100dvh] flex-col bg-background">
+      {/* ── Native Mobile Header with Safe Area Inset ── */}
+      <header
+        className="sticky top-0 z-30 flex items-center justify-between border-b border-border/40 bg-background/85 px-4 backdrop-blur-xl shrink-0"
+        style={{
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          height: 'calc(3.5rem + env(safe-area-inset-top, 0px))',
+        }}
+      >
+        <div className="w-16">
+          {step > 0 ? (
+            <button
+              onClick={() => go(step - 1)}
+              className="-ml-1 flex items-center gap-0.5 rounded-full px-2 py-1 text-[15px] font-semibold text-primary transition-transform active:scale-95"
+            >
+              <ChevronLeft className="size-5" strokeWidth={2.4} />
+              <span>Back</span>
+            </button>
+          ) : (
+            <Link
+              href="/"
+              className="-ml-1 flex items-center gap-0.5 rounded-full px-2 py-1 text-[15px] font-semibold text-primary transition-transform active:scale-95"
+            >
+              <ChevronLeft className="size-5" strokeWidth={2.4} />
+              <span>Exit</span>
+            </Link>
+          )}
         </div>
 
-        <span className="w-12" />
+        {/* Step indicator pills */}
+        <div className="flex flex-col items-center gap-1" aria-label={`Step ${step + 1} of ${totalSteps}`}>
+          <div className="flex items-center gap-1.5">
+            {Array.from({ length: totalSteps }).map((_, i) => (
+              <motion.span
+                key={i}
+                animate={{
+                  width: i === step ? 20 : 6,
+                  opacity: i <= step ? 1 : 0.35,
+                }}
+                transition={{ type: 'spring', stiffness: 480, damping: 34 }}
+                className={cn('h-1.5 rounded-full', i <= step ? 'bg-primary' : 'bg-muted-foreground/30')}
+              />
+            ))}
+          </div>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider tabular-nums">
+            Step {step + 1} of {totalSteps}
+          </span>
+        </div>
+
+        <div className="w-16" />
       </header>
 
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 pb-8">
+      {/* ── Scrollable Step Content Container ── */}
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pt-4 pb-36">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={step}
@@ -1126,7 +1142,14 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        <div className="mt-8 flex flex-col gap-3">
+      </div>
+
+      {/* ── Fixed Native Bottom Action Dock with Safe Area ── */}
+      <div
+        className="fixed bottom-0 inset-x-0 z-30 border-t border-border/50 bg-background/90 backdrop-blur-2xl px-4 pt-3 transition-all"
+        style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 1rem))' }}
+      >
+        <div className="mx-auto flex w-full max-w-md flex-col gap-2">
           {step < 5 ? (
             <PillButton size="lg" full onClick={() => go(step + 1)} disabled={!canContinue}>
               Continue
@@ -1252,9 +1275,9 @@ export default function OnboardingPage() {
               } catch (_) { /* silent */ }
               router.push('/dashboard')
             }}
-            className="py-1 text-center text-[15px] font-medium text-muted-foreground"
+            className="py-1 text-center text-[13.5px] font-semibold text-muted-foreground hover:text-foreground transition-colors active:scale-95"
           >
-            Skip for now
+            {step === 6 ? "I'll do this later" : 'Skip for now'}
           </button>
         </div>
       </div>
