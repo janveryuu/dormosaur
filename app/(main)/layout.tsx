@@ -10,7 +10,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8 lg:!pt-6 lg:!pb-16"
         style={{
           paddingTop: 'calc(3.75rem + env(safe-area-inset-top, 0px))',
-          paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))',
+          paddingBottom: 'calc(5.75rem + env(safe-area-inset-bottom, 0px))',
         }}
       >
         {children}
