@@ -34,6 +34,13 @@ export default function RootErrorBoundary({
         <p className="mt-2 text-[14.5px] leading-relaxed text-muted-foreground">
           Dormosaur hit a temporary bump, but your semester data and settings are safely stored.
         </p>
+        {error?.message && (
+          <div className="mt-3 overflow-hidden rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-left">
+            <p className="text-[12px] font-mono font-medium text-destructive break-all">
+              {error.message}
+            </p>
+          </div>
+        )}
 
         <div className="mt-8 flex flex-col gap-3">
           <PillButton size="lg" full onClick={() => reset()}>

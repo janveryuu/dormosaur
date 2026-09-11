@@ -36,7 +36,8 @@ const desktopTabs = [
   { href: '/profile', label: 'Profile', icon: User },
 ]
 
-function isActive(pathname: string, href: string) {
+function isActive(pathname: string | null | undefined, href: string) {
+  if (!pathname) return false
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
@@ -62,28 +63,35 @@ export function AppNav() {
   const isQuickHubActive = isActive(pathname, '/alarms') || isActive(pathname, '/kitchen')
 
   const pendingDeadlinesCount = React.useMemo(() => {
-    return deadlines.filter((d) => !d.completed).length
+    if (!Array.isArray(deadlines)) return 0
+    return deadlines.filter((d) => !d?.completed).length
   }, [deadlines])
 
   const hasActiveAlarms = React.useMemo(() => {
-    return alarms.some((a) => a.enabled)
+    if (!Array.isArray(alarms)) return false
+    return alarms.some((a) => a?.enabled)
   }, [alarms])
 
-  const isSubRoute =
-    pathname === '/profile' ||
-    pathname.startsWith('/schedule/import') ||
-    pathname.startsWith('/schedule/review') ||
-    pathname.startsWith('/deadlines/import') ||
-    pathname.startsWith('/deadlines/review') ||
-    pathname.startsWith('/kitchen/')
+  const isSubRoute = Boolean(
+    pathname &&
+      (pathname === '/profile' ||
+        pathname.startsWith('/schedule/import') ||
+        pathname.startsWith('/schedule/review') ||
+        pathname.startsWith('/deadlines/import') ||
+        pathname.startsWith('/deadlines/review') ||
+        pathname.startsWith('/kitchen/')),
+  )
 
-  const isModalFlow =
-    pathname.startsWith('/schedule/import') ||
-    pathname.startsWith('/schedule/review') ||
-    pathname.startsWith('/deadlines/import') ||
-    pathname.startsWith('/deadlines/review')
+  const isModalFlow = Boolean(
+    pathname &&
+      (pathname.startsWith('/schedule/import') ||
+        pathname.startsWith('/schedule/review') ||
+        pathname.startsWith('/deadlines/import') ||
+        pathname.startsWith('/deadlines/review')),
+  )
 
   const backTarget = React.useMemo(() => {
+    if (!pathname) return '/dashboard'
     if (pathname.startsWith('/kitchen/')) return '/kitchen'
     if (pathname.startsWith('/schedule/review')) return '/schedule/import'
     if (pathname.startsWith('/schedule/import')) return '/schedule'
@@ -94,6 +102,7 @@ export function AppNav() {
   }, [pathname])
 
   const subRouteTitle = React.useMemo(() => {
+    if (!pathname) return ''
     if (pathname.startsWith('/kitchen/')) return 'Recipe'
     if (pathname.startsWith('/schedule/review')) return 'Review Schedule'
     if (pathname.startsWith('/schedule/import')) return 'Import Schedule'
@@ -158,15 +167,15 @@ export function AppNav() {
               )}
               aria-label="View Profile & Settings"
             >
-              {profile.avatar_url ? (
+              {profile?.avatar_url ? (
                 <img
                   src={profile.avatar_url}
-                  alt={profile.name}
+                  alt={profile?.name || 'User'}
                   className="size-8 rounded-full object-cover"
                 />
               ) : (
                 <span className="text-primary font-bold text-[11px]">
-                  {profile.initials || 'ST'}
+                  {profile?.initials || 'ST'}
                 </span>
               )}
               <span
@@ -189,6 +198,7 @@ export function AppNav() {
         <AnimatePresence>
           {isPlusOpen && (
             <motion.div
+              key="plus-backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -205,6 +215,7 @@ export function AppNav() {
           <AnimatePresence>
             {isPlusOpen && (
               <motion.div
+                key="plus-popover-menu"
                 initial={{ opacity: 0, scale: 0.94, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.94, y: 10 }}
@@ -431,14 +442,10 @@ export function AppNav() {
             aria-expanded={isPlusOpen}
           >
             <motion.div
-              animate={{ rotate: isPlusOpen ? 90 : 0 }}
+              animate={{ rotate: isPlusOpen ? 45 : 0 }}
               transition={{ type: 'spring', stiffness: 500, damping: 28 }}
             >
-              {isPlusOpen ? (
-                <X className="size-5.5" strokeWidth={2.4} />
-              ) : (
-                <Plus className="size-6" strokeWidth={2.4} />
-              )}
+              <Plus className="size-6" strokeWidth={2.4} />
             </motion.div>
 
             {/* Indicator dot if Alarms or Kitchen is currently active */}
@@ -509,23 +516,23 @@ export function AppNav() {
           href="/profile"
           className="mt-auto flex items-center gap-3 rounded-3xl bg-fill p-3 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
-          {profile.avatar_url ? (
+          {profile?.avatar_url ? (
             <img
               src={profile.avatar_url}
-              alt={profile.name}
+              alt={profile?.name || 'User'}
               className="size-9 shrink-0 rounded-full object-cover shadow-ios-sm"
             />
           ) : (
             <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-[13px] font-semibold text-primary-foreground">
-              {profile.initials || 'ST'}
+              {profile?.initials || 'ST'}
             </span>
           )}
           <span className="min-w-0">
             <span className="block truncate text-[14px] font-semibold tracking-[-0.015em]">
-              {profile.name}
+              {profile?.name}
             </span>
             <span className="block truncate text-[12px] text-muted-foreground">
-              {profile.school}
+              {profile?.school}
             </span>
           </span>
         </Link>
