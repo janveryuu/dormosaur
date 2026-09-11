@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { CalendarCheck, BellRinging, ForkKnife } from '@phosphor-icons/react'
-import { IOS_SPRING, IOS_SPRING_SNAPPY, IOS_EASE } from '@/lib/springs'
+import { IOS_SPRING, IOS_SPRING_SNAPPY, IOS_EASE, BUTTON_SPRING } from '@/lib/springs'
 
 // ─── Feature data ─────────────────────────────────────────────────────────────
 const features = [
@@ -45,8 +45,9 @@ function FeaturePill({
     <motion.div
       initial={reduce ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ ...IOS_SPRING, delay }}
-      className="flex flex-col gap-2.5 rounded-3xl bg-card p-4 shadow-ios border border-separator/50"
+      whileTap={reduce ? undefined : { scale: 0.95 }}
+      transition={{ ...BUTTON_SPRING, delay: delay || 0 }}
+      className="flex flex-col gap-2.5 rounded-3xl bg-card p-4 shadow-ios border border-separator/50 cursor-pointer select-none"
     >
       <span className="flex size-9 items-center justify-center rounded-2xl bg-accent text-primary">
         <Icon weight="duotone" size={20} />
@@ -170,12 +171,13 @@ export function MobileSplashScreen() {
       >
         <motion.div
           className="w-full"
-          whileTap={reduce ? undefined : { scale: 0.975 }}
-          transition={IOS_SPRING_SNAPPY}
+          whileTap={reduce ? undefined : { scale: 0.96 }}
+          whileHover={reduce ? undefined : { scale: 1.015 }}
+          transition={BUTTON_SPRING}
         >
           <Link
             href="/sign-up"
-            className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-base font-semibold text-primary-foreground shadow-[0_12px_28px_-10px_rgba(31,111,80,0.45)] transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-base font-semibold text-primary-foreground shadow-[0_12px_28px_-10px_rgba(31,111,80,0.45)] hover:shadow-[0_16px_32px_-10px_rgba(31,111,80,0.55)] transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Get started
             <ArrowRight className="size-4.5" aria-hidden="true" />

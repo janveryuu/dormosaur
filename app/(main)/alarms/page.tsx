@@ -7,7 +7,7 @@ import { PullAffordance, ScreenHeader } from '@/components/ios/screen-header'
 import { IosSwitch } from '@/components/ios/ios-switch'
 import { LeadPicker, type Lead } from '@/components/ios/lead-picker'
 import { NotificationBanner } from '@/components/ios/notification-banner'
-import { PillButton } from '@/components/ios/pill-button'
+import { PillButton, PillLink } from '@/components/ios/pill-button'
 import { useSchedule } from '@/components/schedule-provider'
 import { formatTime, subjectColorClass } from '@/lib/data'
 import { requestAndSubscribePush, triggerPushNotification } from '@/lib/push-notifications'
@@ -146,12 +146,9 @@ export default function AlarmsPage() {
                 Alarms are automatically generated from your class schedule. Import your timetable to get started.
               </p>
             </div>
-            <a
-              href="/schedule/import"
-              className="mt-1 rounded-full bg-primary px-5 py-2.5 text-[13.5px] font-bold text-primary-foreground shadow-sm transition-all hover:scale-105"
-            >
+            <PillLink href="/schedule/import" size="md">
               Import Schedule
-            </a>
+            </PillLink>
           </section>
         ) : (
           groups.map((group) => {

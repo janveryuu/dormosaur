@@ -1,8 +1,8 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { buttonTapScale, springSnappy } from '@/lib/motion-presets'
+import { buttonTapScale, chipTapScale, springLayout, springButton } from '@/lib/motion-presets'
 
 export function SegmentedControl<T extends string>({
   options,
@@ -17,33 +17,38 @@ export function SegmentedControl<T extends string>({
   className?: string
   layoutId?: string
 }) {
+  const reduce = useReducedMotion()
+
   return (
     <div
       role="tablist"
-      className={cn('flex w-full items-center gap-1 rounded-full bg-fill p-1', className)}
+      className={cn('flex w-full items-center gap-1 rounded-full bg-fill p-1 select-none', className)}
     >
       {options.map((option) => {
         const active = option.value === value
         return (
           <motion.button
             key={option.value}
+            type="button"
             role="tab"
             aria-selected={active}
-            whileTap={buttonTapScale}
+            whileTap={reduce ? undefined : buttonTapScale}
+            whileHover={reduce || active ? undefined : { scale: 1.015 }}
+            transition={springButton}
             onClick={() => onChange(option.value)}
-            className="relative flex-1 rounded-full px-3 py-2 text-[13.5px] font-semibold tracking-[-0.01em] focus-visible:outline-none"
+            className="relative flex-1 rounded-full px-3 py-2 text-[13.5px] font-semibold tracking-[-0.01em] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {active && (
               <motion.span
                 layoutId={layoutId}
-                transition={springSnappy}
+                transition={springLayout}
                 className="absolute inset-0 rounded-full bg-card shadow-ios"
               />
             )}
             <span
               className={cn(
-                'relative z-10 whitespace-nowrap transition-colors',
-                active ? 'text-foreground' : 'text-muted-foreground',
+                'relative z-10 block truncate transition-colors duration-150',
+                active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
               )}
             >
               {option.label}
@@ -64,16 +69,20 @@ export function FilterChip({
   active?: boolean
   onClick?: () => void
 }) {
+  const reduce = useReducedMotion()
+
   return (
     <motion.button
-      whileTap={{ scale: 0.94 }}
-      transition={{ type: 'spring', stiffness: 600, damping: 28 }}
+      type="button"
+      whileTap={reduce ? undefined : chipTapScale}
+      whileHover={reduce ? undefined : { scale: 1.025, y: -1 }}
+      transition={springButton}
       onClick={onClick}
       className={cn(
-        'shrink-0 rounded-full px-4 py-2 text-[13.5px] font-medium transition-colors',
+        'shrink-0 rounded-full px-4 py-2 text-[13.5px] font-medium transition-colors select-none cursor-pointer',
         active
-          ? 'bg-primary text-primary-foreground'
-          : 'bg-card text-muted-foreground shadow-ios',
+          ? 'bg-primary text-primary-foreground shadow-[0_4px_12px_-2px_rgba(31,111,80,0.4)]'
+          : 'bg-card text-muted-foreground shadow-ios hover:text-foreground hover:bg-fill/60',
       )}
     >
       {label}

@@ -8,7 +8,7 @@ import { ArrowRight, Check } from 'lucide-react'
 import { CalendarCheck, BellRinging, ForkKnife } from '@phosphor-icons/react'
 import { MobileSplashScreen } from '@/components/mobile/splash-screen'
 import { createClient } from '@/lib/supabase/client'
-import { IOS_EASE, IOS_SPRING, IOS_SPRING_SNAPPY } from '@/lib/springs'
+import { IOS_EASE, IOS_SPRING, IOS_SPRING_SNAPPY, BUTTON_SPRING } from '@/lib/springs'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const messyLines = [
@@ -223,8 +223,8 @@ function NavCTA({ href, children }: { href: string; children: React.ReactNode })
   return (
     <motion.div
       whileHover={{ scale: 1.03, y: -1 }}
-      whileTap={{ scale: 0.97 }}
-      transition={IOS_SPRING_SNAPPY}
+      whileTap={{ scale: 0.96 }}
+      transition={BUTTON_SPRING}
     >
       <Link
         href={href}
@@ -248,8 +248,8 @@ function CTAButton({ href, children, large }: { href: string; children: React.Re
   return (
     <motion.div
       whileHover={{ scale: 1.025, y: -1.5 }}
-      whileTap={{ scale: 0.975 }}
-      transition={IOS_SPRING_SNAPPY}
+      whileTap={{ scale: 0.96 }}
+      transition={BUTTON_SPRING}
     >
       <Link
         href={href}

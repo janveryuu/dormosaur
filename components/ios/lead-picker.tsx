@@ -1,10 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Check, ChevronRight } from 'lucide-react'
-
-import { buttonTapScale, springSmooth, springSnappy } from '@/lib/motion-presets'
+import { buttonTapScale, buttonHoverScale, springButton, springSmooth } from '@/lib/motion-presets'
 
 const options = [15, 30, 60] as const
 export type Lead = (typeof options)[number]
@@ -20,6 +19,7 @@ export function LeadPicker({
 }) {
   const [open, setOpen] = React.useState(false)
   const ref = React.useRef<HTMLDivElement>(null)
+  const reduce = useReducedMotion()
 
   React.useEffect(() => {
     if (!open) return
@@ -31,19 +31,21 @@ export function LeadPicker({
   }, [open])
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative select-none">
       <motion.button
-        whileTap={buttonTapScale}
-        transition={springSnappy}
+        type="button"
+        whileTap={reduce ? undefined : buttonTapScale}
+        whileHover={reduce ? undefined : buttonHoverScale}
+        transition={springButton}
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={`${label} lead time`}
-        className="flex items-center gap-1 rounded-full bg-fill px-3 py-1.5 text-[13.5px] font-semibold tabular-nums"
+        className="flex items-center gap-1 rounded-full bg-fill px-3 py-1.5 text-[13.5px] font-semibold tabular-nums cursor-pointer hover:bg-accent transition-colors"
       >
         {value} min
         <ChevronRight
-          className={`size-3.5 text-muted-foreground transition-transform ${open ? 'rotate-90' : ''}`}
+          className={`size-3.5 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-90' : ''}`}
           strokeWidth={2.2}
         />
       </motion.button>
@@ -52,30 +54,36 @@ export function LeadPicker({
         {open && (
           <motion.ul
             role="listbox"
-            initial={{ opacity: 0, scale: 0.92, y: -4 }}
+            initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: -4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: -4 }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: -4 }}
             transition={springSmooth}
-            className="ios-glass absolute top-full right-0 z-20 mt-2 w-40 origin-top-right overflow-hidden rounded-2xl border border-border shadow-ios-lg"
+            className="ios-glass absolute top-full right-0 z-30 mt-2 w-44 origin-top-right overflow-hidden rounded-2xl border border-border shadow-ios-lg p-1"
           >
-            {options.map((option) => (
-              <li key={option}>
-                <button
-                  role="option"
-                  aria-selected={option === value}
-                  onClick={() => {
-                    onChange(option)
-                    setOpen(false)
-                  }}
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-[14.5px] font-medium hover:bg-fill"
-                >
-                  {option} min before
-                  {option === value && (
-                    <Check className="size-4 text-primary" strokeWidth={2.4} />
-                  )}
-                </button>
-              </li>
-            ))}
+            {options.map((option) => {
+              const active = option === value
+              return (
+                <li key={option}>
+                  <motion.button
+                    type="button"
+                    role="option"
+                    aria-selected={active}
+                    whileTap={reduce ? undefined : { scale: 0.97 }}
+                    transition={springButton}
+                    onClick={() => {
+                      onChange(option)
+                      setOpen(false)
+                    }}
+                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2 text-[14px] font-medium transition-colors cursor-pointer ${
+                      active ? 'bg-primary/12 text-primary font-semibold' : 'text-foreground hover:bg-fill'
+                    }`}
+                  >
+                    <span>{option} min before</span>
+                    {active && <Check className="size-4 text-primary" strokeWidth={2.4} />}
+                  </motion.button>
+                </li>
+              )
+            })}
           </motion.ul>
         )}
       </AnimatePresence>

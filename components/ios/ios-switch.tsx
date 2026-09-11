@@ -1,9 +1,8 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-
-import { springSnappy } from '@/lib/motion-presets'
+import { springSwitch, springSnappy } from '@/lib/motion-presets'
 
 export function IosSwitch({
   checked,
@@ -16,25 +15,30 @@ export function IosSwitch({
   label: string
   className?: string
 }) {
+  const reduce = useReducedMotion()
+
   return (
-    <button
+    <motion.button
+      type="button"
       role="switch"
       aria-checked={checked}
       aria-label={label}
+      whileTap={reduce ? undefined : { scale: 0.93 }}
+      transition={springSnappy}
       onClick={() => onChange(!checked)}
       className={cn(
-        'relative flex h-[31px] w-[51px] shrink-0 items-center rounded-full px-[2px] transition-colors duration-300',
+        'relative flex h-[31px] w-[51px] shrink-0 items-center rounded-full p-[2px] transition-colors duration-250 cursor-pointer select-none',
         'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
-        checked ? 'bg-primary' : 'bg-fill',
+        checked ? 'bg-primary shadow-[0_2px_8px_-2px_rgba(31,111,80,0.5)]' : 'bg-fill',
         className,
       )}
     >
       <motion.span
         layout
-        transition={springSnappy}
-        className="h-[27px] w-[27px] rounded-full bg-card shadow-[0_2px_6px_rgba(0,0,0,0.2)]"
+        transition={springSwitch}
+        className="size-[27px] rounded-full bg-card shadow-[0_2px_5px_rgba(0,0,0,0.18)]"
         style={{ marginLeft: checked ? 20 : 0 }}
       />
-    </button>
+    </motion.button>
   )
 }

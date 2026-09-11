@@ -128,18 +128,21 @@ export function ScheduleMealBanner() {
                 )}
               </div>
 
-              <button
+              <motion.button
                 type="button"
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.015 }}
+                transition={{ type: 'spring', stiffness: 520, damping: 26 }}
                 onClick={() => handleSaveToPlan(recipe.slug)}
-                className={`mt-3 flex items-center justify-center gap-1.5 rounded-full py-1.5 text-[12px] font-semibold transition-all ${
+                className={`mt-3 flex items-center justify-center gap-1.5 rounded-full py-1.5 text-[12px] font-semibold transition-colors cursor-pointer select-none ${
                   isSaved
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-card text-foreground border border-border hover:border-primary/40 active:scale-95'
+                    ? 'bg-primary text-primary-foreground shadow-xs'
+                    : 'bg-card text-foreground border border-border/80 hover:border-primary/50'
                 }`}
               >
                 {isSaved ? <Check className="size-3.5" /> : <CookingPot className="size-3.5 text-primary" />}
                 <span>{isSaved ? 'Planned!' : 'Plan for Today'}</span>
-              </button>
+              </motion.button>
             </div>
           )
         })}

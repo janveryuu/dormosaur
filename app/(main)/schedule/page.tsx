@@ -51,34 +51,42 @@ export default function SchedulePage() {
         }
         trailing={
           <div className="flex items-center gap-1.5">
-            {/* Simple, Modern Templates Icon Button matching top action bar */}
-            <button
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ scale: 1.08 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 26 }}
               onClick={() => setTemplateOpen(true)}
               aria-label="Schedule Templates & Wallpaper Export"
               title="Schedule Templates & Export"
-              className="flex size-9 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25 transition-all"
+              className="flex size-9 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25 cursor-pointer"
             >
               <Sparkles className="size-4.5" strokeWidth={2.2} />
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ scale: 1.08 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 26 }}
               onClick={() => setExportOpen(true)}
               aria-label="Export schedule"
               title="Export schedule"
-              className="flex size-9 items-center justify-center rounded-full bg-fill text-foreground hover:bg-accent transition-all"
+              className="flex size-9 items-center justify-center rounded-full bg-fill text-foreground hover:bg-accent cursor-pointer"
             >
               <Download className="size-4.5" strokeWidth={2} />
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ scale: 1.08 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 26 }}
               onClick={() => setAddClassOpen(true)}
               aria-label="Add a course"
               title="Add course"
-              className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:scale-105"
+              className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs cursor-pointer"
             >
               <Plus className="size-4.5" strokeWidth={2.4} />
-            </button>
+            </motion.button>
           </div>
         }
       />
@@ -106,14 +114,17 @@ export default function SchedulePage() {
               </div>
             </div>
 
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 26 }}
               onClick={() => setTemplateOpen(true)}
-              className="flex h-9 items-center justify-center gap-1.5 rounded-full bg-emerald-600 px-4 text-[13px] font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 whitespace-nowrap self-start sm:self-auto"
+              className="flex h-9 items-center justify-center gap-1.5 rounded-full bg-emerald-600 px-4 text-[13px] font-bold text-white shadow-sm hover:bg-emerald-700 whitespace-nowrap self-start sm:self-auto cursor-pointer"
             >
               <Sparkles className="size-4" />
               <span>Choose Theme</span>
-            </button>
+            </motion.button>
           </div>
         </div>
 

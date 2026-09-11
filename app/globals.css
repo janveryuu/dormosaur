@@ -254,3 +254,26 @@
     display: none;
   }
 }
+
+/* ── Tactile interactive motion utilities ─────────────────────── */
+
+@utility tap-press {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
+  will-change: transform;
+  &:active {
+    transform: scale(0.965);
+    transition-duration: 0.06s;
+  }
+}
+
+@utility tap-lift {
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
+  will-change: transform;
+  &:hover {
+    transform: translateY(-1.5px);
+  }
+  &:active {
+    transform: translateY(0px) scale(0.975);
+    transition-duration: 0.06s;
+  }
+}
