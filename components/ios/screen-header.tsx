@@ -37,14 +37,14 @@ export function ScreenHeader({
       <div
         className={cn(
           'hidden lg:block sticky top-0 z-20 -mx-8 px-8 transition-all duration-300',
-          collapsed ? 'ios-glass border-b border-separator' : 'border-b border-transparent',
+          collapsed ? 'ios-glass border-b border-separator' : 'border-b border-transparent pointer-events-none',
         )}
       >
         <div className="flex h-14 items-center gap-2">
           {backHref && (
             <Link
               href={backHref}
-              className="-ml-2 flex items-center gap-0.5 rounded-full py-1 pr-2 pl-1 text-[15px] font-medium text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="-ml-2 flex items-center gap-0.5 rounded-full py-1 pr-2 pl-1 text-[15px] font-medium text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-events-auto"
             >
               <ChevronLeft className="size-5" strokeWidth={2.2} />
               Back
@@ -57,13 +57,12 @@ export function ScreenHeader({
                 animate={{ opacity: 1, y: 0 }}
                 exit={reduce ? undefined : { opacity: 0, y: 8 }}
                 transition={LAYOUT_SPRING}
-                className="truncate text-[17px] font-semibold tracking-[-0.02em]"
+                className="truncate text-[17px] font-semibold tracking-[-0.02em] pointer-events-auto"
               >
                 {title}
               </motion.span>
             )}
           </AnimatePresence>
-          <div className="ml-auto flex items-center gap-2">{trailing}</div>
         </div>
       </div>
 

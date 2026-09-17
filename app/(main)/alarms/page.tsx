@@ -74,13 +74,6 @@ export default function AlarmsPage() {
         title="Alarms"
         eyebrow="Smart Timetable Sync"
         subtitle={`${activeCount} of ${alarms.length} alarms active. Auto-calculated with campus walking lead times.`}
-        headerGraphic={
-          <img
-            src="/ai-dormosaur.png"
-            alt="AI Dormosaur"
-            className="size-16 sm:size-20 md:size-24 object-contain drop-shadow-md hover:scale-105 transition-transform select-none"
-          />
-        }
       />
 
       <div className="flex flex-col gap-6">

@@ -103,16 +103,16 @@ export function NextClassCard({
           aria-hidden="true"
         />
 
-        {/* Student Dormosaur Mascot (holding CLASS SCHEDULE) */}
-        <div className="pointer-events-none absolute right-3 sm:right-6 md:right-8 -bottom-1 z-0 select-none">
+        {/* Student Dormosaur Mascot (holding CLASS SCHEDULE) - Maximized with overlap */}
+        <div className="pointer-events-none absolute -right-1 sm:right-1 md:right-3 -bottom-2 sm:-bottom-3 md:-bottom-4 z-20 select-none">
           <img
             src="/student-dormosaur.png"
             alt="Student Dormosaur"
-            className="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+            className="h-36 sm:h-48 md:h-56 lg:h-64 w-auto object-contain drop-shadow-xl transition-transform duration-300 group-hover:scale-105"
           />
         </div>
 
-        <div className="relative z-10 pr-24 sm:pr-36 md:pr-44">
+        <div className="relative z-10 pr-10 sm:pr-20 md:pr-28">
           {/* Live Status Header */}
           <div className="flex items-center justify-between pl-1">
           <div className="flex items-center gap-2">

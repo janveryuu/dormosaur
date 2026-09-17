@@ -119,11 +119,13 @@ export default function DashboardPage() {
           todayClasses.length === 1 ? 'class' : 'classes'
         } and ${activeAlarmsCount} active ${activeAlarmsCount === 1 ? 'alarm' : 'alarms'}.`}
         headerGraphic={
-          <img
-            src="/dormosaur-hi.png"
-            alt="Dormosaur Mascot"
-            className="size-20 sm:size-24 md:size-28 object-contain drop-shadow-md hover:scale-105 transition-transform select-none"
-          />
+          <div className="relative -my-3 -mr-2 sm:-my-5 sm:-mr-4 md:-my-7 md:-mr-6 z-10 pointer-events-none">
+            <img
+              src="/dormosaur-hi.png"
+              alt="Dormosaur Mascot"
+              className="size-28 sm:size-36 md:size-48 lg:size-56 object-contain drop-shadow-xl hover:scale-105 transition-transform select-none pointer-events-auto"
+            />
+          </div>
         }
       />
 

@@ -58,13 +58,6 @@ export default function SchedulePage() {
                 classes.length === 1 ? 'course' : 'courses'
               } synced with your alarms and dorm meals.`
         }
-        headerGraphic={
-          <img
-            src="/student-dormosaur.png"
-            alt="Student Dormosaur"
-            className="size-16 sm:size-20 md:size-24 object-contain drop-shadow-md hover:scale-105 transition-transform select-none"
-          />
-        }
         trailing={
           <div className="flex items-center gap-1.5">
             <motion.button

@@ -98,13 +98,6 @@ export default function KitchenPage() {
         eyebrow="Micro-Cooking"
         title="Dorm Kitchen"
         subtitle="Student-tested recipes for microwaves, electric kettles & rice cookers."
-        headerGraphic={
-          <img
-            src="/chef-dormosaur.png"
-            alt="Chef Dormosaur"
-            className="size-16 sm:size-20 md:size-24 object-contain drop-shadow-md hover:scale-105 transition-transform select-none"
-          />
-        }
       />
 
       <div className="mb-5">
