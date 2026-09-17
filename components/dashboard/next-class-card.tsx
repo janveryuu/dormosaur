@@ -112,7 +112,7 @@ export function NextClassCard({
           />
         </div>
 
-        <div className="relative z-10 pr-10 sm:pr-20 md:pr-28">
+        <div className="relative z-10 pr-32 sm:pr-44 md:pr-52 lg:pr-60">
           {/* Live Status Header */}
           <div className="flex items-center justify-between pl-1">
           <div className="flex items-center gap-2">

@@ -118,15 +118,6 @@ export default function DashboardPage() {
         subtitle={`Good morning, ${firstName}. ${todayClasses.length} ${
           todayClasses.length === 1 ? 'class' : 'classes'
         } and ${activeAlarmsCount} active ${activeAlarmsCount === 1 ? 'alarm' : 'alarms'}.`}
-        headerGraphic={
-          <div className="relative -my-3 -mr-2 sm:-my-5 sm:-mr-4 md:-my-7 md:-mr-6 z-10 pointer-events-none">
-            <img
-              src="/dormosaur-hi.png"
-              alt="Dormosaur Mascot"
-              className="size-28 sm:size-36 md:size-48 lg:size-56 object-contain drop-shadow-xl hover:scale-105 transition-transform select-none pointer-events-auto"
-            />
-          </div>
-        }
       />
 
       <div className="flex flex-col gap-6 sm:gap-7">
