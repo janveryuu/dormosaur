@@ -276,7 +276,7 @@ export default function ReviewDeadlinesPage() {
         </div>
 
         {/* Sticky Confirm Button */}
-        <div className="fixed inset-x-0 bottom-0 z-40 bg-background/80 backdrop-blur-md p-4 border-t border-border">
+        <div className="fixed inset-x-0 bottom-0 z-40 bg-background/80 backdrop-blur-md p-4 pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] border-t border-border lg:left-72">
           <div className="mx-auto max-w-xl">
             <PillButton
               size="lg"

@@ -224,7 +224,7 @@ export default function DashboardPage() {
                     return (
                       <div
                         key={`gap-${idx}`}
-                        className="my-0.5 flex items-center gap-2.5 rounded-xl border border-dashed border-border/80 bg-fill/50 px-3.5 py-2 text-[12px] text-muted-foreground"
+                        className="my-0.5 flex items-center gap-2.5 rounded-xl border border-dashed border-border/80 bg-fill/50 px-3.5 py-2 text-[12px] text-muted-foreground min-w-0"
                       >
                         <Coffee className="size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
                         <span className="font-semibold text-foreground">{gapLabel}</span>

@@ -78,7 +78,7 @@ export function ListRow({
           <div className="mt-0.5 text-[13px] leading-relaxed text-muted-foreground">{detail}</div>
         )}
       </div>
-      {trailing && <div className="flex shrink-0 items-center gap-2">{trailing}</div>}
+      {trailing && <div className="flex items-center gap-2 min-w-0">{trailing}</div>}
     </div>
   )
 }

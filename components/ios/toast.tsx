@@ -35,7 +35,7 @@ export function IosToast({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -16, scale: 0.96 }}
           transition={{ type: 'spring', stiffness: 450, damping: 30 }}
-          className="fixed top-5 left-1/2 z-50 w-[92%] max-w-md -translate-x-1/2 pointer-events-auto"
+          className="fixed left-1/2 z-50 w-[92%] max-w-md -translate-x-1/2 pointer-events-auto top-[calc(env(safe-area-inset-top,0px)+4rem)]"
         >
           <div
             className={cn(

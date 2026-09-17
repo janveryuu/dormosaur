@@ -192,6 +192,7 @@ export function AppNav() {
         className={cn(
           'fixed bottom-[calc(env(safe-area-inset-bottom,0px)+14px)] inset-x-0 z-40 flex justify-center px-3.5 pointer-events-none lg:hidden',
           isModalFlow && 'hidden',
+          isSubRoute && 'hidden',
         )}
       >
         {/* Backdrop overlay for dismissing the '+' Quick Hub */}

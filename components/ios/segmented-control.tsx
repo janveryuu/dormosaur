@@ -36,7 +36,7 @@ export function SegmentedControl<T extends string>({
             whileHover={reduce || active ? undefined : { scale: 1.015 }}
             transition={springButton}
             onClick={() => onChange(option.value)}
-            className="relative flex-1 rounded-full px-3 py-2 text-[13.5px] font-semibold tracking-[-0.01em] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="relative flex-1 min-w-0 rounded-full px-2 py-2 text-[13.5px] font-semibold tracking-[-0.01em] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {active && (
               <motion.span

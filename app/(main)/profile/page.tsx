@@ -824,9 +824,9 @@ export default function ProfilePage() {
               setIsSchoolModalOpen(true)
             }}
             trailing={
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <span className="text-[15px] font-medium text-foreground">{profile.school}</span>
-                <ChevronRight className="size-4 text-muted-foreground/60" />
+              <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
+                <span className="text-[15px] font-medium text-foreground truncate max-w-[130px] sm:max-w-[220px]">{profile.school}</span>
+                <ChevronRight className="size-4 text-muted-foreground/60 shrink-0" />
               </div>
             }
           />
@@ -836,11 +836,11 @@ export default function ProfilePage() {
             detail={`Time zone: ${profile.timezone || 'Asia/Manila'}`}
             onClick={() => setIsCountryModalOpen(true)}
             trailing={
-              <div className="flex items-center gap-1.5">
-                <span className="text-[15px] font-medium text-foreground">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="text-[15px] font-medium text-foreground truncate max-w-[130px] sm:max-w-[200px]">
                   {getCountryByCode(profile.country).flag} {getCountryByCode(profile.country).name}
                 </span>
-                <ChevronRight className="size-4 text-muted-foreground/60" />
+                <ChevronRight className="size-4 text-muted-foreground/60 shrink-0" />
               </div>
             }
           />
@@ -853,35 +853,33 @@ export default function ProfilePage() {
           <ListRow
             icon={<CookingPot className="size-4.5 text-primary" strokeWidth={1.9} />}
             label="Kitchen setup"
-            detail={formatApplianceSummary(profile.appliances)}
             onClick={() => {
               setTempAppliances((profile.appliances as ApplianceType[]) || ['microwave', 'kettle'])
               setIsKitchenModalOpen(true)
             }}
             trailing={
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <span className="text-[14px] font-medium text-foreground">
+              <div className="flex items-center gap-1 text-muted-foreground min-w-0">
+                <span className="text-[14px] font-medium text-foreground truncate max-w-[140px] sm:max-w-[240px]">
                   {formatApplianceSummary(profile.appliances)}
                 </span>
-                <ChevronRight className="size-4 text-muted-foreground/60" />
+                <ChevronRight className="size-4 text-muted-foreground/60 shrink-0" />
               </div>
             }
           />
           <ListRow
             icon={<UtensilsCrossed className="size-4.5 text-primary" strokeWidth={1.9} />}
             label="Dietary preference"
-            detail={formatDietarySummary(profile.dietary_preference as DietaryPreference, profile.dietary_note)}
             onClick={() => {
               setTempDietaryPref((profile.dietary_preference as DietaryPreference) || 'none')
               setTempDietaryNote(profile.dietary_note || '')
               setIsDietaryModalOpen(true)
             }}
             trailing={
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <span className="text-[14px] font-medium text-foreground">
+              <div className="flex items-center gap-1 text-muted-foreground min-w-0">
+                <span className="text-[14px] font-medium text-foreground truncate max-w-[140px] sm:max-w-[240px]">
                   {formatDietarySummary(profile.dietary_preference as DietaryPreference, profile.dietary_note)}
                 </span>
-                <ChevronRight className="size-4 text-muted-foreground/60" />
+                <ChevronRight className="size-4 text-muted-foreground/60 shrink-0" />
               </div>
             }
           />
@@ -1094,7 +1092,7 @@ export default function ProfilePage() {
       {/* ─── DEDICATED SCHOOL SELECTION MODAL ─────────────────────────────── */}
       <AnimatePresence>
         {isSchoolModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1107,7 +1105,7 @@ export default function ProfilePage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
               transition={spring}
-              className="relative z-10 w-full max-w-md overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
+              className="relative z-10 w-full max-w-md max-h-[90dvh] flex flex-col overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
             >
               <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2.5">
@@ -1200,7 +1198,7 @@ export default function ProfilePage() {
       {/* ─── DEDICATED KITCHEN SETUP MODAL ───────────────────────────────── */}
       <AnimatePresence>
         {isKitchenModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1213,7 +1211,7 @@ export default function ProfilePage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
               transition={spring}
-              className="relative z-10 w-full max-w-md overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
+              className="relative z-10 w-full max-w-md max-h-[90dvh] flex flex-col overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
             >
               <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2.5">
@@ -1305,7 +1303,7 @@ export default function ProfilePage() {
       {/* ─── DEDICATED DIETARY PREFERENCE MODAL ───────────────────────────── */}
       <AnimatePresence>
         {isDietaryModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1318,7 +1316,7 @@ export default function ProfilePage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
               transition={spring}
-              className="relative z-10 w-full max-w-md overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
+              className="relative z-10 w-full max-w-md max-h-[90dvh] flex flex-col overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
             >
               <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2.5">
@@ -1433,7 +1431,7 @@ export default function ProfilePage() {
       {/* ─── DEDICATED YEAR LEVEL MODAL ────────────────────────────────────── */}
       <AnimatePresence>
         {isYearModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1446,7 +1444,7 @@ export default function ProfilePage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
               transition={spring}
-              className="relative z-10 w-full max-w-md overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
+              className="relative z-10 w-full max-w-md max-h-[90dvh] flex flex-col overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
             >
               <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2.5">
@@ -1529,7 +1527,7 @@ export default function ProfilePage() {
       {/* ─── FULL EDIT PROFILE MODAL ────────────────────────────────────────── */}
       <AnimatePresence>
         {isEditModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1542,7 +1540,7 @@ export default function ProfilePage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
               transition={spring}
-              className="relative z-10 w-full max-w-lg overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
+              className="relative z-10 w-full max-w-lg max-h-[90dvh] flex flex-col overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
             >
               <div className="flex items-center justify-between pb-4 border-b border-border">
                 <div className="flex items-center gap-2.5">
@@ -1727,7 +1725,7 @@ export default function ProfilePage() {
       {/* ─── COUNTRY & TIMEZONE PICKER MODAL ─────────────────────────────── */}
       <AnimatePresence>
         {isCountryModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1740,7 +1738,7 @@ export default function ProfilePage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
               transition={spring}
-              className="relative z-10 w-full max-w-md overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
+              className="relative z-10 w-full max-w-md max-h-[90dvh] flex flex-col overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
             >
               <div className="flex items-center justify-between pb-3">
                 <div className="flex items-center gap-2">
@@ -1804,7 +1802,7 @@ export default function ProfilePage() {
       {/* ─── PRIVACY & DATA SECURITY MODAL ─────────────────────────────────── */}
       <AnimatePresence>
         {isPrivacyModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1817,7 +1815,7 @@ export default function ProfilePage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
               transition={spring}
-              className="relative z-10 w-full max-w-md overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
+              className="relative z-10 w-full max-w-md max-h-[90dvh] flex flex-col overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
             >
               <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2.5">
@@ -1862,7 +1860,7 @@ export default function ProfilePage() {
       {/* ─── RESET DEMO DATA MODAL ────────────────────────────────────── */}
       <AnimatePresence>
         {isResetModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1875,7 +1873,7 @@ export default function ProfilePage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
               transition={spring}
-              className="relative z-10 w-full max-w-md overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
+              className="relative z-10 w-full max-w-md max-h-[90dvh] flex flex-col overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
             >
               <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2.5">

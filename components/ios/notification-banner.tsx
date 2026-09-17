@@ -66,7 +66,7 @@ export function NotificationBanner({
   return (
     <AnimatePresence>
       {open && (
-        <div className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center p-3">
+        <div className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center p-3" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}>
           <div className="pointer-events-auto w-full max-w-md">{card}</div>
         </div>
       )}

@@ -104,15 +104,15 @@ export function NextClassCard({
         />
 
         {/* Student Dormosaur Mascot (holding CLASS SCHEDULE) - Maximized with overlap */}
-        <div className="pointer-events-none absolute -right-1 sm:right-1 md:right-3 -bottom-2 sm:-bottom-3 md:-bottom-4 z-20 select-none">
+        <div className="pointer-events-none absolute -right-1 sm:right-1 md:right-3 -bottom-2 sm:-bottom-3 md:-bottom-4 z-0 sm:z-20 select-none opacity-60 sm:opacity-100">
           <img
             src="/student-dormosaur.png"
             alt="Student Dormosaur"
-            className="h-36 sm:h-48 md:h-56 lg:h-64 w-auto object-contain drop-shadow-xl transition-transform duration-300 group-hover:scale-105"
+            className="h-28 sm:h-48 md:h-56 lg:h-64 w-auto object-contain drop-shadow-xl transition-transform duration-300 group-hover:scale-105"
           />
         </div>
 
-        <div className="relative z-10 pr-32 sm:pr-44 md:pr-52 lg:pr-60">
+        <div className="relative z-10 pr-0 sm:pr-44 md:pr-52 lg:pr-60">
           {/* Live Status Header */}
           <div className="flex items-center justify-between pl-1">
           <div className="flex items-center gap-2">
