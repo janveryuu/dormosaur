@@ -32,11 +32,11 @@ export function MobileSplashScreen() {
 
       {/* ── 2. Upper Scene: Floating Jumping Mascot ─────────────────── */}
       <div
-        className="relative z-10 flex flex-1 items-center justify-center pt-8 px-6"
-        style={{ paddingTop: 'max(2.5rem, env(safe-area-inset-top, 2.5rem))' }}
+        className="relative z-10 flex flex-1 items-center justify-center pt-4 sm:pt-8 px-6"
+        style={{ paddingTop: 'max(2rem, env(safe-area-inset-top, 2rem))' }}
       >
         <motion.div
-          className="relative w-56 sm:w-64 max-h-[38vh] aspect-square flex items-center justify-center"
+          className="relative w-[280px] sm:w-[320px] max-h-[44vh] aspect-[776/934] flex items-center justify-center"
           initial={{ opacity: 0, scale: 0.9, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
@@ -44,7 +44,7 @@ export function MobileSplashScreen() {
           {/* Subtle natural ambient shadow beneath jumping mascot */}
           <div
             aria-hidden="true"
-            className="absolute -bottom-2 inset-x-12 h-6 rounded-full bg-black/40 blur-xl pointer-events-none"
+            className="absolute -bottom-3 inset-x-6 h-7 rounded-full bg-black/45 blur-2xl pointer-events-none"
           />
 
           {/* Gentle compositor-level floating animation */}
@@ -54,8 +54,8 @@ export function MobileSplashScreen() {
               alt="Dormosaur Mascot"
               fill
               priority
-              sizes="(max-width: 640px) 256px, 320px"
-              className="object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.45)]"
+              sizes="(max-width: 640px) 320px, 384px"
+              className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
             />
           </div>
         </motion.div>
