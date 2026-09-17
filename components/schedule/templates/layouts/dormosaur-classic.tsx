@@ -54,13 +54,13 @@ export function DormosaurClassicTemplate({
         </div>
 
         {/* Mascot Brand Badge */}
-        <div className="flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 border border-white/15 backdrop-blur-xs">
+        <div className="flex items-center gap-2.5 rounded-full bg-white/10 px-4 py-1.5 border border-white/15 backdrop-blur-xs">
           <img
             src="/dormosaur-hi.png"
             alt="Dormosaur"
-            className="size-6 object-contain"
+            className="size-8.5 object-contain drop-shadow-xs"
           />
-          <span className="text-[12px] font-bold tracking-wider uppercase text-white">
+          <span className="text-[12.5px] font-bold tracking-wider uppercase text-white">
             Dormosaur
           </span>
         </div>

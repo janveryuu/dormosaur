@@ -47,14 +47,14 @@ function FeaturePill({
       animate={{ opacity: 1, y: 0 }}
       whileTap={reduce ? undefined : { scale: 0.95 }}
       transition={{ ...BUTTON_SPRING, delay: delay || 0 }}
-      className="flex flex-col gap-2.5 rounded-3xl bg-card p-4 shadow-ios border border-separator/50 cursor-pointer select-none"
+      className="flex flex-col gap-2 rounded-2xl sm:rounded-3xl bg-card p-2.5 sm:p-4 shadow-ios border border-separator/50 cursor-pointer select-none"
     >
-      <span className="flex size-9 items-center justify-center rounded-2xl bg-accent text-primary">
-        <Icon weight="duotone" size={20} />
+      <span className="flex size-8 sm:size-9 items-center justify-center rounded-xl sm:rounded-2xl bg-accent text-primary">
+        <Icon weight="duotone" size={18} />
       </span>
       <div>
-        <p className="text-[15px] font-semibold tracking-[-0.015em] text-foreground">{label}</p>
-        <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground">{body}</p>
+        <p className="text-[13px] sm:text-[15px] font-semibold tracking-[-0.015em] text-foreground">{label}</p>
+        <p className="mt-0.5 text-[11px] sm:text-[13px] leading-tight text-muted-foreground">{body}</p>
       </div>
     </motion.div>
   )
@@ -76,7 +76,7 @@ export function MobileSplashScreen() {
 
         {/* Mascot — the brand character, float animation is motivated */}
         <motion.div
-          className="relative h-52 w-48"
+          className="relative h-64 w-56 sm:h-72 sm:w-64 max-h-[42vh]"
           initial={reduce ? false : { opacity: 0, y: 20, scale: 0.88 }}
           animate={
             reduce
@@ -106,15 +106,15 @@ export function MobileSplashScreen() {
           {/* Floor shadow — intentional, not random blob */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-10 bottom-1 h-5 rounded-full bg-primary/12 blur-lg"
+            className="absolute inset-x-8 bottom-0 h-6 rounded-full bg-primary/15 blur-xl"
           />
           <Image
             src="/dormosaur-hi.png"
             alt="Dormosaur mascot"
             fill
             priority
-            sizes="192px"
-            className="object-contain"
+            sizes="320px"
+            className="object-contain drop-shadow-md"
           />
         </motion.div>
 

@@ -22,7 +22,15 @@ export const metadata: Metadata = {
   title: 'Dormosaur — Dorm life, decoded.',
   description:
     'Dormosaur turns a messy pasted class schedule into a beautiful timetable with auto-synced alarms, plus dorm-friendly recipes for tiny kitchens.',
-  generator: 'v0.app',
+  applicationName: 'Dormosaur',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Dormosaur',
+  },
+  formatDetection: {
+    telephone: false,
+  },
   manifest: '/site.webmanifest',
   icons: {
     icon: [
@@ -36,9 +44,14 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   colorScheme: 'light dark',
-  themeColor: '#F9F9FB',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F7F8F5' },
+    { media: '(prefers-color-scheme: dark)', color: '#0F0F0F' },
+  ],
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: 'cover',
 }
 

@@ -39,25 +39,25 @@ export function RecipeCard({ recipe, index = 0 }: { recipe: Recipe; index?: numb
           </span>
         </div>
 
-        <div className="flex flex-1 flex-col gap-2 p-4">
-          <h3 className="text-[16.5px] leading-snug font-semibold tracking-[-0.015em] text-pretty">
+        <div className="flex flex-1 flex-col gap-1.5 sm:gap-2 p-3.5 sm:p-4">
+          <h3 className="text-[15px] sm:text-[16.5px] leading-snug font-semibold tracking-[-0.015em] text-pretty">
             {recipe.title}
           </h3>
-          <p className="line-clamp-2 flex-1 text-[13.5px] leading-relaxed text-muted-foreground">
+          <p className="line-clamp-2 flex-1 text-[12.5px] sm:text-[13.5px] leading-relaxed text-muted-foreground">
             {recipe.blurb}
           </p>
-          <div className="mt-1 flex items-center gap-3 text-[12.5px] font-medium text-muted-foreground">
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11.5px] sm:text-[12.5px] font-medium text-muted-foreground">
             <span className="flex items-center gap-1">
               <Clock className="size-3.5" strokeWidth={2.2} />
-              {recipe.minutes}m
+              <span className="tabular-nums">{recipe.minutes}m</span>
             </span>
             <span className="flex items-center gap-1">
               <Users className="size-3.5" strokeWidth={2.2} />
-              {recipe.servings}
+              <span>{recipe.servings}</span>
             </span>
             <span className="flex items-center gap-1 font-semibold text-foreground">
               <Banknote className="size-3.5" strokeWidth={2.2} />
-              {displayCost}
+              <span className="tabular-nums">{displayCost}</span>
             </span>
           </div>
         </div>

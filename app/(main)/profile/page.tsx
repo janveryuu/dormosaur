@@ -237,6 +237,9 @@ export default function ProfilePage() {
   // Privacy Info Modal
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = React.useState(false)
 
+  // Reset Demo Data Modal
+  const [isResetModalOpen, setIsResetModalOpen] = React.useState(false)
+
   // Devices & Push state
   const [signingOut, setSigningOut] = React.useState(false)
   const [userEmail, setUserEmail] = React.useState<string>('')
@@ -981,7 +984,7 @@ export default function ProfilePage() {
                       <button
                         type="button"
                         onClick={() => handleRemoveDevice(d.id, d.endpoint)}
-                        className="rounded-full bg-destructive/10 px-3 py-1 text-[12px] font-semibold text-destructive hover:bg-destructive/20 active:scale-95 transition-transform"
+                        className="rounded-full bg-muted/80 px-2.5 py-1 text-[11.5px] font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive active:scale-95 transition-all"
                       >
                         Remove
                       </button>
@@ -1047,7 +1050,7 @@ export default function ProfilePage() {
         </ListGroup>
 
         {/* ─── Account & Security ────────────────────────────────────────────── */}
-        <ListGroup title="Account" footnote="Dormosaur v1.0 · Made for small rooms and long semesters.">
+        <ListGroup title="Account & Data" footnote="Dormosaur v1.0 · Made for small rooms and long semesters.">
           <ListRow
             icon={<ShieldCheck className="size-4.5 text-primary" strokeWidth={1.9} />}
             label="Privacy & Data Protection"
@@ -1060,44 +1063,32 @@ export default function ProfilePage() {
               </div>
             }
           />
+          <ListRow
+            icon={<RotateCcw className="size-4.5 text-muted-foreground" strokeWidth={1.9} />}
+            label="Restore Demo Schedule"
+            detail="Reset timetable and alarms to default sample values"
+            onClick={() => setIsResetModalOpen(true)}
+            trailing={<ChevronRight className="size-4.5 text-muted-foreground" />}
+          />
         </ListGroup>
 
-        {/* Reset to Demo Button */}
-        <PillButton
-          variant="secondary"
-          size="lg"
-          full
-          onClick={() => {
-            if (confirm('Reset all classes and alarms back to demo values? This cannot be undone.')) {
-              resetToDemo()
-              setToast({
-                type: 'info',
-                title: 'Data Reset',
-                message: 'All schedule data restored to demo defaults.',
-              })
-            }
-          }}
-          className="text-destructive hover:bg-destructive/10 border border-destructive/20"
-        >
-          <RotateCcw className="mr-2 size-4" />
-          Reset All Data to Demo
-        </PillButton>
-
         {/* Sign Out Button */}
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          transition={spring}
-          onClick={handleSignOut}
-          disabled={signingOut}
-          className="flex w-full items-center justify-center gap-2.5 rounded-full bg-destructive/10 py-4 text-[16px] font-semibold text-destructive hover:bg-destructive/15 active:scale-95 disabled:opacity-60 transition-all shadow-ios-sm"
-        >
-          {signingOut ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <LogOut className="size-4.5" strokeWidth={2} />
-          )}
-          {signingOut ? 'Signing out…' : 'Sign Out'}
-        </motion.button>
+        <div className="pt-2 pb-6">
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            transition={spring}
+            onClick={handleSignOut}
+            disabled={signingOut}
+            className="flex w-full items-center justify-center gap-2.5 rounded-2xl md:rounded-3xl bg-secondary/80 hover:bg-secondary border border-border/60 py-3.5 sm:py-4 text-[15px] font-semibold text-foreground/80 hover:text-foreground active:scale-[0.99] disabled:opacity-60 transition-all shadow-ios-sm cursor-pointer"
+          >
+            {signingOut ? (
+              <Loader2 className="size-4 animate-spin text-primary" />
+            ) : (
+              <LogOut className="size-4 text-muted-foreground" strokeWidth={2} />
+            )}
+            {signingOut ? 'Signing out…' : 'Sign Out'}
+          </motion.button>
+        </div>
       </div>
 
       {/* ─── DEDICATED SCHOOL SELECTION MODAL ─────────────────────────────── */}
@@ -1861,6 +1852,77 @@ export default function ProfilePage() {
                   className="rounded-full bg-primary px-5 py-2 text-[13.5px] font-bold text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-95 transition-transform"
                 >
                   Got It
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── RESET DEMO DATA MODAL ────────────────────────────────────── */}
+      <AnimatePresence>
+        {isResetModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsResetModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 14 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 14 }}
+              transition={spring}
+              className="relative z-10 w-full max-w-md overflow-hidden rounded-4xl bg-card p-6 shadow-ios-2xl border border-border"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-border">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex size-9 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold">
+                    <RotateCcw className="size-5" />
+                  </span>
+                  <h3 className="text-[18px] font-bold">Restore Demo Data?</h3>
+                </div>
+                <button
+                  onClick={() => setIsResetModalOpen(false)}
+                  className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              <div className="my-4 space-y-2.5 text-[14px] leading-relaxed text-muted-foreground">
+                <p>
+                  This will reload sample university courses and alarms back to their original defaults.
+                </p>
+                <p className="text-[13px] text-muted-foreground/80">
+                  Your student profile (name, school, dorm, dietary preferences) will stay safe and untouched.
+                </p>
+              </div>
+
+              <div className="pt-4 flex items-center justify-end gap-2.5 border-t border-border">
+                <button
+                  type="button"
+                  onClick={() => setIsResetModalOpen(false)}
+                  className="rounded-full bg-muted px-4 py-2 text-[13.5px] font-medium text-foreground hover:bg-muted/80 active:scale-95 transition-transform cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetToDemo()
+                    setIsResetModalOpen(false)
+                    setToast({
+                      type: 'info',
+                      title: 'Demo Data Restored',
+                      message: 'Timetable and alarms restored to sample defaults.',
+                    })
+                  }}
+                  className="rounded-full bg-primary px-5 py-2 text-[13.5px] font-bold text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-95 transition-transform cursor-pointer"
+                >
+                  Confirm Reset
                 </button>
               </div>
             </motion.div>

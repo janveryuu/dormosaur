@@ -186,7 +186,7 @@ function NavBar() {
           <img
             src="/android-chrome-192x192.png"
             alt="Dormosaur"
-            style={{ width: 26, height: 26, borderRadius: 8, objectFit: 'cover' }}
+            style={{ width: 30, height: 30, borderRadius: 9, objectFit: 'contain' }}
           />
           <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em', color: '#1a1f1c' }}>Dormosaur</span>
         </Link>
@@ -318,11 +318,11 @@ export default function LandingPage() {
         <NavBar />
 
         {/* HERO */}
-        <section className="flex justify-center px-4 sm:px-8 md:px-10 py-12 sm:py-20 md:py-24">
-          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16 w-full max-w-[1160px]">
+        <section className="flex justify-center px-4 sm:px-8 md:px-10 py-12 sm:py-18 lg:py-24">
+          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16 w-full max-w-[1160px]">
 
             {/* LEFT — Text */}
-            <div className="flex-1 w-full min-w-0 md:min-w-[340px] flex flex-col gap-5 sm:gap-6">
+            <div className="flex-1 w-full min-w-0 lg:min-w-[340px] flex flex-col gap-5 sm:gap-6 text-center lg:text-left items-center lg:items-start">
 
               <motion.div
                 initial={{ opacity: 0, y: 26 }}
@@ -330,10 +330,10 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, ease: IOS_EASE, delay: 0.08 }}
               >
                 <h1 style={{
-                  fontSize: 'clamp(36px, 5.5vw, 66px)',
+                  fontSize: 'clamp(36px, 5vw, 64px)',
                   fontWeight: 700,
                   letterSpacing: '-0.035em',
-                  lineHeight: '1.03em',
+                  lineHeight: '1.04em',
                   color: '#1a1f1c',
                   margin: 0,
                 }}>
@@ -347,11 +347,11 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: IOS_EASE, delay: 0.18 }}
                 style={{
-                  fontSize: 'clamp(15px, 1.6vw, 18px)',
+                  fontSize: 'clamp(15px, 1.5vw, 18px)',
                   lineHeight: '1.6em',
                   color: '#7a8580',
                   margin: 0,
-                  maxWidth: '38ch',
+                  maxWidth: '42ch',
                 }}
               >
                 Paste your schedule as-is. We turn it into a timetable, set your alarms, and suggest what to cook.
@@ -375,7 +375,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, scale: 0.97, y: 34 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.9, ease: IOS_EASE, delay: 0.36 }}
-              className="flex-1 w-full min-w-0 md:min-w-[360px] flex flex-col gap-3 overflow-visible"
+              className="flex-1 w-full min-w-0 lg:min-w-[360px] flex flex-col gap-3 overflow-visible"
             >
               <motion.div
                 initial={{ rotate: -1.4 }}

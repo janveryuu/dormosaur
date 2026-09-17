@@ -496,7 +496,7 @@ export default function OnboardingPage() {
       </header>
 
       {/* ── Scrollable Step Content Container ── */}
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pt-4 pb-36">
+      <div className="mx-auto flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-1 flex-col px-4 sm:px-6 md:px-8 pt-4 pb-36">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={step}
@@ -1149,7 +1149,7 @@ export default function OnboardingPage() {
         className="fixed bottom-0 inset-x-0 z-30 border-t border-border/50 bg-background/90 backdrop-blur-2xl px-4 pt-3 transition-all"
         style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 1rem))' }}
       >
-        <div className="mx-auto flex w-full max-w-md flex-col gap-2">
+        <div className="mx-auto flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-col gap-2">
           {step < 5 ? (
             <PillButton size="lg" full onClick={() => go(step + 1)} disabled={!canContinue}>
               Continue

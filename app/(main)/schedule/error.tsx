@@ -2,8 +2,9 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { AlertCircle, RotateCcw, CalendarDays, LayoutDashboard } from 'lucide-react'
+import { RotateCcw, LayoutDashboard, Calendar } from 'lucide-react'
 import { PillButton } from '@/components/ios/pill-button'
 
 export default function ScheduleErrorBoundary({
@@ -18,26 +19,41 @@ export default function ScheduleErrorBoundary({
   }, [error])
 
   return (
-    <div className="flex min-h-[70vh] w-full flex-col items-center justify-center px-6 py-12 text-center">
+    <div className="flex min-h-[65vh] w-full flex-col items-center justify-center px-4 sm:px-6 py-10 text-center">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md rounded-3xl border border-border/80 bg-card p-6 shadow-ios-lg"
+        initial={{ opacity: 0, scale: 0.95, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+        className="w-full max-w-md sm:max-w-lg rounded-4xl border border-border/80 bg-card p-6 sm:p-8 shadow-ios-2xl"
       >
-        <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
-          <AlertCircle className="size-7" strokeWidth={2} />
+        <div className="mx-auto mb-5 relative size-32 sm:size-36 flex items-center justify-center">
+          <Image
+            src="/supportive-dormosaur.png"
+            alt="Dormosaur"
+            width={144}
+            height={144}
+            priority
+            className="object-contain drop-shadow-lg"
+          />
         </div>
 
-        <h2 className="text-[20px] font-bold tracking-tight text-foreground">
-          Schedule Display Notice
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/12 px-3 py-1 text-[12px] font-bold text-emerald-600 dark:text-emerald-400 mb-2">
+          <Calendar className="size-3.5" />
+          <span>Classes safely saved</span>
+        </div>
+
+        <h2 className="text-[20px] sm:text-[22px] font-bold tracking-tight text-foreground">
+          Schedule view had a hiccup
         </h2>
         <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
-          We encountered a display issue while rendering the timetable layout. Your saved classes and cloud schedule data are unaffected.
+          We encountered a display issue rendering the timetable grid. Your registered classes and alarm sync are unaffected.
         </p>
 
         {error?.message && (
-          <div className="my-4 rounded-xl bg-fill p-3 text-left font-mono text-[12px] text-muted-foreground overflow-x-auto max-h-24">
-            {error.message}
+          <div className="my-4 overflow-hidden rounded-2xl border border-border/70 bg-fill/80 p-3 text-left">
+            <p className="text-[11.5px] font-mono text-muted-foreground break-all line-clamp-3">
+              {error.message}
+            </p>
           </div>
         )}
 

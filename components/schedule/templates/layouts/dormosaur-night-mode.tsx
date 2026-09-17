@@ -38,11 +38,11 @@ export function DormosaurNightModeTemplate({
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-gradient-to-br from-[#0F1714] via-[#162820] to-[#0A100E] text-[#FAFBF7] font-sans selection:bg-[#38D399] selection:text-[#0F1714]">
       {/* ── Low-Opacity Silhouette Watermark Mascot in Background Corner ── */}
-      <div className="pointer-events-none absolute bottom-2 right-2 z-0 opacity-10 blur-[0.5px]">
+      <div className="pointer-events-none absolute -bottom-4 -right-4 z-0 opacity-12 blur-[0.5px]">
         <img
           src="/dormosaur-hi.png"
           alt="Dormosaur Watermark"
-          className="size-64 object-contain grayscale brightness-200"
+          className="size-80 sm:size-96 object-contain grayscale brightness-200"
         />
       </div>
 

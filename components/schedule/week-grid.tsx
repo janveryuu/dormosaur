@@ -417,11 +417,11 @@ export function WeekGrid() {
       {/* ── DESKTOP / TABLET FULL WEEK GRID ── */}
       <div className="hidden sm:block overflow-hidden rounded-3xl bg-card shadow-ios border border-border/60">
         <div ref={desktopScrollRef} className="no-scrollbar overflow-x-auto">
-          <div className="w-full min-w-[800px]">
+          <div className="w-full min-w-[690px] sm:min-w-[710px] lg:min-w-[780px]">
             {/* ── Header Row ── */}
             <div className="sticky top-0 z-20 flex border-b border-separator bg-card/95 backdrop-blur-md">
               {/* Time column spacer */}
-              <div className="sticky left-0 z-30 w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40" />
+              <div className="sticky left-0 z-30 w-11 sm:w-12 lg:w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40" />
               {weekDays.map((day, di) => {
                 const isToday = day === todayKey
                 const count = dayClassCount[di]
@@ -449,9 +449,9 @@ export function WeekGrid() {
             {/* ── Grid Body ── */}
             <div className="relative flex">
               {/* Sticky time column */}
-              <div className="sticky left-0 z-20 w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40">
+              <div className="sticky left-0 z-20 w-11 sm:w-12 lg:w-14 shrink-0 bg-card/95 backdrop-blur-md border-r border-separator/40">
                 {hours.map((hour) => (
-                  <div key={hour} style={{ height: HOUR_HEIGHT_DESKTOP }} className="relative pr-2.5 text-right">
+                  <div key={hour} style={{ height: HOUR_HEIGHT_DESKTOP }} className="relative pr-2 text-right">
                     <span className="absolute -top-[9px] right-2.5 text-[10.5px] font-medium text-muted-foreground/55 tabular-nums select-none">
                       {hour % 12 === 0 ? 12 : hour % 12}{hour >= 12 ? 'p' : 'a'}
                     </span>

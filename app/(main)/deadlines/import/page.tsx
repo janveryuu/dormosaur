@@ -277,10 +277,12 @@ export default function ImportDeadlinesPage() {
                 <span>{rawText.length} characters</span>
                 {rawText && (
                   <button
+                    type="button"
                     onClick={() => setRawText('')}
-                    className="text-destructive font-semibold hover:underline"
+                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11.5px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors active:scale-95 cursor-pointer"
                   >
-                    Clear text
+                    <X className="size-3" />
+                    <span>Clear</span>
                   </button>
                 )}
               </div>

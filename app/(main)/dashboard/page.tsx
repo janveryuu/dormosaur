@@ -148,17 +148,17 @@ export default function DashboardPage() {
         )}
 
         {/* 2. Glance Metrics Row (Native 3-Stat Card Strip) */}
-        <section className="grid grid-cols-3 gap-2.5">
+        <section className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
           <Link href="/schedule" className="block group">
             <motion.div
               whileTap={{ scale: 0.96 }}
               transition={IOS_SPRING_SNAPPY}
-              className="flex flex-col items-center justify-center rounded-2xl border border-border/60 bg-card p-3 text-center shadow-2xs transition-all group-hover:border-primary/40"
+              className="flex min-h-[76px] sm:min-h-[84px] flex-col items-center justify-center rounded-2xl md:rounded-3xl border border-border/60 bg-card p-2.5 sm:p-3.5 md:p-4 text-center shadow-2xs transition-all group-hover:border-primary/40"
             >
-              <span className="font-mono text-xl font-black text-foreground tabular-nums">
+              <span className="font-mono text-xl sm:text-2xl font-black text-foreground tabular-nums">
                 {todayClasses.length}
               </span>
-              <span className="mt-0.5 text-[11px] font-semibold text-muted-foreground">
+              <span className="mt-0.5 text-[10.5px] sm:text-[11.5px] font-semibold text-muted-foreground truncate max-w-full">
                 Today's Classes
               </span>
             </motion.div>
@@ -168,12 +168,12 @@ export default function DashboardPage() {
             <motion.div
               whileTap={{ scale: 0.96 }}
               transition={IOS_SPRING_SNAPPY}
-              className="flex flex-col items-center justify-center rounded-2xl border border-border/60 bg-card p-3 text-center shadow-2xs transition-all group-hover:border-primary/40"
+              className="flex min-h-[76px] sm:min-h-[84px] flex-col items-center justify-center rounded-2xl md:rounded-3xl border border-border/60 bg-card p-2.5 sm:p-3.5 md:p-4 text-center shadow-2xs transition-all group-hover:border-primary/40"
             >
-              <span className="font-mono text-xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums">
+              <span className="font-mono text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums">
                 {activeAlarmsCount}
               </span>
-              <span className="mt-0.5 text-[11px] font-semibold text-muted-foreground">
+              <span className="mt-0.5 text-[10.5px] sm:text-[11.5px] font-semibold text-muted-foreground truncate max-w-full">
                 Alarms Active
               </span>
             </motion.div>
@@ -183,12 +183,12 @@ export default function DashboardPage() {
             <motion.div
               whileTap={{ scale: 0.96 }}
               transition={IOS_SPRING_SNAPPY}
-              className="flex flex-col items-center justify-center rounded-2xl border border-border/60 bg-card p-3 text-center shadow-2xs transition-all group-hover:border-primary/40"
+              className="flex min-h-[76px] sm:min-h-[84px] flex-col items-center justify-center rounded-2xl md:rounded-3xl border border-border/60 bg-card p-2.5 sm:p-3.5 md:p-4 text-center shadow-2xs transition-all group-hover:border-primary/40"
             >
-              <span className="font-mono text-xl font-black text-foreground tabular-nums">
+              <span className="font-mono text-xl sm:text-2xl font-black text-foreground tabular-nums">
                 {allPendingDeadlines.length}
               </span>
-              <span className="mt-0.5 text-[11px] font-semibold text-muted-foreground">
+              <span className="mt-0.5 text-[10.5px] sm:text-[11.5px] font-semibold text-muted-foreground truncate max-w-full">
                 Deadlines Due
               </span>
             </motion.div>

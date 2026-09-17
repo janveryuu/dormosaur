@@ -74,13 +74,13 @@ export function ScheduleMealBanner() {
 
       {/* Header Badge */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <img
             src="/chef-dormosaur.png"
             alt="Chef Dormosaur"
-            className="size-9 object-contain drop-shadow-xs"
+            className="size-12 sm:size-14 object-contain drop-shadow-sm shrink-0"
           />
-          <span className="text-[12px] font-bold tracking-wider uppercase text-primary">
+          <span className="text-[12.5px] font-bold tracking-wider uppercase text-primary">
             Chef Dormosaur Intelligence
           </span>
         </div>

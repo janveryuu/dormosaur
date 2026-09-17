@@ -23,7 +23,7 @@ export function BrandPanel() {
         <img
           src="/android-chrome-192x192.png"
           alt="Dormosaur"
-          className="size-10 rounded-2xl object-cover shadow-ios-md"
+          className="size-12 rounded-2xl object-contain shadow-ios-md"
         />
         <span className="text-xl font-bold tracking-tight text-foreground">
           Dormosaur

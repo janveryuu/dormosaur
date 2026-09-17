@@ -174,16 +174,26 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    /* Remove iOS tap highlight — replaced by motion feedback */
+    /* Remove tap highlight — replaced by tactile motion feedback */
     -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior-y: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  input,
+  textarea,
+  [contenteditable="true"] {
+    -webkit-user-select: auto;
+    user-select: auto;
   }
   html {
     scroll-behavior: smooth;
+    overscroll-behavior-y: none;
   }
 }
 

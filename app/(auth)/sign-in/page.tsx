@@ -132,7 +132,7 @@ function SignInContent() {
             <img
               src="/android-chrome-192x192.png"
               alt="Dormosaur"
-              className="size-12 rounded-2xl object-cover shadow-ios-md"
+              className="size-14 rounded-2xl object-contain shadow-ios-md"
             />
           </div>
 

@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Activity, Sparkles, Wand2, Plus, Check } from 'lucide-react'
+import { Activity, Sparkles, Wand2, Plus, Check, AlertCircle, RotateCcw } from 'lucide-react'
 import { AiRecipeModal, type GeneratedRecipe } from './ai-recipe-modal'
 
 import { useSchedule } from '@/components/schedule-provider'
@@ -123,7 +123,7 @@ export function AiRecipeGenerator() {
             <img
               src="/chef-dormosaur.png"
               alt="Chef Dormosaur"
-              className="size-14 sm:size-16 object-contain filter drop-shadow-sm shrink-0 transition-transform hover:scale-105"
+              className="size-18 sm:size-22 object-contain filter drop-shadow-md shrink-0 transition-transform hover:scale-105"
             />
             <div>
               <h3 className="text-[16px] font-extrabold tracking-tight text-foreground">
@@ -207,14 +207,18 @@ export function AiRecipeGenerator() {
           />
 
           {error && (
-            <div className="flex items-center justify-between gap-2 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-[12.5px] font-medium text-rose-800 dark:text-rose-200">
-              <span>{error}</span>
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 px-3.5 py-2.5 text-[12.5px] text-foreground/80">
+              <div className="flex items-center gap-2 min-w-0">
+                <AlertCircle className="size-4 shrink-0 text-destructive/80" />
+                <span className="truncate">{error}</span>
+              </div>
               <button
                 type="button"
                 onClick={() => handleGenerate()}
-                className="shrink-0 rounded-full bg-rose-600 px-3 py-1 text-[11.5px] font-bold text-white shadow-xs hover:bg-rose-700 transition-all"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-[12px] font-medium text-foreground shadow-xs border border-border/80 hover:bg-accent active:scale-95 transition-all cursor-pointer"
               >
-                Try Again
+                <RotateCcw className="size-3 text-muted-foreground" />
+                <span>Retry</span>
               </button>
             </div>
           )}

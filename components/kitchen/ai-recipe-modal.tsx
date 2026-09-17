@@ -97,8 +97,8 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
 
           {/* Chef Dormosaur Badge */}
           <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-[11.5px] font-bold text-emerald-800 dark:text-emerald-300">
-            <img src="/chef-dormosaur.png" alt="Chef Dormosaur" className="size-5 object-contain" />
-            <span>CHEF DORMSAUR DISH-COVERY</span>
+            <img src="/chef-dormosaur.png" alt="Chef Dormosaur" className="size-6.5 object-contain drop-shadow-xs" />
+            <span>CHEF DORMOSAUR DISH-COVERY</span>
           </div>
 
           {/* Title */}
@@ -177,8 +177,8 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
 
           {/* Dorm Tip */}
           {recipe.dorm_tip && (
-            <div className="mt-5 flex gap-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 p-4 text-emerald-950 dark:text-emerald-200">
-              <img src="/chef-dormosaur.png" alt="Chef Dormosaur" className="mt-0.5 size-9 shrink-0 object-contain drop-shadow-xs" />
+            <div className="mt-5 flex items-start gap-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 p-4 text-emerald-950 dark:text-emerald-200">
+              <img src="/chef-dormosaur.png" alt="Chef Dormosaur" className="size-12 shrink-0 object-contain drop-shadow-sm" />
               <div>
                 <p className="text-[12px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">Chef Dormosaur Tip</p>
                 <p className="mt-0.5 text-[13px] leading-relaxed font-medium">{recipe.dorm_tip}</p>

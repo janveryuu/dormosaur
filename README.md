@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/dormosaur-hi.png" alt="Dormosaur Mascot" width="160" />
+  <img src="public/dormosaur-hi.png" alt="Dormosaur Mascot" width="220" />
 </p>
 
 <h1 align="center">🦖 Dormosaur</h1>

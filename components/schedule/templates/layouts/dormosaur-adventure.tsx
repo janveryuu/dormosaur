@@ -34,7 +34,7 @@ export function DormosaurAdventureTemplate({
           <img
             src="/dormosaur-hi.png"
             alt="Dormosaur Mascot"
-            className="size-12 object-contain drop-shadow-md"
+            className="size-16 object-contain drop-shadow-lg shrink-0"
           />
           <div>
             <div className="flex items-center gap-2">

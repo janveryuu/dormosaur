@@ -203,10 +203,7 @@ export default function AlarmsPage() {
 
             return (
               <section key={group} className="flex flex-col gap-2">
-                <div
-                  className="sticky z-10 -mx-4 px-4 py-1.5 backdrop-blur-md bg-background/85 flex items-center justify-between border-b border-border/30"
-                  style={{ top: 'calc(3.5rem + env(safe-area-inset-top, 0px))' }}
-                >
+                <div className="sticky z-10 -mx-4 sm:-mx-6 md:-mx-8 lg:mx-0 px-4 sm:px-6 md:px-8 lg:px-0 py-1.5 backdrop-blur-md bg-background/85 flex items-center justify-between border-b border-border/30 top-[calc(3.5rem+env(safe-area-inset-top,0px))] lg:top-0 transition-all">
                   <h3 className="text-[13px] font-bold tracking-wider text-muted-foreground uppercase">
                     {group}
                   </h3>

@@ -168,14 +168,18 @@ export function DormosaurAiChat() {
           onClick={() => setIsOpen(!isOpen)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="relative flex items-center gap-2 rounded-full bg-[#1f6f50] px-4.5 py-2.5 text-white shadow-[0_10px_30px_rgba(31,111,80,0.4)] transition-all hover:bg-[#1a6148]"
+          className="relative flex items-center gap-2.5 rounded-full bg-[#1f6f50] pl-3 pr-4.5 py-2 text-white shadow-[0_10px_30px_rgba(31,111,80,0.4)] transition-all hover:bg-[#1a6148]"
         >
-          <span className="relative flex size-2.5">
+          <img
+            src="/ai-dormosaur.png"
+            alt="AI Dormosaur"
+            className="size-7.5 object-contain drop-shadow-xs"
+          />
+          <span className="relative flex size-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex size-2.5 rounded-full bg-white" />
+            <span className="relative inline-flex size-2 rounded-full bg-white" />
           </span>
-          <Sparkles className="size-4.5" strokeWidth={2.2} />
-          <span className="text-[14px] font-semibold tracking-tight">Dormosaur AI</span>
+          <span className="text-[14px] font-bold tracking-tight">Dormosaur AI</span>
         </motion.button>
       </div>
 
@@ -183,12 +187,13 @@ export function DormosaurAiChat() {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Mobile backdrop overlay to easily dismiss */}
+            {/* Mobile / Tablet backdrop overlay to easily dismiss */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
+              onTouchStart={() => setIsOpen(false)}
               className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs lg:hidden"
             />
             <motion.div
@@ -204,7 +209,7 @@ export function DormosaurAiChat() {
                   setIsOpen(false)
                 }
               }}
-              className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl border-t border-border/80 bg-card/95 shadow-[0_-12px_40px_rgba(0,0,0,0.25)] backdrop-blur-2xl lg:bottom-6 lg:right-6 lg:inset-x-auto lg:w-[420px] lg:max-h-[85vh] lg:rounded-3xl lg:border"
+              className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl border-t border-border/80 bg-card/95 shadow-[0_-12px_40px_rgba(0,0,0,0.25)] backdrop-blur-2xl md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:inset-x-auto md:w-[460px] md:max-h-[85vh] md:rounded-3xl md:border lg:right-6 lg:left-auto lg:translate-x-0 lg:w-[420px]"
             >
               {/* Mobile Drag/Grab Indicator with swipe dismiss */}
               <div
@@ -215,11 +220,11 @@ export function DormosaurAiChat() {
               </div>
             {/* Drawer Header */}
             <div className="flex items-center justify-between border-b border-border/60 bg-fill/50 px-4 py-3">
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-3">
                 <img
                   src="/ai-dormosaur.png"
                   alt="Dormosaur Copilot"
-                  className="size-10 object-contain filter drop-shadow-xs shrink-0"
+                  className="size-12 object-contain filter drop-shadow-sm shrink-0"
                 />
                 <div>
                   <div className="flex items-center gap-1.5">
@@ -252,7 +257,7 @@ export function DormosaurAiChat() {
                     <img
                       src="/ai-dormosaur.png"
                       alt="AI Dormosaur"
-                      className="size-9 shrink-0 object-contain filter drop-shadow-xs mt-0.5"
+                      className="size-10.5 shrink-0 object-contain filter drop-shadow-xs mt-0.5"
                     />
                   )}
 

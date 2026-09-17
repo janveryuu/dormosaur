@@ -176,7 +176,7 @@ export default function KitchenPage() {
 
               <SegmentedControl options={[...meals]} value={meal} onChange={setMeal} layoutId="meal" />
 
-              <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0 [&::-webkit-scrollbar]:hidden">
+              <div className="-mx-4 sm:-mx-6 md:-mx-8 lg:mx-0 flex gap-2 overflow-x-auto px-4 sm:px-6 md:px-8 pb-1 lg:px-0 [&::-webkit-scrollbar]:hidden">
                 {appliances.map((a) => (
                   <FilterChip
                     key={a}

@@ -140,7 +140,7 @@ export function AppNav() {
                 src="/android-chrome-192x192.png"
                 alt=""
                 aria-hidden="true"
-                className="size-7.5 rounded-xl object-cover shadow-2xs ring-1 ring-border/40"
+                className="size-8 rounded-xl object-contain shadow-2xs"
               />
               <span className="text-[17px] font-black tracking-tight text-foreground">
                 Dormosaur
@@ -150,7 +150,7 @@ export function AppNav() {
 
           {/* Center: Contextual Subroute Title */}
           {isSubRoute && (
-            <div className="absolute left-1/2 -translate-x-1/2 max-w-[170px] truncate pointer-events-none">
+            <div className="absolute left-1/2 -translate-x-1/2 max-w-[220px] sm:max-w-xs md:max-w-md truncate pointer-events-none text-center">
               <span className="text-[15px] font-bold text-foreground">
                 {subRouteTitle}
               </span>
@@ -162,7 +162,7 @@ export function AppNav() {
             <Link
               href="/profile"
               className={cn(
-                'relative flex size-8 items-center justify-center rounded-full border border-border/70 bg-card text-[12px] font-bold text-foreground shadow-2xs transition-transform active:scale-95',
+                'relative flex size-9 items-center justify-center rounded-full border border-border/70 bg-card text-[12px] font-bold text-foreground shadow-2xs transition-transform active:scale-95',
                 pathname === '/profile' && 'ring-2 ring-primary border-primary',
               )}
               aria-label="View Profile & Settings"
@@ -171,15 +171,15 @@ export function AppNav() {
                 <img
                   src={profile.avatar_url}
                   alt={profile?.name || 'User'}
-                  className="size-8 rounded-full object-cover"
+                  className="size-9 rounded-full object-cover"
                 />
               ) : (
-                <span className="text-primary font-bold text-[11px]">
+                <span className="text-primary font-bold text-[12px]">
                   {profile?.initials || 'ST'}
                 </span>
               )}
               <span
-                className="absolute bottom-0 right-0 size-2 rounded-full bg-emerald-500 ring-2 ring-card"
+                className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 ring-2 ring-card"
                 aria-hidden="true"
               />
             </Link>
@@ -204,13 +204,14 @@ export function AppNav() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               onClick={() => setIsPlusOpen(false)}
+              onTouchStart={() => setIsPlusOpen(false)}
               className="fixed inset-0 z-30 bg-black/40 backdrop-blur-xs pointer-events-auto"
               aria-hidden="true"
             />
           )}
         </AnimatePresence>
 
-        <div className="relative flex w-full max-w-[390px] items-center gap-2.5 pointer-events-auto">
+        <div className="relative flex w-full max-w-[390px] md:max-w-[480px] items-center gap-2.5 pointer-events-auto transition-all">
           {/* ── Floating '+' Quick Hub Menu (Pawi Project Spec) ── */}
           <AnimatePresence>
             {isPlusOpen && (
@@ -467,7 +468,7 @@ export function AppNav() {
             src="/android-chrome-192x192.png"
             alt=""
             aria-hidden="true"
-            className="size-9 rounded-2xl object-cover shadow-ios-sm"
+            className="size-10 rounded-2xl object-contain shadow-ios-sm"
           />
           <span className="text-[19px] font-bold tracking-[-0.03em]">Dormosaur</span>
         </Link>
