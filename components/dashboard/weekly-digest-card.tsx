@@ -129,11 +129,13 @@ export function WeeklyDigestCard() {
 
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-            <Sparkles className="size-4" />
-          </div>
-          <span className="text-[12px] font-bold uppercase tracking-wider text-primary">
+        <div className="flex items-center gap-2.5">
+          <img
+            src="/ai-dormosaur.png"
+            alt="AI Dormosaur"
+            className="size-9 object-contain drop-shadow-xs shrink-0 select-none"
+          />
+          <span className="text-[12.5px] font-bold uppercase tracking-wider text-primary">
             Weekly AI Digest
           </span>
         </div>

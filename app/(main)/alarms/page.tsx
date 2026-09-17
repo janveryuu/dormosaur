@@ -74,6 +74,13 @@ export default function AlarmsPage() {
         title="Alarms"
         eyebrow="Smart Timetable Sync"
         subtitle={`${activeCount} of ${alarms.length} alarms active. Auto-calculated with campus walking lead times.`}
+        headerGraphic={
+          <img
+            src="/ai-dormosaur.png"
+            alt="AI Dormosaur"
+            className="size-16 sm:size-20 md:size-24 object-contain drop-shadow-md hover:scale-105 transition-transform select-none"
+          />
+        }
       />
 
       <div className="flex flex-col gap-6">
@@ -121,9 +128,11 @@ export default function AlarmsPage() {
         {/* ── AI Smart Nudge & Push Test Card ── */}
         <section className="rounded-3xl border border-border/70 bg-card p-4 sm:p-5 shadow-2xs">
           <div className="flex items-center gap-3">
-            <span className="flex size-9 items-center justify-center rounded-2xl bg-primary/15 text-primary">
-              <Sparkles className="size-4.5" strokeWidth={2.2} />
-            </span>
+            <img
+              src="/ai-dormosaur.png"
+              alt="AI Dormosaur"
+              className="size-11 object-contain drop-shadow-xs shrink-0 select-none"
+            />
             <div className="min-w-0 flex-1">
               <h2 className="text-[14.5px] font-bold text-foreground">
                 Groq Llama 3 AI Smart Nudges

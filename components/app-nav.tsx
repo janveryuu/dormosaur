@@ -512,10 +512,25 @@ export function AppNav() {
           })}
         </ul>
 
+        {/* Dormosaur Mascot Companion Card */}
+        <div className="mt-auto mb-3 flex flex-col items-center justify-center rounded-3xl bg-emerald-500/8 border border-emerald-500/15 p-3 text-center">
+          <img
+            src="/dormosaur-hi.png"
+            alt="Dormosaur"
+            className="h-24 w-auto object-contain drop-shadow-xs transition-transform hover:scale-105 select-none"
+          />
+          <span className="mt-1 text-[11.5px] font-bold text-foreground">
+            Dormosaur Copilot
+          </span>
+          <p className="text-[10px] text-muted-foreground leading-tight">
+            Schedule & dorm meals sorted
+          </p>
+        </div>
+
         {/* User profile — bottom of sidebar */}
         <Link
           href="/profile"
-          className="mt-auto flex items-center gap-3 rounded-3xl bg-fill p-3 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="flex items-center gap-3 rounded-3xl bg-fill p-3 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           {profile?.avatar_url ? (
             <img

@@ -292,9 +292,11 @@ export function DayView() {
         {/* ── Timeline List for Selected Day ── */}
         {dayClasses.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3.5 rounded-3xl border border-dashed border-border/80 bg-card/60 py-16 px-4 text-center shadow-2xs">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-              <Calendar className="size-6" />
-            </div>
+            <img
+              src="/student-dormosaur.png"
+              alt="Free day"
+              className="size-28 sm:size-36 object-contain drop-shadow-md select-none"
+            />
             <div>
               <h4 className="text-base font-bold text-foreground">
                 Free day on {fullDayMap[selectedDay]}

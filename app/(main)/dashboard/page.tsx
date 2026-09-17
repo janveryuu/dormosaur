@@ -118,6 +118,13 @@ export default function DashboardPage() {
         subtitle={`Good morning, ${firstName}. ${todayClasses.length} ${
           todayClasses.length === 1 ? 'class' : 'classes'
         } and ${activeAlarmsCount} active ${activeAlarmsCount === 1 ? 'alarm' : 'alarms'}.`}
+        headerGraphic={
+          <img
+            src="/dormosaur-hi.png"
+            alt="Dormosaur Mascot"
+            className="size-20 sm:size-24 md:size-28 object-contain drop-shadow-md hover:scale-105 transition-transform select-none"
+          />
+        }
       />
 
       <div className="flex flex-col gap-6 sm:gap-7">
@@ -126,9 +133,11 @@ export default function DashboardPage() {
           <NextClassCard entry={nextClassResult.entry} nextMeta={nextClassResult} />
         ) : (
           <section className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border/80 bg-card/60 p-8 text-center shadow-ios-sm">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-              <CalendarDays className="size-6" />
-            </div>
+            <img
+              src="/dormosaur-hi.png"
+              alt="Dormosaur"
+              className="size-28 sm:size-32 object-contain drop-shadow-md select-none"
+            />
             <div>
               <h3 className="text-base font-bold text-foreground">
                 No classes scheduled for today

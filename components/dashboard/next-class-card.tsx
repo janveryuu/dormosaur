@@ -103,8 +103,18 @@ export function NextClassCard({
           aria-hidden="true"
         />
 
-        {/* Live Status Header */}
-        <div className="flex items-center justify-between pl-1">
+        {/* Student Dormosaur Mascot (holding CLASS SCHEDULE) */}
+        <div className="pointer-events-none absolute right-3 sm:right-6 md:right-8 -bottom-1 z-0 select-none">
+          <img
+            src="/student-dormosaur.png"
+            alt="Student Dormosaur"
+            className="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+
+        <div className="relative z-10 pr-24 sm:pr-36 md:pr-44">
+          {/* Live Status Header */}
+          <div className="flex items-center justify-between pl-1">
           <div className="flex items-center gap-2">
             <span className="relative flex size-2.5">
               <span
@@ -200,6 +210,7 @@ export function NextClassCard({
           >
             {countdown || '—'}
           </div>
+        </div>
         </div>
       </motion.article>
     </Link>
