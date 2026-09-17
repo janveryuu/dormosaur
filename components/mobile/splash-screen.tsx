@@ -3,195 +3,135 @@
 import * as React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
-import { CalendarCheck, BellRinging, ForkKnife } from '@phosphor-icons/react'
-import { IOS_SPRING, IOS_SPRING_SNAPPY, IOS_EASE, BUTTON_SPRING } from '@/lib/springs'
-
-// ─── Feature data ─────────────────────────────────────────────────────────────
-const features = [
-  {
-    Icon: CalendarCheck,
-    label: 'Schedule',
-    body: 'Paste the mess from your registrar. Clean timetable in seconds.',
-  },
-  {
-    Icon: BellRinging,
-    label: 'Alarms',
-    body: 'Every class gets an alarm that follows your timetable automatically.',
-  },
-  {
-    Icon: ForkKnife,
-    label: 'Kitchen',
-    body: 'Real meals from a microwave, a kettle, and a very small budget.',
-  },
-]
-
-// ─── Sub-components ────────────────────────────────────────────────────────────
-
-function FeaturePill({
-  Icon,
-  label,
-  body,
-  delay,
-}: {
-  Icon: React.ElementType
-  label: string
-  body: string
-  delay: number
-}) {
-  const reduce = useReducedMotion()
-  return (
-    <motion.div
-      initial={reduce ? false : { opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileTap={reduce ? undefined : { scale: 0.95 }}
-      transition={{ ...BUTTON_SPRING, delay: delay || 0 }}
-      className="flex flex-col gap-2 rounded-2xl sm:rounded-3xl bg-card p-2.5 sm:p-4 shadow-ios border border-separator/50 cursor-pointer select-none"
-    >
-      <span className="flex size-8 sm:size-9 items-center justify-center rounded-xl sm:rounded-2xl bg-accent text-primary">
-        <Icon weight="duotone" size={18} />
-      </span>
-      <div>
-        <p className="text-[13px] sm:text-[15px] font-semibold tracking-[-0.015em] text-foreground">{label}</p>
-        <p className="mt-0.5 text-[11px] sm:text-[13px] leading-tight text-muted-foreground">{body}</p>
-      </div>
-    </motion.div>
-  )
-}
-
-// ─── Main component ────────────────────────────────────────────────────────────
+import { motion } from 'framer-motion'
+import { ShieldCheck } from 'lucide-react'
+import { BUTTON_SPRING, IOS_SPRING } from '@/lib/springs'
 
 export function MobileSplashScreen() {
-  const reduce = useReducedMotion()
-
   return (
-    <div
-      className="relative flex min-h-[100dvh] w-full flex-col overflow-hidden bg-background text-foreground md:hidden"
-      style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
-    >
+    <div className="relative flex min-h-[100dvh] w-full flex-col justify-between overflow-hidden bg-[#07130b] text-white md:hidden select-none">
+      {/* ── 1. Full-Bleed Illustrated Scenic Background ─────────────── */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Image
+          src="/landing-bg.png"
+          alt="Dormosaur Valley"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        {/* Atmospheric Scrim Gradient — subtle in upper half, deepening at bottom for crystal-clear readability */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(to bottom, rgba(6,16,10,0.02) 0%, rgba(6,16,10,0.06) 30%, rgba(6,17,11,0.38) 50%, rgba(6,18,12,0.74) 68%, rgba(5,15,10,0.92) 84%, rgba(4,12,8,0.98) 100%)',
+          }}
+        />
+      </div>
 
-      {/* ── Hero section ────────────────────────────────────────────── */}
-      <section className="relative flex flex-1 flex-col items-center justify-center gap-0 px-6 pb-4 pt-6 text-center">
-
-        {/* Mascot — the brand character, float animation is motivated */}
+      {/* ── 2. Upper Scene: Floating Jumping Mascot ─────────────────── */}
+      <div
+        className="relative z-10 flex flex-1 items-center justify-center pt-8 px-6"
+        style={{ paddingTop: 'max(2.5rem, env(safe-area-inset-top, 2.5rem))' }}
+      >
         <motion.div
-          className="relative h-64 w-56 sm:h-72 sm:w-64 max-h-[42vh]"
-          initial={reduce ? false : { opacity: 0, y: 20, scale: 0.88 }}
-          animate={
-            reduce
-              ? { opacity: 1 }
-              : {
-                  opacity: 1,
-                  y: [0, -8, 0],
-                  scale: 1,
-                }
-          }
-          transition={
-            reduce
-              ? { duration: 0 }
-              : {
-                  opacity: { duration: 0.5, delay: 0.06 },
-                  scale: { duration: 0.6, ease: IOS_EASE, delay: 0.06 },
-                  y: {
-                    ...IOS_SPRING,
-                    delay: 0.5,
-                    repeat: Infinity,
-                    repeatDelay: 3,
-                    repeatType: 'loop',
-                  },
-                }
-          }
+          className="relative w-56 sm:w-64 max-h-[38vh] aspect-square flex items-center justify-center"
+          initial={{ opacity: 0, scale: 0.9, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          {/* Floor shadow — intentional, not random blob */}
+          {/* Subtle natural ambient shadow beneath jumping mascot */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-8 bottom-0 h-6 rounded-full bg-primary/15 blur-xl"
+            className="absolute -bottom-2 inset-x-12 h-6 rounded-full bg-black/40 blur-xl pointer-events-none"
           />
-          <Image
-            src="/dormosaur-hi.png"
-            alt="Dormosaur mascot"
-            fill
-            priority
-            sizes="320px"
-            className="object-contain drop-shadow-md"
-          />
-        </motion.div>
 
-        {/* Wordmark + tagline */}
+          {/* Gentle compositor-level floating animation */}
+          <div className="relative w-full h-full animate-[dormo-float_3.4s_easeInOut_infinite] motion-reduce:animate-none">
+            <Image
+              src="/dormo-jumping.png"
+              alt="Dormosaur Mascot"
+              fill
+              priority
+              sizes="(max-width: 640px) 256px, 320px"
+              className="object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.45)]"
+            />
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ── 3. Lower Content: Brand, Copy, CTAs, and Trust Badges ─────── */}
+      <div
+        className="relative z-10 flex flex-col items-center px-6 pb-6 text-center"
+        style={{ paddingBottom: 'max(1.75rem, env(safe-area-inset-bottom, 1.75rem))' }}
+      >
+        {/* Brand Title + Value Proposition */}
         <motion.div
-          className="mt-4 flex flex-col items-center gap-2"
-          initial={reduce ? false : { opacity: 0, y: 14 }}
+          className="flex flex-col items-center gap-2.5 mb-7"
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={reduce ? { duration: 0 } : { ...IOS_SPRING, delay: 0.28 }}
+          transition={{ ...IOS_SPRING, delay: 0.15 }}
         >
-          <h1 className="text-4xl font-bold tracking-[-0.035em] text-foreground">
+          <h1 className="text-4xl sm:text-[42px] font-black tracking-[-0.035em] text-white leading-tight drop-shadow-[0_3px_12px_rgba(0,0,0,0.6)]">
             Dormosaur
           </h1>
-          <p className="max-w-[17rem] text-[15px] leading-snug text-muted-foreground">
-            Your schedule, your alarms, your meals — sorted.
+          <p className="max-w-[290px] sm:max-w-[320px] text-[14.5px] sm:text-[15px] font-normal leading-[1.5] text-white/90 drop-shadow-[0_1px_8px_rgba(0,0,0,0.7)]">
+            Dorm life, decoded. Paste your schedule, sync class alarms, and eat well on a dorm budget.
           </p>
         </motion.div>
-      </section>
 
-      {/* ── Feature strip ───────────────────────────────────────────── */}
-      <section className="px-5 pb-4">
-        <div className="grid grid-cols-3 gap-2.5">
-          {features.map((f, i) => (
-            <FeaturePill key={f.label} {...f} delay={0.42 + i * 0.07} />
-          ))}
-        </div>
-      </section>
-
-      {/* ── Social proof ────────────────────────────────────────────── */}
-      <motion.section
-        className="px-5 pb-4"
-        initial={reduce ? false : { opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={reduce ? { duration: 0 } : { ...IOS_SPRING, delay: 0.65 }}
-      >
-        <blockquote className="rounded-3xl border border-separator/50 bg-card p-4 shadow-ios-sm">
-          <p className="text-[13.5px] leading-snug text-foreground/80">
-            "I used to miss 8 AM classes all the time. Set up Dormosaur in 2 minutes,
-            never missed one since."
-          </p>
-          <footer className="mt-2.5 text-[12px] text-muted-foreground">
-            Maya R. · 2nd year · Computer Science
-          </footer>
-        </blockquote>
-      </motion.section>
-
-      {/* ── CTAs ────────────────────────────────────────────────────── */}
-      <motion.section
-        className="flex flex-col gap-3 px-5"
-        style={{ paddingBottom: 'max(1.75rem, env(safe-area-inset-bottom))' }}
-        initial={reduce ? false : { opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={reduce ? { duration: 0 } : { ...IOS_SPRING, delay: 0.75 }}
-      >
+        {/* Action Buttons */}
         <motion.div
-          className="w-full"
-          whileTap={reduce ? undefined : { scale: 0.96 }}
-          whileHover={reduce ? undefined : { scale: 1.015 }}
-          transition={BUTTON_SPRING}
+          className="flex flex-col items-center gap-3.5 w-full max-w-sm"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...IOS_SPRING, delay: 0.25 }}
         >
-          <Link
-            href="/sign-up"
-            className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-base font-semibold text-primary-foreground shadow-[0_12px_28px_-10px_rgba(31,111,80,0.45)] hover:shadow-[0_16px_32px_-10px_rgba(31,111,80,0.55)] transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          {/* Primary CTA — PaWi-style earthy moss green pill */}
+          <motion.div
+            className="w-full"
+            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: 1.015 }}
+            transition={BUTTON_SPRING}
           >
-            Get started
-            <ArrowRight className="size-4.5" aria-hidden="true" />
+            <Link
+              href="/sign-up"
+              className="inline-flex h-14 w-full items-center justify-center rounded-full bg-[#557E56] hover:bg-[#4C724D] active:bg-[#436644] px-6 text-[16px] font-semibold text-white tracking-[-0.01em] shadow-[0_10px_24px_-6px_rgba(18,48,25,0.6),inset_0_1px_0_rgba(255,255,255,0.22)] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              Let&apos;s get started!
+            </Link>
+          </motion.div>
+
+          {/* Secondary Action Link */}
+          <Link
+            href="/sign-in"
+            className="flex min-h-11 items-center justify-center rounded-full px-4 text-[13.5px] sm:text-[14px] font-normal text-white/80 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            Already have an account?{' '}
+            <span className="ml-1.5 font-semibold text-white underline underline-offset-4 decoration-white/70 hover:decoration-white">
+              Log in
+            </span>
           </Link>
         </motion.div>
 
-        <Link
-          href="/sign-in"
-          className="flex min-h-11 items-center justify-center rounded-full px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        {/* Trust Badges matching PaWi reference */}
+        <motion.div
+          className="mt-6 flex items-center justify-center gap-2 text-[11.5px] sm:text-[12px] font-medium text-white/70 tracking-tight"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.38 }}
         >
-          Already have an account?&nbsp;
-          <span className="font-semibold text-primary">Sign in</span>
-        </Link>
-      </motion.section>
+          <span className="inline-flex items-center gap-1.5 text-emerald-400">
+            <ShieldCheck className="size-3.5 stroke-[2.2]" aria-hidden="true" />
+            <span className="text-white/75">Offline-First</span>
+          </span>
+          <span className="text-white/30" aria-hidden="true">·</span>
+          <span className="text-white/75">Zero Ads</span>
+          <span className="text-white/30" aria-hidden="true">·</span>
+          <span className="text-white/75">Private by Design</span>
+        </motion.div>
+      </div>
     </div>
   )
 }

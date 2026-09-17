@@ -87,24 +87,17 @@ export function ScreenHeader({
           </div>
 
           {/* Right actions or graphic */}
-          <div className="flex items-center gap-2 shrink-0 self-start pt-1">
-            {trailing && <div className="flex items-center gap-1.5">{trailing}</div>}
-            {headerGraphic && (
-              <div className="hidden sm:block shrink-0">
-                {headerGraphic}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* On mobile, if header graphic exists, show a refined compact version below if needed */}
-        {headerGraphic && (
-          <div className="sm:hidden mt-2 flex justify-end">
-            <div className="max-h-16 max-w-20 overflow-hidden">
-              {headerGraphic}
+          {(trailing || headerGraphic) && (
+            <div className="flex items-center gap-2 shrink-0 self-start pt-1">
+              {trailing && <div className="flex items-center gap-1.5">{trailing}</div>}
+              {headerGraphic && (
+                <div className="shrink-0">
+                  {headerGraphic}
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </>
   )
