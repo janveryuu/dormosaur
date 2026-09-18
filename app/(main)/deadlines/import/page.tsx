@@ -234,7 +234,7 @@ export default function ImportDeadlinesPage() {
                   setMode(item.id as ImportMode)
                   setErrorMessage(null)
                 }}
-                className={`relative flex flex-col items-center justify-center gap-1.5 rounded-xl py-3 text-[12.5px] font-semibold transition-all duration-200 ${
+                className={`relative flex min-h-11 flex-col items-center justify-center gap-1.5 rounded-xl py-3 text-[12.5px] font-semibold transition-[color,background-color,border-color,box-shadow,transform] duration-200 ${
                   active
                     ? 'bg-card text-foreground shadow-ios ring-1 ring-border/50'
                     : 'text-muted-foreground hover:text-foreground'
@@ -306,8 +306,9 @@ export default function ImportDeadlinesPage() {
                   <Camera className="size-10 text-muted-foreground" />
                   <p className="text-[14px] leading-relaxed max-w-sm text-gray-300">{cameraError}</p>
                   <button
+                    type="button"
                     onClick={startCamera}
-                    className="mt-2 rounded-full bg-emerald-600 px-5 py-2 text-[13px] font-bold text-white shadow-sm"
+                    className="mt-2 min-h-11 rounded-full bg-emerald-600 px-5 py-2 text-[13px] font-bold text-white shadow-sm"
                   >
                     Try Camera Again
                   </button>
@@ -317,16 +318,19 @@ export default function ImportDeadlinesPage() {
                   <img
                     src={capturedImage}
                     alt="Captured deadline still"
-                    className="w-full max-h-[360px] object-contain bg-black"
+                    width={1000}
+                    height={750}
+                    className="h-auto max-h-[360px] w-full object-contain bg-black"
                   />
                   <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-3 bg-black/60 backdrop-blur-md p-3 rounded-2xl border border-white/10">
                     <span className="text-[13px] font-semibold text-white">Photo captured</span>
                     <button
+                      type="button"
                       onClick={() => {
                         setCapturedImage(null)
                         startCamera()
                       }}
-                      className="flex items-center gap-1.5 rounded-full bg-white/20 px-4 py-1.5 text-[12.5px] font-bold text-white hover:bg-white/30"
+                      className="flex min-h-11 items-center gap-1.5 rounded-full bg-white/20 px-4 py-1.5 text-[12.5px] font-bold text-white hover:bg-white/30"
                     >
                       <RefreshCw className="size-3.5" /> Retake
                     </button>
@@ -343,9 +347,10 @@ export default function ImportDeadlinesPage() {
                   {cameraActive && (
                     <div className="absolute bottom-4 inset-x-0 flex items-center justify-center">
                       <button
+                        type="button"
                         onClick={capturePhoto}
+                        aria-label="Capture deadline photo"
                         className="flex size-16 items-center justify-center rounded-full bg-white shadow-ios border-4 border-emerald-600 active:scale-90 transition-transform"
-                        title="Capture Photo"
                       >
                         <div className="size-10 rounded-full bg-emerald-600" />
                       </button>
@@ -374,7 +379,8 @@ export default function ImportDeadlinesPage() {
               }}
             />
 
-            <div
+            <button
+              type="button"
               onDragOver={(e) => {
                 e.preventDefault()
                 setDragOver(true)
@@ -387,7 +393,7 @@ export default function ImportDeadlinesPage() {
                 if (f) handlePhotoSelect(f)
               }}
               onClick={() => photoInputRef.current?.click()}
-              className={`flex flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed p-8 text-center cursor-pointer transition-all ${
+              className={`flex w-full flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed p-8 text-center cursor-pointer transition-[border-color,background-color,box-shadow] ${
                 dragOver
                   ? 'border-emerald-600 bg-emerald-500/10'
                   : 'border-border/80 bg-card hover:bg-accent/40 shadow-ios'
@@ -399,6 +405,8 @@ export default function ImportDeadlinesPage() {
                     <img
                       src={uploadedFile.previewUrl}
                       alt="Uploaded preview"
+                      width={96}
+                      height={96}
                       className="size-24 rounded-2xl object-cover shadow-sm border"
                     />
                   )}
@@ -423,7 +431,7 @@ export default function ImportDeadlinesPage() {
                   </div>
                 </>
               )}
-            </div>
+            </button>
           </div>
         )}
 

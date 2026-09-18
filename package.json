@@ -9,7 +9,10 @@
     "lint": "eslint .",
     "cap:add": "cap add android",
     "cap:sync": "cap sync android",
-    "cap:open": "cap open android"
+    "cap:open": "cap open android",
+    "video:studio": "remotion preview remotion/index.ts",
+    "video:render": "remotion render remotion/index.ts DormosaurAppleLaunch out/dormosaur-launch.mp4",
+    "video:render-vertical": "remotion render remotion/index.ts DormosaurAppleShort out/dormosaur-short.mp4"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -17,6 +20,8 @@
     "@capacitor/core": "^8.5.1",
     "@google/generative-ai": "^0.24.1",
     "@phosphor-icons/react": "^2.1.10",
+    "@remotion/cli": "^4.0.526",
+    "@remotion/player": "^4.0.526",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.2",
     "@types/pg": "^8.21.0",
@@ -36,6 +41,7 @@
     "react-day-picker": "^10.0.1",
     "react-dom": "^19",
     "recharts": "^3.10.1",
+    "remotion": "^4.0.526",
     "resend": "^6.20.0",
     "shadcn": "^4.16.2",
     "tailwind-merge": "^3.3.1",

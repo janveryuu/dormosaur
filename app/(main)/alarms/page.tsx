@@ -76,24 +76,39 @@ export default function AlarmsPage() {
         subtitle={`${activeCount} of ${alarms.length} alarms active. Auto-calculated with campus walking lead times.`}
       />
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-8 sm:gap-10">
+        <section className="alarm-summary" aria-label="Alarm overview">
+          <div>
+            <p className="route-label">Departure reminders</p>
+            <h2>Leave with less to remember.</h2>
+            <p className="alarm-summary-copy">Dormosaur watches the clock, the walking buffer, and what you need to bring.</p>
+          </div>
+          <div className="alarm-summary-stats">
+            <div><strong>{activeCount}</strong><span>active now</span></div>
+            <div><strong>{alarms.length}</strong><span>on your board</span></div>
+            <div><strong>{nextAlarm?.lead || 0}m</strong><span>next lead time</span></div>
+          </div>
+        </section>
+
         {/* ── Native Alarm Spotlight Hero Card ── */}
         {nextAlarm && (
-          <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-card p-5 sm:p-6 shadow-ios">
+          <section className="alarm-next-board">
+            <div className="wayfinding-grid pointer-events-none absolute inset-0 opacity-20" aria-hidden="true" />
+            <div className="relative z-10">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <span className="text-[11.5px] font-bold uppercase tracking-wider text-muted-foreground">
+                <span className="text-[11.5px] font-bold uppercase tracking-wider text-primary-foreground/65">
                   {nextAlarm.enabled ? 'Upcoming Alarm' : 'Next Alarm (Disabled)'}
                 </span>
                 <div className="mt-1 flex items-baseline gap-2">
-                  <span className="font-mono text-4xl sm:text-5xl font-black tracking-tight text-foreground tabular-nums">
+                  <span className="font-mono text-4xl sm:text-5xl font-black tracking-tight text-primary-foreground tabular-nums">
                     {nextAlarmRingTime ? formatTime(nextAlarmRingTime) : formatTime(nextAlarm.time)}
                   </span>
-                  <span className="text-xs font-semibold text-muted-foreground">
+                  <span className="text-xs font-semibold text-primary-foreground/65">
                     ({nextAlarm.lead}m lead)
                   </span>
                 </div>
-                <p className="mt-1 text-[13.5px] font-medium text-foreground">
+                <p className="mt-1 text-[13.5px] font-medium text-primary-foreground/80">
                   For {nextAlarm.subject} at {formatTime(nextAlarm.time)}
                 </p>
               </div>
@@ -107,7 +122,7 @@ export default function AlarmsPage() {
 
             {/* Smart Nudge Mini Banner */}
             {nextAlarm.enabled && (
-              <div className="mt-4 flex items-center gap-2.5 rounded-2xl bg-primary/10 border border-primary/20 px-3.5 py-2.5 text-xs font-semibold text-primary">
+              <div className="alarm-nudge mt-4 flex items-center gap-2.5">
                 <Sparkles className="size-4 shrink-0" />
                 <span className="truncate">
                   {aiNudges[nextAlarm.id] ||
@@ -115,15 +130,18 @@ export default function AlarmsPage() {
                 </span>
               </div>
             )}
+            </div>
           </section>
         )}
 
         {/* ── AI Smart Nudge & Push Test Card ── */}
-        <section className="rounded-3xl border border-border/70 bg-card p-4 sm:p-5 shadow-2xs">
+        <section className="alarm-ai-panel">
           <div className="flex items-center gap-3">
             <img
               src="/ai-dormosaur.png"
               alt="AI Dormosaur"
+              width={56}
+              height={56}
               className="size-11 object-contain drop-shadow-xs shrink-0 select-none"
             />
             <div className="min-w-0 flex-1">
@@ -184,7 +202,7 @@ export default function AlarmsPage() {
 
         {/* ── Alarms Grouped By Day ── */}
         {alarms.length === 0 ? (
-          <section className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border/80 bg-card/60 py-16 text-center shadow-2xs">
+          <section className="schedule-empty-state gap-3 py-16">
             <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
               <BellRing className="size-6" />
             </div>
@@ -205,7 +223,7 @@ export default function AlarmsPage() {
 
             return (
               <section key={group} className="flex flex-col gap-2">
-                <div className="sticky z-10 -mx-4 sm:-mx-6 md:-mx-8 lg:mx-0 px-4 sm:px-6 md:px-8 lg:px-0 py-1.5 backdrop-blur-md bg-background/85 flex items-center justify-between border-b border-border/30 top-[calc(3.5rem+env(safe-area-inset-top,0px))] lg:top-0 transition-all">
+                <div className="sticky z-10 -mx-4 sm:-mx-6 md:-mx-8 lg:mx-0 px-4 sm:px-6 md:px-8 lg:px-0 py-1.5 backdrop-blur-md bg-background/85 flex items-center justify-between border-b border-border/30 top-[calc(3.5rem+env(safe-area-inset-top,0px))] lg:top-0 transition-[background-color,border-color,box-shadow]">
                   <h3 className="text-[13px] font-bold tracking-wider text-muted-foreground uppercase">
                     {group}
                   </h3>
@@ -214,7 +232,7 @@ export default function AlarmsPage() {
                   </span>
                 </div>
 
-                <div className="overflow-hidden rounded-3xl border border-border/70 bg-card shadow-ios divide-y divide-border/50">
+                <div className="alarm-list">
                   {groupAlarms.map((alarm) => {
                     const color = subjectColorClass[alarm.color] || subjectColorClass[1]
                     const [h, m] = alarm.time.split(':').map(Number)
@@ -228,10 +246,10 @@ export default function AlarmsPage() {
                     return (
                       <div
                         key={alarm.id}
-                        className="flex flex-col gap-2.5 p-4 sm:p-4.5 transition-colors hover:bg-fill/30"
+                        className="alarm-row flex flex-col gap-2.5 p-4 sm:p-4.5 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <span className={`h-10 w-1.5 shrink-0 rounded-full ${color.bg}`} />
+                          <span className={`alarm-row-accent h-10 w-1.5 shrink-0 ${color.bg}`} />
                           <div className="min-w-0 flex-1">
                             <p
                               className={`text-[15.5px] font-bold tracking-tight ${
@@ -260,7 +278,7 @@ export default function AlarmsPage() {
 
                         {/* Smart Nudge Pill */}
                         {alarm.enabled && (
-                          <div className="ml-4.5 flex items-center gap-2 rounded-xl bg-fill px-3 py-1.5 text-[11.5px] font-medium text-foreground border border-border/40">
+                          <div className="alarm-row-nudge ml-4.5 flex items-center gap-2">
                             <Sparkles className="size-3 shrink-0 text-primary" />
                             <span className="truncate text-muted-foreground">
                               {nudge ||

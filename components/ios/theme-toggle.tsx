@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Sun, Moon } from 'lucide-react'
 
 interface ThemeToggleProps {
@@ -12,29 +12,23 @@ interface ThemeToggleProps {
 
 export function ThemeToggle({ value, onChange, className = '' }: ThemeToggleProps) {
   const isDark = value === 'dark'
-  const shouldReduceMotion = useReducedMotion()
-
   const toggleTheme = () => {
     onChange(isDark ? 'light' : 'dark')
   }
 
   // Spring transition tuned for snappy, tactile iOS feel
-  const springTransition = shouldReduceMotion
-    ? { duration: 0.15 }
-    : {
-        type: 'spring' as const,
-        stiffness: 480,
-        damping: 26,
-        mass: 0.7,
-      }
+  const springTransition = {
+    type: 'spring' as const,
+    stiffness: 480,
+    damping: 26,
+    mass: 0.7,
+  }
 
-  const iconTransition = shouldReduceMotion
-    ? { duration: 0.12 }
-    : {
-        type: 'spring' as const,
-        stiffness: 400,
-        damping: 24,
-      }
+  const iconTransition = {
+    type: 'spring' as const,
+    stiffness: 400,
+    damping: 24,
+  }
 
   return (
     <motion.button

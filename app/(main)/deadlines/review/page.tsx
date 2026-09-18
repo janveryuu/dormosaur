@@ -120,6 +120,8 @@ export default function ReviewDeadlinesPage() {
             <img
               src={sourceImage}
               alt="Source photo thumbnail"
+              width={72}
+              height={72}
               className="size-16 rounded-2xl object-cover border border-border"
             />
             <div className="flex-1">

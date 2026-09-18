@@ -29,7 +29,7 @@ export function DayCardClassList({
       {classList.map((c, i) => (
         <div
           key={i}
-          className={`flex flex-col rounded-xl p-1.5 ${cardBg} border ${borderColor} shadow-2xs transition-all`}
+          className={`flex flex-col rounded-xl p-1.5 ${cardBg} border ${borderColor} shadow-2xs transition-[color,background-color,border-color,box-shadow]`}
         >
           <span className={`font-extrabold text-[10px] sm:text-[10.5px] ${textColor} leading-tight truncate w-full`}>
             {c.subject}

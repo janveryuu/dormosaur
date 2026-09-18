@@ -328,9 +328,18 @@ export default function ImportSchedulePage() {
         subtitle="Paste text, snap a picture, or upload a file. Messy schedules are converted instantly."
       />
 
-      <div className="mx-auto flex w-full max-w-xl flex-col gap-5 pb-16">
+      <div className="schedule-import-content mx-auto flex w-full max-w-xl flex-col gap-6 pb-16 sm:gap-8">
+        <section className="import-brief">
+          <div>
+            <p className="route-label">Route map</p>
+            <h2>Bring your week on board.</h2>
+            <p>Give Dormosaur the timetable once. We’ll turn it into classes, alarms, and a plan you can actually follow.</p>
+          </div>
+          <Sparkles className="size-5 shrink-0 text-highlight" />
+        </section>
+
         {/* ── Mode Switcher Tabs ── */}
-        <div className="grid grid-cols-4 gap-1.5 rounded-2xl bg-fill p-1.5 shadow-inner">
+        <div className="schedule-import-tabs grid grid-cols-4 gap-1.5">
           {[
             { id: 'text', label: 'Paste Text', icon: Type },
             { id: 'camera', label: 'Camera', icon: Camera },
@@ -345,7 +354,7 @@ export default function ImportSchedulePage() {
                 onClick={() => {
                   setMode(item.id as ImportMode)
                 }}
-                className={`relative flex flex-col items-center justify-center gap-1.5 rounded-xl py-2.5 text-[12.5px] font-semibold transition-all duration-200 ${
+                className={`relative flex min-h-11 flex-col items-center justify-center gap-1.5 rounded-xl py-2.5 text-[12.5px] font-semibold transition-[color,background-color,border-color,box-shadow,transform] duration-200 ${
                   active
                     ? 'bg-card text-foreground shadow-ios'
                     : 'text-muted-foreground hover:text-foreground'
@@ -359,7 +368,7 @@ export default function ImportSchedulePage() {
         </div>
 
         {/* ── Main Input Card ── */}
-        <div className="overflow-hidden rounded-4xl bg-card p-6 shadow-ios-lg">
+        <div className="schedule-import-card overflow-hidden p-6">
           {/* TAB 1: PASTE TEXT */}
           {mode === 'text' && (
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
@@ -383,7 +392,7 @@ export default function ImportSchedulePage() {
                 rows={8}
                 disabled={loading}
                 placeholder={rawScheduleSample}
-                className="w-full resize-none rounded-3xl bg-fill p-4 font-mono text-[13px] leading-relaxed outline-none placeholder:text-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+                className="schedule-import-textarea w-full resize-none p-4 font-mono text-[13px] leading-relaxed outline-none placeholder:text-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
               />
               <div className="mt-3 flex items-center justify-between text-[12.5px] text-muted-foreground">
                 <span>Copy straight from student portal or email</span>
@@ -433,7 +442,7 @@ export default function ImportSchedulePage() {
                 <div className="relative flex w-full flex-col items-center gap-4">
                   <div className="relative overflow-hidden rounded-3xl border border-border bg-fill p-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={capturedImage} alt="Captured timetable" className="max-h-60 rounded-2xl object-contain" />
+                    <img src={capturedImage} alt="Captured timetable" width={1000} height={750} className="h-auto max-h-60 max-w-full rounded-2xl object-contain" />
                     <button
                       onClick={() => {
                         setCapturedImage(null)
@@ -486,7 +495,7 @@ export default function ImportSchedulePage() {
                 <div className="relative flex w-full flex-col items-center gap-4">
                   <div className="relative overflow-hidden rounded-3xl border border-border bg-fill p-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={capturedImage} alt="Uploaded photo" className="max-h-60 rounded-2xl object-contain" />
+                    <img src={capturedImage} alt="Uploaded photo" width={1000} height={750} className="h-auto max-h-60 max-w-full rounded-2xl object-contain" />
                     <button
                       onClick={() => {
                         setCapturedImage(null)
@@ -533,7 +542,7 @@ export default function ImportSchedulePage() {
                     const file = e.dataTransfer.files?.[0]
                     if (file) handleFileSelect(file)
                   }}
-                  className={`flex min-h-[220px] w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed p-6 transition-all ${
+                  className={`flex min-h-[220px] w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed p-6 transition-[color,background-color,border-color,box-shadow,transform] ${
                     dragOver
                       ? 'border-primary bg-primary/5 scale-[1.01]'
                       : 'border-separator bg-fill hover:border-primary/50 hover:bg-accent/30'
@@ -630,7 +639,7 @@ export default function ImportSchedulePage() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden rounded-3xl bg-card p-5 shadow-ios"
+              className="schedule-import-progress overflow-hidden p-5"
             >
               {stages.map((label, i) => (
                 <li

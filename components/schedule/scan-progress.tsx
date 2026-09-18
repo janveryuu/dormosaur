@@ -93,7 +93,7 @@ export function ScheduleScanProgress({
   const Icon = isCompleted ? CheckCircle2 : currentPhase.icon
 
   return (
-    <div className={`flex flex-col gap-3 rounded-3xl border border-primary/20 bg-card p-4.5 shadow-ios transition-all ${className}`}>
+    <div className={`flex flex-col gap-3 rounded-3xl border border-primary/20 bg-card p-4.5 shadow-ios transition-[color,background-color,border-color,box-shadow] ${className}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="relative flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">

@@ -32,7 +32,7 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
         backHref="/kitchen"
       />
 
-      <div className="relative aspect-[16/10] overflow-hidden rounded-3xl shadow-ios">
+      <div className="recipe-hero relative aspect-[16/10] overflow-hidden">
         <Image
           src={recipe.image || '/placeholder.svg'}
           alt={recipe.title}
@@ -41,6 +41,10 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
           sizes="(min-width: 1024px) 720px, 100vw"
           className="object-cover"
         />
+        <div className="recipe-hero-caption">
+          <span className="route-label">Dorm kitchen brief</span>
+          <span>{recipe.appliance} · {recipe.minutes} min</span>
+        </div>
       </div>
 
       <RecipeDetailStats
@@ -51,11 +55,11 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
         difficulty={recipe.difficulty}
       />
 
-      <section className="mt-8 flex flex-col gap-3">
-        <h2 className="px-1 text-[13px] font-semibold tracking-[0.04em] text-muted-foreground uppercase">
+      <section className="recipe-ingredients mt-8 flex flex-col gap-3">
+        <h2 className="route-label px-1">
           Ingredients
         </h2>
-        <ul className="overflow-hidden rounded-3xl bg-card shadow-ios">
+        <ul className="recipe-ingredients-list overflow-hidden">
           {recipe.ingredients.map((item) => (
             <li
               key={item}
@@ -72,7 +76,7 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
         <RecipeSteps steps={recipe.steps} />
       </div>
 
-      <section className="mt-8 flex gap-3 rounded-3xl bg-accent p-5 text-accent-foreground">
+      <section className="recipe-tip mt-8 flex gap-3 p-5 text-accent-foreground">
         <Lightbulb className="mt-0.5 size-5 shrink-0 text-primary" strokeWidth={2.2} />
         <div className="flex flex-col gap-1">
           <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Dorm tip</h2>

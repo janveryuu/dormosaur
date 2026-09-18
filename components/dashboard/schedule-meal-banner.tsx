@@ -43,7 +43,7 @@ export function ScheduleMealBanner() {
 
   if (loading) {
     return (
-      <div className="flex h-36 items-center justify-center rounded-3xl border border-border/60 bg-card p-6 shadow-ios animate-pulse">
+      <div className="flex h-36 items-center justify-center rounded-3xl border border-line bg-field p-6 animate-pulse">
         <div className="flex items-center gap-3 text-muted-foreground">
           <Sparkles className="size-5 text-primary animate-spin" />
           <span className="text-[14px] font-medium">Analyzing schedule & kitchen gaps...</span>
@@ -67,24 +67,23 @@ export function ScheduleMealBanner() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 360, damping: 30 }}
-      className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/5 p-5 shadow-ios"
+      className="dashboard-section rounded-3xl border border-line bg-field p-5"
     >
-      {/* Decorative top accent */}
-      <div className="absolute top-0 right-0 h-32 w-32 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
-
       {/* Header Badge */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img
             src="/chef-dormosaur.png"
             alt="Chef Dormosaur"
-            className="size-12 sm:size-14 object-contain drop-shadow-sm shrink-0"
+            width={48}
+            height={48}
+            className="size-12 shrink-0 object-contain sm:size-14"
           />
-          <span className="text-[12.5px] font-bold tracking-wider uppercase text-primary">
-            Chef Dormosaur Intelligence
+          <span className="route-label">
+            Kitchen connection
           </span>
         </div>
-        <span className="rounded-full bg-card border border-border px-2.5 py-0.5 text-[11px] font-semibold text-muted-foreground shadow-sm">
+        <span className="rounded-full border border-line bg-card px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
           Schedule x Kitchen
         </span>
       </div>
@@ -107,14 +106,14 @@ export function ScheduleMealBanner() {
           return (
             <div
               key={recipe.slug}
-              className="flex flex-col justify-between rounded-2xl border border-border/60 bg-fill p-3.5 transition-all hover:border-primary/40 hover:shadow-sm"
+              className="flex flex-col justify-between rounded-2xl border border-line bg-card p-3.5 transition-colors hover:border-primary/50"
             >
               <div>
                 <div className="flex items-center justify-between text-[11.5px] font-semibold text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Clock className="size-3 text-primary" /> {recipe.minutes} min
                   </span>
-                  <span className="rounded-md bg-card px-1.5 py-0.5 text-[10.5px] text-foreground font-medium border border-border/40">
+                  <span className="rounded-full bg-card px-1.5 py-0.5 text-[10.5px] text-foreground font-medium border border-border/40">
                     {recipe.appliance}
                   </span>
                 </div>
@@ -123,7 +122,7 @@ export function ScheduleMealBanner() {
                 </h4>
                 {insight && (
                   <p className="mt-1 text-[11.5px] leading-normal text-muted-foreground line-clamp-2">
-                    💡 {insight}
+                    {insight}
                   </p>
                 )}
               </div>
@@ -134,10 +133,10 @@ export function ScheduleMealBanner() {
                 whileHover={{ scale: 1.015 }}
                 transition={{ type: 'spring', stiffness: 520, damping: 26 }}
                 onClick={() => handleSaveToPlan(recipe.slug)}
-                className={`mt-3 flex items-center justify-center gap-1.5 rounded-full py-1.5 text-[12px] font-semibold transition-colors cursor-pointer select-none ${
+                className={`mt-3 flex min-h-10 cursor-pointer items-center justify-center gap-1.5 py-1.5 text-[12px] font-bold transition-colors select-none ${
                   isSaved
-                    ? 'bg-primary text-primary-foreground shadow-xs'
-                    : 'bg-card text-foreground border border-border/80 hover:border-primary/50'
+                    ? 'rounded-full bg-primary text-primary-foreground shadow-xs'
+                    : 'rounded-full bg-card text-foreground border border-border/80 hover:border-primary/50'
                 }`}
               >
                 {isSaved ? <Check className="size-3.5" /> : <CookingPot className="size-3.5 text-primary" />}

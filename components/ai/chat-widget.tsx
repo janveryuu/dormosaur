@@ -1,19 +1,15 @@
 'use client'
 
 import * as React from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
-  Bot,
   Calendar,
   ChevronDown,
   Clock,
   CookingPot,
   CornerDownLeft,
   Flame,
-  MessageSquare,
   Sparkles,
-  User,
-  X,
 } from 'lucide-react'
 import { useSchedule } from '@/components/schedule-provider'
 
@@ -33,20 +29,24 @@ const quickPrompts = [
 
 export function DormosaurAiChat() {
   const { classes, alarms, profile, deadlines } = useSchedule()
+  const reduceMotion = useReducedMotion()
   const [isOpen, setIsOpen] = React.useState(false)
   const [messages, setMessages] = React.useState<Message[]>([
     {
       id: 'welcome',
       role: 'assistant',
-      content: `Hey ${profile.name || 'there'}! 👋 I'm Dormosaur AI (powered by Llama 3).\n\nI have live access to your ${classes.length} classes, ${alarms.length} alarms, and dorm kitchen preferences.\n\nHow can I help you today?`,
+      content: `Hey ${profile.name || 'there'}! I'm Dormosaur AI (powered by Llama 3).\n\nI have live access to your ${classes.length} classes, ${alarms.length} alarms, and dorm kitchen preferences.\n\nHow can I help you today?`,
     },
   ])
   const [input, setInput] = React.useState('')
   const [isTyping, setIsTyping] = React.useState(false)
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null)
+  const drawerRef = React.useRef<HTMLDivElement | null>(null)
+  const closeButtonRef = React.useRef<HTMLButtonElement | null>(null)
+  const dialogTitleId = React.useId()
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    messagesEndRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' })
   }
 
   // Keep welcome message synced with the logged-in user's real profile name
@@ -55,7 +55,7 @@ export function DormosaurAiChat() {
       const updatedWelcome: Message = {
         id: 'welcome',
         role: 'assistant',
-        content: `Hey ${profile.name || 'there'}! 👋 I'm Dormosaur AI (powered by Llama 3).\n\nI have live access to your ${classes.length} classes, ${alarms.length} alarms, and dorm kitchen preferences.\n\nHow can I help you today?`,
+        content: `Hey ${profile.name || 'there'}! I'm Dormosaur AI (powered by Llama 3).\n\nI have live access to your ${classes.length} classes, ${alarms.length} alarms, and dorm kitchen preferences.\n\nHow can I help you today?`,
       }
       if (prev.length === 0 || prev[0].id === 'welcome') {
         return [updatedWelcome, ...prev.slice(1)]
@@ -68,7 +68,7 @@ export function DormosaurAiChat() {
     if (isOpen) {
       scrollToBottom()
     }
-  }, [messages, isOpen])
+  }, [messages, isOpen, reduceMotion])
 
   React.useEffect(() => {
     const handleOpen = () => setIsOpen(true)
@@ -83,6 +83,47 @@ export function DormosaurAiChat() {
       window.removeEventListener('close-dormosaur-ai', handleClose)
     }
   }, [])
+
+  React.useEffect(() => {
+    if (!isOpen) return
+
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const focusTimer = window.requestAnimationFrame(() => closeButtonRef.current?.focus())
+
+    const handleDialogKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setIsOpen(false)
+        return
+      }
+
+      if (event.key !== 'Tab' || !drawerRef.current) return
+      const focusable = Array.from(
+        drawerRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => !element.hasAttribute('hidden'))
+
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handleDialogKeyDown)
+    return () => {
+      window.cancelAnimationFrame(focusTimer)
+      window.removeEventListener('keydown', handleDialogKeyDown)
+      previousFocus?.focus()
+    }
+  }, [isOpen])
 
   const handleSend = async (textToSend?: string) => {
     const query = (textToSend || input).trim()
@@ -162,21 +203,26 @@ export function DormosaurAiChat() {
 
   return (
     <>
-      {/* ── Floating AI Trigger Button (Desktop Only — on mobile accessed via dock '+' menu) ── */}
+      {/* ── Floating AI Trigger Button ── */}
       <div className="fixed bottom-6 right-6 z-40 hidden lg:flex">
         <motion.button
+          type="button"
           onClick={() => setIsOpen(!isOpen)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative flex items-center gap-2.5 rounded-full bg-[#1f6f50] pl-3 pr-4.5 py-2 text-white shadow-[0_10px_30px_rgba(31,111,80,0.4)] transition-all hover:bg-[#1a6148]"
+          whileHover={{ scale: 1.03, y: -1 }}
+          whileTap={{ scale: 0.96 }}
+          aria-expanded={isOpen}
+          aria-controls="dormosaur-ai-dialog"
+          className="ai-launcher relative flex items-center gap-2.5 pl-3 pr-4.5 py-2 text-white"
         >
           <img
             src="/ai-dormosaur.png"
-            alt="AI Dormosaur"
+            alt=""
+            aria-hidden="true"
+            width={30}
+            height={30}
             className="size-7.5 object-contain drop-shadow-xs"
           />
-          <span className="relative flex size-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+          <span className="ai-status-dot relative flex size-2">
             <span className="relative inline-flex size-2 rounded-full bg-white" />
           </span>
           <span className="text-[14px] font-bold tracking-tight">Dormosaur AI</span>
@@ -193,10 +239,15 @@ export function DormosaurAiChat() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              onTouchStart={() => setIsOpen(false)}
+              aria-hidden="true"
               className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs lg:hidden"
             />
             <motion.div
+              id="dormosaur-ai-dialog"
+              ref={drawerRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={dialogTitleId}
               initial={{ opacity: 0, y: '100%' }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: '100%' }}
@@ -209,27 +260,30 @@ export function DormosaurAiChat() {
                   setIsOpen(false)
                 }
               }}
-              className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl border-t border-border/80 bg-card/95 shadow-[0_-12px_40px_rgba(0,0,0,0.25)] backdrop-blur-2xl md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:inset-x-auto md:w-[460px] md:max-h-[85vh] md:rounded-3xl md:border lg:right-6 lg:left-auto lg:translate-x-0 lg:w-[420px]"
+              className="ai-drawer fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[92dvh] w-full flex-col overflow-hidden md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:inset-x-auto md:w-[460px] md:max-h-[85vh] lg:right-6 lg:left-auto lg:translate-x-0 lg:w-[420px]"
             >
               {/* Mobile Drag/Grab Indicator with swipe dismiss */}
               <div
                 className="flex w-full cursor-grab justify-center py-2.5 active:cursor-grabbing lg:hidden select-none"
-                aria-label="Drag down to dismiss"
+                aria-hidden="true"
               >
                 <div className="h-1.5 w-10 rounded-full bg-muted-foreground/30 transition-colors hover:bg-muted-foreground/50" />
               </div>
             {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-border/60 bg-fill/50 px-4 py-3">
+            <div className="ai-header flex items-center justify-between px-4 py-3">
               <div className="flex items-center gap-3">
                 <img
                   src="/ai-dormosaur.png"
-                  alt="Dormosaur Copilot"
+                  alt=""
+                  aria-hidden="true"
+                  width={48}
+                  height={48}
                   className="size-12 object-contain filter drop-shadow-sm shrink-0"
                 />
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h3 className="text-[14.5px] font-bold text-foreground">Dormosaur Copilot</h3>
-                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                    <h2 id={dialogTitleId} className="text-[14.5px] font-bold text-foreground">Dormosaur Copilot</h2>
+                    <span className="ai-model-badge px-2 py-0.5 text-[10px] font-bold text-primary">
                       Llama 3
                     </span>
                   </div>
@@ -239,15 +293,18 @@ export function DormosaurAiChat() {
                 </div>
               </div>
               <button
+                ref={closeButtonRef}
+                type="button"
                 onClick={() => setIsOpen(false)}
-                className="flex size-8 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground"
+                aria-label="Close Dormosaur AI"
+                className="flex size-11 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground"
               >
                 <ChevronDown className="size-4.5" />
               </button>
             </div>
 
             {/* Messages Container */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 max-h-[50vh] min-h-[260px]">
+            <div role="log" aria-live="polite" aria-relevant="additions" aria-busy={isTyping} className="flex-1 overflow-y-auto p-4 space-y-3.5 max-h-[50vh] min-h-[260px]">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -256,16 +313,19 @@ export function DormosaurAiChat() {
                   {msg.role === 'assistant' && (
                     <img
                       src="/ai-dormosaur.png"
-                      alt="AI Dormosaur"
+                      alt=""
+                      aria-hidden="true"
+                      width={42}
+                      height={42}
                       className="size-10.5 shrink-0 object-contain filter drop-shadow-xs mt-0.5"
                     />
                   )}
 
                   <div
-                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-relaxed ${
+                    className={`ai-message max-w-[85%] px-3.5 py-2.5 text-[13.5px] leading-relaxed ${
                       msg.role === 'user'
-                        ? 'bg-primary text-primary-foreground rounded-br-xs shadow-sm'
-                        : 'bg-fill text-foreground border border-border/40 rounded-bl-xs'
+                        ? 'ai-message-user text-primary-foreground'
+                        : 'ai-message-assistant text-foreground'
                     }`}
                   >
                     <div className="whitespace-pre-wrap">
@@ -281,14 +341,15 @@ export function DormosaurAiChat() {
               ))}
 
               {isTyping && (
-                <div className="flex gap-2.5 justify-start">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                    <Sparkles className="size-3.5" />
+                <div role="status" className="flex gap-2.5 justify-start">
+                  <span className="sr-only">Dormosaur is preparing a reply.</span>
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                    <Sparkles className="size-3.5" aria-hidden="true" />
                   </div>
                   <div className="flex items-center gap-1 rounded-2xl bg-fill px-4 py-3 border border-border/40">
-                    <span className="size-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="size-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="size-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="ai-typing-dot size-1.5 bg-primary" style={{ animationDelay: '0ms' }} />
+                    <span className="ai-typing-dot size-1.5 bg-primary" style={{ animationDelay: '150ms' }} />
+                    <span className="ai-typing-dot size-1.5 bg-primary" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
               )}
@@ -304,9 +365,9 @@ export function DormosaurAiChat() {
                     key={item.label}
                     onClick={() => handleSend(item.prompt)}
                     disabled={isTyping}
-                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[11.5px] font-medium text-muted-foreground transition-all hover:border-primary/50 hover:text-foreground active:scale-95 disabled:opacity-50"
+                    className="ai-suggestion flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-[11.5px] font-medium text-muted-foreground transition-[color,border-color,transform] hover:text-foreground active:scale-95 disabled:opacity-50"
                   >
-                    <Icon className="size-3 text-primary" />
+                    <Icon className="size-3 text-primary" aria-hidden="true" />
                     <span>{item.label}</span>
                   </button>
                 )
@@ -320,21 +381,26 @@ export function DormosaurAiChat() {
                   e.preventDefault()
                   handleSend()
                 }}
-                className="flex items-center gap-2 rounded-2xl border border-border bg-fill px-3 py-1.5 focus-within:ring-2 focus-within:ring-ring"
+                className="ai-input flex items-center gap-2 px-3 py-1.5 focus-within:ring-2 focus-within:ring-ring"
               >
+                <label htmlFor="dormosaur-ai-input" className="sr-only">Ask Dormosaur AI</label>
                 <input
+                  id="dormosaur-ai-input"
+                  name="dormosaur-ai-message"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask Dormosaur AI..."
+                  placeholder="Ask Dormosaur AI…"
+                  autoComplete="off"
                   disabled={isTyping}
-                  className="flex-1 bg-transparent text-[13.5px] outline-none placeholder:text-muted-foreground/60"
+                  className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground/60"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isTyping}
-                  className="flex size-7 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-transform active:scale-90 disabled:opacity-40"
+                  aria-label="Send message"
+                  className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform active:scale-90 disabled:opacity-40"
                 >
-                  <CornerDownLeft className="size-3.5" />
+                  <CornerDownLeft className="size-4" aria-hidden="true" />
                 </button>
               </form>
             </div>

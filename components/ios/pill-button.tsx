@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { buttonTapScale, buttonHoverScale, springButton } from '@/lib/motion-presets'
 
@@ -21,7 +21,7 @@ const variants: Record<Variant, string> = {
 }
 
 const sizes: Record<Size, string> = {
-  sm: 'h-9 px-4 text-[13.5px]',
+  sm: 'h-11 px-4 text-[13.5px]',
   md: 'h-11 px-5 text-[15px]',
   lg: 'h-14 px-7 text-[16.5px]',
 }
@@ -42,12 +42,10 @@ export function PillButton({
   children,
   ...props
 }: BaseProps & React.ComponentPropsWithoutRef<'button'>) {
-  const reduce = useReducedMotion()
-
   return (
     <motion.button
-      whileTap={reduce ? undefined : buttonTapScale}
-      whileHover={reduce ? undefined : buttonHoverScale}
+      whileTap={buttonTapScale}
+      whileHover={buttonHoverScale}
       transition={springButton}
       className={cn(
         'inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-[-0.01em] select-none cursor-pointer',
@@ -73,12 +71,10 @@ export function PillLink({
   children,
   href,
 }: BaseProps & { href: string }) {
-  const reduce = useReducedMotion()
-
   return (
     <motion.div
-      whileTap={reduce ? undefined : buttonTapScale}
-      whileHover={reduce ? undefined : buttonHoverScale}
+      whileTap={buttonTapScale}
+      whileHover={buttonHoverScale}
       transition={springButton}
       className={cn('inline-flex', full && 'w-full')}
     >
@@ -104,12 +100,10 @@ export function Tappable({
   children,
   ...props
 }: React.ComponentPropsWithoutRef<typeof motion.div>) {
-  const reduce = useReducedMotion()
-
   return (
     <motion.div
-      whileTap={reduce ? undefined : { scale: 0.975 }}
-      whileHover={reduce ? undefined : { scale: 1.01 }}
+      whileTap={{ scale: 0.975 }}
+      whileHover={{ scale: 1.01 }}
       transition={springButton}
       className={cn('cursor-pointer', className)}
       {...props}

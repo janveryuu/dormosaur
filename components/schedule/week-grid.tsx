@@ -224,7 +224,7 @@ export function WeekGrid() {
         </div>
         <Link
           href="/schedule/import"
-          className="mt-2 flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[13.5px] font-bold text-primary-foreground shadow-sm transition-all hover:scale-105"
+          className="mt-2 flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[13.5px] font-bold text-primary-foreground shadow-sm transition-[color,background-color,box-shadow,transform] hover:scale-105"
         >
           <UploadCloud className="size-4" />
           <span>Import Schedule</span>

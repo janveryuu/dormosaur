@@ -16,7 +16,7 @@ export function OceanPartyTemplate({ classes }: TemplateProps) {
   const grouped = groupClassesByDay(classes)
 
   return (
-    <div className="relative flex h-full w-full flex-col bg-gradient-to-br from-indigo-100 via-blue-100 to-indigo-200 p-5 select-none overflow-hidden text-indigo-950 font-sans border-4 border-indigo-300 rounded-3xl">
+    <div className="relative flex h-full w-full flex-col bg-gradient-to-br from-sky-100 via-blue-100 to-sky-200 p-5 select-none overflow-hidden text-sky-950 font-sans border-4 border-sky-300 rounded-3xl">
       {/* Decorative Sea Icons */}
       <Waves className="absolute -top-4 -right-4 size-24 text-indigo-300/60 rotate-12 pointer-events-none" />
       <Shell className="absolute -bottom-6 -left-6 size-24 text-blue-300/60 -rotate-12 pointer-events-none" />
@@ -28,8 +28,8 @@ export function OceanPartyTemplate({ classes }: TemplateProps) {
             <Waves className="size-6" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-indigo-700 tracking-tight leading-none">
-              OCEAN PARTY SCHEDULE 🌊
+            <h1 className="text-xl sm:text-2xl font-black text-sky-800 tracking-tight leading-none">
+              OCEAN PARTY SCHEDULE
             </h1>
             <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-0.5">
               Periwinkle Sea Edition

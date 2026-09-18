@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Check, ChevronRight } from 'lucide-react'
 import { buttonTapScale, buttonHoverScale, springButton, springSmooth } from '@/lib/motion-presets'
 
@@ -19,18 +19,19 @@ export function LeadPicker({
 }) {
   const [open, setOpen] = React.useState(false)
   const ref = React.useRef<HTMLDivElement>(null)
-  const reduce = useReducedMotion()
-
   React.useEffect(() => {
     if (!open) return
-    const onDown = (e: MouseEvent | TouchEvent) => {
+    const onDown = (e: PointerEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
     }
-    document.addEventListener('mousedown', onDown)
-    document.addEventListener('touchstart', onDown)
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('pointerdown', onDown)
+    document.addEventListener('keydown', onKeyDown)
     return () => {
-      document.removeEventListener('mousedown', onDown)
-      document.removeEventListener('touchstart', onDown)
+      document.removeEventListener('pointerdown', onDown)
+      document.removeEventListener('keydown', onKeyDown)
     }
   }, [open])
 
@@ -38,14 +39,14 @@ export function LeadPicker({
     <div ref={ref} className="relative select-none">
       <motion.button
         type="button"
-        whileTap={reduce ? undefined : buttonTapScale}
-        whileHover={reduce ? undefined : buttonHoverScale}
+        whileTap={buttonTapScale}
+        whileHover={buttonHoverScale}
         transition={springButton}
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={`${label} lead time`}
-        className="flex items-center gap-1 rounded-full bg-fill px-3 py-1.5 text-[13.5px] font-semibold tabular-nums cursor-pointer hover:bg-accent transition-colors"
+        className="flex min-h-11 items-center gap-1 rounded-full bg-fill px-3 py-1.5 text-[13.5px] font-semibold tabular-nums cursor-pointer hover:bg-accent transition-colors"
       >
         {value} min
         <ChevronRight
@@ -58,9 +59,9 @@ export function LeadPicker({
         {open && (
           <motion.ul
             role="listbox"
-            initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: -4 }}
+            initial={{ opacity: 0, scale: 0.94, y: -4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: -4 }}
+            exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={springSmooth}
             className="ios-glass absolute top-full right-0 z-30 mt-2 w-44 origin-top-right overflow-hidden rounded-2xl border border-border shadow-ios-lg p-1"
           >
@@ -72,13 +73,13 @@ export function LeadPicker({
                     type="button"
                     role="option"
                     aria-selected={active}
-                    whileTap={reduce ? undefined : { scale: 0.97 }}
+                    whileTap={{ scale: 0.97 }}
                     transition={springButton}
                     onClick={() => {
                       onChange(option)
                       setOpen(false)
                     }}
-                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2 text-[14px] font-medium transition-colors cursor-pointer ${
+                    className={`flex min-h-11 w-full items-center justify-between rounded-xl px-3.5 py-2 text-[14px] font-medium transition-colors cursor-pointer ${
                       active ? 'bg-primary/12 text-primary font-semibold' : 'text-foreground hover:bg-fill'
                     }`}
                   >

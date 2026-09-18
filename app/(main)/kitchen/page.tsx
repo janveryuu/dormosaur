@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Utensils, Sparkles, X } from 'lucide-react'
+import { Moon, Search, Sandwich, Sparkles, Sun, Utensils, X } from 'lucide-react'
 import { ScreenHeader } from '@/components/ios/screen-header'
 import { SegmentedControl, FilterChip } from '@/components/ios/segmented-control'
 import { RecipeCard } from '@/components/kitchen/recipe-card'
@@ -100,7 +100,23 @@ export default function KitchenPage() {
         subtitle="Student-tested recipes for microwaves, electric kettles & rice cookers."
       />
 
-      <div className="mb-5">
+      <section className="kitchen-summary" aria-label="Kitchen overview">
+        <div>
+          <p className="route-label">Dorm life, served</p>
+          <h2>Cook something that fits your day.</h2>
+          <p className="kitchen-summary-copy">Fast, affordable recipes for the space and appliances you actually have.</p>
+        </div>
+        <div className="kitchen-setup-note">
+          <Utensils className="size-5" />
+          <div><span>Your setup</span><strong>{formatApplianceSummary(studentAppliances)}</strong></div>
+        </div>
+      </section>
+
+      <div className="kitchen-view-toolbar">
+        <div>
+          <p className="route-label">Kitchen board</p>
+          <p className="mt-1 text-xs text-muted-foreground">Choose how you want to plan the next meal.</p>
+        </div>
         <SegmentedControl
           options={[...mainViews]}
           value={view}
@@ -119,11 +135,11 @@ export default function KitchenPage() {
             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
           >
             {/* Dorm Setup Feasibility Banner */}
-            <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2.5 rounded-2xl bg-card border border-border/50 p-3.5 shadow-sm text-[13.5px]">
+            <div className="kitchen-setup-banner">
               {studentAppliances.length > 0 ? (
                 <>
                   <div className="flex items-center gap-2 text-foreground font-medium">
-                    <span className="flex size-2 rounded-full bg-emerald-500 shrink-0" />
+                    <span className="size-2 shrink-0 bg-primary" />
                     <span>
                       Showing {studentDietaryPref !== 'none' && studentDietaryPref !== 'other' ? `${formatDietarySummary(studentDietaryPref)} ` : ''}recipes for your dorm setup ({formatApplianceSummary(studentAppliances)})
                     </span>
@@ -148,7 +164,7 @@ export default function KitchenPage() {
 
             {/* Free-text Dietary Reminder Chip */}
             {studentDietaryPref === 'other' && studentDietaryNote && !dismissedDietaryChip && (
-              <div className="mb-4 flex items-center justify-between gap-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 px-4 py-2.5 text-[13.5px] text-emerald-800 dark:text-emerald-300 font-medium shadow-sm">
+              <div className="kitchen-dietary-note">
                 <span>Remember: {studentDietaryNote}</span>
                 <button
                   type="button"
@@ -163,7 +179,7 @@ export default function KitchenPage() {
             <AiRecipeGenerator />
 
             <div className="flex flex-col gap-4">
-              <label className="flex h-11 items-center gap-2.5 rounded-full bg-fill px-4">
+              <label className="kitchen-search">
                 <Search className="size-4 shrink-0 text-muted-foreground" strokeWidth={2.2} />
                 <input
                   value={query}
@@ -192,7 +208,7 @@ export default function KitchenPage() {
             {recommendedRecipes.length > 0 && (
               <div className="mt-7 mb-6 flex flex-col gap-6">
                 <div className="flex items-center justify-between px-1">
-                  <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3.5 py-1 text-[13px] font-extrabold text-emerald-800 dark:text-emerald-300 shadow-xs">
+                  <span className="kitchen-recommendation">
                     <Sparkles className="size-3.5" />
                     Recommended for {countryData.flag} {countryData.name} Dorm Students
                   </span>
@@ -202,7 +218,7 @@ export default function KitchenPage() {
                 {recommendedRecipes.some((r) => r.mealType === 'breakfast' || r.mealTypes?.includes('breakfast')) && (
                   <div>
                     <h3 className="mb-2.5 px-1 text-[13.5px] font-bold text-foreground flex items-center gap-1.5">
-                      <span>☀️</span> Breakfast Picks
+                      <Sun className="size-4 text-amber-500" aria-hidden="true" /> Breakfast Picks
                     </h3>
                     <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
                       {recommendedRecipes
@@ -218,7 +234,7 @@ export default function KitchenPage() {
                 {recommendedRecipes.some((r) => r.mealType === 'lunch' || r.mealTypes?.includes('lunch')) && (
                   <div>
                     <h3 className="mb-2.5 px-1 text-[13.5px] font-bold text-foreground flex items-center gap-1.5">
-                      <span>🍱</span> Lunch Picks
+                      <Sandwich className="size-4 text-amber-600" aria-hidden="true" /> Lunch Picks
                     </h3>
                     <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
                       {recommendedRecipes
@@ -234,7 +250,7 @@ export default function KitchenPage() {
                 {recommendedRecipes.some((r) => r.mealType === 'dinner' || r.mealTypes?.includes('dinner')) && (
                   <div>
                     <h3 className="mb-2.5 px-1 text-[13.5px] font-bold text-foreground flex items-center gap-1.5">
-                      <span>🌙</span> Dinner Picks
+                      <Moon className="size-4 text-indigo-500" aria-hidden="true" /> Dinner Picks
                     </h3>
                     <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
                       {recommendedRecipes
@@ -259,7 +275,7 @@ export default function KitchenPage() {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-3 rounded-3xl bg-card px-6 py-14 text-center shadow-ios">
+              <div className="schedule-empty-state gap-3 px-6 py-14">
                 <span className="flex size-12 items-center justify-center rounded-2xl bg-fill">
                   <Utensils className="size-5 text-muted-foreground" strokeWidth={2.2} />
                 </span>

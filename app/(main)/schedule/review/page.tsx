@@ -135,7 +135,19 @@ export default function ReviewSchedulePage() {
         }
       />
 
-      <div className="flex flex-col gap-3 pb-28">
+      <div className="flex flex-col gap-6 pb-28 sm:gap-8">
+        <section className="review-summary">
+          <div>
+            <p className="route-label">Route map check</p>
+            <h2>Make sure every departure is right.</h2>
+            <p>Review the details once, then Dormosaur can keep your alarms and Today board in sync.</p>
+          </div>
+          <div className="review-summary-stats">
+            <div><strong>{entries.length}</strong><span>classes found</span></div>
+            <div><strong>{lowCount}</strong><span>need a look</span></div>
+          </div>
+        </section>
+
         {entries.map((entry, index) => {
           const color = subjectColorClass[entry.color] || subjectColorClass[1]
           const isLow = (field: Field) => entry.lowFields?.includes(field)
@@ -146,7 +158,7 @@ export default function ReviewSchedulePage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 330, damping: 30, delay: index * 0.04 }}
-              className="rounded-3xl bg-card p-5 shadow-ios"
+              className="schedule-review-card p-5"
             >
               <div className="flex items-start gap-3">
                 <span className={`mt-1.5 h-8 w-1 shrink-0 rounded-full ${color.bg}`} />
@@ -194,7 +206,7 @@ export default function ReviewSchedulePage() {
                     value={entry.start}
                     onChange={(e) => update(entry.id, 'start', e.target.value)}
                     aria-label={`${entry.code} start time`}
-                    className="w-full rounded-xl bg-fill px-3 py-2 text-[15px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="schedule-review-input w-full px-3 py-2 text-[15px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </FieldRow>
                 <FieldRow label="Ends" flagged={isLow('end')}>
@@ -203,7 +215,7 @@ export default function ReviewSchedulePage() {
                     value={entry.end}
                     onChange={(e) => update(entry.id, 'end', e.target.value)}
                     aria-label={`${entry.code} end time`}
-                    className="w-full rounded-xl bg-fill px-3 py-2 text-[15px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="schedule-review-input w-full px-3 py-2 text-[15px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </FieldRow>
                 <FieldRow label="Room" flagged={isLow('room')}>
@@ -211,7 +223,7 @@ export default function ReviewSchedulePage() {
                     value={entry.room}
                     onChange={(e) => update(entry.id, 'room', e.target.value)}
                     aria-label={`${entry.code} room`}
-                    className="w-full rounded-xl bg-fill px-3 py-2 text-[15px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="schedule-review-input w-full px-3 py-2 text-[15px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </FieldRow>
                 <FieldRow label="Instructor" flagged={isLow('instructor')}>
@@ -219,7 +231,7 @@ export default function ReviewSchedulePage() {
                     value={entry.instructor}
                     onChange={(e) => update(entry.id, 'instructor', e.target.value)}
                     aria-label={`${entry.code} instructor`}
-                    className="w-full rounded-xl bg-fill px-3 py-2 text-[15px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="schedule-review-input w-full px-3 py-2 text-[15px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </FieldRow>
               </div>
@@ -240,8 +252,8 @@ export default function ReviewSchedulePage() {
                         aria-pressed={active}
                         className={
                           active
-                            ? 'size-9 rounded-full bg-primary text-[12.5px] font-semibold text-primary-foreground'
-                            : 'size-9 rounded-full bg-fill text-[12.5px] font-medium text-muted-foreground'
+                            ? 'schedule-review-day is-active size-9 text-[12.5px] font-semibold text-primary-foreground'
+                            : 'schedule-review-day size-9 bg-fill text-[12.5px] font-medium text-muted-foreground'
                         }
                       >
                         {day.slice(0, 2)}

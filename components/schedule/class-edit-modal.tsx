@@ -30,6 +30,7 @@ import {
   type ClassEntry,
   type SubjectColor,
 } from '@/lib/data'
+import { useModalA11y } from '@/hooks/use-modal-a11y'
 
 interface ClassEditModalProps {
   open: boolean
@@ -66,6 +67,7 @@ export function ClassEditModal({
   const [color, setColor] = React.useState<SubjectColor>(1)
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false)
+  const dialogRef = useModalA11y(open, onClose)
 
   // Populate state whenever modal opens or initialData changes
   React.useEffect(() => {
@@ -165,6 +167,11 @@ export function ClassEditModal({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="class-edit-title"
+            tabIndex={-1}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -186,16 +193,18 @@ export function ClassEditModal({
             {/* Header */}
             <div className="flex items-center justify-between border-b border-separator px-6 py-4">
               <div>
-                <h3 className="text-[19px] font-bold tracking-[-0.02em] text-foreground">
+                <h2 id="class-edit-title" className="text-[19px] font-bold tracking-[-0.02em] text-foreground">
                   {isEditing ? 'Edit Class' : 'Add New Class'}
-                </h3>
+                </h2>
                 <p className="text-[13px] text-muted-foreground">
                   {isEditing ? 'Update course schedule details' : 'Add a course to your weekly timetable'}
                 </p>
               </div>
               <button
+                type="button"
                 onClick={onClose}
-                className="flex size-8 items-center justify-center rounded-full bg-fill text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Close class editor"
+                className="flex size-11 items-center justify-center rounded-full bg-fill text-muted-foreground hover:text-foreground transition-colors"
               >
                 <X className="size-4" />
               </button>
@@ -287,7 +296,7 @@ export function ClassEditModal({
                         key={day}
                         type="button"
                         onClick={() => toggleDay(day)}
-                        className={`size-10 rounded-2xl text-[13px] font-bold transition-all ${
+                        className={`size-11 rounded-2xl text-[13px] font-bold transition-[color,background-color,border-color,box-shadow,transform] ${
                           active
                             ? 'bg-primary text-primary-foreground shadow-sm scale-105'
                             : 'bg-fill text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -344,7 +353,7 @@ export function ClassEditModal({
                         onClick={() => setColor(c.id)}
                         className={`relative flex size-9 items-center justify-center rounded-2xl ${
                           theme.bg
-                        } text-white transition-all ${
+                        } text-white transition-[color,background-color,border-color,box-shadow,transform] ${
                           isSelected
                             ? 'ring-3 ring-offset-2 ring-primary scale-110 shadow-md'
                             : 'opacity-70 hover:opacity-100 hover:scale-105'

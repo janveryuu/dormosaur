@@ -20,11 +20,11 @@ const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
 // Soft mint & neon emerald dark mode class cards
 const NIGHT_CLASS_COLORS = [
-  'bg-[#193A2D] text-[#FAFBF7] border-l-4 border-[#38D399]',
-  'bg-[#1F4536] text-[#FAFBF7] border-l-4 border-[#6EE7B7]',
-  'bg-[#163428] text-[#FAFBF7] border-l-4 border-[#A3E635]',
-  'bg-[#23503E] text-[#FAFBF7] border-l-4 border-[#34D399]',
-  'bg-[#132A20] text-[#FAFBF7] border-l-4 border-[#4ADE80]',
+  'bg-[#193A2D] text-[#FAFBF7] border-l border-[#38D399]',
+  'bg-[#1F4536] text-[#FAFBF7] border-l border-[#6EE7B7]',
+  'bg-[#163428] text-[#FAFBF7] border-l border-[#A3E635]',
+  'bg-[#23503E] text-[#FAFBF7] border-l border-[#34D399]',
+  'bg-[#132A20] text-[#FAFBF7] border-l border-[#4ADE80]',
 ]
 
 export function DormosaurNightModeTemplate({
@@ -41,7 +41,10 @@ export function DormosaurNightModeTemplate({
       <div className="pointer-events-none absolute -bottom-4 -right-4 z-0 opacity-12 blur-[0.5px]">
         <img
           src="/dormosaur-hi.png"
-          alt="Dormosaur Watermark"
+          alt=""
+          aria-hidden="true"
+          width={384}
+          height={384}
           className="size-80 sm:size-96 object-contain grayscale brightness-200"
         />
       </div>
@@ -127,7 +130,7 @@ export function DormosaurNightModeTemplate({
                   <div
                     key={c.id ? `${c.id}-${i}` : i}
                     style={{ top: `${topPct}%`, height: `${heightPct}%` }}
-                    className={`absolute inset-x-1 overflow-hidden rounded-xl ${colorClass} p-2 shadow-lg transition-all hover:z-20 hover:scale-[1.02] flex flex-col justify-between`}
+                    className={`absolute inset-x-1 overflow-hidden rounded-xl ${colorClass} p-2 shadow-lg transition-[box-shadow,transform] hover:z-20 hover:scale-[1.02] flex flex-col justify-between`}
                   >
                     <div>
                       <p className="font-black text-[11px] leading-tight truncate text-white">

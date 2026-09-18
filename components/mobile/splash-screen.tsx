@@ -9,16 +9,16 @@ import { BUTTON_SPRING, IOS_SPRING } from '@/lib/springs'
 
 export function MobileSplashScreen() {
   return (
-    <div className="relative flex min-h-[100dvh] w-full flex-col justify-between overflow-hidden bg-[#07130b] text-white md:hidden select-none">
+    <div className="landing-mobile relative flex min-h-[100dvh] w-full flex-col justify-between overflow-hidden bg-[#07130b] text-white md:hidden select-none">
       {/* ── 1. Full-Bleed Illustrated Scenic Background ─────────────── */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <Image
-          src="/landing-bg.png"
-          alt="Dormosaur Valley"
+          src="/dormosaur-background.png"
+          alt="An illustrated green campus forest with a river"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center"
+          className="object-cover object-[center_58%]"
         />
         {/* Atmospheric Scrim Gradient — subtle in upper half, deepening at bottom for crystal-clear readability */}
         <div

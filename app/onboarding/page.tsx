@@ -443,10 +443,10 @@ export default function OnboardingPage() {
   )
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-background">
+    <div className="onboarding-shell flex min-h-[100dvh] flex-col bg-background">
       {/* ── Native Mobile Header with Safe Area Inset ── */}
       <header
-        className="sticky top-0 z-30 flex items-center justify-between border-b border-border/40 bg-background/85 px-4 backdrop-blur-xl shrink-0"
+        className="onboarding-header sticky top-0 z-30 flex items-center justify-between border-b border-border/40 bg-background/85 px-4 backdrop-blur-xl shrink-0"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
           height: 'calc(3.5rem + env(safe-area-inset-top, 0px))',
@@ -496,7 +496,7 @@ export default function OnboardingPage() {
       </header>
 
       {/* ── Scrollable Step Content Container ── */}
-      <div className="mx-auto flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-1 flex-col px-4 sm:px-6 md:px-8 pt-4 pb-36">
+      <div className="onboarding-content mx-auto flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-1 flex-col px-4 sm:px-6 md:px-8 pt-4 pb-36">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={step}
@@ -505,10 +505,14 @@ export default function OnboardingPage() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: direction * -60 }}
             transition={{ type: 'spring', stiffness: 340, damping: 32 }}
-            className="flex flex-1 flex-col"
+            className="onboarding-step flex flex-1 flex-col"
           >
             {step === 0 && (
               <div className="flex flex-1 flex-col pt-6">
+                <div className="onboarding-welcome-visual">
+                  <img src="/supportive-dormosaur.png" alt="Dormosaur ready for campus" width={220} height={220} />
+                  <span className="route-label">Campus day one</span>
+                </div>
                 <span className="mb-5 flex size-14 items-center justify-center rounded-3xl bg-accent text-accent-foreground">
                   <GraduationCap className="size-7" strokeWidth={1.8} />
                 </span>
@@ -602,7 +606,7 @@ export default function OnboardingPage() {
                                   type="button"
                                   onClick={() => handleSelectCountry(c)}
                                   className={cn(
-                                    'flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-[15px] font-medium transition-all',
+                                    'flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-[15px] font-medium transition-[color,background-color,border-color,box-shadow,transform]',
                                     isSelected ? 'bg-accent font-semibold text-accent-foreground' : 'text-foreground hover:bg-fill',
                                   )}
                                 >
@@ -635,7 +639,7 @@ export default function OnboardingPage() {
                               type="button"
                               onClick={() => setSelectedTimezone(tz.id)}
                               className={cn(
-                                'flex w-full items-center justify-between rounded-2xl p-3 text-left transition-all',
+                                'flex w-full items-center justify-between rounded-2xl p-3 text-left transition-[color,background-color,border-color,box-shadow,transform]',
                                 active ? 'bg-accent font-semibold text-accent-foreground' : 'hover:bg-fill text-foreground',
                               )}
                             >
@@ -687,7 +691,7 @@ export default function OnboardingPage() {
                         type="button"
                         onClick={() => toggleAppliance(opt.id)}
                         className={cn(
-                          'flex items-center justify-between rounded-2xl border p-4 text-left transition-all',
+                          'flex items-center justify-between rounded-2xl border p-4 text-left transition-[color,background-color,border-color,box-shadow,transform]',
                           isSelected
                             ? 'border-emerald-600/50 bg-emerald-500/12 text-foreground shadow-sm ring-1 ring-emerald-600/30'
                             : 'border-border/60 bg-card hover:bg-accent/40 text-foreground',
@@ -701,7 +705,7 @@ export default function OnboardingPage() {
                         </div>
                         <div
                           className={cn(
-                            'flex size-6 shrink-0 items-center justify-center rounded-full border transition-all',
+                            'flex size-6 shrink-0 items-center justify-center rounded-full border transition-[color,background-color,border-color,transform]',
                             isSelected
                               ? 'border-emerald-600 bg-emerald-600 text-white'
                               : 'border-muted-foreground/30 bg-background/50',
@@ -718,7 +722,7 @@ export default function OnboardingPage() {
                     type="button"
                     onClick={() => toggleAppliance('none')}
                     className={cn(
-                      'flex items-center justify-between rounded-2xl border p-4 text-left transition-all mt-1',
+                      'flex items-center justify-between rounded-2xl border p-4 text-left transition-[color,background-color,border-color,box-shadow,transform] mt-1',
                       selectedAppliances.length === 0
                         ? 'border-amber-500/50 bg-amber-500/12 text-foreground shadow-sm ring-1 ring-amber-500/30'
                         : 'border-border/60 bg-card hover:bg-accent/40 text-foreground',
@@ -732,7 +736,7 @@ export default function OnboardingPage() {
                     </div>
                     <div
                       className={cn(
-                        'flex size-6 shrink-0 items-center justify-center rounded-full border transition-all',
+                        'flex size-6 shrink-0 items-center justify-center rounded-full border transition-[color,background-color,border-color,transform]',
                         selectedAppliances.length === 0
                           ? 'border-amber-600 bg-amber-600 text-white'
                           : 'border-muted-foreground/30 bg-background/50',
@@ -769,7 +773,7 @@ export default function OnboardingPage() {
                           type="button"
                           onClick={() => setDietaryPref(item.id as DietaryPreference)}
                           className={cn(
-                            'flex items-center justify-between rounded-2xl border p-4 text-left transition-all active:scale-[0.99]',
+                            'flex items-center justify-between rounded-2xl border p-4 text-left transition-[color,background-color,border-color,box-shadow,transform] active:scale-[0.99]',
                             isSelected
                               ? 'border-emerald-600/50 bg-emerald-500/12 text-foreground shadow-sm ring-1 ring-emerald-600/30'
                               : 'border-border/60 bg-card hover:bg-accent/40 text-foreground',
@@ -783,7 +787,7 @@ export default function OnboardingPage() {
                           </div>
                           <div
                             className={cn(
-                              'flex size-6 shrink-0 items-center justify-center rounded-full border transition-all',
+                              'flex size-6 shrink-0 items-center justify-center rounded-full border transition-[color,background-color,border-color,transform]',
                               isSelected
                                 ? 'border-emerald-600 bg-emerald-600 text-white'
                                 : 'border-muted-foreground/30 bg-background/50',
@@ -868,7 +872,7 @@ export default function OnboardingPage() {
                         key={item.id}
                         type="button"
                         onClick={() => setMode(item.id as ImportMode)}
-                        className={`flex flex-col items-center justify-center gap-1 rounded-xl py-2 text-[11.5px] font-semibold transition-all ${
+                        className={`flex flex-col items-center justify-center gap-1 rounded-xl py-2 text-[11.5px] font-semibold transition-[color,background-color,border-color,box-shadow,transform] ${
                           active
                             ? 'bg-card text-foreground shadow-ios'
                             : 'text-muted-foreground hover:text-foreground'
@@ -943,7 +947,7 @@ export default function OnboardingPage() {
                         <div className="flex flex-col items-center gap-3">
                           <div className="relative overflow-hidden rounded-2xl border border-border bg-fill p-1.5">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={capturedImage} alt="Captured schedule" className="max-h-48 rounded-xl object-contain" />
+                            <img src={capturedImage} alt="Captured schedule" width={800} height={600} className="h-auto max-h-48 max-w-full rounded-xl object-contain" />
                             <button
                               type="button"
                               onClick={() => {
@@ -987,7 +991,7 @@ export default function OnboardingPage() {
                         <div className="flex flex-col items-center gap-3">
                           <div className="relative overflow-hidden rounded-2xl border border-border bg-fill p-1.5">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={capturedImage} alt="Photo" className="max-h-48 rounded-xl object-contain" />
+                            <img src={capturedImage} alt="Photo" width={800} height={600} className="h-auto max-h-48 max-w-full rounded-xl object-contain" />
                             <button
                               type="button"
                               onClick={() => {
@@ -1034,7 +1038,7 @@ export default function OnboardingPage() {
                             }
                             input.click()
                           }}
-                          className={`flex min-h-[160px] w-full cursor-pointer flex-col items-center justify-center gap-2.5 rounded-2xl border-2 border-dashed p-4 transition-all ${
+                          className={`flex min-h-[160px] w-full cursor-pointer flex-col items-center justify-center gap-2.5 rounded-2xl border-2 border-dashed p-4 transition-[color,background-color,border-color,box-shadow,transform] ${
                             dragOver ? 'border-primary bg-primary/5' : 'border-separator bg-fill hover:border-primary/50'
                           }`}
                         >
@@ -1146,7 +1150,7 @@ export default function OnboardingPage() {
 
       {/* ── Fixed Native Bottom Action Dock with Safe Area ── */}
       <div
-        className="fixed bottom-0 inset-x-0 z-30 border-t border-border/50 bg-background/90 backdrop-blur-2xl px-4 pt-3 transition-all"
+        className="fixed bottom-0 inset-x-0 z-30 border-t border-border/50 bg-background/90 backdrop-blur-2xl px-4 pt-3 transition-[background-color,border-color,box-shadow,transform]"
         style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 1rem))' }}
       >
         <div className="mx-auto flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-col gap-2">

@@ -24,7 +24,7 @@ export function RecipeCard({ recipe, index = 0 }: { recipe: Recipe; index?: numb
     >
       <Link
         href={`/kitchen/${recipe.slug}`}
-        className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-ios focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        className="recipe-card group flex flex-col overflow-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
       >
         <div className="relative aspect-[4/3] overflow-hidden">
           <Image
@@ -34,7 +34,7 @@ export function RecipeCard({ recipe, index = 0 }: { recipe: Recipe; index?: numb
             sizes="(min-width: 1024px) 320px, 50vw"
             className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
-          <span className="ios-glass absolute top-3 left-3 rounded-full px-2.5 py-1 text-[11.5px] font-semibold tracking-[0.02em] text-foreground">
+          <span className="recipe-card-tag absolute top-3 left-3 px-2.5 py-1 text-[11.5px] font-semibold tracking-[0.02em] text-foreground">
             {recipe.appliance}
           </span>
         </div>

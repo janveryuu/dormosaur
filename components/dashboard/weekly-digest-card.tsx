@@ -122,27 +122,26 @@ export function WeeklyDigestCard() {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-      className="relative overflow-hidden rounded-3xl border border-primary/25 bg-gradient-to-br from-[#1f6f50]/12 via-card to-card p-5 shadow-ios"
+      className="dashboard-section rounded-3xl border border-line bg-field p-5"
     >
-      {/* Decorative backdrop blur */}
-      <div className="absolute top-0 right-0 h-28 w-28 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
-
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <img
             src="/ai-dormosaur.png"
             alt="AI Dormosaur"
-            className="size-9 object-contain drop-shadow-xs shrink-0 select-none"
+            width={40}
+            height={40}
+            className="size-9 shrink-0 object-contain select-none"
           />
-          <span className="text-[12.5px] font-bold uppercase tracking-wider text-primary">
-            Weekly AI Digest
+          <span className="route-label">
+            Weekly route brief
           </span>
         </div>
         <button
           onClick={() => fetchDigest(true)}
           disabled={loading}
-          className="flex items-center gap-1.5 rounded-full bg-card border border-border px-2.5 py-1 text-[11px] font-semibold text-muted-foreground hover:text-foreground active:scale-95 disabled:opacity-50 transition-all shadow-sm"
+          className="flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-card px-3 text-[11px] font-bold text-muted-foreground transition-colors hover:text-foreground active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <RefreshCw className={`size-3 ${loading ? 'animate-spin text-primary' : ''}`} />
           <span>{loading ? 'Analyzing...' : 'Refresh'}</span>

@@ -39,7 +39,7 @@ export function IosToast({
         >
           <div
             className={cn(
-              'flex items-start gap-3.5 rounded-3xl p-4 shadow-ios-lg backdrop-blur-2xl border transition-all',
+              'flex items-start gap-3.5 rounded-3xl p-4 shadow-ios-lg backdrop-blur-2xl border transition-[color,background-color,border-color,box-shadow,transform,opacity]',
               toast.type === 'success'
                 ? 'bg-accent/95 border-primary/30 text-foreground'
                 : toast.type === 'error'

@@ -53,16 +53,16 @@ export function DeadlineCard({ deadline }: { deadline: DeadlineItem }) {
       exit={{ opacity: 0, scale: 0.94, height: 0, marginBottom: 0 }}
       transition={springSmooth}
       whileTap={buttonTapScale}
-      className="flex items-center gap-3.5 rounded-3xl bg-card p-4 shadow-ios"
+      className={`task-card ${deadline.completed ? 'is-complete' : ''}`}
     >
       <motion.button
         whileTap={{ scale: 0.88 }}
         onClick={() => toggleDeadlineCompleted(deadline.id)}
         aria-label={`Mark ${deadline.title} as ${deadline.completed ? 'incomplete' : 'complete'}`}
-        className={`flex size-7 shrink-0 items-center justify-center rounded-full border transition-colors ${
+        className={`task-card-check ${deadline.completed ? 'is-checked' : ''} flex size-7 shrink-0 items-center justify-center border transition-colors ${
           deadline.completed
-            ? 'border-primary bg-primary text-primary-foreground'
-            : 'border-border bg-fill'
+            ? 'text-primary-foreground'
+            : 'text-transparent'
         }`}
       >
         {deadline.completed && (
@@ -76,7 +76,7 @@ export function DeadlineCard({ deadline }: { deadline: DeadlineItem }) {
         )}
       </motion.button>
 
-      <span className={`h-9 w-1 shrink-0 rounded-full ${color.bg}`} />
+      <span className={`task-card-accent h-9 w-1 shrink-0 ${color.bg}`} />
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
@@ -88,7 +88,7 @@ export function DeadlineCard({ deadline }: { deadline: DeadlineItem }) {
             {deadline.title}
           </span>
           <span
-            className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.03em] ${color.soft} ${color.text}`}
+            className={`task-course-code shrink-0 ${color.soft} ${color.text}`}
           >
             {deadline.code}
           </span>
@@ -101,7 +101,7 @@ export function DeadlineCard({ deadline }: { deadline: DeadlineItem }) {
           </span>
           <span
             suppressHydrationWarning
-            className={`flex items-center gap-1 font-semibold ${
+            className={`task-card-countdown flex items-center gap-1 font-semibold ${
               deadline.completed
                 ? 'text-muted-foreground'
                 : urgent

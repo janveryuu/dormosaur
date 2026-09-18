@@ -35,7 +35,7 @@ export function RecipeDetailStats({
   return (
     <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
       {stats.map((stat) => (
-        <div key={stat.label} className="flex flex-col gap-1 rounded-2xl bg-card p-4 shadow-ios border border-border/50">
+        <div key={stat.label} className="recipe-stat flex flex-col gap-1 p-4">
           <dt className="flex items-center gap-1.5 text-[12.5px] font-medium text-muted-foreground">
             <stat.icon className="size-3.5" strokeWidth={2.2} />
             {stat.label}

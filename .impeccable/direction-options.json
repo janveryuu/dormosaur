@@ -1,0 +1,130 @@
+{
+  "title": "Choose Dormosaur's new visual world",
+  "question": "Choose the visual system that should guide the student-facing redesign, or re-roll for a new set.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "The Study Desk",
+      "kicker": "THE ROLL",
+      "lineage": "graph-paper study planners, pinned class strips, translucent highlighter marks",
+      "thesis": "Dormosaur turns a student's scattered week into one calm, living command sheet.",
+      "palette": ["#F4F7F1", "#14231B", "#277A4B", "#B7DD78", "#E9A84A"],
+      "materials": ["soft graph paper", "translucent highlighter", "matte paper strips", "inked grid marks"],
+      "viewport": "A mobile Today surface built on a quiet planning grid, with one prominent next-action strip, a compact week rail, and the mascot appearing as a small contextual guide rather than decoration.",
+      "risk": "It becomes childish or scrapbook-like if paper texture, stickers, and mascot moments are overused.",
+      "raised": [
+        {"from": "Emission Rail", "raise": "State is carried by line weight, position, and rhythm before color."},
+        {"from": "Seedbed Lobes", "raise": "Green owns meaningful regions instead of appearing as scattered accents."},
+        {"from": "Industrial Labels", "raise": "Controls use direct language and visibly honest states."}
+      ],
+      "comp": ".impeccable/mocks/decision/dormosaur-command-sheet.png"
+    },
+    {
+      "id": "model-pick",
+      "label": "Campus Departures",
+      "kicker": "IMPECCABLE'S PICK",
+      "lineage": "campus wayfinding, transit departure boards, room signage",
+      "thesis": "The interface behaves like a friendly campus departure system for classes, deadlines, alarms, and meals.",
+      "palette": ["#F3F6EF", "#15382B", "#2D7C4D", "#FFBC4A", "#56655D"],
+      "materials": ["matte enamel", "printed timetable strips", "directional signage", "tabular displays"],
+      "viewport": "A confident mobile dashboard leads with what happens next, followed by time, place, preparation, and one clear action, while desktop expands into a spatial weekly control board.",
+      "risk": "The system can become too utilitarian and may need carefully placed warmth in kitchen, onboarding, and empty states.",
+      "comp": ".impeccable/mocks/decision/campus-departures.png"
+    },
+    {
+      "id": "challenger-seedbed",
+      "label": "Green Field",
+      "verdict": "competitive",
+      "lineage": "saturated green fields with detached white utility objects",
+      "thesis": "Dormosaur becomes a bold green landscape with high-contrast tools floating above it.",
+      "palette": ["#75BE58", "#F4F1E7", "#FFFFFF", "#2D332F", "#F05E50"],
+      "materials": ["flat color fields", "white utility capsules", "large cream slabs"],
+      "viewport": "A green first viewport carries the next class and primary action, with the weekly plan rising from below as a structured cream workspace.",
+      "case": "Strong audience recognition and clear mobile actions, but its pill-heavy grammar is close to the generic styling this redesign must leave behind.",
+      "risk": "Without strict restraint it repeats the current rounded-card and floating-pill problem at a higher saturation.",
+      "comp": ".impeccable/mocks/decision/green-field.png",
+      "hero": "https://impeccable.style/worlds/cards/sd-seedbed-lobes-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/sd-seedbed-lobes.webp"
+    },
+    {
+      "id": "challenger-emission",
+      "label": "The Time Rail",
+      "verdict": "competitive",
+      "lineage": "calibrated instrument rails and emission-line diagrams",
+      "thesis": "Every commitment registers against one continuous time rail, with urgency shown through position and line form.",
+      "palette": ["#151B18", "#E9E9DF", "#3F9960", "#E6B94A", "#7897C5"],
+      "materials": ["charcoal continuum", "bone labels", "needle-thin signal lines"],
+      "viewport": "A mobile timeline shows now, next class, deadline pressure, and alarm readiness on one calibrated vertical rail; desktop rotates it into a full weekly instrument.",
+      "case": "Excellent product clarity and state discipline, but its scientific austerity identifies less naturally with everyday student life.",
+      "risk": "The interface could feel cold, technical, and visually tiring across cooking and onboarding surfaces.",
+      "comp": ".impeccable/mocks/decision/time-rail.png",
+      "hero": "https://impeccable.style/worlds/cards/operate-c-emission-line-rail-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/operate-c-emission-line-rail.webp"
+    },
+    {
+      "id": "challenger-industrial",
+      "label": "Literal Labels",
+      "verdict": "declined",
+      "lineage": "industrial streetwear labels and stockroom markings",
+      "thesis": "Every action and state says exactly what it is.",
+      "palette": ["#F6F6F2", "#171A18", "#2D7C4D", "#F07834"],
+      "materials": ["stenciled labels", "utility tags", "diagonal state marks"],
+      "viewport": "A literal task board labels every student action directly.",
+      "case": "Clear but too severe for a supportive daily companion.",
+      "kept": "Direct labels and visibly honest disabled states.",
+      "risk": "It can feel confrontational and fashion-coded rather than useful."
+    },
+    {
+      "id": "challenger-depth",
+      "label": "The Deep Dive",
+      "verdict": "declined",
+      "lineage": "vertical dive profiles and changing depth conditions",
+      "thesis": "A student's workload becomes a navigable descent through the day.",
+      "palette": ["#092632", "#E9F1EC", "#35B7A0", "#277A4B"],
+      "materials": ["depth bands", "floating particles", "instrument annotations"],
+      "viewport": "A vertical day profile moves from now through classes and deadlines.",
+      "case": "The progression is useful, but the ocean metaphor is unrelated to the product and mascot.",
+      "kept": "Time, context, and environmental change move together in one transition.",
+      "risk": "The metaphor would dominate the product and confuse routine tasks."
+    },
+    {
+      "id": "challenger-console",
+      "label": "Elbow Console",
+      "verdict": "declined",
+      "lineage": "flat-color starship utility panels",
+      "thesis": "Navigation becomes a set of bold connected banks and unmistakable states.",
+      "palette": ["#111714", "#77BC58", "#F0BD54", "#A6A5D8"],
+      "materials": ["flat control blocks", "thick routing elbows", "numeric labels"],
+      "viewport": "The dashboard is a connected utility panel for every student workflow.",
+      "case": "Operationally clear, but the science-fiction vocabulary does not identify with normal student life.",
+      "kept": "Strong topology and immediate flat-color state changes.",
+      "risk": "It would turn Dormosaur into a novelty control panel."
+    },
+    {
+      "id": "challenger-teletext",
+      "label": "Campus Teletext",
+      "verdict": "declined",
+      "lineage": "broadcast information pages and fixed character grids",
+      "thesis": "Every student workflow becomes a numbered information page.",
+      "palette": ["#101713", "#F1F4E9", "#45A667", "#E8C84F"],
+      "materials": ["character cells", "block mosaics", "broadcast labels"],
+      "viewport": "A compact index routes directly to schedule, deadlines, alarms, and meals.",
+      "case": "Dense and navigable, but too retro and rigid for a warm mobile companion.",
+      "kept": "Direct navigation and disciplined information density.",
+      "risk": "Accessibility and touch comfort suffer if the character grid becomes literal."
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "comp", "toggle": true},
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "A polished modern student productivity app with clean cards, green accents, and familiar mobile navigation.",
+    "palette": ["#F7F8F5", "#17211B", "#277A4B", "#FFFFFF"],
+    "materials": ["clean app grid", "soft cards", "simple iconography"],
+    "viewport": "A conventional greeting, next-class card, quick actions, and bottom navigation.",
+    "risk": "Clear and usable, but intentionally familiar and less distinct from other productivity apps.",
+    "comp": ".impeccable/mocks/decision/category-standard.png"
+  },
+  "steer": true
+}

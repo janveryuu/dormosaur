@@ -34,12 +34,14 @@ interface Props {
 }
 
 import { buttonTapScale, springSmooth } from '@/lib/motion-presets'
+import { useModalA11y } from '@/hooks/use-modal-a11y'
 
 export function AiRecipeModal({ recipe, onClose }: Props) {
   const { setMealPlanItem, addCustomGroceryItem } = useSchedule()
   const [completedSteps, setCompletedSteps] = React.useState<Record<number, boolean>>({})
   const [savedMealPlan, setSavedMealPlan] = React.useState(false)
   const [addedGrocery, setAddedGrocery] = React.useState(false)
+  const dialogRef = useModalA11y(Boolean(recipe), onClose)
 
   React.useEffect(() => {
     setCompletedSteps({})
@@ -71,6 +73,11 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         {/* Backdrop */}
         <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="generated-recipe-title"
+          tabIndex={-1}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -89,20 +96,22 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
         >
           {/* Close button */}
           <button
+            type="button"
             onClick={onClose}
-            className="absolute top-5 right-5 flex size-8 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="Close generated recipe"
+            className="absolute top-4 right-4 flex size-11 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground"
           >
             <X className="size-4.5" />
           </button>
 
           {/* Chef Dormosaur Badge */}
           <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-[11.5px] font-bold text-emerald-800 dark:text-emerald-300">
-            <img src="/chef-dormosaur.png" alt="Chef Dormosaur" className="size-6.5 object-contain drop-shadow-xs" />
+            <img src="/chef-dormosaur.png" alt="Chef Dormosaur" width={26} height={26} className="size-6.5 object-contain drop-shadow-xs" />
             <span>CHEF DORMOSAUR DISH-COVERY</span>
           </div>
 
           {/* Title */}
-          <h2 className="mt-3 text-[22px] font-bold tracking-tight text-foreground leading-snug">
+          <h2 id="generated-recipe-title" className="mt-3 pr-10 text-[22px] font-bold tracking-tight text-foreground leading-snug">
             {recipe.title}
           </h2>
 
@@ -145,17 +154,19 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
               {recipe.steps.map((step, idx) => {
                 const done = !!completedSteps[idx]
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={idx}
                     onClick={() => toggleStep(idx)}
-                    className={`flex items-start gap-3 rounded-2xl border p-3.5 cursor-pointer transition-all ${
+                    aria-pressed={done}
+                    className={`flex min-h-11 w-full items-start gap-3 rounded-2xl border p-3.5 text-left cursor-pointer transition-[border-color,background-color,opacity] ${
                       done
                         ? 'border-primary/40 bg-primary/5 opacity-75'
                         : 'border-border bg-card hover:border-primary/30'
                     }`}
                   >
-                    <button
-                      type="button"
+                    <span
+                      aria-hidden="true"
                       className={`flex size-6 shrink-0 items-center justify-center rounded-full border mt-0.5 transition-colors ${
                         done
                           ? 'border-primary bg-primary text-primary-foreground'
@@ -163,13 +174,13 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
                       }`}
                     >
                       <Check className="size-3.5 stroke-[3]" />
-                    </button>
+                    </span>
                     <div className="flex-1 text-[13.5px] leading-relaxed font-medium">
                       <span className={done ? 'line-through text-muted-foreground' : 'text-foreground'}>
                         {step.text}
                       </span>
                     </div>
-                  </div>
+                  </button>
                 )
               })}
             </div>
@@ -178,7 +189,7 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
           {/* Dorm Tip */}
           {recipe.dorm_tip && (
             <div className="mt-5 flex items-start gap-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 p-4 text-emerald-950 dark:text-emerald-200">
-              <img src="/chef-dormosaur.png" alt="Chef Dormosaur" className="size-12 shrink-0 object-contain drop-shadow-sm" />
+              <img src="/chef-dormosaur.png" alt="Chef Dormosaur" width={48} height={48} className="size-12 shrink-0 object-contain drop-shadow-sm" />
               <div>
                 <p className="text-[12px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">Chef Dormosaur Tip</p>
                 <p className="mt-0.5 text-[13px] leading-relaxed font-medium">{recipe.dorm_tip}</p>
@@ -189,15 +200,19 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
           {/* Action Buttons */}
           <div className="mt-6 grid grid-cols-2 gap-3">
             <button
+              type="button"
               onClick={handleAddGrocery}
-              className="flex items-center justify-center gap-1.5 rounded-full border border-border bg-fill py-3 text-[13.5px] font-semibold text-foreground hover:bg-secondary active:scale-95 transition-all"
+              aria-live="polite"
+              className="flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-border bg-fill py-3 text-[13.5px] font-semibold text-foreground hover:bg-secondary active:scale-95 transition-[background-color,transform]"
             >
               {addedGrocery ? <CheckCircle2 className="size-4 text-primary" /> : <ShoppingBag className="size-4" />}
               {addedGrocery ? 'Added to Grocery!' : 'Add to Grocery'}
             </button>
             <button
+              type="button"
               onClick={handleSaveToMealPlan}
-              className="flex items-center justify-center gap-1.5 rounded-full bg-primary py-3 text-[13.5px] font-semibold text-white shadow-ios hover:bg-[#1a6148] active:scale-95 transition-all"
+              aria-live="polite"
+              className="flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-primary py-3 text-[13.5px] font-semibold text-white shadow-ios hover:bg-[#1a6148] active:scale-95 transition-[background-color,transform]"
             >
               {savedMealPlan ? <Check className="size-4" /> : <Plus className="size-4" />}
               {savedMealPlan ? 'Saved to Plan!' : 'Save to Meal Plan'}

@@ -188,12 +188,12 @@ export default function SignUpPage() {
   // Verification Screen
   if (step === 'verify') {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-background px-6 py-12">
+      <div className="auth-shell flex min-h-screen w-full items-center justify-center px-6 py-12">
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: IOS_EASE }}
-          className="w-full max-w-md text-center bg-card p-8 rounded-3xl border border-border shadow-ios-lg"
+          className="auth-verification-card w-full max-w-md text-center p-8"
         >
           <div className="mb-6 flex justify-center">
             <div className="flex size-20 items-center justify-center rounded-full bg-primary/10">
@@ -263,23 +263,25 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="grid min-h-screen w-full lg:grid-cols-2 bg-background">
+    <div className="auth-shell grid min-h-screen w-full lg:grid-cols-2">
       {/* Left Column: Brand Panel (Hidden on Mobile, Visible on Desktop) */}
       <BrandPanel />
 
       {/* Right Column: Sign Up Form Container */}
-      <div className="flex items-center justify-center px-6 py-10 sm:px-12 lg:px-16">
+      <div className="auth-main flex items-center justify-center px-6 py-10 sm:px-12 lg:px-16">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: IOS_EASE }}
-          className="flex w-full max-w-md flex-col gap-6"
+          className="auth-form flex w-full max-w-md flex-col gap-6"
         >
           {/* Mobile Logo Header */}
           <div className="flex flex-col items-center gap-3 text-center lg:hidden">
             <img
               src="/android-chrome-192x192.png"
               alt="Dormosaur"
+              width={56}
+              height={56}
               className="size-14 rounded-2xl object-contain shadow-ios-md"
             />
           </div>
@@ -295,7 +297,7 @@ export default function SignUpPage() {
           </div>
 
           {/* Form Card */}
-          <div className="overflow-hidden rounded-3xl bg-card border border-border/80 shadow-ios-lg">
+          <div className="auth-form-card overflow-hidden">
             <div className="flex flex-col gap-0 divide-y divide-border/60">
               {/* Google Auth Button */}
               <div className="p-5">
@@ -329,68 +331,80 @@ export default function SignUpPage() {
               <form onSubmit={handleSignUp} className="flex flex-col gap-0 divide-y divide-border/60">
                 {/* Full Name */}
                 <div className="px-5 py-4">
-                  <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <label htmlFor="sign-up-name" className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Full Name
                   </label>
                   <input
+                    id="sign-up-name"
+                    name="name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Janver Manlapaz"
                     autoComplete="name"
                     required
-                    className="w-full bg-transparent text-[15.5px] font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
+                    className="min-h-11 w-full bg-transparent text-base font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
                   />
                 </div>
 
                 {/* School Email */}
                 <div className="px-5 py-4">
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                    <label htmlFor="sign-up-email" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       School Email
                     </label>
                     {detectedSchool ? (
-                      <span className="flex items-center gap-1 text-[11px] text-emerald-600 font-semibold">
+                      <span role="status" aria-live="polite" className="flex items-center gap-1 text-[11px] text-emerald-600 font-semibold">
                         <GraduationCap className="size-3.5" /> {detectedSchool}
                       </span>
                     ) : !isSchoolEmail && email.length > 5 ? (
-                      <span className="flex items-center gap-1 text-[11px] text-amber-600 font-semibold">
+                      <span role="status" aria-live="polite" className="flex items-center gap-1 text-[11px] text-amber-600 font-semibold">
                         <Info className="size-3" /> Non-school email
                       </span>
                     ) : null}
                   </div>
                   <input
+                    id="sign-up-email"
+                    name="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="24-01096@g.batstate.edu.ph"
                     autoComplete="email"
+                    spellCheck={false}
+                    aria-invalid={Boolean(error)}
+                    aria-describedby={error ? 'sign-up-error' : undefined}
                     required
-                    className="w-full bg-transparent text-[15.5px] font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
+                    className="min-h-11 w-full bg-transparent text-base font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
                   />
                 </div>
 
                 {/* Password with Strength Indicator */}
                 <div className="px-5 py-4">
-                  <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <label htmlFor="sign-up-password" className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Password
                   </label>
                   <div className="flex items-center gap-2">
                     <input
+                      id="sign-up-password"
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Min. 8 characters"
                       autoComplete="new-password"
                       minLength={8}
+                      aria-invalid={Boolean(error)}
+                      aria-describedby={error ? 'sign-up-error' : undefined}
                       required
-                      className="flex-1 bg-transparent text-[15.5px] font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
+                      className="min-h-11 min-w-0 flex-1 bg-transparent text-base font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      className="shrink-0 text-muted-foreground hover:text-foreground transition-colors p-1"
+                      className="flex size-11 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-pressed={showPassword}
                     >
                       {showPassword ? <EyeOff className="size-4.5" /> : <Eye className="size-4.5" />}
                     </button>
@@ -404,20 +418,13 @@ export default function SignUpPage() {
                   <input
                     type="checkbox"
                     id="terms"
+                    name="terms"
                     checked={agreed}
                     onChange={(e) => setAgreed(e.target.checked)}
-                    className="mt-0.5 size-4 rounded border-border text-primary focus:ring-primary accent-emerald-600 cursor-pointer"
+                    className="size-5 shrink-0 rounded border-border text-primary focus:ring-primary accent-emerald-600 cursor-pointer"
                   />
-                  <label htmlFor="terms" className="text-[13px] text-muted-foreground leading-snug cursor-pointer select-none">
-                    I agree to Dormosaur&apos;s{' '}
-                    <Link href="#" className="font-semibold text-foreground underline underline-offset-2 hover:text-primary">
-                      Terms of Service
-                    </Link>{' '}
-                    and{' '}
-                    <Link href="#" className="font-semibold text-foreground underline underline-offset-2 hover:text-primary">
-                      Privacy Policy
-                    </Link>
-                    .
+                  <label htmlFor="terms" className="flex min-h-11 items-center text-[13px] text-muted-foreground leading-snug cursor-pointer select-none">
+                    I agree to Dormosaur&apos;s Terms of Service and Privacy Policy.
                   </label>
                 </div>
 
@@ -425,6 +432,8 @@ export default function SignUpPage() {
                 <AnimatePresence>
                   {error && (
                     <motion.div
+                      id="sign-up-error"
+                      role="alert"
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
@@ -463,7 +472,7 @@ export default function SignUpPage() {
             Already have an account?{' '}
             <Link
               href="/sign-in"
-              className="font-bold text-primary underline-offset-2 hover:underline"
+              className="inline-flex min-h-11 items-center font-bold text-primary underline-offset-2 hover:underline"
             >
               Sign in
             </Link>

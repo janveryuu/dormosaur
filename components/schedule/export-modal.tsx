@@ -6,15 +6,22 @@ import { Calendar, Download, ExternalLink, X } from 'lucide-react'
 import { downloadIcsFile, getGoogleCalendarUrl } from '@/lib/ical'
 import { PillButton } from '@/components/ios/pill-button'
 import { useSchedule } from '@/components/schedule-provider'
+import { useModalA11y } from '@/hooks/use-modal-a11y'
 
 export function ExportModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { classes } = useSchedule()
+  const dialogRef = useModalA11y(open, onClose)
 
   return (
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="export-schedule-title"
+            tabIndex={-1}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -34,12 +41,13 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
                 <span className="flex size-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
                   <Calendar className="size-5" strokeWidth={2} />
                 </span>
-                <h3 className="text-[19px] font-semibold tracking-[-0.02em]">Export Schedule</h3>
+                <h2 id="export-schedule-title" className="text-[19px] font-semibold tracking-[-0.02em]">Export Schedule</h2>
               </div>
               <button
+                type="button"
                 onClick={onClose}
-                aria-label="Close"
-                className="flex size-8 items-center justify-center rounded-full bg-fill text-muted-foreground transition-colors hover:text-foreground"
+                aria-label="Close export schedule"
+                className="flex size-11 items-center justify-center rounded-full bg-fill text-muted-foreground transition-colors hover:text-foreground"
               >
                 <X className="size-4" />
               </button>

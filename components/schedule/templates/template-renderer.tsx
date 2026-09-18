@@ -40,7 +40,7 @@ export function TemplateRenderer({
   return (
     <div
       id="schedule-export-artboard"
-      className={`relative w-full overflow-hidden rounded-3xl shadow-xl transition-all duration-300 ${aspectClass}`}
+      className={`relative w-full overflow-hidden rounded-3xl shadow-xl transition-[box-shadow,transform] duration-300 ${aspectClass}`}
     >
       {templateId === 'simple-modern' && <SimpleModernTemplate classes={classes} />}
       {templateId === 'ultra-pink' && <UltraPinkTemplate classes={classes} name={name} school={school} />}

@@ -138,7 +138,7 @@ export function ExportPreviewView({
                     key={fmt}
                     type="button"
                     onClick={() => setFormat(fmt)}
-                    className={`rounded-lg py-1.5 text-[13px] font-bold uppercase transition-all ${
+                    className={`min-h-11 rounded-lg py-1.5 text-[13px] font-bold uppercase transition-[color,background-color,border-color,box-shadow,transform] ${
                       format === fmt
                         ? 'bg-card text-foreground shadow-xs'
                         : 'text-muted-foreground hover:text-foreground'
@@ -165,7 +165,7 @@ export function ExportPreviewView({
                     key={preset.id}
                     type="button"
                     onClick={() => setPresetSize(preset.id as PresetSize)}
-                    className={`rounded-lg py-1.5 text-[12px] font-bold transition-all ${
+                    className={`min-h-11 rounded-lg py-1.5 text-[12px] font-bold transition-[color,background-color,border-color,box-shadow,transform] ${
                       presetSize === preset.id
                         ? 'bg-card text-foreground shadow-xs'
                         : 'text-muted-foreground hover:text-foreground'
@@ -229,7 +229,7 @@ export function ExportPreviewView({
             type="button"
             onClick={handleDownload}
             disabled={isExporting}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-600 font-semibold text-white shadow-md transition-all hover:bg-emerald-700 active:scale-[0.99] disabled:opacity-60"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-600 font-semibold text-white shadow-md transition-[color,background-color,box-shadow,transform,opacity] hover:bg-emerald-700 active:scale-[0.99] disabled:opacity-60"
           >
             {isExporting ? (
               <>

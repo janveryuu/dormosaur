@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { buttonTapScale, chipTapScale, springLayout, springButton } from '@/lib/motion-presets'
 
@@ -17,8 +17,6 @@ export function SegmentedControl<T extends string>({
   className?: string
   layoutId?: string
 }) {
-  const reduce = useReducedMotion()
-
   return (
     <div
       role="tablist"
@@ -32,11 +30,11 @@ export function SegmentedControl<T extends string>({
             type="button"
             role="tab"
             aria-selected={active}
-            whileTap={reduce ? undefined : buttonTapScale}
-            whileHover={reduce || active ? undefined : { scale: 1.015 }}
+            whileTap={buttonTapScale}
+            whileHover={active ? undefined : { scale: 1.015 }}
             transition={springButton}
             onClick={() => onChange(option.value)}
-            className="relative flex-1 min-w-0 rounded-full px-2 py-2 text-[13.5px] font-semibold tracking-[-0.01em] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="relative min-h-11 min-w-0 flex-1 rounded-full px-2 py-2 text-[13.5px] font-semibold tracking-[-0.01em] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {active && (
               <motion.span
@@ -69,17 +67,15 @@ export function FilterChip({
   active?: boolean
   onClick?: () => void
 }) {
-  const reduce = useReducedMotion()
-
   return (
     <motion.button
       type="button"
-      whileTap={reduce ? undefined : chipTapScale}
-      whileHover={reduce ? undefined : { scale: 1.025, y: -1 }}
+      whileTap={chipTapScale}
+      whileHover={{ scale: 1.025, y: -1 }}
       transition={springButton}
       onClick={onClick}
       className={cn(
-        'shrink-0 rounded-full px-4 py-2 text-[13.5px] font-medium transition-colors select-none cursor-pointer',
+        'min-h-11 shrink-0 rounded-full px-4 py-2 text-[13.5px] font-medium transition-colors select-none cursor-pointer',
         active
           ? 'bg-primary text-primary-foreground shadow-[0_4px_12px_-2px_rgba(31,111,80,0.4)]'
           : 'bg-card text-muted-foreground shadow-ios hover:text-foreground hover:bg-fill/60',

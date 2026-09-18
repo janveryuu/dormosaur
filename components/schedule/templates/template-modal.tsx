@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import type { ScheduleTemplateId } from '@/lib/template-registry'
 import { TemplatePickerView } from './template-picker-view'
 import { ExportPreviewView } from './export-preview-view'
+import { useModalA11y } from '@/hooks/use-modal-a11y'
 
 interface TemplateModalProps {
   open: boolean
@@ -16,6 +17,7 @@ type ModalStep = 'picker' | 'export'
 export function TemplateModal({ open, onClose }: TemplateModalProps) {
   const [step, setStep] = React.useState<ModalStep>('picker')
   const [selectedTemplate, setSelectedTemplate] = React.useState<ScheduleTemplateId>('simple-modern')
+  const dialogRef = useModalA11y(open, onClose)
 
   // Reset to picker when closed
   React.useEffect(() => {
@@ -30,6 +32,11 @@ export function TemplateModal({ open, onClose }: TemplateModalProps) {
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
           {/* Backdrop */}
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Choose and export a schedule template"
+            tabIndex={-1}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

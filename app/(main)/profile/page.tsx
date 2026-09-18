@@ -15,6 +15,7 @@ import {
   GraduationCap,
   Image as ImageIcon,
   Loader2,
+  LockKeyhole,
   LogOut,
   Moon,
   Palette,
@@ -53,6 +54,7 @@ import { getDeviceLabel } from '@/lib/ua-parser'
 import { IosToast, type ToastMessage } from '@/components/ios/toast'
 import { cropAndCompressAvatar } from '@/lib/image-utils'
 import { cn } from '@/lib/utils'
+import { useModalA11y } from '@/hooks/use-modal-a11y'
 
 const spring = { type: 'spring' as const, stiffness: 500, damping: 30 }
 
@@ -239,6 +241,14 @@ export default function ProfilePage() {
 
   // Reset Demo Data Modal
   const [isResetModalOpen, setIsResetModalOpen] = React.useState(false)
+  const schoolDialogRef = useModalA11y(isSchoolModalOpen, () => setIsSchoolModalOpen(false))
+  const kitchenDialogRef = useModalA11y(isKitchenModalOpen, () => setIsKitchenModalOpen(false))
+  const dietaryDialogRef = useModalA11y(isDietaryModalOpen, () => setIsDietaryModalOpen(false))
+  const yearDialogRef = useModalA11y(isYearModalOpen, () => setIsYearModalOpen(false))
+  const editDialogRef = useModalA11y(isEditModalOpen, () => setIsEditModalOpen(false))
+  const countryDialogRef = useModalA11y(isCountryModalOpen, () => setIsCountryModalOpen(false))
+  const privacyDialogRef = useModalA11y(isPrivacyModalOpen, () => setIsPrivacyModalOpen(false))
+  const resetDialogRef = useModalA11y(isResetModalOpen, () => setIsResetModalOpen(false))
 
   // Devices & Push state
   const [signingOut, setSigningOut] = React.useState(false)
@@ -761,7 +771,7 @@ export default function ProfilePage() {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
           onClick={() => setIsEditModalOpen(true)}
-          className="group relative flex cursor-pointer items-center gap-4.5 rounded-4xl bg-card p-5 shadow-ios-lg border border-border/50 hover:border-primary/40 transition-all"
+          className="profile-identity-card group relative flex cursor-pointer items-center gap-4.5"
         >
           {/* Avatar Container with Camera Overlay */}
           <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -769,6 +779,8 @@ export default function ProfilePage() {
               <img
                 src={profile.avatar_url}
                 alt={profile.name || 'User Avatar'}
+                width={96}
+                height={96}
                 className="size-16 rounded-full object-cover shadow-ios-sm ring-2 ring-primary/20 transition-transform group-hover:scale-105"
               />
             ) : (
@@ -780,7 +792,7 @@ export default function ProfilePage() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploadingAvatar}
-              className="absolute -bottom-1 -right-1 flex size-6.5 items-center justify-center rounded-full bg-card border border-border/80 shadow-ios-sm text-foreground hover:bg-primary hover:text-white active:scale-90 transition-all"
+              className="absolute -bottom-2 -right-2 flex size-11 items-center justify-center rounded-full bg-card border border-border/80 shadow-ios-sm text-foreground hover:bg-primary hover:text-white active:scale-90 transition-[color,background-color,border-color,box-shadow,transform]"
               title="Upload profile photo"
             >
               {isUploadingAvatar ? (
@@ -982,7 +994,7 @@ export default function ProfilePage() {
                       <button
                         type="button"
                         onClick={() => handleRemoveDevice(d.id, d.endpoint)}
-                        className="rounded-full bg-muted/80 px-2.5 py-1 text-[11.5px] font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive active:scale-95 transition-all"
+                        className="min-h-11 rounded-full bg-muted/80 px-2.5 py-1 text-[11.5px] font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive active:scale-95 transition-[color,background-color,transform]"
                       >
                         Remove
                       </button>
@@ -1077,7 +1089,7 @@ export default function ProfilePage() {
             transition={spring}
             onClick={handleSignOut}
             disabled={signingOut}
-            className="flex w-full items-center justify-center gap-2.5 rounded-2xl md:rounded-3xl bg-secondary/80 hover:bg-secondary border border-border/60 py-3.5 sm:py-4 text-[15px] font-semibold text-foreground/80 hover:text-foreground active:scale-[0.99] disabled:opacity-60 transition-all shadow-ios-sm cursor-pointer"
+            className="flex w-full items-center justify-center gap-2.5 rounded-2xl md:rounded-3xl bg-secondary/80 hover:bg-secondary border border-border/60 py-3.5 sm:py-4 text-[15px] font-semibold text-foreground/80 hover:text-foreground active:scale-[0.99] disabled:opacity-60 transition-[color,background-color,border-color,box-shadow,transform,opacity] shadow-ios-sm cursor-pointer"
           >
             {signingOut ? (
               <Loader2 className="size-4 animate-spin text-primary" />
@@ -1101,6 +1113,11 @@ export default function ProfilePage() {
               className="absolute inset-0 bg-black/60 backdrop-blur-md"
             />
             <motion.div
+              ref={schoolDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Select university or school"
+              tabIndex={-1}
               initial={{ opacity: 0, scale: 0.95, y: 14 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
@@ -1118,8 +1135,10 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setIsSchoolModalOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
+                  aria-label="Close school selection"
+                  className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -1136,7 +1155,7 @@ export default function ProfilePage() {
                       value={customSchool}
                       onChange={(e) => setCustomSchool(e.target.value)}
                       placeholder="e.g. NU LIPA or Batangas State University"
-                      className="w-full rounded-2xl border border-border/80 bg-fill px-4 py-2.5 text-[14px] outline-none focus:border-primary"
+                      className="min-h-11 w-full rounded-2xl border border-border/80 bg-fill px-4 py-2.5 text-base outline-none focus:border-primary"
                     />
                     <button
                       onClick={() => {
@@ -1145,7 +1164,7 @@ export default function ProfilePage() {
                           setIsSchoolModalOpen(false)
                         }
                       }}
-                      className="rounded-2xl bg-primary px-4 py-2.5 text-[13.5px] font-bold text-primary-foreground shadow-sm hover:bg-primary/90"
+                      className="min-h-11 rounded-2xl bg-primary px-4 py-2.5 text-[13.5px] font-bold text-primary-foreground shadow-sm hover:bg-primary/90"
                     >
                       Save
                     </button>
@@ -1163,7 +1182,7 @@ export default function ProfilePage() {
                       value={schoolSearch}
                       onChange={(e) => setSchoolSearch(e.target.value)}
                       placeholder="Filter schools..."
-                      className="w-full rounded-2xl border border-border/60 bg-fill pl-9 pr-4 py-2 text-[13px] outline-none focus:border-primary"
+                      className="min-h-11 w-full rounded-2xl border border-border/60 bg-fill pl-9 pr-4 py-2 text-base outline-none focus:border-primary"
                     />
                   </div>
                 </div>
@@ -1180,7 +1199,7 @@ export default function ProfilePage() {
                         setIsSchoolModalOpen(false)
                       }}
                       className={cn(
-                        'flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition-all',
+                        'flex min-h-11 w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition-[color,background-color,border-color,box-shadow,transform]',
                         isSelected ? 'bg-primary/10 font-bold text-primary' : 'hover:bg-accent/40 text-foreground'
                       )}
                     >
@@ -1207,6 +1226,11 @@ export default function ProfilePage() {
               className="absolute inset-0 bg-black/60 backdrop-blur-md"
             />
             <motion.div
+              ref={kitchenDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Select dorm appliances"
+              tabIndex={-1}
               initial={{ opacity: 0, scale: 0.95, y: 14 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
@@ -1224,8 +1248,10 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setIsKitchenModalOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
+                  aria-label="Close appliance selection"
+                  className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -1244,7 +1270,7 @@ export default function ProfilePage() {
                         )
                       }}
                       className={cn(
-                        'flex items-center justify-between rounded-xl border p-3 text-left transition-all',
+                        'flex min-h-11 items-center justify-between rounded-xl border p-3 text-left transition-[color,background-color,border-color,box-shadow,transform]',
                         isSelected
                           ? 'border-emerald-600/40 bg-emerald-500/10 font-semibold text-foreground ring-1 ring-emerald-600/30'
                           : 'border-border/60 bg-fill text-foreground hover:bg-accent/40',
@@ -1253,7 +1279,7 @@ export default function ProfilePage() {
                       <span className="text-[13.5px]">{opt.label}</span>
                       <div
                         className={cn(
-                          'flex size-5 items-center justify-center rounded-full border transition-all',
+                          'flex size-5 items-center justify-center rounded-full border transition-[color,background-color,border-color,transform]',
                           isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-muted-foreground/30',
                         )}
                       >
@@ -1268,7 +1294,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsKitchenModalOpen(false)}
-                  className="rounded-full px-4 py-2 text-[13.5px] font-semibold text-muted-foreground hover:bg-muted"
+                  className="min-h-11 rounded-full px-4 py-2 text-[13.5px] font-semibold text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>
@@ -1290,7 +1316,7 @@ export default function ProfilePage() {
                       message: `Filtered to ${formatApplianceSummary(tempAppliances)}`,
                     })
                   }}
-                  className="rounded-full bg-emerald-600 px-5 py-2 text-[13.5px] font-bold text-white shadow-sm hover:bg-emerald-700 active:scale-95 transition-transform"
+                  className="min-h-11 rounded-full bg-emerald-600 px-5 py-2 text-[13.5px] font-bold text-white shadow-sm hover:bg-emerald-700 active:scale-95 transition-transform"
                 >
                   Save Kitchen Setup
                 </button>
@@ -1312,6 +1338,11 @@ export default function ProfilePage() {
               className="absolute inset-0 bg-black/60 backdrop-blur-md"
             />
             <motion.div
+              ref={dietaryDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Choose dietary preference"
+              tabIndex={-1}
               initial={{ opacity: 0, scale: 0.95, y: 14 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
@@ -1329,8 +1360,10 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setIsDietaryModalOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
+                  aria-label="Close dietary preferences"
+                  className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -1350,7 +1383,7 @@ export default function ProfilePage() {
                       type="button"
                       onClick={() => setTempDietaryPref(opt.id as DietaryPreference)}
                       className={cn(
-                        'flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all',
+                        'flex min-h-11 w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-[color,background-color,border-color,box-shadow,transform]',
                         isSelected
                           ? 'border-emerald-600/40 bg-emerald-500/10 font-semibold text-foreground ring-1 ring-emerald-600/30'
                           : 'border-border/60 bg-fill text-foreground hover:bg-accent/40',
@@ -1359,7 +1392,7 @@ export default function ProfilePage() {
                       <span className="text-[14px] font-medium">{opt.label}</span>
                       <div
                         className={cn(
-                          'flex size-5 items-center justify-center rounded-full border transition-all',
+                          'flex size-5 items-center justify-center rounded-full border transition-[color,background-color,border-color,transform]',
                           isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-muted-foreground/30',
                         )}
                       >
@@ -1379,7 +1412,7 @@ export default function ProfilePage() {
                       value={tempDietaryNote}
                       onChange={(e) => setTempDietaryNote(e.target.value)}
                       placeholder="e.g. dairy-free, no nuts, no shellfish"
-                      className="w-full rounded-xl border border-border/80 bg-fill px-3.5 py-2.5 text-[13.5px] focus:border-emerald-600 focus:outline-none"
+                      className="min-h-11 w-full rounded-xl border border-border/80 bg-fill px-3.5 py-2.5 text-base focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
                 )}
@@ -1389,7 +1422,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsDietaryModalOpen(false)}
-                  className="rounded-full px-4 py-2 text-[13.5px] font-semibold text-muted-foreground hover:bg-muted"
+                  className="min-h-11 rounded-full px-4 py-2 text-[13.5px] font-semibold text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>
@@ -1418,7 +1451,7 @@ export default function ProfilePage() {
                       message: `Saved as ${formatDietarySummary(tempDietaryPref, tempDietaryNote)}`,
                     })
                   }}
-                  className="rounded-full bg-emerald-600 px-5 py-2 text-[13.5px] font-bold text-white shadow-sm hover:bg-emerald-700 active:scale-95 transition-transform"
+                  className="min-h-11 rounded-full bg-emerald-600 px-5 py-2 text-[13.5px] font-bold text-white shadow-sm hover:bg-emerald-700 active:scale-95 transition-transform"
                 >
                   Save Preference
                 </button>
@@ -1440,6 +1473,11 @@ export default function ProfilePage() {
               className="absolute inset-0 bg-black/60 backdrop-blur-md"
             />
             <motion.div
+              ref={yearDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Choose year level"
+              tabIndex={-1}
               initial={{ opacity: 0, scale: 0.95, y: 14 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
@@ -1457,8 +1495,10 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setIsYearModalOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
+                  aria-label="Close year selection"
+                  className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -1476,7 +1516,7 @@ export default function ProfilePage() {
                         setIsYearModalOpen(false)
                       }}
                       className={cn(
-                        'flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all',
+                        'flex min-h-11 w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-[color,background-color,border-color,box-shadow,transform]',
                         isSelected
                           ? 'border-primary/40 bg-primary/10 font-semibold text-foreground ring-1 ring-primary/30'
                           : 'border-border/60 bg-fill text-foreground hover:bg-accent/40'
@@ -1485,7 +1525,7 @@ export default function ProfilePage() {
                       <span className="text-[14.5px] font-medium">{opt}</span>
                       <div
                         className={cn(
-                          'flex size-5 items-center justify-center rounded-full border transition-all',
+                          'flex size-5 items-center justify-center rounded-full border transition-[color,background-color,border-color,transform]',
                           isSelected ? 'border-primary bg-primary text-white' : 'border-muted-foreground/30'
                         )}
                       >
@@ -1502,7 +1542,7 @@ export default function ProfilePage() {
                       await updateProfileField('year', '')
                       setIsYearModalOpen(false)
                     }}
-                    className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-2xl border border-dashed border-border/80 p-3 text-[13px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all"
+                    className="mt-2 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-2xl border border-dashed border-border/80 p-3 text-[13px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-[color,background-color,border-color,transform]"
                   >
                     <RotateCcw className="size-3.5" />
                     Clear / Leave Unset
@@ -1536,6 +1576,11 @@ export default function ProfilePage() {
               className="absolute inset-0 bg-black/60 backdrop-blur-md"
             />
             <motion.div
+              ref={editDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Edit full profile"
+              tabIndex={-1}
               initial={{ opacity: 0, scale: 0.95, y: 14 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
@@ -1553,8 +1598,10 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
+                  aria-label="Close profile editor"
+                  className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -1568,6 +1615,8 @@ export default function ProfilePage() {
                       <img
                         src={profile.avatar_url}
                         alt={modalDraft.name || 'User Avatar'}
+                        width={80}
+                        height={80}
                         className="size-14 rounded-full object-cover shadow-xs"
                       />
                     ) : (
@@ -1584,7 +1633,7 @@ export default function ProfilePage() {
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploadingAvatar}
-                        className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-[12px] font-bold text-primary-foreground shadow-xs hover:bg-primary/90 transition-all"
+                        className="flex min-h-11 items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-[12px] font-bold text-primary-foreground shadow-xs hover:bg-primary/90 transition-[color,background-color,box-shadow,transform]"
                       >
                         {isUploadingAvatar ? (
                           <>
@@ -1602,7 +1651,7 @@ export default function ProfilePage() {
                         <button
                           type="button"
                           onClick={handleRemoveAvatar}
-                          className="flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[12px] font-medium text-rose-800 dark:text-rose-400 hover:bg-rose-500/10 transition-all"
+                          className="flex min-h-11 items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[12px] font-medium text-rose-800 dark:text-rose-400 hover:bg-rose-500/10 transition-[color,background-color,border-color,transform]"
                         >
                           <Trash2 className="size-3" />
                           Remove
@@ -1620,7 +1669,7 @@ export default function ProfilePage() {
                     type="text"
                     value={modalDraft.name}
                     onChange={(e) => setModalDraft({ ...modalDraft, name: e.target.value })}
-                    className="w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-[15px] font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                    className="min-h-11 w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-base font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                     placeholder="Janver Manlapaz"
                   />
                 </div>
@@ -1633,7 +1682,7 @@ export default function ProfilePage() {
                     type="text"
                     value={modalDraft.school}
                     onChange={(e) => setModalDraft({ ...modalDraft, school: e.target.value })}
-                    className="w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-[15px] font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                    className="min-h-11 w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-base font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                     placeholder="Batangas State University"
                   />
                 </div>
@@ -1647,7 +1696,7 @@ export default function ProfilePage() {
                       type="text"
                       value={modalDraft.dorm}
                       onChange={(e) => setModalDraft({ ...modalDraft, dorm: e.target.value })}
-                      className="w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-[15px] font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                      className="min-h-11 w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-base font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                       placeholder="Dorm Room"
                     />
                   </div>
@@ -1659,7 +1708,7 @@ export default function ProfilePage() {
                       <select
                         value={modalDraft.year}
                         onChange={(e) => setModalDraft({ ...modalDraft, year: e.target.value })}
-                        className="w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-[15px] font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer text-foreground"
+                        className="min-h-11 w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-base font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer text-foreground"
                       >
                         <option value="">Select year level</option>
                         {YEAR_OPTIONS.map((opt) => (
@@ -1682,7 +1731,7 @@ export default function ProfilePage() {
                       type="text"
                       value={modalDraft.country}
                       onChange={(e) => setModalDraft({ ...modalDraft, country: e.target.value.toUpperCase() })}
-                      className="w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-[15px] font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary uppercase"
+                      className="min-h-11 w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-base font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary uppercase"
                       placeholder="PH"
                     />
                   </div>
@@ -1694,7 +1743,7 @@ export default function ProfilePage() {
                       type="text"
                       value={modalDraft.timezone}
                       onChange={(e) => setModalDraft({ ...modalDraft, timezone: e.target.value })}
-                      className="w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-[15px] font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                      className="min-h-11 w-full rounded-2xl border border-border/80 bg-fill px-4 py-3 text-base font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                       placeholder="Asia/Manila"
                     />
                   </div>
@@ -1705,14 +1754,14 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="rounded-full px-5 py-2.5 text-[14px] font-semibold text-muted-foreground hover:bg-muted"
+                  className="min-h-11 rounded-full px-5 py-2.5 text-[14px] font-semibold text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveFullProfile}
-                  className="rounded-full bg-primary px-6 py-2.5 text-[14px] font-bold text-primary-foreground shadow-ios hover:bg-primary/90 active:scale-95 transition-transform"
+                  className="min-h-11 rounded-full bg-primary px-6 py-2.5 text-[14px] font-bold text-primary-foreground shadow-ios hover:bg-primary/90 active:scale-95 transition-transform"
                 >
                   Save Profile
                 </button>
@@ -1734,6 +1783,11 @@ export default function ProfilePage() {
               className="absolute inset-0 bg-black/60 backdrop-blur-md"
             />
             <motion.div
+              ref={countryDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Select study country"
+              tabIndex={-1}
               initial={{ opacity: 0, scale: 0.95, y: 14 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
@@ -1746,8 +1800,10 @@ export default function ProfilePage() {
                   <h3 className="text-[18px] font-bold">Select Study Country</h3>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setIsCountryModalOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
+                  aria-label="Close country selection"
+                  className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -1758,7 +1814,7 @@ export default function ProfilePage() {
                 value={countrySearch}
                 onChange={(e) => setCountrySearch(e.target.value)}
                 placeholder="Search country or code (e.g. Philippines, PH)"
-                className="my-3 w-full rounded-2xl border border-border/80 bg-fill px-4 py-2.5 text-[14px] outline-none focus:border-primary"
+                className="my-3 min-h-11 w-full rounded-2xl border border-border/80 bg-fill px-4 py-2.5 text-base outline-none focus:border-primary"
               />
 
               <div className="my-2 max-h-[50vh] overflow-y-auto space-y-1 pr-1">
@@ -1778,7 +1834,7 @@ export default function ProfilePage() {
                         })
                       }}
                       className={cn(
-                        'flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition-all',
+                        'flex min-h-11 w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition-[color,background-color,border-color,box-shadow,transform]',
                         isSelected ? 'bg-primary/10 font-bold text-primary' : 'hover:bg-accent/40 text-foreground'
                       )}
                     >
@@ -1811,6 +1867,11 @@ export default function ProfilePage() {
               className="absolute inset-0 bg-black/60 backdrop-blur-md"
             />
             <motion.div
+              ref={privacyDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Privacy and security"
+              tabIndex={-1}
               initial={{ opacity: 0, scale: 0.95, y: 14 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
@@ -1825,8 +1886,10 @@ export default function ProfilePage() {
                   <h3 className="text-[18px] font-bold">Privacy & Security</h3>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setIsPrivacyModalOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
+                  aria-label="Close privacy details"
+                  className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -1834,20 +1897,21 @@ export default function ProfilePage() {
 
               <div className="my-4 space-y-3.5 text-[14px] leading-relaxed text-muted-foreground">
                 <p>
-                  <strong className="text-foreground">🔒 Row Level Security (RLS)</strong>: Your student profile, class schedule, and alarms are isolated so only your authenticated user ID can read or write data.
+                  <strong className="inline-flex items-center gap-1.5 text-foreground"><LockKeyhole className="size-4" aria-hidden="true" /> Row Level Security (RLS)</strong>: Your student profile, class schedule, and alarms are isolated so only your authenticated user ID can read or write data.
                 </p>
                 <p>
-                  <strong className="text-foreground">⚡ Local-First Cache</strong>: Your timetable is cached in browser local storage for instant offline access even without WiFi.
+                  <strong className="inline-flex items-center gap-1.5 text-foreground"><Zap className="size-4" aria-hidden="true" /> Local-First Cache</strong>: Your timetable is cached in browser local storage for instant offline access even without WiFi.
                 </p>
                 <p>
-                  <strong className="text-foreground">🛡️ Zero Ads & Tracking</strong>: Dormosaur is built exclusively for student utility. We never track your personal data or sell info to third parties.
+                  <strong className="inline-flex items-center gap-1.5 text-foreground"><ShieldCheck className="size-4" aria-hidden="true" /> Zero Ads & Tracking</strong>: Dormosaur is built exclusively for student utility. We never track your personal data or sell info to third parties.
                 </p>
               </div>
 
               <div className="pt-3 flex justify-end border-t border-border">
                 <button
+                  type="button"
                   onClick={() => setIsPrivacyModalOpen(false)}
-                  className="rounded-full bg-primary px-5 py-2 text-[13.5px] font-bold text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-95 transition-transform"
+                  className="min-h-11 rounded-full bg-primary px-5 py-2 text-[13.5px] font-bold text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-95 transition-transform"
                 >
                   Got It
                 </button>
@@ -1869,6 +1933,11 @@ export default function ProfilePage() {
               className="absolute inset-0 bg-black/60 backdrop-blur-md"
             />
             <motion.div
+              ref={resetDialogRef}
+              role="alertdialog"
+              aria-modal="true"
+              aria-label="Restore demo data"
+              tabIndex={-1}
               initial={{ opacity: 0, scale: 0.95, y: 14 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 14 }}
@@ -1883,8 +1952,10 @@ export default function ProfilePage() {
                   <h3 className="text-[18px] font-bold">Restore Demo Data?</h3>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setIsResetModalOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
+                  aria-label="Close restore demo data confirmation"
+                  className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                   <X className="size-4" />
                 </button>
@@ -1903,7 +1974,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsResetModalOpen(false)}
-                  className="rounded-full bg-muted px-4 py-2 text-[13.5px] font-medium text-foreground hover:bg-muted/80 active:scale-95 transition-transform cursor-pointer"
+                  className="min-h-11 rounded-full bg-muted px-4 py-2 text-[13.5px] font-medium text-foreground hover:bg-muted/80 active:scale-95 transition-transform cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1918,7 +1989,7 @@ export default function ProfilePage() {
                       message: 'Timetable and alarms restored to sample defaults.',
                     })
                   }}
-                  className="rounded-full bg-primary px-5 py-2 text-[13.5px] font-bold text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-95 transition-transform cursor-pointer"
+                  className="min-h-11 rounded-full bg-primary px-5 py-2 text-[13.5px] font-bold text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-95 transition-transform cursor-pointer"
                 >
                   Confirm Reset
                 </button>

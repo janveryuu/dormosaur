@@ -8,6 +8,7 @@ import { PillButton } from '@/components/ios/pill-button'
 import { useSchedule, type MealPlanEntry } from '@/components/schedule-provider'
 import { formatRecipeCost } from '@/lib/currency'
 import { recipes, weekDays } from '@/lib/data'
+import { useModalA11y } from '@/hooks/use-modal-a11y'
 
 const meals: MealPlanEntry['meal'][] = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
 
@@ -17,6 +18,7 @@ export function MealPlanner() {
     day: string
     meal: MealPlanEntry['meal']
   } | null>(null)
+  const dialogRef = useModalA11y(Boolean(selectedSlot), () => setSelectedSlot(null))
 
   // Calculate estimated total weekly budget in USD numeric value first
   const totalCostUSD = React.useMemo(() => {
@@ -77,9 +79,10 @@ export function MealPlanner() {
                         </span>
                         {entry && (
                           <button
+                            type="button"
                             onClick={() => removeMealPlanItem(day, meal)}
                             aria-label={`Remove ${meal} for ${day}`}
-                            className="text-muted-foreground hover:text-destructive transition-colors"
+                            className="flex size-11 items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
                           >
                             <Trash2 className="size-3.5" />
                           </button>
@@ -107,6 +110,7 @@ export function MealPlanner() {
                         </div>
                       ) : (
                         <button
+                          type="button"
                           onClick={() => setSelectedSlot({ day, meal })}
                           className="mt-3 flex h-11 items-center justify-center gap-1.5 rounded-xl border border-dashed border-border bg-card text-[13px] font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                         >
@@ -128,6 +132,11 @@ export function MealPlanner() {
         {selectedSlot && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
+              ref={dialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Plan ${selectedSlot.meal} for ${selectedSlot.day}`}
+              tabIndex={-1}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -150,8 +159,10 @@ export function MealPlanner() {
                   <p className="text-[13px] text-muted-foreground">Select a dorm recipe</p>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setSelectedSlot(null)}
-                  className="flex size-8 items-center justify-center rounded-full bg-fill text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Close recipe picker"
+                  className="flex size-11 items-center justify-center rounded-full bg-fill text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="size-4" />
                 </button>
@@ -161,12 +172,13 @@ export function MealPlanner() {
                 <div className="grid gap-2 sm:grid-cols-2">
                   {recipes.map((r) => (
                     <button
+                      type="button"
                       key={r.slug}
                       onClick={() => {
                         setMealPlanItem(selectedSlot.day, selectedSlot.meal, r.slug)
                         setSelectedSlot(null)
                       }}
-                      className="flex items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-ios hover:ring-2 hover:ring-primary focus-visible:outline-none transition-all"
+                      className="flex min-h-14 items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-ios hover:ring-2 hover:ring-primary focus-visible:outline-none transition-[box-shadow,transform]"
                     >
                       <div className="relative size-12 shrink-0 overflow-hidden rounded-xl">
                         <Image src={r.image} alt={r.title} fill className="object-cover" />

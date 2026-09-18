@@ -26,6 +26,11 @@ export default function DeadlinesPage() {
 
   const pendingCount = deadlines.filter((d) => !d.completed).length
   const completedCount = deadlines.filter((d) => d.completed).length
+  const dueSoonCount = deadlines.filter((d) => {
+    if (d.completed) return false
+    const due = new Date(d.dueDate).getTime()
+    return due >= Date.now() && due - Date.now() <= 48 * 60 * 60 * 1000
+  }).length
 
   const filteredDeadlines = deadlines.filter((d) => {
     if (filter === 'pending') return !d.completed
@@ -65,12 +70,25 @@ export default function DeadlinesPage() {
         }
       />
 
-      <div className="flex flex-col gap-5 pb-12">
+      <div className="flex flex-col gap-8 pb-12 sm:gap-10">
+        <section className="task-summary" aria-label="Deadline overview">
+          <div>
+            <p className="route-label">Your due board</p>
+            <h2>Make room for what’s next.</h2>
+            <p className="task-summary-copy">Keep the important dates visible without letting them take over your day.</p>
+          </div>
+          <div className="task-summary-stats">
+            <div><strong>{pendingCount}</strong><span>to do</span></div>
+            <div><strong>{dueSoonCount}</strong><span>due soon</span></div>
+            <div><strong>{completedCount}</strong><span>finished</span></div>
+          </div>
+        </section>
+
         {/* ── Compact Syllabus Scanner Action Strip ── */}
-        <div className="relative overflow-hidden rounded-3xl border border-emerald-500/25 bg-emerald-500/10 p-3.5 sm:p-4 shadow-2xs">
+        <div className="task-scanner">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-2xs">
+              <div className="task-scanner-icon">
                 <CheckSquare className="size-4.5" strokeWidth={2.2} />
               </div>
               <div className="flex flex-col">
@@ -78,7 +96,7 @@ export default function DeadlinesPage() {
                   <span className="text-[13.5px] font-bold text-foreground tracking-tight">
                     Syllabus Camera & File Import
                   </span>
-                  <span className="rounded-full bg-emerald-600/20 px-1.5 py-0.5 text-[9px] font-black uppercase text-emerald-800 dark:text-emerald-300">
+                  <span className="task-scanner-badge">
                     AI Vision
                   </span>
                 </div>
@@ -90,7 +108,7 @@ export default function DeadlinesPage() {
 
             <Link
               href="/deadlines/import"
-              className="flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-full bg-emerald-600 px-3.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 whitespace-nowrap self-start sm:self-auto cursor-pointer transition-transform active:scale-95"
+              className="task-scanner-action"
             >
               <Sparkles className="size-3.5" />
               <span>Import Deadlines</span>
@@ -99,7 +117,11 @@ export default function DeadlinesPage() {
         </div>
 
         {/* ── Filter Segmented Controls ── */}
-        <div className="flex items-center justify-between">
+        <div className="task-view-toolbar">
+          <div>
+            <p className="route-label">Deadline view</p>
+            <p className="mt-1 text-xs text-muted-foreground">Track the work that still needs your attention.</p>
+          </div>
           <SegmentedControl
             value={filter}
             onChange={(v) => setFilter(v as FilterStatus)}
@@ -115,7 +137,7 @@ export default function DeadlinesPage() {
 
         {/* ── Deadlines List ── */}
         {filteredDeadlines.length > 0 ? (
-          <div className="flex flex-col gap-2.5">
+          <div className="task-list">
             <AnimatePresence mode="popLayout">
               {filteredDeadlines.map((item) => (
                 <motion.div
@@ -132,10 +154,12 @@ export default function DeadlinesPage() {
             </AnimatePresence>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border/80 bg-card/60 py-16 px-4 text-center shadow-2xs">
+          <div className="schedule-empty-state gap-3 py-16 px-4">
             <img
               src="/student-dormosaur.png"
               alt="Dormosaur all caught up"
+              width={128}
+              height={128}
               className="size-28 sm:size-36 object-contain drop-shadow-md select-none"
             />
             <div>

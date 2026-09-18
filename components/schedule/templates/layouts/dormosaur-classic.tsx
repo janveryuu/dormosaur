@@ -20,11 +20,11 @@ const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
 // Soft green & sage tonal palette (Brand Forest #1F6F50)
 const CLASS_TONAL_COLORS = [
-  'bg-[#1F6F50] text-[#FAFBF7] border-l-4 border-[#A3E635]',
-  'bg-[#278260] text-[#FAFBF7] border-l-4 border-[#38D399]',
-  'bg-[#18573E] text-[#FAFBF7] border-l-4 border-[#6EE7B7]',
-  'bg-[#349570] text-[#FAFBF7] border-l-4 border-[#D9F99D]',
-  'bg-[#134431] text-[#FAFBF7] border-l-4 border-[#86EFAC]',
+  'bg-[#1F6F50] text-[#FAFBF7] border-l border-[#A3E635]',
+  'bg-[#278260] text-[#FAFBF7] border-l border-[#38D399]',
+  'bg-[#18573E] text-[#FAFBF7] border-l border-[#6EE7B7]',
+  'bg-[#349570] text-[#FAFBF7] border-l border-[#D9F99D]',
+  'bg-[#134431] text-[#FAFBF7] border-l border-[#86EFAC]',
 ]
 
 export function DormosaurClassicTemplate({
@@ -58,6 +58,8 @@ export function DormosaurClassicTemplate({
           <img
             src="/dormosaur-hi.png"
             alt="Dormosaur"
+            width={34}
+            height={34}
             className="size-8.5 object-contain drop-shadow-xs"
           />
           <span className="text-[12.5px] font-bold tracking-wider uppercase text-white">
@@ -126,7 +128,7 @@ export function DormosaurClassicTemplate({
                   <div
                     key={c.id ? `${c.id}-${i}` : i}
                     style={{ top: `${topPct}%`, height: `${heightPct}%` }}
-                    className={`absolute inset-x-1 overflow-hidden rounded-xl ${colorClass} p-2 shadow-xs transition-all hover:z-20 hover:scale-[1.02] flex flex-col justify-between`}
+                    className={`absolute inset-x-1 overflow-hidden rounded-xl ${colorClass} p-2 shadow-xs transition-[box-shadow,transform] hover:z-20 hover:scale-[1.02] flex flex-col justify-between`}
                   >
                     <div>
                       <p className="font-extrabold text-[11px] leading-tight truncate">

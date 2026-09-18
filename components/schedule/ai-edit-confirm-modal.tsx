@@ -4,6 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Check, AlertTriangle, Trash2, Sparkles, X, Clock, MapPin } from 'lucide-react'
 import type { ClassEntry } from '@/lib/data'
+import { useModalA11y } from '@/hooks/use-modal-a11y'
 
 export type ScheduleEditDiff = {
   action: 'update' | 'delete' | 'add'
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export function AiEditConfirmModal({ diff, onConfirm, onCancel }: Props) {
+  const dialogRef = useModalA11y(Boolean(diff), onCancel)
   if (!diff) return null
 
   const isDelete = diff.action === 'delete'
@@ -33,6 +35,11 @@ export function AiEditConfirmModal({ diff, onConfirm, onCancel }: Props) {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         {/* Backdrop */}
         <motion.div
+          ref={dialogRef}
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="ai-edit-confirm-title"
+          tabIndex={-1}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -59,17 +66,19 @@ export function AiEditConfirmModal({ diff, onConfirm, onCancel }: Props) {
               </span>
             </div>
             <button
+              type="button"
               onClick={onCancel}
-              className="flex size-8 items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-foreground"
+              aria-label="Close edit confirmation"
+              className="flex size-11 items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-foreground"
             >
               <X className="size-4" />
             </button>
           </div>
 
           {/* Question / Headline */}
-          <h3 className="mt-4 text-[18px] font-bold tracking-tight text-foreground leading-snug">
+          <h2 id="ai-edit-confirm-title" className="mt-4 text-[18px] font-bold tracking-tight text-foreground leading-snug">
             {diff.confirmationText}
-          </h3>
+          </h2>
 
           {/* Class details banner */}
           <div className="mt-4 flex items-center justify-between rounded-2xl border border-border/60 bg-fill p-3.5">
@@ -103,14 +112,16 @@ export function AiEditConfirmModal({ diff, onConfirm, onCancel }: Props) {
           {/* Action Buttons */}
           <div className="mt-6 flex items-center gap-3">
             <button
+              type="button"
               onClick={onCancel}
-              className="flex-1 rounded-full border border-border bg-card py-3 text-[14.5px] font-semibold text-foreground hover:bg-secondary active:scale-95 transition-all"
+              className="min-h-11 flex-1 rounded-full border border-border bg-card py-3 text-[14.5px] font-semibold text-foreground hover:bg-secondary active:scale-95 transition-[background-color,transform]"
             >
               Cancel
             </button>
             <button
+              type="button"
               onClick={onConfirm}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-full py-3 text-[14.5px] font-semibold text-white shadow-ios active:scale-95 transition-all ${
+              className={`min-h-11 flex-1 flex items-center justify-center gap-2 rounded-full py-3 text-[14.5px] font-semibold text-white shadow-ios active:scale-95 transition-[background-color,transform] ${
                 isDelete
                   ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/30'
                   : 'bg-primary hover:bg-[#1a6148] shadow-primary/30'

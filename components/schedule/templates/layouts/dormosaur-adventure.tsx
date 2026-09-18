@@ -34,6 +34,8 @@ export function DormosaurAdventureTemplate({
           <img
             src="/dormosaur-hi.png"
             alt="Dormosaur Mascot"
+            width={64}
+            height={64}
             className="size-16 object-contain drop-shadow-lg shrink-0"
           />
           <div>
@@ -61,7 +63,7 @@ export function DormosaurAdventureTemplate({
           return (
             <div
               key={dayName}
-              className="flex min-h-[90px] flex-col overflow-hidden rounded-2xl bg-[#F7F8F5] p-2.5 sm:p-3 text-[#1F6F50] shadow-md border border-white/40 transition-all hover:shadow-lg"
+              className="flex min-h-[90px] flex-col overflow-hidden rounded-2xl bg-[#F7F8F5] p-2.5 sm:p-3 text-[#1F6F50] shadow-md border border-white/40 transition-[border-color,box-shadow,transform] hover:shadow-lg"
             >
               {/* Day Header Pill */}
               <div className="mb-2 flex items-center justify-between rounded-xl bg-[#1F6F50] px-2.5 py-1.5 text-white">

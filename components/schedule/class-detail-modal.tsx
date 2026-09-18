@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Calendar, Clock, Edit2, MapPin, User, X } from 'lucide-react'
 import type { ClassEntry } from '@/lib/data'
 import { formatTimeRange, subjectColorClass } from '@/lib/data'
+import { useModalA11y } from '@/hooks/use-modal-a11y'
 
 interface ClassDetailModalProps {
   entry: ClassEntry | null
@@ -23,6 +24,7 @@ const fullDayMap: Record<string, string> = {
 }
 
 export function ClassDetailModal({ entry, onClose, onEdit }: ClassDetailModalProps) {
+  const dialogRef = useModalA11y(Boolean(entry), onClose)
   if (!entry) return null
 
   const color = subjectColorClass[entry.color] || subjectColorClass[1]
@@ -34,6 +36,11 @@ export function ClassDetailModal({ entry, onClose, onEdit }: ClassDetailModalPro
       <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-0 sm:p-4">
         {/* Backdrop */}
         <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="class-detail-title"
+          tabIndex={-1}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -54,8 +61,10 @@ export function ClassDetailModal({ entry, onClose, onEdit }: ClassDetailModalPro
 
           {/* Close Button */}
           <button
+            type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 flex size-8 items-center justify-center rounded-full bg-muted/60 text-muted-foreground transition-all hover:bg-muted"
+            aria-label="Close class details"
+            className="absolute top-3 right-3 flex size-11 items-center justify-center rounded-full bg-muted/60 text-muted-foreground transition-colors hover:bg-muted"
           >
             <X className="size-4" />
           </button>
@@ -68,9 +77,9 @@ export function ClassDetailModal({ entry, onClose, onEdit }: ClassDetailModalPro
               >
                 {entry.code}
               </span>
-              <h3 className="mt-2 text-[20px] font-black tracking-tight text-foreground">
+              <h2 id="class-detail-title" className="mt-2 text-[20px] font-black tracking-tight text-foreground">
                 {entry.subject}
-              </h3>
+              </h2>
             </div>
           </div>
 
@@ -139,11 +148,12 @@ export function ClassDetailModal({ entry, onClose, onEdit }: ClassDetailModalPro
           {onEdit && (
             <div className="mt-5 border-t border-separator pt-4 flex justify-end">
               <button
+                type="button"
                 onClick={() => {
                   onClose()
                   onEdit(entry)
                 }}
-                className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[13px] font-bold text-primary-foreground shadow-sm hover:scale-105 transition-all"
+                className="flex min-h-11 items-center gap-2 rounded-full bg-primary px-4 py-2 text-[13px] font-bold text-primary-foreground shadow-sm hover:scale-[1.02] transition-transform"
               >
                 <Edit2 className="size-3.5" />
                 <span>Edit Course</span>

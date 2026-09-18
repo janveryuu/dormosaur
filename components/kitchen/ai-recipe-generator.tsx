@@ -123,6 +123,8 @@ export function AiRecipeGenerator() {
             <img
               src="/chef-dormosaur.png"
               alt="Chef Dormosaur"
+              width={52}
+              height={52}
               className="size-18 sm:size-22 object-contain filter drop-shadow-md shrink-0 transition-transform hover:scale-105"
             />
             <div>
@@ -152,7 +154,7 @@ export function AiRecipeGenerator() {
                   key={ing.name}
                   type="button"
                   onClick={() => toggleIngredient(ing.name)}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-semibold transition-all ${
+                  className={`flex min-h-11 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-semibold transition-[color,background-color,border-color,box-shadow,transform] ${
                     active
                       ? 'bg-primary text-primary-foreground shadow-sm scale-[1.02]'
                       : 'bg-fill text-muted-foreground hover:text-foreground'
@@ -180,7 +182,7 @@ export function AiRecipeGenerator() {
                   key={app.name}
                   type="button"
                   onClick={() => toggleAppliance(app.name)}
-                  className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all ${
+                  className={`flex min-h-11 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-[color,background-color,border-color,box-shadow,transform] ${
                     active
                       ? 'border border-primary/40 bg-primary/10 text-primary'
                       : 'border border-border bg-card text-muted-foreground'
@@ -215,7 +217,7 @@ export function AiRecipeGenerator() {
               <button
                 type="button"
                 onClick={() => handleGenerate()}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-[12px] font-medium text-foreground shadow-xs border border-border/80 hover:bg-accent active:scale-95 transition-all cursor-pointer"
+                className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-[12px] font-medium text-foreground shadow-xs border border-border/80 hover:bg-accent active:scale-95 transition-[color,background-color,border-color,box-shadow,transform] cursor-pointer"
               >
                 <RotateCcw className="size-3 text-muted-foreground" />
                 <span>Retry</span>
@@ -228,7 +230,7 @@ export function AiRecipeGenerator() {
             whileTap={{ scale: 0.985 }}
             onClick={() => handleGenerate()}
             disabled={loading}
-            className="mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-[14.5px] font-semibold text-white shadow-ios hover:bg-[#1a6148] disabled:opacity-75 transition-all"
+            className="mt-1 flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-[14.5px] font-semibold text-white shadow-ios hover:bg-[#1a6148] disabled:opacity-75 transition-[color,background-color,box-shadow,transform,opacity]"
           >
             {loading ? (
               <>

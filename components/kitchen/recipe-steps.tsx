@@ -12,7 +12,7 @@ export function RecipeSteps({ steps }: { steps: string[] }) {
     setDone((prev) => (prev.includes(i) ? prev.filter((n) => n !== i) : [...prev, i]))
 
   return (
-    <section className="flex flex-col gap-3">
+    <section className="recipe-method flex flex-col gap-3">
       <div className="flex items-baseline justify-between px-1">
         <h2 className="text-[13px] font-semibold tracking-[0.04em] text-muted-foreground uppercase">
           Method
@@ -31,12 +31,12 @@ export function RecipeSteps({ steps }: { steps: string[] }) {
                 whileTap={{ scale: 0.99 }}
                 onClick={() => toggle(i)}
                 aria-pressed={complete}
-                className="flex w-full items-start gap-3 rounded-3xl bg-card p-4 text-left shadow-ios focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                className="recipe-step flex w-full items-start gap-3 p-4 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               >
                 <span
                   className={cn(
-                    'mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-[12.5px] font-semibold transition-colors',
-                    complete ? 'bg-primary text-primary-foreground' : 'bg-fill text-muted-foreground',
+                    'recipe-step-number mt-0.5 flex size-6 shrink-0 items-center justify-center text-[12.5px] font-semibold transition-colors',
+                    complete ? 'is-complete bg-primary text-primary-foreground' : 'bg-fill text-muted-foreground',
                   )}
                 >
                   {complete ? <Check className="size-3.5" strokeWidth={3} /> : i + 1}

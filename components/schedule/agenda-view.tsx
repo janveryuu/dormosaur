@@ -103,7 +103,7 @@ export function AgendaView() {
           <div className="mt-2 flex flex-wrap items-center justify-center gap-2.5">
             <button
               onClick={handleOpenAdd}
-              className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[13.5px] font-bold text-primary-foreground shadow-sm transition-all hover:scale-105"
+              className="flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[13.5px] font-bold text-primary-foreground shadow-sm transition-[color,background-color,box-shadow,transform] hover:scale-105"
             >
               <Plus className="size-4" strokeWidth={2.4} />
               <span>Add Class</span>
@@ -111,7 +111,7 @@ export function AgendaView() {
 
             <Link
               href="/schedule/import"
-              className="flex items-center gap-2 rounded-full bg-fill px-5 py-2.5 text-[13.5px] font-bold text-foreground hover:bg-accent transition-all"
+              className="flex min-h-11 items-center gap-2 rounded-full bg-fill px-5 py-2.5 text-[13.5px] font-bold text-foreground hover:bg-accent transition-[color,background-color,box-shadow,transform]"
             >
               <UploadCloud className="size-4" />
               <span>Import Timetable</span>
@@ -187,7 +187,7 @@ export function AgendaView() {
                         }}
                         whileTap={{ scale: 0.985 }}
                         onClick={() => handleOpenEdit(entry)}
-                        className="group relative flex gap-4 rounded-3xl bg-card p-4 shadow-ios border border-border/40 hover:border-primary/40 transition-all cursor-pointer"
+                        className="group relative flex gap-4 rounded-3xl bg-card p-4 shadow-ios border border-border/40 hover:border-primary/40 transition-[color,background-color,border-color,box-shadow,transform] cursor-pointer"
                       >
                         {/* Time Column */}
                         <div className="w-16 shrink-0 pt-0.5">

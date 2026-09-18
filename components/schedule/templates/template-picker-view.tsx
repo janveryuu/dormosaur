@@ -35,7 +35,7 @@ export function TemplatePickerView({
         <button
           type="button"
           onClick={onClose}
-          className="flex size-9 items-center justify-center rounded-full bg-fill text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
+          className="flex size-11 items-center justify-center rounded-full bg-fill text-muted-foreground hover:bg-accent hover:text-foreground transition-[color,background-color,transform]"
         >
           <X className="size-5" />
           <span className="sr-only">Close</span>
@@ -63,7 +63,7 @@ export function TemplatePickerView({
                   whileTap={{ scale: 0.96 }}
                   onClick={() => onSelectTemplate(tmpl.id)}
                   className={cn(
-                    'group relative flex flex-col overflow-hidden rounded-2xl border p-3 text-left transition-all shadow-xs',
+                    'group relative flex flex-col overflow-hidden rounded-2xl border p-3 text-left transition-[color,background-color,border-color,box-shadow,transform] shadow-xs',
                     isSelected
                       ? 'border-emerald-600 bg-emerald-500/10 ring-2 ring-emerald-600/30'
                       : 'border-border/60 bg-card hover:border-border hover:bg-accent/40',
@@ -77,6 +77,8 @@ export function TemplatePickerView({
                     <img
                       src={tmpl.imagePath}
                       alt={tmpl.name}
+                      width={480}
+                      height={360}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none'
                       }}
@@ -151,7 +153,7 @@ export function TemplatePickerView({
           <button
             type="button"
             onClick={onNext}
-            className="flex h-12 w-full items-center justify-center rounded-full bg-emerald-600 font-semibold text-white shadow-md transition-all hover:bg-emerald-700 active:scale-[0.99]"
+            className="flex h-12 w-full items-center justify-center rounded-full bg-emerald-600 font-semibold text-white shadow-md transition-[color,background-color,box-shadow,transform] hover:bg-emerald-700 active:scale-[0.99]"
           >
             Use This Template
           </button>

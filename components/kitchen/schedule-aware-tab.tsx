@@ -1,8 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { motion } from 'framer-motion'
-import { Clock, Sparkles, Utensils, Calendar } from 'lucide-react'
+import { Clock3, CookingPot, Soup, Sparkles, Utensils, Zap } from 'lucide-react'
 import { useSchedule } from '@/components/schedule-provider'
 import { analyzeTodaySchedule } from '@/lib/schedule-gap-analyzer'
 import { recipes } from '@/lib/data'
@@ -43,23 +42,27 @@ export function ScheduleAwareTab() {
         {/* Time Window Chips */}
         <div className="mt-4 flex flex-wrap gap-2">
           {[
-            { mins: 5, label: '⚡ Under 5 mins (Ultra Fast)' },
-            { mins: 10, label: '⏱️ Under 10 mins (Quick Break)' },
-            { mins: 15, label: '🍲 Under 15 mins (Standard)' },
-            { mins: 30, label: '🍳 Under 30 mins (Leisurely)' },
+            { mins: 5, label: 'Under 5 mins', detail: 'Ultra fast', Icon: Zap },
+            { mins: 10, label: 'Under 10 mins', detail: 'Quick break', Icon: Clock3 },
+            { mins: 15, label: 'Under 15 mins', detail: 'Standard', Icon: Soup },
+            { mins: 30, label: 'Under 30 mins', detail: 'Leisurely', Icon: CookingPot },
           ].map((item) => {
             const active = maxMinutes === item.mins
             return (
               <button
                 key={item.mins}
+                type="button"
                 onClick={() => setMaxMinutes(item.mins)}
-                className={`rounded-full px-3.5 py-1.5 text-[12.5px] font-semibold transition-all ${
+                aria-pressed={active}
+                className={`inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 py-2 text-[12.5px] font-semibold transition-[color,background-color,border-color,box-shadow,transform] ${
                   active
                     ? 'bg-primary text-primary-foreground shadow-sm scale-[1.02]'
                     : 'bg-fill text-muted-foreground hover:text-foreground border border-border/40'
                 }`}
               >
-                {item.label}
+                <item.Icon className="size-3.5" aria-hidden="true" />
+                <span>{item.label}</span>
+                <span className="sr-only">({item.detail})</span>
               </button>
             )
           })}

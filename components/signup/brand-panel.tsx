@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Bell, CalendarDays } from 'lucide-react'
+import { Bell } from 'lucide-react'
 
 const highlights = [
   'Sync every syllabus into one calendar',
@@ -11,7 +11,7 @@ const highlights = [
 
 export function BrandPanel() {
   return (
-    <div className="relative hidden h-full flex-col justify-between gap-6 overflow-hidden bg-fill/50 px-10 py-10 lg:flex border-r border-border/60">
+    <div className="auth-brand-panel relative hidden h-full flex-col justify-between gap-6 overflow-hidden px-10 py-10 lg:flex">
       {/* Dot-grid texture */}
       <div
         aria-hidden="true"
@@ -23,9 +23,11 @@ export function BrandPanel() {
         <img
           src="/android-chrome-192x192.png"
           alt="Dormosaur"
+          width={48}
+          height={48}
           className="size-12 rounded-2xl object-contain shadow-ios-md"
         />
-        <span className="text-xl font-bold tracking-tight text-foreground">
+        <span className="text-xl font-bold tracking-tight text-primary-foreground">
           Dormosaur
         </span>
       </div>
@@ -33,12 +35,8 @@ export function BrandPanel() {
       {/* Main Illustration & Highlights */}
       <div className="relative z-10 flex flex-1 flex-col justify-center gap-8 max-w-md mx-auto">
         <div className="relative mx-auto flex items-center justify-center">
-          <div className="flex size-40 items-center justify-center rounded-full bg-emerald-500/10 ring-1 ring-primary/20 shadow-ios-lg">
-            <CalendarDays
-              className="size-16 text-primary"
-              strokeWidth={1.5}
-              aria-hidden="true"
-            />
+          <div className="auth-brand-mascot">
+            <img src="/supportive-dormosaur.png" alt="Dormosaur with a backpack" width={320} height={320} />
           </div>
           <div className="absolute -right-1 -top-1 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-ios-md ring-4 ring-background">
             <Bell
@@ -50,15 +48,16 @@ export function BrandPanel() {
         </div>
 
         <div className="flex flex-col gap-4 text-center">
-          <h2 className="text-2xl font-extrabold leading-tight text-balance text-foreground tracking-tight">
-            One app. Every dorm-life headache, handled.
+          <p className="route-label">Your campus companion</p>
+          <h2 className="auth-brand-title text-2xl font-extrabold leading-tight text-balance tracking-tight">
+            One route map for the semester scramble.
           </h2>
-          <ul className="mx-auto flex flex-col items-start gap-2.5 text-[14.5px] font-medium text-muted-foreground">
+          <ul className="mx-auto flex flex-col items-start gap-2.5 text-[14.5px] font-medium text-primary-foreground/72">
             {highlights.map((item) => (
               <li key={item} className="flex items-center gap-3">
                 <span
                   aria-hidden="true"
-                  className="inline-flex size-2 shrink-0 rounded-full bg-primary shadow-xs"
+                  className="inline-flex size-2 shrink-0 bg-highlight shadow-xs"
                 />
                 {item}
               </li>
@@ -68,7 +67,7 @@ export function BrandPanel() {
       </div>
 
       {/* Social Proof Footer Banner (Step 4 Requirement: 5,000+ students) */}
-      <div className="relative z-10 flex items-center gap-3 rounded-2xl border border-border/60 bg-card/90 p-4 backdrop-blur-md shadow-ios-sm">
+      <div className="auth-brand-proof relative z-10 flex items-center gap-3 p-4 backdrop-blur-md">
         <div className="flex -space-x-2">
           {['M', 'J', 'R'].map((initial) => (
             <span
@@ -79,8 +78,8 @@ export function BrandPanel() {
             </span>
           ))}
         </div>
-        <p className="text-[13.5px] text-muted-foreground">
-          Joined by <span className="font-bold text-foreground">5,000+</span>{' '}
+        <p className="text-[13.5px] text-primary-foreground/72">
+          Joined by <span className="font-bold text-primary-foreground">5,000+</span>{' '}
           students this semester
         </p>
       </div>

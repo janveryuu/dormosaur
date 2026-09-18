@@ -100,12 +100,25 @@ export default function SchedulePage() {
         }
       />
 
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-8 sm:gap-10">
+        <section className="schedule-summary" aria-label="Schedule overview">
+          <div>
+            <p className="route-label">Your planning board</p>
+            <h2>Every class, one clear route.</h2>
+            <p className="schedule-summary-copy">Keep your week visible, then make room for the parts between.</p>
+          </div>
+          <div className="schedule-summary-stats">
+            <div><strong>{classes.length}</strong><span>{classes.length === 1 ? 'course' : 'courses'}</span></div>
+            <div><strong>{pendingDeadlines.length}</strong><span>open deadlines</span></div>
+            <div><strong>3</strong><span>views to plan</span></div>
+          </div>
+        </section>
+
         {/* Wallpapers Spotlight Strip */}
-        <div className="relative overflow-hidden rounded-3xl border border-emerald-500/25 bg-emerald-500/10 p-3.5 sm:p-4 shadow-2xs">
+        <div className="schedule-spotlight">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-2xs">
+              <div className="schedule-spotlight-icon">
                 <Palette className="size-4.5" />
               </div>
               <div className="flex flex-col">
@@ -113,7 +126,7 @@ export default function SchedulePage() {
                   <span className="text-[13.5px] font-bold text-foreground tracking-tight">
                     Schedule Wallpapers & Themes
                   </span>
-                  <span className="rounded-full bg-emerald-600/20 px-1.5 py-0.5 text-[9px] font-black uppercase text-emerald-800 dark:text-emerald-300">
+                  <span className="schedule-spotlight-badge">
                     7 STYLES
                   </span>
                 </div>
@@ -126,7 +139,7 @@ export default function SchedulePage() {
             <button
               type="button"
               onClick={() => setTemplateOpen(true)}
-              className="flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-full bg-emerald-600 px-3.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 whitespace-nowrap self-start sm:self-auto cursor-pointer transition-transform active:scale-95"
+              className="schedule-spotlight-action"
             >
               <Sparkles className="size-3.5" />
               <span>Choose Theme</span>
@@ -135,7 +148,11 @@ export default function SchedulePage() {
         </div>
 
         {/* View Segmented Control (Day / Week / Agenda) */}
-        <div className="flex items-center justify-between">
+        <div className="schedule-view-toolbar">
+          <div>
+            <p className="route-label">Timetable view</p>
+            <p className="mt-1 text-xs text-muted-foreground">Choose the level of detail that helps right now.</p>
+          </div>
           <SegmentedControl
             value={view}
             onChange={(v) => setView(v as View)}
@@ -168,9 +185,9 @@ export default function SchedulePage() {
         </AnimatePresence>
 
         {/* Deadlines Section */}
-        <section className="mt-2 flex flex-col gap-3">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
+        <section className="schedule-section mt-2 flex flex-col gap-3">
+          <div className="schedule-section-heading">
+            <h2>
               Exams & Assignment Deadlines ({pendingDeadlines.length})
             </h2>
             <button
@@ -189,7 +206,7 @@ export default function SchedulePage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2 rounded-3xl bg-card p-6 text-center shadow-ios border border-border/60">
+            <div className="schedule-empty-state">
               <Calendar className="size-6 text-muted-foreground" />
               <p className="text-[14px] font-semibold text-foreground">No upcoming deadlines</p>
               <PillButton size="sm" variant="secondary" onClick={() => setAddDeadlineOpen(true)}>
@@ -201,8 +218,8 @@ export default function SchedulePage() {
 
         {/* Subject Colors Legend */}
         {classes.length > 0 && (
-          <section className="rounded-3xl bg-card p-4 sm:p-5 shadow-ios border border-border/60">
-            <h2 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
+          <section className="schedule-legend">
+            <h2 className="route-label">
               Subject Colors
             </h2>
             <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-2">

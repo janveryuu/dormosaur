@@ -2,8 +2,6 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
-import { ScheduleProvider } from '@/components/schedule-provider'
-import { AuthProvider } from '@/hooks/use-auth'
 import './globals.css'
 
 const geistSans = Geist({
@@ -45,13 +43,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: 'light dark',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F7F8F5' },
-    { media: '(prefers-color-scheme: dark)', color: '#0F0F0F' },
+    { media: '(prefers-color-scheme: light)', color: '#F4F4E9' },
+    { media: '(prefers-color-scheme: dark)', color: '#173A2C' },
   ],
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: 'cover',
 }
 
@@ -63,11 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
       <body className="font-sans antialiased">
-        <AuthProvider>
-          <ThemeProvider>
-            <ScheduleProvider>{children}</ScheduleProvider>
-          </ThemeProvider>
-        </AuthProvider>
+        <ThemeProvider>{children}</ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

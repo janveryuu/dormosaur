@@ -1,52 +1,43 @@
 'use client'
 
 import * as React from 'react'
-import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Clock, MapPin, Navigation, User } from 'lucide-react'
-import { formatTime, subjectColorClass, type ClassEntry } from '@/lib/data'
+import { ArrowRight, Navigation } from 'lucide-react'
+import Link from 'next/link'
+import { formatTime, type ClassEntry } from '@/lib/data'
 import type { NextClassResult } from '@/lib/schedule-engine'
 
 function useLiveCountdown(remainingMinutes: number, targetTimeStr: string) {
-  const [countdownLabel, setCountdownLabel] = React.useState<string>(() => {
-    if (!remainingMinutes || remainingMinutes <= 0) return '0m 00s'
-    const days = Math.floor(remainingMinutes / (24 * 60))
-    const hours = Math.floor((remainingMinutes % (24 * 60)) / 60)
-    const mins = remainingMinutes % 60
-    if (days > 0) return `${days}d ${hours}h ${String(mins).padStart(2, '0')}m`
-    if (hours > 0) return `${hours}h ${String(mins).padStart(2, '0')}m 00s`
-    return `${mins}m 00s`
-  })
+  const [countdownLabel, setCountdownLabel] = React.useState(() => formatRemaining(remainingMinutes))
 
   React.useEffect(() => {
-    const startTime = Date.now()
+    const startedAt = Date.now()
     const totalTargetSeconds = Math.max(0, remainingMinutes * 60)
 
     const tick = () => {
-      const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000)
-      const currentSecondsRemaining = Math.max(0, totalTargetSeconds - elapsedSeconds)
-
-      const totalMins = Math.floor(currentSecondsRemaining / 60)
-      const secs = currentSecondsRemaining % 60
-      const days = Math.floor(totalMins / (24 * 60))
-      const hours = Math.floor((totalMins % (24 * 60)) / 60)
-      const mins = totalMins % 60
-
-      if (days > 0) {
-        setCountdownLabel(`${days}d ${hours}h ${String(mins).padStart(2, '0')}m`)
-      } else if (hours > 0) {
-        setCountdownLabel(`${hours}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`)
-      } else {
-        setCountdownLabel(`${mins}m ${String(secs).padStart(2, '0')}s`)
-      }
+      const elapsedSeconds = Math.floor((Date.now() - startedAt) / 1000)
+      setCountdownLabel(formatRemaining(Math.max(0, totalTargetSeconds - elapsedSeconds), true))
     }
 
     tick()
-    const id = setInterval(tick, 1000)
-    return () => clearInterval(id)
+    const intervalId = window.setInterval(tick, 1000)
+    return () => window.clearInterval(intervalId)
   }, [remainingMinutes, targetTimeStr])
 
   return countdownLabel
+}
+
+function formatRemaining(value: number, fromSeconds = false) {
+  const totalSeconds = fromSeconds ? value : Math.max(0, value) * 60
+  const totalMinutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  const days = Math.floor(totalMinutes / (24 * 60))
+  const hours = Math.floor((totalMinutes % (24 * 60)) / 60)
+  const minutes = totalMinutes % 60
+
+  if (days > 0) return `${days}d ${hours}h`
+  if (hours > 0) return `${hours}h ${String(minutes).padStart(2, '0')}m`
+  return `${minutes}m ${String(seconds).padStart(2, '0')}s`
 }
 
 export function NextClassCard({
@@ -58,160 +49,60 @@ export function NextClassCard({
 }) {
   const isHappeningNow = nextMeta?.status === 'in_progress'
   const isFutureDay = nextMeta?.status === 'upcoming_future'
-  const remainingMins = nextMeta?.remainingMinutes ?? 0
-
-  const countdown = useLiveCountdown(
-    remainingMins,
-    isHappeningNow ? entry.end : entry.start
-  )
-
-  const color = subjectColorClass[entry.color] || subjectColorClass[1]
-
-  const hasDistinctCode =
-    Boolean(entry.code) &&
-    Boolean(entry.subject) &&
-    entry.code.trim().toLowerCase() !== entry.subject.trim().toLowerCase()
-
+  const countdown = useLiveCountdown(nextMeta?.remainingMinutes ?? 0, isHappeningNow ? entry.end : entry.start)
   const title = entry.subject || entry.code || 'Class'
-
-  let subtitleParts: string[] = []
-  if (hasDistinctCode) {
-    subtitleParts.push(entry.code)
-    if (entry.instructor && entry.instructor !== 'TBA' && entry.instructor !== 'None') {
-      subtitleParts.push(entry.instructor)
-    }
-  } else {
-    if (entry.instructor && entry.instructor !== 'TBA' && entry.instructor !== 'None') {
-      subtitleParts.push(entry.instructor)
-    } else if (entry.room && entry.room !== 'TBA') {
-      subtitleParts.push(entry.room)
-    }
-  }
-
-  const subtitle = subtitleParts.join(' · ')
+  const subtitle = [
+    entry.code && entry.code.trim().toLowerCase() !== title.trim().toLowerCase() ? entry.code : null,
+    entry.instructor && !['TBA', 'None'].includes(entry.instructor) ? entry.instructor : null,
+  ].filter(Boolean).join(' · ')
 
   return (
-    <Link href="/schedule" className="block group select-none">
+    <Link href="/schedule" className="group block select-none" aria-label={`Open schedule for ${title}`}>
       <motion.article
-        whileTap={{ scale: 0.985 }}
-        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-        className="relative overflow-hidden rounded-3xl bg-card p-5 sm:p-6 shadow-ios border border-border/80 ring-1 ring-black/[0.03] dark:ring-white/[0.05] hover:border-primary/40 transition-all"
+        whileTap={{ scale: 0.99 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+        className="departure-card p-5 sm:p-7"
       >
-        {/* Color bar indicator on the left */}
-        <span
-          className={`absolute top-0 left-0 bottom-0 w-1.5 ${color.bg}`}
-          aria-hidden="true"
+      <div className="wayfinding-grid pointer-events-none absolute inset-0 z-0 opacity-20" aria-hidden="true" />
+      <div className="pointer-events-none absolute -bottom-1 -right-3 z-0 sm:right-6" aria-hidden="true">
+        <img
+          src="/student-dormosaur.png"
+          alt=""
+          width={240}
+          height={240}
+          className="h-28 w-auto object-contain opacity-35 transition-transform duration-500 sm:h-48 sm:opacity-100 md:h-56"
         />
+      </div>
 
-        {/* Student Dormosaur Mascot (holding CLASS SCHEDULE) - Maximized with overlap */}
-        <div className="pointer-events-none absolute -right-1 sm:right-1 md:right-3 -bottom-2 sm:-bottom-3 md:-bottom-4 z-0 sm:z-20 select-none opacity-60 sm:opacity-100">
-          <img
-            src="/student-dormosaur.png"
-            alt="Student Dormosaur"
-            className="h-28 sm:h-48 md:h-56 lg:h-64 w-auto object-contain drop-shadow-xl transition-transform duration-300 group-hover:scale-105"
-          />
-        </div>
-
-        <div className="relative z-10 pr-0 sm:pr-44 md:pr-52 lg:pr-60">
-          {/* Live Status Header */}
-          <div className="flex items-center justify-between pl-1">
-          <div className="flex items-center gap-2">
-            <span className="relative flex size-2.5">
-              <span
-                className={`absolute inset-0 animate-ping rounded-full opacity-75 ${
-                  isHappeningNow ? 'bg-amber-500' : 'bg-emerald-500'
-                }`}
-              />
-              <span
-                className={`relative size-2.5 rounded-full ${
-                  isHappeningNow ? 'bg-amber-500' : 'bg-emerald-500'
-                }`}
-              />
-            </span>
-            <span
-              className={`text-[12px] font-bold tracking-wider uppercase ${
-                isHappeningNow
-                  ? 'text-amber-700 dark:text-amber-400'
-                  : 'text-primary'
-              }`}
-            >
-              {isHappeningNow
-                ? 'Happening Now'
-                : isFutureDay && nextMeta?.dayLabel
-                ? `Next Class · ${nextMeta.dayLabel}`
-                : 'Next Class Today'}
-            </span>
+      <div className="relative z-10">
+        <div className="flex items-start justify-between gap-4">
+          <div className="departure-heading">
+            <span className="departure-heading-icon"><ArrowRight className="size-6" /></span>
+            <div>
+              <p className="route-label !text-highlight">{isHappeningNow ? 'On the route now' : 'Next departure'}</p>
+              <p className="mt-1 text-xs font-medium text-primary-foreground/65">{isFutureDay && nextMeta?.dayLabel ? `Your next class · ${nextMeta.dayLabel}` : 'Same direction, one less thing to remember'}</p>
+            </div>
           </div>
-
-          <span className="flex items-center gap-1 text-[12px] font-semibold text-muted-foreground group-hover:text-primary transition-colors">
-            <span>Schedule</span>
-            <ArrowUpRight className="size-3.5" />
-          </span>
+          <span className="hidden items-center gap-1 text-xs font-bold text-primary-foreground/78 sm:flex">Open schedule <ArrowRight className="size-3.5" /></span>
         </div>
 
-        {/* Primary Subject & Details */}
-        <div className="mt-3 pl-1">
-          <div className="flex items-baseline gap-2">
-            <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground text-balance">
-              {title}
-            </h2>
-            {entry.code && hasDistinctCode && (
-              <span className="rounded-md bg-fill px-2 py-0.5 text-[11px] font-bold text-muted-foreground">
-                {entry.code}
-              </span>
-            )}
-          </div>
-
-          {subtitle && (
-            <p className="mt-0.5 text-[13.5px] font-medium text-muted-foreground">
-              {subtitle}
-            </p>
-          )}
+        <div className="mt-7 max-w-[32rem] sm:mt-9">
+          <p className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-primary-foreground/55">Class</p>
+          <h2 className="mt-2 text-[2rem] font-extrabold leading-[0.98] tracking-[-0.06em] text-primary-foreground sm:text-[2.8rem]">{title}</h2>
+          {subtitle && <p className="mt-2 text-sm font-medium text-primary-foreground/72">{subtitle}</p>}
         </div>
 
-        {/* Time, Room & Instructor Pills */}
-        <div className="mt-4 flex flex-wrap items-center gap-2 pl-1">
-          <span className="flex items-center gap-1.5 rounded-full bg-fill/80 border border-border/40 px-3 py-1.5 text-[12.5px] font-semibold text-foreground">
-            <Clock className="size-3.5 text-muted-foreground shrink-0" strokeWidth={2} />
-            <span className="tabular-nums">
-              {formatTime(entry.start)} – {formatTime(entry.end)}
-            </span>
-          </span>
-
-          <span className="flex items-center gap-1.5 rounded-full bg-fill/80 border border-border/40 px-3 py-1.5 text-[12.5px] font-semibold text-foreground">
-            <MapPin className="size-3.5 text-muted-foreground shrink-0" strokeWidth={2} />
-            <span>{entry.room || 'Online'}</span>
-          </span>
-
-          {entry.instructor &&
-            entry.instructor !== 'TBA' &&
-            entry.instructor !== 'None' &&
-            !subtitle.includes(entry.instructor) && (
-              <span className="flex items-center gap-1.5 rounded-full bg-fill/80 border border-border/40 px-3 py-1.5 text-[12.5px] font-semibold text-muted-foreground">
-                <User className="size-3.5 text-muted-foreground shrink-0" strokeWidth={2} />
-                <span>{entry.instructor}</span>
-              </span>
-            )}
+        <div className="departure-fields max-w-[48rem]">
+          <div className="departure-field"><span className="departure-field-label">Time</span><span className="departure-field-value tabular-nums">{formatTime(entry.start)} – {formatTime(entry.end)}</span></div>
+          <div className="departure-field"><span className="departure-field-label">Room</span><span className="departure-field-value">{entry.room || 'Online'}</span></div>
+          <div className="departure-field"><span className="departure-field-label">Guide</span><span className="departure-field-value">{entry.instructor && !['TBA', 'None'].includes(entry.instructor) ? entry.instructor.split(' ').slice(-1)[0] : 'Campus'}</span></div>
         </div>
 
-        {/* Live Activity Digital Countdown Ticker */}
-        <div className="mt-4.5 flex items-center justify-between border-t border-border/60 pt-3.5 pl-1">
-          <div className="flex items-center gap-2">
-            <Navigation className="size-3.5 text-muted-foreground" />
-            <span className="text-[12.5px] font-medium text-muted-foreground">
-              {isHappeningNow ? 'Ends in' : 'Starts in'}
-            </span>
-          </div>
-
-          <div
-            className={`font-mono text-2xl font-black tracking-tight tabular-nums ${
-              isHappeningNow ? 'text-amber-600 dark:text-amber-400' : 'text-primary'
-            }`}
-          >
-            {countdown || '—'}
-          </div>
+        <div className="departure-action-row max-w-[48rem]">
+          <span className="flex items-center gap-2 text-sm font-bold text-primary-foreground/78"><Navigation className="size-4 text-highlight" /> {isHappeningNow ? 'Ends in' : 'Leave in'} <strong className="tabular-nums text-2xl tracking-[-0.05em] text-highlight">{countdown}</strong></span>
+          <span className="departure-cta">View route <ArrowRight className="size-4" /></span>
         </div>
-        </div>
+      </div>
       </motion.article>
     </Link>
   )

@@ -1,11 +1,11 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, Check } from 'lucide-react'
-import { CalendarCheck, BellRinging, ForkKnife } from '@phosphor-icons/react'
+import { ArrowRight, BellRing, CalendarCheck2, Check, UtensilsCrossed } from 'lucide-react'
 import { MobileSplashScreen } from '@/components/mobile/splash-screen'
 import { createClient } from '@/lib/supabase/client'
 import { IOS_EASE, IOS_SPRING, IOS_SPRING_SNAPPY, BUTTON_SPRING } from '@/lib/springs'
@@ -29,17 +29,17 @@ const scheduleItems = [
 
 const featureItems = [
   {
-    Icon: CalendarCheck,
+    Icon: CalendarCheck2,
     title: 'Schedule',
     body: 'Paste the mess from your registrar. Get a clean weekly grid in seconds.',
   },
   {
-    Icon: BellRinging,
+    Icon: BellRing,
     title: 'Alarms',
     body: 'Every class gets an alarm that follows your timetable automatically.',
   },
   {
-    Icon: ForkKnife,
+    Icon: UtensilsCrossed,
     title: 'Kitchen',
     body: 'Real meals from a microwave, a kettle, and a very small budget.',
   },
@@ -182,10 +182,12 @@ function NavBar() {
           boxShadow: shadow,
         }}
       >
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
-          <img
+        <Link href="/" style={{ display: 'flex', minHeight: 44, alignItems: 'center', gap: 9, textDecoration: 'none' }}>
+          <Image
             src="/android-chrome-192x192.png"
             alt="Dormosaur"
+            width={30}
+            height={30}
             style={{ width: 30, height: 30, borderRadius: 9, objectFit: 'contain' }}
           />
           <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em', color: '#1a1f1c' }}>Dormosaur</span>
@@ -212,7 +214,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
     <Link
       href={href}
       style={{ fontSize: 14, fontWeight: 400, color: '#7a8580', textDecoration: 'none' }}
-      className="transition-colors hover:text-[#1a1f1c]"
+      className="inline-flex min-h-11 items-center transition-colors hover:text-[#1a1f1c]"
     >
       {children}
     </Link>
@@ -230,6 +232,7 @@ function NavCTA({ href, children }: { href: string; children: React.ReactNode })
         href={href}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
+          minHeight: 44,
           padding: '7px 14px', borderRadius: 100,
           backgroundColor: '#1f6f50', color: '#fff',
           fontSize: 13.5, fontWeight: 500, letterSpacing: '-0.005em',
@@ -255,6 +258,7 @@ function CTAButton({ href, children, large }: { href: string; children: React.Re
         href={href}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: large ? 9 : 7,
+          minHeight: 44,
           padding: large ? '12px 22px' : '10px 20px',
           borderRadius: 100,
           backgroundColor: '#1f6f50', color: '#fff',
@@ -306,7 +310,7 @@ export default function LandingPage() {
 
       {/* Desktop: full landing page */}
       <div
-        className="hidden md:block"
+        className="landing-desktop hidden md:block"
         style={{
           minHeight: '100dvh',
           overflowX: 'hidden',
@@ -500,7 +504,7 @@ export default function LandingPage() {
                   transition={{ duration: 0.6, ease: IOS_EASE, delay: i * 0.08 }}
                   style={{ display: 'flex', flexDirection: 'column', gap: 12, alignSelf: 'start' }}
                 >
-                  <feat.Icon weight="duotone" size={22} color="#1f6f50" />
+                  <feat.Icon size={22} strokeWidth={1.9} color="#1f6f50" aria-hidden="true" />
                   <h3 style={{
                     fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em',
                     lineHeight: '1.3em', color: '#1a1f1c', margin: 0,
@@ -544,8 +548,8 @@ export default function LandingPage() {
               Dormosaur — less scrambling, more sleeping.
             </p>
             <div className="flex items-center gap-6">
-              <Link href="/sign-in" style={{ fontSize: 13, color: '#7a8580', textDecoration: 'none' }} className="hover:text-[#1a1f1c] transition-colors">Sign in</Link>
-              <Link href="/sign-up" style={{ fontSize: 13, color: '#7a8580', textDecoration: 'none' }} className="hover:text-[#1a1f1c] transition-colors">Get started</Link>
+              <Link href="/sign-in" style={{ fontSize: 13, color: '#7a8580', textDecoration: 'none' }} className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-[#1a1f1c] transition-colors">Sign in</Link>
+              <Link href="/sign-up" style={{ fontSize: 13, color: '#7a8580', textDecoration: 'none' }} className="inline-flex min-h-11 items-center hover:text-[#1a1f1c] transition-colors">Get started</Link>
               <p style={{ fontSize: 13, color: '#7a8580', margin: 0 }}>© 2026</p>
             </div>
           </div>

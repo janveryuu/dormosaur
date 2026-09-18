@@ -182,7 +182,7 @@ export function DayView() {
       <div className="flex flex-col gap-5">
         {/* ── 7-Day Responsive Selector Strip (Fits All Mobile Screens) ── */}
         <div className="w-full">
-          <div className="grid grid-cols-7 gap-1 rounded-2xl bg-card border border-border/70 p-1 shadow-2xs">
+          <div className="schedule-day-strip">
             {weekDays.map((day) => {
               const active = day === selectedDay
               const isToday = day === todayKey
@@ -193,14 +193,14 @@ export function DayView() {
                   key={day}
                   type="button"
                   onClick={() => setSelectedDay(day)}
-                  className="relative flex flex-col items-center justify-center py-2 px-0.5 rounded-xl transition-all cursor-pointer select-none"
+                  className={cn('relative flex min-h-11 flex-col items-center justify-center py-2 px-0.5 transition-[color,background-color,border-color,box-shadow,transform] cursor-pointer select-none', active && 'is-active')}
                 >
                   {/* Active day background pill */}
                   {active && (
                     <motion.span
                       layoutId="day-strip-active"
                       transition={LAYOUT_SPRING}
-                      className="absolute inset-0 rounded-xl bg-primary text-primary-foreground shadow-xs"
+                      className="absolute inset-0"
                       aria-hidden="true"
                     />
                   )}
@@ -238,7 +238,7 @@ export function DayView() {
 
                   {/* "Today" subtle indicator pill */}
                   {isToday && !active && (
-                    <span className="absolute bottom-1 h-0.5 w-2.5 rounded-full bg-primary" />
+                    <span className="absolute bottom-1 h-0.5 w-2.5 bg-primary" />
                   )}
                 </button>
               )
@@ -257,13 +257,13 @@ export function DayView() {
                 <button
                   type="button"
                   onClick={() => setSelectedDay(todayKey)}
-                  className="flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-2 py-0.5 text-[11px] font-bold text-primary hover:bg-primary/20 transition-all active:scale-95 cursor-pointer"
+                    className="flex min-h-11 items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary hover:bg-primary/20 transition-[color,background-color,border-color,transform] active:scale-95 cursor-pointer"
                 >
                   <span className="size-1.5 rounded-full bg-primary animate-pulse" />
                   Jump to Today
                 </button>
               ) : (
-                <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10.5px] font-bold text-emerald-700 dark:text-emerald-400">
+                  <span className="flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-2 py-0.5 text-[10.5px] font-bold text-emerald-700 dark:text-emerald-400">
                   <span className="size-1.5 rounded-full bg-emerald-500 animate-ping" />
                   Live Today
                 </span>
@@ -291,10 +291,12 @@ export function DayView() {
 
         {/* ── Timeline List for Selected Day ── */}
         {dayClasses.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3.5 rounded-3xl border border-dashed border-border/80 bg-card/60 py-16 px-4 text-center shadow-2xs">
+          <div className="schedule-empty-state gap-3.5 py-16 px-4">
             <img
               src="/student-dormosaur.png"
               alt="Free day"
+              width={128}
+              height={128}
               className="size-28 sm:size-36 object-contain drop-shadow-md select-none"
             />
             <div>
@@ -351,7 +353,7 @@ export function DayView() {
                 return (
                   <div
                     key={`gap-${idx}`}
-                    className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-border/80 bg-fill/40 px-4 py-2.5 text-[12px] text-muted-foreground"
+                    className="schedule-gap gap-3 text-[12px] text-muted-foreground"
                   >
                     <div className="flex items-center gap-2">
                       <Coffee className="size-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
@@ -385,7 +387,7 @@ export function DayView() {
                   onClick={() => setSelectedClass(entry)}
                   whileTap={{ scale: 0.985 }}
                   transition={IOS_SPRING_SNAPPY}
-                  className={`group relative overflow-hidden rounded-3xl border p-4 sm:p-5 shadow-ios transition-all cursor-pointer ${
+                  className={`schedule-class-card group ${
                     isHappeningNow
                       ? 'border-primary/40 bg-primary/[0.04] ring-1 ring-primary/20'
                       : hasPassed
@@ -410,7 +412,7 @@ export function DayView() {
                           </span>
                         )}
                         {entry.code && (
-                          <span className="rounded-md bg-fill px-2 py-0.5 text-[11px] font-extrabold text-foreground border border-border/50">
+                          <span className="rounded-full bg-fill px-2 py-0.5 text-[11px] font-extrabold text-foreground border border-border/50">
                             {entry.code}
                           </span>
                         )}
@@ -435,7 +437,7 @@ export function DayView() {
                           </div>
                           <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-fill">
                             <div
-                              className="h-full bg-amber-500 transition-all duration-500 rounded-full"
+                              className="h-full bg-amber-500 transition-[width] duration-500 rounded-full"
                               style={{
                                 width: `${Math.min(
                                   100,

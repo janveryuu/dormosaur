@@ -115,23 +115,25 @@ function SignInContent() {
   }
 
   return (
-    <div className="grid min-h-screen w-full lg:grid-cols-2 bg-background">
+    <div className="auth-shell grid min-h-screen w-full lg:grid-cols-2">
       {/* Left Column: Brand Panel (Matches Sign Up screen 100%) */}
       <BrandPanel />
 
       {/* Right Column: Sign In Form Container */}
-      <div className="flex items-center justify-center px-6 py-10 sm:px-12 lg:px-16">
+      <div className="auth-main flex items-center justify-center px-6 py-10 sm:px-12 lg:px-16">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: IOS_EASE }}
-          className="flex w-full max-w-md flex-col gap-6"
+          className="auth-form flex w-full max-w-md flex-col gap-6"
         >
           {/* Mobile Logo Header */}
           <div className="flex flex-col items-center gap-3 text-center lg:hidden">
             <img
               src="/android-chrome-192x192.png"
               alt="Dormosaur"
+              width={56}
+              height={56}
               className="size-14 rounded-2xl object-contain shadow-ios-md"
             />
           </div>
@@ -147,7 +149,7 @@ function SignInContent() {
           </div>
 
           {/* Form Card */}
-          <div className="overflow-hidden rounded-3xl bg-card border border-border/80 shadow-ios-lg">
+          <div className="auth-form-card overflow-hidden">
             <div className="flex flex-col gap-0 divide-y divide-border/60">
               {/* Google Auth Button */}
               <div className="p-5">
@@ -181,40 +183,50 @@ function SignInContent() {
               <form onSubmit={handleEmailSignIn} className="flex flex-col gap-0 divide-y divide-border/60">
                 {/* Email */}
                 <div className="px-5 py-4">
-                  <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <label htmlFor="sign-in-email" className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Email
                   </label>
                   <input
+                    id="sign-in-email"
+                    name="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="24-01096@g.batstate.edu.ph"
                     autoComplete="email"
+                    spellCheck={false}
+                    aria-invalid={Boolean(error)}
+                    aria-describedby={error ? 'sign-in-error' : undefined}
                     required
-                    className="w-full bg-transparent text-[15.5px] font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
+                    className="min-h-11 w-full bg-transparent text-base font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
                   />
                 </div>
 
                 {/* Password */}
                 <div className="px-5 py-4">
-                  <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <label htmlFor="sign-in-password" className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Password
                   </label>
                   <div className="flex items-center gap-2">
                     <input
+                      id="sign-in-password"
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       autoComplete="current-password"
+                      aria-invalid={Boolean(error)}
+                      aria-describedby={error ? 'sign-in-error' : undefined}
                       required
-                      className="flex-1 bg-transparent text-[15.5px] font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
+                      className="min-h-11 min-w-0 flex-1 bg-transparent text-base font-medium text-foreground outline-none placeholder:text-muted-foreground/50"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      className="shrink-0 text-muted-foreground hover:text-foreground transition-colors p-1"
+                      className="flex size-11 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-pressed={showPassword}
                     >
                       {showPassword ? <EyeOff className="size-4.5" /> : <Eye className="size-4.5" />}
                     </button>
@@ -225,6 +237,8 @@ function SignInContent() {
                 <AnimatePresence>
                   {error && (
                     <motion.div
+                      id="sign-in-error"
+                      role="alert"
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
@@ -263,7 +277,7 @@ function SignInContent() {
             Don&apos;t have an account?{' '}
             <Link
               href="/sign-up"
-              className="font-bold text-primary underline-offset-2 hover:underline"
+              className="inline-flex min-h-11 items-center font-bold text-primary underline-offset-2 hover:underline"
             >
               Create one
             </Link>
