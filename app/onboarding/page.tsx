@@ -33,6 +33,7 @@ import {
 import { PillButton } from '@/components/ios/pill-button'
 import { IosSwitch } from '@/components/ios/ios-switch'
 import { ActivityIndicator } from '@/components/ios/activity-indicator'
+import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 import { rawScheduleSample } from '@/lib/data'
 import { parseRawSchedule } from '@/lib/parser'
 import { useSchedule } from '@/components/schedule-provider'
@@ -510,7 +511,7 @@ export default function OnboardingPage() {
             {step === 0 && (
               <div className="flex flex-1 flex-col pt-6">
                 <div className="onboarding-welcome-visual">
-                  <img src="/supportive-dormosaur.png" alt="Dormosaur ready for campus" width={220} height={220} />
+                  <DormosaurMascot variant="greeting" alt="Dormosaur waving hello" width={220} height={220} priority />
                   <span className="route-label">Campus day one</span>
                 </div>
                 <span className="mb-5 flex size-14 items-center justify-center rounded-3xl bg-accent text-accent-foreground">

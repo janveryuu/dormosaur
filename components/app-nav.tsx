@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSchedule } from '@/components/schedule-provider'
+import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 
 const mobileTabs = [
   { href: '/dashboard', label: 'Today', icon: House },
@@ -159,8 +160,10 @@ export function AppNav() {
           )}
 
           {!isSubRoute ? (
-            <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('open-dormosaur-ai'))} aria-label="Open Dormosaur AI" className="flex h-12 cursor-pointer items-center gap-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <img src="/dormosaur-mascot-transparent.png" alt="" aria-hidden="true" width={40} height={40} className="size-10 object-contain" />
+            <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('open-dormosaur-ai'))} aria-label="Open Dormosaur AI" className="flex h-12 cursor-pointer items-center gap-1.5 rounded-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-full border border-primary/15 bg-primary/10 text-primary shadow-xs">
+                <Sparkles className="size-[1.1rem]" strokeWidth={2} />
+              </span>
               <span className="hidden max-w-16 text-[0.62rem] font-bold leading-tight text-muted-foreground sm:block">A brighter you</span>
             </button>
           ) : (
@@ -300,7 +303,7 @@ export function AppNav() {
             onClick={() => window.dispatchEvent(new CustomEvent('open-dormosaur-ai'))}
             className="group flex min-h-14 w-full cursor-pointer items-center gap-3 border-t border-line pt-5 text-left focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <img src="/dormosaur-hi.png" alt="" aria-hidden="true" width={48} height={48} className="size-12 object-contain transition-transform duration-300 group-hover:-translate-y-1" />
+            <DormosaurMascot variant="thinking" alt="Dormosaur thinking" width={48} height={48} className="size-12 object-contain transition-transform duration-300 group-hover:-translate-y-1" />
             <span>
               <span className="block text-sm font-bold">Dormosaur AI</span>
               <span className="block text-xs text-muted-foreground">Your campus copilot</span>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, RefreshCw, Calendar, CheckCircle2 } from 'lucide-react'
 import { useSchedule } from '@/components/schedule-provider'
 import { parseTimeToMinutes } from '@/lib/schedule-gap-analyzer'
+import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 
 const STORAGE_DIGEST_KEY = 'dormosaur_weekly_digest_v1'
 
@@ -127,9 +128,9 @@ export function WeeklyDigestCard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <img
-            src="/ai-dormosaur.png"
-            alt="AI Dormosaur"
+          <DormosaurMascot
+            variant="thinking"
+            alt="Dormosaur thinking through your weekly route"
             width={40}
             height={40}
             className="size-9 shrink-0 object-contain select-none"

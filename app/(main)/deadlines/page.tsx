@@ -15,6 +15,7 @@ import { ScreenHeader } from '@/components/ios/screen-header'
 import { SegmentedControl } from '@/components/ios/segmented-control'
 import { AddDeadlineModal } from '@/components/schedule/add-deadline-modal'
 import { DeadlineCard } from '@/components/schedule/deadline-card'
+import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 import { useSchedule } from '@/components/schedule-provider'
 
 type FilterStatus = 'pending' | 'completed' | 'all'
@@ -155,9 +156,9 @@ export default function DeadlinesPage() {
           </div>
         ) : (
           <div className="schedule-empty-state gap-3 py-16 px-4">
-            <img
-              src="/student-dormosaur.png"
-              alt="Dormosaur all caught up"
+            <DormosaurMascot
+              variant="youGotThis"
+              alt="Dormosaur celebrating that you are all caught up"
               width={128}
               height={128}
               className="size-28 sm:size-36 object-contain drop-shadow-md select-none"

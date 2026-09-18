@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { RotateCcw, LayoutDashboard, Calendar } from 'lucide-react'
 import { PillButton } from '@/components/ios/pill-button'
+import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 
 export default function ScheduleErrorBoundary({
   error,
@@ -27,9 +27,9 @@ export default function ScheduleErrorBoundary({
         className="w-full max-w-md sm:max-w-lg rounded-4xl border border-border/80 bg-card p-6 sm:p-8 shadow-ios-2xl"
       >
         <div className="mx-auto mb-5 relative size-32 sm:size-36 flex items-center justify-center">
-          <Image
-            src="/supportive-dormosaur.png"
-            alt="Dormosaur"
+          <DormosaurMascot
+            variant="thinking"
+            alt="Dormosaur thinking through a timetable hiccup"
             width={144}
             height={144}
             priority

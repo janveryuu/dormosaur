@@ -14,6 +14,7 @@ import { useSchedule } from '@/components/schedule-provider'
 import { formatTime, recipes, subjectColorClass } from '@/lib/data'
 import { getNextUpcomingClass } from '@/lib/schedule-engine'
 import { DeadlineCard } from '@/components/schedule/deadline-card'
+import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -88,7 +89,7 @@ export default function DashboardPage() {
           <NextClassCard entry={nextClassResult.entry} nextMeta={nextClassResult} />
         ) : (
           <section className="wayfinding-grid flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-line bg-field p-8 text-center sm:p-12">
-            <img src="/dormosaur-hi.png" alt="Dormosaur" width={112} height={112} className="size-28 object-contain" />
+            <DormosaurMascot variant="comfy" alt="Dormosaur taking a well-earned break" width={112} height={112} className="size-28 object-contain" />
             <div className="mt-3 max-w-sm">
               <h2 className="text-lg font-extrabold tracking-[-0.03em]">Your board is clear today</h2>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Take the break, or bring in your timetable to start planning the week.</p>
@@ -132,7 +133,7 @@ export default function DashboardPage() {
         </section>
 
         <section className="mascot-callout" aria-label="Dormosaur encouragement">
-          <img src="/supportive-dormosaur.png" alt="Dormosaur with a backpack" width={200} height={200} />
+          <DormosaurMascot variant="youGotThis" alt="Dormosaur celebrating a brighter day" width={200} height={200} />
           <div>
             <p className="route-label !text-primary">Same campus. Bigger you.</p>
             <h2>Show up for a brighter you.</h2>

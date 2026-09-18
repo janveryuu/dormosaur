@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { Bell } from 'lucide-react'
+import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 
 const highlights = [
   'Sync every syllabus into one calendar',
@@ -36,7 +37,7 @@ export function BrandPanel() {
       <div className="relative z-10 flex flex-1 flex-col justify-center gap-8 max-w-md mx-auto">
         <div className="relative mx-auto flex items-center justify-center">
           <div className="auth-brand-mascot">
-            <img src="/supportive-dormosaur.png" alt="Dormosaur with a backpack" width={320} height={320} />
+            <DormosaurMascot variant="welcome" alt="Dormosaur welcoming you to campus" width={320} height={320} priority />
           </div>
           <div className="absolute -right-1 -top-1 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-ios-md ring-4 ring-background">
             <Bell
