@@ -112,10 +112,21 @@ export default function DashboardPage() {
             <p>{activeAlarmsCount > 0 ? `${activeAlarmsCount} alarms are watching your schedule` : 'Add a lead time before your next class'}</p>
             <ChevronRight className="briefing-arrow size-4" />
           </Link>
-          <Link href="/kitchen" className="briefing-card">
+          <Link href="/kitchen" className="briefing-card briefing-card--meal">
             <Utensils className="briefing-card-icon" />
             <h3>{recipes[0]?.title || 'Dorm dinner'}</h3>
             <p>{recipes[0] ? `${recipes[0].minutes} min · ${recipes[0].appliance}` : 'Find something easy tonight'}</p>
+            {recipes[0]?.image && (
+              <span className="briefing-card-media" aria-hidden="true">
+                <Image
+                  src={recipes[0].image}
+                  alt=""
+                  fill
+                  sizes="(max-width: 480px) 70vw, 240px"
+                  className="briefing-card-image"
+                />
+              </span>
+            )}
             <ChevronRight className="briefing-arrow size-4" />
           </Link>
         </section>

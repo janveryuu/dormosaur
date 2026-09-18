@@ -4,6 +4,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Navigation } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { formatTime, type ClassEntry } from '@/lib/data'
 import type { NextClassResult } from '@/lib/schedule-engine'
 
@@ -40,6 +41,11 @@ function formatRemaining(value: number, fromSeconds = false) {
   return `${minutes}m ${String(seconds).padStart(2, '0')}s`
 }
 
+function formatRoomLabel(value?: string) {
+  const room = (value || 'Online').trim().replace(/(?:\.{3}|…)+$/, '').trim()
+  return room.includes('(') && !room.includes(')') ? `${room})` : room
+}
+
 export function NextClassCard({
   entry,
   nextMeta,
@@ -64,13 +70,13 @@ export function NextClassCard({
         className="departure-card p-5 sm:p-7"
       >
       <div className="wayfinding-grid pointer-events-none absolute inset-0 z-0 opacity-20" aria-hidden="true" />
-      <div className="pointer-events-none absolute -bottom-1 -right-3 z-0 sm:right-6" aria-hidden="true">
-        <img
+      <div className="departure-mascot" aria-hidden="true">
+        <Image
           src="/student-dormosaur.png"
           alt=""
           width={240}
           height={240}
-          className="h-28 w-auto object-contain opacity-35 transition-transform duration-500 sm:h-48 sm:opacity-100 md:h-56"
+          className="h-full w-auto object-contain transition-transform duration-500"
         />
       </div>
 
@@ -94,7 +100,7 @@ export function NextClassCard({
 
         <div className="departure-fields max-w-[48rem]">
           <div className="departure-field"><span className="departure-field-label">Time</span><span className="departure-field-value tabular-nums">{formatTime(entry.start)} – {formatTime(entry.end)}</span></div>
-          <div className="departure-field"><span className="departure-field-label">Room</span><span className="departure-field-value">{entry.room || 'Online'}</span></div>
+          <div className="departure-field"><span className="departure-field-label">Room</span><span className="departure-field-value" title={formatRoomLabel(entry.room)}>{formatRoomLabel(entry.room)}</span></div>
           <div className="departure-field"><span className="departure-field-label">Guide</span><span className="departure-field-value">{entry.instructor && !['TBA', 'None'].includes(entry.instructor) ? entry.instructor.split(' ').slice(-1)[0] : 'Campus'}</span></div>
         </div>
 

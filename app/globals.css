@@ -277,6 +277,20 @@
   position: relative;
 }
 
+.departure-mascot {
+  bottom: -0.65rem;
+  height: 14rem;
+  pointer-events: none;
+  position: absolute;
+  right: 0.75rem;
+  transform-origin: bottom right;
+  transition: transform 240ms ease;
+  width: auto;
+  z-index: 1;
+}
+
+.departure-card:hover .departure-mascot { transform: translateY(-0.2rem); }
+
 .departure-card::after {
   background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--highlight) 35%, transparent), transparent);
   content: '';
@@ -337,9 +351,11 @@
   letter-spacing: -0.045em;
   line-height: 1.05;
   margin-top: 0.7rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-height: 2.1rem;
+  overflow-wrap: anywhere;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .departure-action-row {
@@ -426,6 +442,27 @@
 .briefing-card h3 { color: var(--foreground); font-size: 0.95rem; font-weight: 800; letter-spacing: -0.025em; margin-top: 1.4rem; }
 .briefing-card p { color: var(--muted-foreground); font-size: 0.82rem; line-height: 1.45; margin-top: 0.4rem; }
 .briefing-card .briefing-arrow { color: var(--muted-foreground); margin-left: auto; margin-top: auto; }
+
+.briefing-card--meal { overflow: hidden; position: relative; }
+.briefing-card--meal > :not(.briefing-card-media) { position: relative; z-index: 1; }
+.briefing-card--meal h3,
+.briefing-card--meal p { max-width: 62%; }
+.briefing-card-media {
+  bottom: 0;
+  height: 62%;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  width: 58%;
+  z-index: 0;
+}
+.briefing-card-media::after {
+  background: linear-gradient(90deg, var(--card) 0%, color-mix(in oklab, var(--card) 82%, transparent) 30%, transparent 80%);
+  content: '';
+  inset: 0;
+  position: absolute;
+}
+.briefing-card-image { object-fit: cover; object-position: center; opacity: 0.92; }
 
 .mascot-callout {
   align-items: center;
@@ -926,14 +963,26 @@
   .status-strip a { padding-inline: 0.55rem; }
   .status-strip span { font-size: 0.625rem; }
 
-  .departure-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .departure-field { padding-right: 0.65rem; }
-  .departure-field + .departure-field { padding-left: 0.65rem; }
-  .departure-field-value { font-size: 0.98rem; }
-  .departure-action-row { align-items: flex-start; flex-direction: column; }
-  .departure-cta { width: 100%; justify-content: center; }
-  .briefing-grid { grid-template-columns: 1fr; }
-  .briefing-card { min-height: 7.25rem; }
+  .departure-mascot { bottom: -0.65rem; height: 9.75rem; right: -0.35rem; }
+  .departure-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .departure-field { padding: 0.85rem 0.5rem 0.95rem 0; }
+  .departure-field + .departure-field { padding-left: 0.5rem; }
+  .departure-field:last-child { border-left: 0; border-top: 1px solid color-mix(in oklab, var(--primary-foreground) 20%, transparent); grid-column: 1 / -1; padding-left: 0; }
+  .departure-field-value { font-size: clamp(0.8rem, 3.3vw, 0.98rem); line-height: 1.12; }
+  .departure-action-row { align-items: flex-start; flex-direction: column; gap: 0.75rem; padding-right: 5.75rem; }
+  .departure-cta { justify-content: center; width: 100%; }
+  .briefing-grid {
+    display: flex;
+    gap: 0.75rem;
+    margin-inline: -0.25rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding: 0.25rem 0.25rem 0.65rem;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+  .briefing-grid::-webkit-scrollbar { display: none; }
+  .briefing-card { flex: 0 0 min(78vw, 17rem); min-height: 10.5rem; scroll-snap-align: start; }
   .briefing-card h3 { margin-top: 0.9rem; }
   .mascot-callout { grid-template-columns: auto minmax(0, 1fr); min-height: 7.5rem; padding: 0.75rem 1rem; }
   .mascot-callout img { height: 7.25rem; margin-left: -0.75rem; }
