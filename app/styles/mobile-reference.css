@@ -31,15 +31,32 @@
   /* Schedule */
   .mobile-main:has(.mobile-schedule-toolbar) .mobile-page-intro h1 { font-size: clamp(1.8rem, 7.5vw, 2.2rem); white-space: nowrap; }
   .mobile-main:has(.mobile-schedule-toolbar) > div > .flex.flex-col { gap: 1rem; }
-  .mobile-theme-card { align-items: center; background: linear-gradient(115deg, #eff2e8, #e7efe5); border: 1px solid #b7d2bd; border-radius: 1.2rem; display: flex; gap: 0.4rem; min-height: 5.6rem; padding: 0.8rem; }
+  .mobile-theme-card { align-items: center; background: linear-gradient(115deg, #eff2e8, #e7efe5); border: 1px solid #b7d2bd; border-radius: 1.2rem; display: flex; gap: 0.25rem; min-height: 4.7rem; padding: 0.55rem 0.5rem 0.55rem 0.65rem; }
   .mobile-theme-card > div { min-width: 0; flex: 1; }
-  .mobile-theme-card .schedule-spotlight-icon { border-radius: 0.9rem; height: 3.25rem; width: 3.25rem; }
+  .mobile-theme-card .schedule-spotlight-icon { border-radius: 0.9rem; flex: 0 0 2.8rem; height: 2.8rem; width: 2.8rem; }
   .mobile-theme-card .schedule-spotlight-icon svg { height: 1.6rem; width: 1.6rem; }
-  .mobile-theme-card .text-\[13\.5px\] { font-size: 0.88rem; }
-  .mobile-theme-card .text-\[11\.5px\] { font-size: 0.73rem; }
-  .mobile-theme-preview { align-items: center; display: flex; gap: 0.3rem; flex-shrink: 0; }
-  .mobile-theme-preview img { border: 2px solid #fffefa; border-radius: 0.55rem; height: 3.4rem; object-fit: cover; width: 1.7rem; box-shadow: 0 2px 7px #063c231c; }
-  .mobile-theme-preview svg { color: #235c44; width: 1rem; }
+  .mobile-theme-card .text-\[13\.5px\] { font-size: 0.78rem; }
+  .mobile-theme-card .text-\[11\.5px\] { font-size: 0.65rem; white-space: nowrap; }
+  .mobile-theme-preview { align-items: center; display: flex; gap: 0.22rem; flex-shrink: 0; }
+  .schedule-theme-miniature { border: 2px solid #fffefa; border-radius: 0.55rem; box-shadow: 0 2px 7px #063c231c; display: block; height: 3.05rem; overflow: hidden; position: relative; width: 1.9rem; }
+  .schedule-theme-miniature .mini-sun { border-radius: 50%; height: 1.05rem; left: 0.23rem; position: absolute; top: 0.75rem; width: 1.05rem; }
+  .schedule-theme-miniature .mini-hill-back, .schedule-theme-miniature .mini-hill-front { bottom: -0.3rem; display: block; height: 1.75rem; position: absolute; width: 3.2rem; }
+  .schedule-theme-miniature .mini-hill-back { border-radius: 52% 52% 0 0; left: -1rem; transform: rotate(-15deg); }
+  .schedule-theme-miniature .mini-hill-front { border-radius: 55% 55% 0 0; bottom: -0.65rem; left: -0.4rem; transform: rotate(15deg); }
+  .schedule-theme-miniature.is-nature { background: linear-gradient(#c8e2d7 0 57%, #f7eac0 58%); }
+  .schedule-theme-miniature.is-nature .mini-sun { background: #fff2c9; box-shadow: 0 0 0 0.25rem #f8efd1a8; }
+  .schedule-theme-miniature.is-nature .mini-hill-back { background: #91bd88; }
+  .schedule-theme-miniature.is-nature .mini-hill-front { background: #227a5d; }
+  .schedule-theme-miniature.is-sunset { background: linear-gradient(#ee9aaa, #f7bca2 64%, #e7a99f); }
+  .schedule-theme-miniature.is-sunset .mini-sun { background: #ffe4ab; box-shadow: 0 0 0 0.28rem #ffe5af59; }
+  .schedule-theme-miniature.is-sunset .mini-hill-back { background: #d892ad; }
+  .schedule-theme-miniature.is-sunset .mini-hill-front { background: #a972a0; }
+  .schedule-theme-miniature.is-night { background: linear-gradient(#10243a, #1a3450 70%, #182c3b); }
+  .schedule-theme-miniature.is-night .mini-sun { background: #ffe3a4; height: 0.75rem; left: 1rem; top: 0.65rem; width: 0.75rem; }
+  .schedule-theme-miniature.is-night .mini-sun::after { background: #10243a; border-radius: 50%; content: ''; height: 0.75rem; left: 0.23rem; position: absolute; top: -0.13rem; width: 0.75rem; }
+  .schedule-theme-miniature.is-night .mini-hill-back { background: #263f53; }
+  .schedule-theme-miniature.is-night .mini-hill-front { background: #102338; }
+  .mobile-theme-preview svg { color: #235c44; width: 0.85rem; }
   .mobile-theme-card .schedule-spotlight-action { display: none; }
   .mobile-schedule-toolbar { align-items: center; display: grid; grid-template-columns: 1fr auto; gap: 0.65rem; }
   .mobile-schedule-toolbar > div:first-child { display: none; }
@@ -58,10 +75,11 @@
   .mobile-week-day strong { font-size: 0.78rem; font-weight: 650; margin-top: 0.18rem; }
   .mobile-week-day.text-primary { background: #e0f1e6; border-radius: 0.8rem; color: #005e3d; }
   .mobile-week-hour { font-size: 0.56rem; font-weight: 550; }
-  .mobile-class-block { border: 0; box-shadow: none; }
+  .mobile-class-block { border: 0; box-shadow: none; min-width: 0; }
   .mobile-class-content { min-width: 0; }
-  .mobile-class-code { font-size: clamp(0.46rem, 2.2vw, 0.67rem); line-height: 1.15; overflow: hidden; text-overflow: clip; white-space: nowrap; }
-  .mobile-class-time { font-size: clamp(0.42rem, 1.9vw, 0.56rem); line-height: 1.15; margin-top: 0.18rem; overflow: hidden; white-space: nowrap; }
+  .mobile-class-code { font-size: clamp(0.52rem, 2.45vw, 0.66rem); letter-spacing: -0.035em; line-height: 1.12; overflow: hidden; text-overflow: clip; white-space: nowrap; }
+  .mobile-class-code.is-long { display: -webkit-box; font-size: 0.47rem; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal; }
+  .mobile-class-time { font-size: clamp(0.45rem, 2.05vw, 0.54rem); letter-spacing: -0.045em; line-height: 1.12; margin-top: 0.2rem; overflow: hidden; white-space: nowrap; }
   .mobile-main:has(.mobile-week-board) .schedule-section-heading h2 { font-size: 0.75rem; }
   .mobile-schedule-actions { display: flex; gap: 0.5rem; }
   .mobile-schedule-actions button { align-items: center; background: #e7eee5; border-radius: 999px; color: #075d3b; display: inline-flex; font-size: 0.72rem; font-weight: 750; gap: 0.3rem; min-height: 2.45rem; padding: 0 0.85rem; }

@@ -50,6 +50,7 @@ function codeToColorIndex(code: string): number {
 
 const HOUR_HEIGHT_DESKTOP = 72
 const HOUR_HEIGHT_MOBILE = 64
+const MOBILE_CLASS_HEIGHT = 44
 
 const shortDayFull: Record<string, string> = {
   Mon: 'Mon',
@@ -73,7 +74,7 @@ const JS_DAY_TO_KEY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 function compactTimeRange(start: string, end: string) {
   const short = (value: string) => {
     const [hour, minute] = value.split(':').map(Number)
-    return `${hour % 12 || 12}:${String(minute).padStart(2, '0')}`
+    return `${hour % 12 || 12}${minute ? `:${String(minute).padStart(2, '0')}` : ''}`
   }
   return `${short(start)}–${short(end)}`
 }
@@ -192,20 +193,24 @@ export function WeekGrid({ weekOffset = 0 }: { weekOffset?: number }) {
   const startHour = range.startHour
   const endHour = range.endHour
   const hours = Array.from({ length: endHour - startHour }, (_, i) => startHour + i)
+  // The mobile board shows the hours occupied by real classes without the
+  // desktop grid's generous empty-hour buffer.
+  const mobileStartHour = Math.floor(Math.min(...classes.map((entry) => minutesOf(entry.start))) / 60)
+  const mobileEndHour = Math.ceil(Math.max(...classes.map((entry) => minutesOf(entry.end))) / 60) + 1
+  const mobileHours = Array.from({ length: mobileEndHour - mobileStartHour }, (_, i) => mobileStartHour + i)
 
   const topDesktop = (time: string) =>
     ((minutesOf(time) - startHour * 60) / 60) * HOUR_HEIGHT_DESKTOP
   const heightDesktop = (start: string, end: string) =>
     ((minutesOf(end) - minutesOf(start)) / 60) * HOUR_HEIGHT_DESKTOP
   const topMobile = (time: string) =>
-    ((minutesOf(time) - startHour * 60) / 60) * HOUR_HEIGHT_MOBILE
-  const heightMobile = (start: string, end: string) =>
-    ((minutesOf(end) - minutesOf(start)) / 60) * HOUR_HEIGHT_MOBILE
+    ((minutesOf(time) - mobileStartHour * 60) / 60) * HOUR_HEIGHT_MOBILE
 
   // "Now" indicator position (pixels from grid top)
   const nowTopDesktop = ((nowMins - startHour * 60) / 60) * HOUR_HEIGHT_DESKTOP
-  const nowTopMobile = ((nowMins - startHour * 60) / 60) * HOUR_HEIGHT_MOBILE
+  const nowTopMobile = ((nowMins - mobileStartHour * 60) / 60) * HOUR_HEIGHT_MOBILE
   const nowVisible = nowMins >= startHour * 60 && nowMins <= endHour * 60
+  const nowVisibleMobile = nowMins >= mobileStartHour * 60 && nowMins <= mobileEndHour * 60
 
   // Smart column widths – days with 0 classes get 0.55 flex, days with classes get 1
   const dayClassCount = weekDays.map((day) => classes.filter((c) => c.days.includes(day)).length)
@@ -213,6 +218,23 @@ export function WeekGrid({ weekOffset = 0 }: { weekOffset?: number }) {
   const mobileWeekStart = new Date()
   mobileWeekStart.setDate(mobileWeekStart.getDate() - ((mobileWeekStart.getDay() + 6) % 7) + weekOffset * 7)
   const mobileDays = weekDays.slice(0, 5)
+  const mobileDayLayouts = mobileDays.map((day) => {
+    let previousBottom = -Infinity
+    return classes
+      .filter((entry) => entry.days.includes(day))
+      .sort((a, b) => minutesOf(a.start) - minutesOf(b.start))
+      .map((entry) => {
+        // Labels keep their real start position unless another label occupies it.
+        const actualTop = Math.max(0, topMobile(entry.start))
+        const top = Math.max(actualTop, previousBottom + 3)
+        previousBottom = top + MOBILE_CLASS_HEIGHT
+        return { entry, top }
+      })
+  })
+  const mobileGridHeight = Math.max(
+    mobileHours.length * HOUR_HEIGHT_MOBILE,
+    ...mobileDayLayouts.flatMap((day) => day.map(({ top }) => top + MOBILE_CLASS_HEIGHT + 12)),
+  )
 
   return (
     <>
@@ -263,8 +285,8 @@ export function WeekGrid({ weekOffset = 0 }: { weekOffset?: number }) {
         {/* Body */}
         <div className="relative flex">
           {/* Time column */}
-          <div className="w-12 shrink-0 bg-card/50">
-            {hours.map((hour) => (
+          <div className="w-12 shrink-0 bg-card/50" style={{ height: mobileGridHeight }}>
+            {mobileHours.map((hour) => (
               <div key={hour} style={{ height: HOUR_HEIGHT_MOBILE }} className="relative pr-1 text-right">
                 <span className="mobile-week-hour absolute -top-2 right-1 text-muted-foreground/70 select-none">
                   {hour % 12 === 0 ? 12 : hour % 12} {hour >= 12 ? 'PM' : 'AM'}
@@ -275,7 +297,7 @@ export function WeekGrid({ weekOffset = 0 }: { weekOffset?: number }) {
 
           <div className="relative grid flex-1 grid-cols-5">
             {/* Hour grid lines */}
-            {hours.map((hour, i) => (
+            {mobileHours.map((hour, i) => (
               <div
                 key={hour}
                 style={{ top: i * HOUR_HEIGHT_MOBILE }}
@@ -299,7 +321,7 @@ export function WeekGrid({ weekOffset = 0 }: { weekOffset?: number }) {
             )}
 
             {/* Now indicator line (mobile) */}
-            {nowVisible && (
+            {nowVisibleMobile && (
               <div
                 className="pointer-events-none absolute inset-x-0 z-20 flex items-center"
                 style={{ top: nowTopMobile - 1 }}
@@ -309,43 +331,42 @@ export function WeekGrid({ weekOffset = 0 }: { weekOffset?: number }) {
               </div>
             )}
 
-            {mobileDays.map((day) => {
-              const dayClasses = classes.filter((c) => c.days.includes(day))
+            {mobileDays.map((day, dayIndex) => {
+              const dayClasses = mobileDayLayouts[dayIndex]
               return (
                 <div
                   key={day}
                   className="relative border-l first:border-l-0 border-separator/25 px-[1.5px]"
-                  style={{ height: hours.length * HOUR_HEIGHT_MOBILE }}
+                  style={{ height: mobileGridHeight }}
                 >
-                  {dayClasses.map((entry) => {
+                  {dayClasses.map(({ entry, top }) => {
                     const colorIdx = codeToColorIndex(entry.code)
                     const color = GRID_COLORS[colorIdx]
-                    const blockHeight = Math.max(heightMobile(entry.start, entry.end) - 2, 36)
-                    const showTime = blockHeight >= 54
+                    const compactCode = entry.code.replace(/\s+/g, '')
 
                     return (
-                      <motion.div
+                      <motion.button
+                        type="button"
                         key={entry.id}
                         onClick={() => setSelectedClass(entry)}
-                        whileTap={{ scale: 0.93 }}
+                        aria-label={`${entry.code}, ${entry.start} to ${entry.end}. View class details`}
+                        title={`${entry.code} · ${entry.start}–${entry.end}`}
+                        whileTap={{ scale: 0.97 }}
                         style={{
-                          top: Math.max(0, topMobile(entry.start)),
-                          height: blockHeight,
+                          top,
+                          height: MOBILE_CLASS_HEIGHT,
                         }}
-                        className={`mobile-class-block absolute inset-x-[2px] overflow-hidden rounded-lg ${color.soft} border ${color.border} flex flex-col justify-center cursor-pointer shadow-2xs transition-transform active:scale-95`}
+                        className={`mobile-class-block absolute inset-x-[2px] overflow-hidden rounded-md ${color.soft} border ${color.border} flex flex-col justify-center text-left cursor-pointer transition-transform`}
                       >
-                        {/* Micro Left Accent Indicator */}
-                        <span className={`absolute inset-y-0 left-0 w-[3px] ${color.accent}`} />
+                        <span className={`absolute inset-y-0 left-0 w-[3px] ${color.accent}`} aria-hidden="true" />
 
-                        <div className="mobile-class-content flex flex-col justify-center leading-tight pl-2 pr-0.5 py-0.5">
-                          <span className={`mobile-class-code font-black ${color.text}`}>{entry.code.replace(/\s+/g, '')}</span>
-                          {showTime && (
-                            <span className="mobile-class-time font-medium text-muted-foreground tabular-nums">
-                              {compactTimeRange(entry.start, entry.end)}
-                            </span>
-                          )}
+                        <div className="mobile-class-content flex flex-col justify-center leading-tight pl-[6px] pr-[1px] py-0.5">
+                          <span className={`mobile-class-code font-bold ${color.text} ${compactCode.length > 8 ? 'is-long' : ''}`}>{compactCode}</span>
+                          <span className="mobile-class-time font-medium text-muted-foreground tabular-nums">
+                            {compactTimeRange(entry.start, entry.end)}
+                          </span>
                         </div>
-                      </motion.div>
+                      </motion.button>
                     )
                   })}
                 </div>

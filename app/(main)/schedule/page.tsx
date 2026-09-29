@@ -162,7 +162,12 @@ export default function SchedulePage() {
               <span>Choose Theme</span>
             </button>
           </div>
-          <button type="button" onClick={() => setTemplateOpen(true)} className="mobile-theme-preview sm:hidden" aria-label="Choose schedule theme"><img src="/templates/forest-whimsy.png" alt="" /><img src="/templates/ocean-party.png" alt="" /><img src="/templates/simple-modern.png" alt="" /><ChevronRight className="size-5" /></button>
+          <button type="button" onClick={() => setTemplateOpen(true)} className="mobile-theme-preview sm:hidden" aria-label="Choose schedule theme">
+            <span className="schedule-theme-miniature is-nature" aria-hidden="true"><span className="mini-sun" /><span className="mini-hill-back" /><span className="mini-hill-front" /></span>
+            <span className="schedule-theme-miniature is-sunset" aria-hidden="true"><span className="mini-sun" /><span className="mini-hill-back" /><span className="mini-hill-front" /></span>
+            <span className="schedule-theme-miniature is-night" aria-hidden="true"><span className="mini-sun" /><span className="mini-hill-back" /><span className="mini-hill-front" /></span>
+            <ChevronRight className="size-5" />
+          </button>
         </div>
 
         {/* View Segmented Control (Day / Week / Agenda) */}
