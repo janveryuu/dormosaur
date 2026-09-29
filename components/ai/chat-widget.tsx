@@ -7,8 +7,8 @@ import {
   ChevronDown,
   Clock,
   CookingPot,
-  CornerDownLeft,
   Flame,
+  Send,
   Sparkles,
 } from 'lucide-react'
 import { useSchedule } from '@/components/schedule-provider'
@@ -21,10 +21,10 @@ type Message = {
 }
 
 const quickPrompts = [
-  { icon: Calendar, label: "What's my next class?", prompt: "What is my next class today and which room is it in?" },
-  { icon: Clock, label: 'Wake-up alarm advice', prompt: 'When should I set my alarm for tomorrow based on my class schedule?' },
-  { icon: CookingPot, label: 'Dorm microwave meal', prompt: 'Suggest a quick 5-minute dorm microwave meal I can make between classes.' },
-  { icon: Flame, label: 'Workload summary', prompt: 'Summarize my upcoming exams and deadlines for this week.' },
+  { icon: Calendar, label: 'Next class', prompt: 'What is my next class today and which room is it in?' },
+  { icon: Clock, label: 'Wake-up advice', prompt: 'When should I set my alarm for tomorrow based on my class schedule?' },
+  { icon: CookingPot, label: 'Meal idea', prompt: 'Suggest a quick 5-minute dorm microwave meal I can make between classes.' },
+  { icon: Flame, label: "Today's tasks", prompt: 'Summarize my upcoming exams and deadlines for this week.' },
 ]
 
 export function DormosaurAiChat() {
@@ -35,7 +35,7 @@ export function DormosaurAiChat() {
     {
       id: 'welcome',
       role: 'assistant',
-      content: `Hey ${profile.name || 'there'}! I'm Dormosaur AI (powered by Llama 3).\n\nI have live access to your ${classes.length} classes, ${alarms.length} alarms, and dorm kitchen preferences.\n\nHow can I help you today?`,
+      content: `Ready to help with classes, alarms, and dorm meals.\n\nWhat do you need today? 🌱`,
     },
   ])
   const [input, setInput] = React.useState('')
@@ -55,7 +55,7 @@ export function DormosaurAiChat() {
       const updatedWelcome: Message = {
         id: 'welcome',
         role: 'assistant',
-        content: `Hey ${profile.name || 'there'}! I'm Dormosaur AI (powered by Llama 3).\n\nI have live access to your ${classes.length} classes, ${alarms.length} alarms, and dorm kitchen preferences.\n\nHow can I help you today?`,
+        content: `Ready to help with classes, alarms, and dorm meals.\n\nWhat do you need today? 🌱`,
       }
       if (prev.length === 0 || prev[0].id === 'welcome') {
         return [updatedWelcome, ...prev.slice(1)]
@@ -222,9 +222,6 @@ export function DormosaurAiChat() {
             height={30}
             className="size-7.5 object-contain drop-shadow-xs"
           />
-          <span className="ai-status-dot relative flex size-2">
-            <span className="relative inline-flex size-2 rounded-full bg-white" />
-          </span>
           <span className="text-[14px] font-bold tracking-tight">Dormosaur AI</span>
         </motion.button>
       </div>
@@ -287,9 +284,7 @@ export function DormosaurAiChat() {
                       Llama 3
                     </span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground">
-                    Connected to {classes.length} classes & {alarms.length} alarms
-                  </p>
+                  <p className="ai-context-line text-[11px] text-muted-foreground"><Calendar className="size-3.5" /> {classes.length} classes <span>·</span> <Clock className="size-3.5" /> {alarms.length} alarms <span>·</span> <CookingPot className="size-3.5" /> kitchen prefs</p>
                 </div>
               </div>
               <button
@@ -400,7 +395,7 @@ export function DormosaurAiChat() {
                   aria-label="Send message"
                   className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform active:scale-90 disabled:opacity-40"
                 >
-                  <CornerDownLeft className="size-4" aria-hidden="true" />
+                  <Send className="size-4" aria-hidden="true" />
                 </button>
               </form>
             </div>

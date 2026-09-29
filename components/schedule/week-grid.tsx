@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { Calendar, UploadCloud } from 'lucide-react'
 import { useSchedule } from '@/components/schedule-provider'
 import type { ClassEntry } from '@/lib/data'
-import { formatTimeRange, minutesOf, weekDays } from '@/lib/data'
+import { minutesOf, weekDays } from '@/lib/data'
 import { getDynamicGridTimeRange } from '@/lib/template-helper'
 import { ClassDetailModal } from '@/components/schedule/class-detail-modal'
 import { ClassEditModal } from '@/components/schedule/class-edit-modal'
@@ -48,52 +48,8 @@ function codeToColorIndex(code: string): number {
   return hash % GRID_COLORS.length
 }
 
-/**
- * Intelligent Mobile Course Code Formatter
- * Splits course codes into a prefix (e.g. "CPE", "ENGG", "FILI") and distinguishing
- * number (e.g. "411", "416", "102") for zero-truncation 2-line stacked rendering.
- */
-export function formatMobileCourseCode(code: string): {
-  prefix: string
-  number: string
-  single: string
-} {
-  if (!code) return { prefix: '', number: '', single: '' }
-  const clean = code.trim()
-
-  // Match letter prefix and number suffix: e.g. "CPE 411", "CPE-411", "ENGG 416", "CS 150", "FILI 102", "MATH101"
-  const match = clean.match(/^([A-Za-z\s]+)[\s\-_/]*(\d+[A-Za-z]?.*)$/)
-  if (match) {
-    let prefix = match[1].trim()
-    if (prefix.length > 5) {
-      prefix = prefix.slice(0, 4)
-    }
-    const number = match[2].trim()
-    return {
-      prefix: prefix.toUpperCase(),
-      number: number,
-      single: `${prefix}${number}`,
-    }
-  }
-
-  // If no digits found (e.g. "ETHICS", "SEMINAR")
-  if (clean.length > 5) {
-    return {
-      prefix: clean.slice(0, 4).toUpperCase(),
-      number: '',
-      single: clean.slice(0, 5).toUpperCase(),
-    }
-  }
-
-  return {
-    prefix: clean.toUpperCase(),
-    number: '',
-    single: clean.toUpperCase(),
-  }
-}
-
 const HOUR_HEIGHT_DESKTOP = 72
-const HOUR_HEIGHT_MOBILE = 56
+const HOUR_HEIGHT_MOBILE = 64
 
 const shortDayFull: Record<string, string> = {
   Mon: 'Mon',
@@ -105,16 +61,6 @@ const shortDayFull: Record<string, string> = {
   Sun: 'Sun',
 }
 
-const shortMobileDayMap: Record<string, string> = {
-  Mon: 'M',
-  Tue: 'T',
-  Wed: 'W',
-  Thu: 'T',
-  Fri: 'F',
-  Sat: 'S',
-  Sun: 'S',
-}
-
 // Returns minutes since midnight for "now" in local time
 function nowMinutes() {
   const d = new Date()
@@ -124,7 +70,15 @@ function nowMinutes() {
 // Today's weekday as a Mon/Tue/… key
 const JS_DAY_TO_KEY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-export function WeekGrid() {
+function compactTimeRange(start: string, end: string) {
+  const short = (value: string) => {
+    const [hour, minute] = value.split(':').map(Number)
+    return `${hour % 12 || 12}:${String(minute).padStart(2, '0')}`
+  }
+  return `${short(start)}–${short(end)}`
+}
+
+export function WeekGrid({ weekOffset = 0 }: { weekOffset?: number }) {
   const { classes, isHydrated, isSyncing, addClass, updateClass, deleteClass } = useSchedule()
   const [selectedClass, setSelectedClass] = React.useState<ClassEntry | null>(null)
   const [editClass, setEditClass] = React.useState<ClassEntry | null>(null)
@@ -256,6 +210,9 @@ export function WeekGrid() {
   // Smart column widths – days with 0 classes get 0.55 flex, days with classes get 1
   const dayClassCount = weekDays.map((day) => classes.filter((c) => c.days.includes(day)).length)
   const getDesktopFlex = (count: number) => (count === 0 ? '0.55' : '1')
+  const mobileWeekStart = new Date()
+  mobileWeekStart.setDate(mobileWeekStart.getDate() - ((mobileWeekStart.getDay() + 6) % 7) + weekOffset * 7)
+  const mobileDays = weekDays.slice(0, 5)
 
   return (
     <>
@@ -279,23 +236,24 @@ export function WeekGrid() {
         onDelete={(id) => deleteClass(id)}
       />
 
-      {/* ── MOBILE 7-DAY COMPACT GRID (ZERO HORIZONTAL SCROLL + UN-TRUNCATED 2-LINE BADGES) ── */}
-      <div className="block sm:hidden overflow-hidden rounded-3xl bg-card shadow-ios border border-border/60">
+      {/* Mobile weekly board keeps the same live class data and detail modal. */}
+      <div className="mobile-week-board block sm:hidden overflow-hidden rounded-3xl bg-card shadow-ios border border-border/60">
         {/* Header */}
         <div className="flex border-b border-separator bg-card/95 backdrop-blur-md">
-          <div className="w-8 shrink-0 py-2.5 border-r border-separator/40" />
-          <div className="grid flex-1 grid-cols-7">
-            {weekDays.map((day) => {
-              const isToday = day === todayKey
+          <div className="w-12 shrink-0 py-2.5" />
+          <div className="grid flex-1 grid-cols-5">
+            {mobileDays.map((day, index) => {
+              const isToday = day === todayKey && weekOffset === 0
+              const date = new Date(mobileWeekStart)
+              date.setDate(mobileWeekStart.getDate() + index)
               return (
                 <div
                   key={day}
-                  className={`py-2 text-center text-[11px] font-black uppercase border-l first:border-l-0 border-separator/40 ${
+                  className={`mobile-week-day py-2 text-center border-l first:border-l-0 border-separator/40 ${
                     isToday ? 'text-primary' : 'text-foreground'
                   }`}
                 >
-                  <span>{shortMobileDayMap[day] || day}</span>
-                  {isToday && <div className="mx-auto mt-0.5 size-1 rounded-full bg-primary" />}
+                  <span>{day}</span><strong>{date.getDate()}</strong>
                 </div>
               )
             })}
@@ -305,17 +263,17 @@ export function WeekGrid() {
         {/* Body */}
         <div className="relative flex">
           {/* Time column */}
-          <div className="w-8 shrink-0 border-r border-separator/40 bg-card/50">
+          <div className="w-12 shrink-0 bg-card/50">
             {hours.map((hour) => (
               <div key={hour} style={{ height: HOUR_HEIGHT_MOBILE }} className="relative pr-1 text-right">
-                <span className="absolute -top-2 right-1 text-[9px] font-bold text-muted-foreground/70 select-none">
-                  {hour % 12 === 0 ? 12 : hour % 12}{hour >= 12 ? 'p' : 'a'}
+                <span className="mobile-week-hour absolute -top-2 right-1 text-muted-foreground/70 select-none">
+                  {hour % 12 === 0 ? 12 : hour % 12} {hour >= 12 ? 'PM' : 'AM'}
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="relative grid flex-1 grid-cols-7">
+          <div className="relative grid flex-1 grid-cols-5">
             {/* Hour grid lines */}
             {hours.map((hour, i) => (
               <div
@@ -327,14 +285,14 @@ export function WeekGrid() {
             ))}
 
             {/* Today column tint */}
-            {weekDays.map((day, di) =>
-              day === todayKey ? (
+            {mobileDays.map((day, di) =>
+              day === todayKey && weekOffset === 0 ? (
                 <div
                   key={`today-tint-mobile-${di}`}
                   className="pointer-events-none absolute inset-y-0 bg-primary/[0.04]"
                   style={{
-                    left: `${(di / 7) * 100}%`,
-                    width: `${(1 / 7) * 100}%`,
+                    left: `${(di / 5) * 100}%`,
+                    width: `${(1 / 5) * 100}%`,
                   }}
                 />
               ) : null,
@@ -351,7 +309,7 @@ export function WeekGrid() {
               </div>
             )}
 
-            {weekDays.map((day) => {
+            {mobileDays.map((day) => {
               const dayClasses = classes.filter((c) => c.days.includes(day))
               return (
                 <div
@@ -362,10 +320,8 @@ export function WeekGrid() {
                   {dayClasses.map((entry) => {
                     const colorIdx = codeToColorIndex(entry.code)
                     const color = GRID_COLORS[colorIdx]
-                    // Floor of 34px ensures ample room for stacked 2-line label
-                    const blockHeight = Math.max(heightMobile(entry.start, entry.end) - 2, 34)
-                    const { prefix, number } = formatMobileCourseCode(entry.code)
-                    const showTime = blockHeight >= 72
+                    const blockHeight = Math.max(heightMobile(entry.start, entry.end) - 2, 36)
+                    const showTime = blockHeight >= 54
 
                     return (
                       <motion.div
@@ -376,31 +332,16 @@ export function WeekGrid() {
                           top: Math.max(0, topMobile(entry.start)),
                           height: blockHeight,
                         }}
-                        className={`absolute inset-x-[1.5px] overflow-hidden rounded-xl ${color.soft} border ${color.border} flex flex-col justify-center items-center text-center cursor-pointer shadow-2xs transition-transform active:scale-95`}
+                        className={`mobile-class-block absolute inset-x-[2px] overflow-hidden rounded-lg ${color.soft} border ${color.border} flex flex-col justify-center cursor-pointer shadow-2xs transition-transform active:scale-95`}
                       >
                         {/* Micro Left Accent Indicator */}
-                        <span className={`absolute inset-y-1 left-0.5 w-[2.5px] rounded-full ${color.accent}`} />
+                        <span className={`absolute inset-y-0 left-0 w-[3px] ${color.accent}`} />
 
-                        {/* Un-truncated Stacked Course Label */}
-                        <div className="flex flex-col items-center justify-center leading-none pl-1.5 pr-0.5 py-0.5">
-                          {number ? (
-                            <>
-                              <span className={`text-[8px] font-black uppercase tracking-tight opacity-80 leading-none ${color.text}`}>
-                                {prefix}
-                              </span>
-                              <span className={`text-[10.5px] font-black tracking-tight leading-none mt-0.5 ${color.text}`}>
-                                {number}
-                              </span>
-                            </>
-                          ) : (
-                            <span className={`text-[9px] font-black uppercase tracking-tight leading-none ${color.text}`}>
-                              {prefix}
-                            </span>
-                          )}
-
+                        <div className="mobile-class-content flex flex-col justify-center leading-tight pl-2 pr-0.5 py-0.5">
+                          <span className={`mobile-class-code font-black ${color.text}`}>{entry.code.replace(/\s+/g, '')}</span>
                           {showTime && (
-                            <span className="text-[7.5px] font-bold text-muted-foreground/75 mt-1 tabular-nums leading-none">
-                              {entry.start}
+                            <span className="mobile-class-time font-medium text-muted-foreground tabular-nums">
+                              {compactTimeRange(entry.start, entry.end)}
                             </span>
                           )}
                         </div>

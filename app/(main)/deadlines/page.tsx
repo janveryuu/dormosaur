@@ -4,6 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
+  ArrowUpRight,
   CalendarCheck,
   CheckSquare,
   Clock,
@@ -43,7 +44,7 @@ export default function DeadlinesPage() {
     <>
       <AddDeadlineModal open={addModalOpen} onClose={() => setAddModalOpen(false)} />
 
-      <ScreenHeader
+      <div className="hidden sm:block"><ScreenHeader
         title="Deadlines"
         eyebrow="Assignments & Exams"
         subtitle={`${pendingCount} ${
@@ -69,10 +70,18 @@ export default function DeadlinesPage() {
             </button>
           </div>
         }
-      />
+      /></div>
+
+      <div className="mobile-page-intro mobile-task-intro sm:hidden">
+        <p className="mobile-eyebrow">Tasks & deadlines</p>
+        <h1>Make room for what’s next.</h1>
+        <p>{pendingCount} {pendingCount === 1 ? 'deadline' : 'deadlines'} left on your board.</p>
+        <DormosaurMascot variant="youGotThis" alt="Dormosaur cheering you on" width={120} height={120} className="mobile-task-mascot" />
+        <button type="button" onClick={() => setAddModalOpen(true)} className="mobile-task-add"><Plus className="size-4" /> Add task</button>
+      </div>
 
       <div className="flex flex-col gap-8 pb-12 sm:gap-10">
-        <section className="task-summary" aria-label="Deadline overview">
+        <section className="task-summary hidden sm:flex" aria-label="Deadline overview">
           <div>
             <p className="route-label">Your due board</p>
             <h2>Make room for what’s next.</h2>
@@ -84,9 +93,10 @@ export default function DeadlinesPage() {
             <div><strong>{completedCount}</strong><span>finished</span></div>
           </div>
         </section>
+        <div className="mobile-stat-grid mobile-task-stats sm:hidden" aria-label="Deadline overview"><div><span className="mobile-stat-icon"><CheckSquare /></span><strong>{pendingCount}</strong><span>to do</span></div><div><span className="mobile-stat-icon is-warm"><Clock /></span><strong>{dueSoonCount}</strong><span>due soon</span></div><div><span className="mobile-stat-icon is-neutral"><CalendarCheck /></span><strong>{completedCount}</strong><span>done</span></div></div>
 
         {/* ── Compact Syllabus Scanner Action Strip ── */}
-        <div className="task-scanner">
+        <div className="task-scanner mobile-task-scanner">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="task-scanner-icon">
@@ -95,14 +105,14 @@ export default function DeadlinesPage() {
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <span className="text-[13.5px] font-bold text-foreground tracking-tight">
-                    Syllabus Camera & File Import
+                    <span className="hidden sm:inline">Syllabus Camera & File Import</span><span className="sm:hidden">Import deadlines</span>
                   </span>
                   <span className="task-scanner-badge">
                     AI Vision
                   </span>
                 </div>
                 <p className="text-[11.5px] text-muted-foreground mt-0.5">
-                  Snap a photo of your syllabus or paste dates to extract deadlines.
+                    <span className="hidden sm:inline">Snap a photo of your syllabus or paste dates to extract deadlines.</span><span className="sm:hidden">Scan a syllabus or paste your dates.</span>
                 </p>
               </div>
             </div>
@@ -111,8 +121,8 @@ export default function DeadlinesPage() {
               href="/deadlines/import"
               className="task-scanner-action"
             >
-              <Sparkles className="size-3.5" />
-              <span>Import Deadlines</span>
+              <ArrowUpRight className="size-4 sm:hidden" /><Sparkles className="hidden size-3.5 sm:block" />
+              <span className="hidden sm:inline">Import Deadlines</span>
             </Link>
           </div>
         </div>

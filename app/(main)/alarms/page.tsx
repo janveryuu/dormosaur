@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { BellRing, Clock, Navigation, Sparkles } from 'lucide-react'
+import { Bell, BellRing, GraduationCap, MapPin, Sparkles } from 'lucide-react'
 import { ScreenHeader } from '@/components/ios/screen-header'
 import { IosSwitch } from '@/components/ios/ios-switch'
 import { LeadPicker, type Lead } from '@/components/ios/lead-picker'
@@ -12,12 +12,23 @@ import { useSchedule } from '@/components/schedule-provider'
 import { formatTime, subjectColorClass } from '@/lib/data'
 import { triggerPushNotification } from '@/lib/push-notifications'
 import { IosToast, type ToastMessage } from '@/components/ios/toast'
+import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 
 export default function AlarmsPage() {
-  const { alarms, toggleAlarm, updateAlarmLead } = useSchedule()
+  const { alarms, classes, toggleAlarm, updateAlarmLead } = useSchedule()
   const [preview, setPreview] = React.useState(false)
   const [aiNudges, setAiNudges] = React.useState<Record<string, string>>({})
   const [toast, setToast] = React.useState<ToastMessage | null>(null)
+  const [alarmFilter, setAlarmFilter] = React.useState<'upcoming' | 'on' | 'off' | 'all'>('upcoming')
+  const [mobileView, setMobileView] = React.useState(false)
+
+  React.useEffect(() => {
+    const media = window.matchMedia('(max-width: 639px)')
+    const update = () => setMobileView(media.matches)
+    update()
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
 
   const groups = Array.from(new Set(alarms.map((a) => a.day || 'Today')))
   if (groups.length === 0) groups.push('Today')
@@ -70,14 +81,21 @@ export default function AlarmsPage() {
 
   return (
     <>
-      <ScreenHeader
+      <div className="hidden sm:block"><ScreenHeader
         title="Alarms"
         eyebrow="Smart Timetable Sync"
         subtitle={`${activeCount} of ${alarms.length} alarms active. Auto-calculated with campus walking lead times.`}
-      />
+      /></div>
+
+      <div className="mobile-page-intro mobile-alarm-intro sm:hidden">
+        <p className="mobile-eyebrow">Smart alarms</p>
+        <h1>Never miss<br />the moment.</h1>
+        <p>Reminders that follow your classes and daily routine.</p>
+        <DormosaurMascot variant="greeting" alt="Dormosaur ready to remind you" width={170} height={170} className="mobile-alarm-mascot" />
+      </div>
 
       <div className="flex flex-col gap-8 sm:gap-10">
-        <section className="alarm-summary" aria-label="Alarm overview">
+        <section className="alarm-summary hidden sm:flex" aria-label="Alarm overview">
           <div>
             <p className="route-label">Departure reminders</p>
             <h2>Leave with less to remember.</h2>
@@ -89,10 +107,13 @@ export default function AlarmsPage() {
             <div><strong>{nextAlarm?.lead || 0}m</strong><span>next lead time</span></div>
           </div>
         </section>
+        <div className="mobile-stat-grid mobile-alarm-stats sm:hidden" aria-label="Alarm overview"><div><span className="mobile-stat-icon"><GraduationCap /></span><strong>{activeCount}</strong><span>Active alarms</span></div><div><span className="mobile-stat-icon is-warm"><Bell /></span><strong>{alarms.length - activeCount}</strong><span>Off</span></div><div><span className="mobile-stat-icon is-blue"><BellRing /></span><strong>{alarms.length}</strong><span>Total</span></div></div>
+
+        <div className="mobile-alarm-filters sm:hidden" role="tablist" aria-label="Filter alarms">{(['upcoming', 'on', 'off', 'all'] as const).map((filter) => <button key={filter} type="button" role="tab" aria-selected={alarmFilter === filter} className={alarmFilter === filter ? 'is-active' : ''} onClick={() => setAlarmFilter(filter)}>{filter === 'upcoming' ? 'Upcoming' : filter === 'on' ? 'On' : filter === 'off' ? 'Off' : 'All'}</button>)}</div>
 
         {/* ── Native Alarm Spotlight Hero Card ── */}
         {nextAlarm && (
-          <section className="alarm-next-board">
+          <section className="alarm-next-board hidden sm:block">
             <div className="wayfinding-grid pointer-events-none absolute inset-0 opacity-20" aria-hidden="true" />
             <div className="relative z-10">
             <div className="flex items-start justify-between gap-3">
@@ -135,7 +156,7 @@ export default function AlarmsPage() {
         )}
 
         {/* ── AI Smart Nudge & Push Test Card ── */}
-        <section className="alarm-ai-panel">
+        <section className="alarm-ai-panel mobile-alarm-ai-panel">
           <div className="flex items-center gap-3">
             <img
               src="/ai-dormosaur.png"
@@ -218,11 +239,11 @@ export default function AlarmsPage() {
           </section>
         ) : (
           groups.map((group) => {
-            const groupAlarms = alarms.filter((a) => a.day === group)
+            const groupAlarms = alarms.filter((a) => a.day === group && (!mobileView || alarmFilter === 'all' || (alarmFilter === 'on' || alarmFilter === 'upcoming' ? a.enabled : !a.enabled)))
             if (groupAlarms.length === 0) return null
 
             return (
-              <section key={group} className="flex flex-col gap-2">
+              <section key={group} className="mobile-alarm-group flex flex-col gap-2">
                 <div className="sticky z-10 -mx-4 sm:-mx-6 md:-mx-8 lg:mx-0 px-4 sm:px-6 md:px-8 lg:px-0 py-1.5 backdrop-blur-md bg-background/85 flex items-center justify-between border-b border-border/30 top-[calc(3.5rem+env(safe-area-inset-top,0px))] lg:top-0 transition-[background-color,border-color,box-shadow]">
                   <h3 className="text-[13px] font-bold tracking-wider text-muted-foreground uppercase">
                     {group}
@@ -242,15 +263,17 @@ export default function AlarmsPage() {
                     ).padStart(2, '0')}`
 
                     const nudge = aiNudges[alarm.id]
+                    const room = classes.find((entry) => entry.id === alarm.classId)?.room
 
                     return (
                       <div
                         key={alarm.id}
                         className="alarm-row flex flex-col gap-2.5 p-4 sm:p-4.5 transition-colors"
                       >
-                        <div className="flex items-center gap-3">
-                          <span className={`alarm-row-accent h-10 w-1.5 shrink-0 ${color.bg}`} />
+                        <div className="mobile-alarm-main flex items-center gap-3">
+                          <span className={`alarm-row-accent h-10 w-1.5 shrink-0 ${color.bg}`}><GraduationCap className="size-6 text-white sm:hidden" /></span>
                           <div className="min-w-0 flex-1">
+                            <p className="mobile-alarm-time sm:hidden">{formatTime(ringAt)}</p>
                             <p
                               className={`text-[15.5px] font-bold tracking-tight ${
                                 alarm.enabled ? 'text-foreground' : 'text-muted-foreground'
@@ -258,7 +281,8 @@ export default function AlarmsPage() {
                             >
                               {alarm.subject}
                             </p>
-                            <p className="text-xs text-muted-foreground tabular-nums mt-0.5">
+                            <p className="mobile-alarm-room mt-0.5 flex items-center gap-1 text-xs text-muted-foreground sm:hidden"><MapPin className="size-3.5" />{room || 'Class reminder'}</p>
+                            <p className="mt-0.5 hidden text-xs text-muted-foreground tabular-nums sm:block">
                               Class {formatTime(alarm.time)} · Rings {formatTime(ringAt)}
                             </p>
                           </div>

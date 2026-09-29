@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   ArrowUpRight,
+  Bell,
   BellRing,
   CalendarClock,
   CalendarDays,
@@ -46,6 +47,7 @@ export function AppNav() {
   const pathname = usePathname()
   const { profile, deadlines, alarms } = useSchedule()
   const [isQuickOpen, setIsQuickOpen] = React.useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false)
 
   const isSubRoute = Boolean(
     pathname &&
@@ -99,11 +101,15 @@ export function AppNav() {
 
   React.useEffect(() => {
     setIsQuickOpen(false)
+    setIsNotificationsOpen(false)
   }, [pathname])
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setIsQuickOpen(false)
+      if (event.key === 'Escape') {
+        setIsQuickOpen(false)
+        setIsNotificationsOpen(false)
+      }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
@@ -116,10 +122,10 @@ export function AppNav() {
   return (
     <>
       <header
-        className="fixed inset-x-0 top-0 z-30 border-b border-line/80 bg-background/94 backdrop-blur-md lg:hidden"
+        className="mobile-app-header fixed inset-x-0 top-0 z-30 border-b border-line/80 bg-background/94 backdrop-blur-md lg:hidden"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
-        <div className="relative flex h-[5.25rem] items-center justify-between px-4">
+        <div className="mobile-app-header-inner relative flex h-[5.25rem] items-center justify-between px-4">
           {isSubRoute ? (
             <Link
               href={backTarget}
@@ -138,7 +144,7 @@ export function AppNav() {
               aria-expanded={isQuickOpen}
               aria-controls="mobile-quick-actions"
               aria-haspopup="menu"
-              className="flex size-11 cursor-pointer items-center justify-center text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="mobile-menu-button flex size-11 cursor-pointer items-center justify-center text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Menu className="size-7" strokeWidth={1.8} />
             </motion.button>
@@ -160,11 +166,8 @@ export function AppNav() {
           )}
 
           {!isSubRoute ? (
-            <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('open-dormosaur-ai'))} aria-label="Open Dormosaur AI" className="flex h-12 cursor-pointer items-center gap-1.5 rounded-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-full border border-primary/15 bg-primary/10 text-primary shadow-xs">
-                <Sparkles className="size-[1.1rem]" strokeWidth={2} />
-              </span>
-              <span className="hidden max-w-16 text-[0.62rem] font-bold leading-tight text-muted-foreground sm:block">A brighter you</span>
+            <button type="button" onClick={() => setIsNotificationsOpen((open) => !open)} aria-label="Notifications" aria-expanded={isNotificationsOpen} aria-controls="mobile-notifications" className="mobile-notification-button flex size-12 cursor-pointer items-center justify-center rounded-full border border-primary/15 bg-primary/10 text-primary shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <Bell className="size-5.5" strokeWidth={1.9} />
             </button>
           ) : (
             <Link href="/profile" aria-label="View profile and settings" className="relative flex size-11 cursor-pointer items-center justify-center rounded-2xl border border-line bg-field text-xs font-bold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -173,6 +176,17 @@ export function AppNav() {
             </Link>
           )}
         </div>
+        {isNotificationsOpen && (
+          <div id="mobile-notifications" className="mobile-notifications absolute right-4 top-full mt-2 w-[min(21rem,calc(100vw-2rem))] rounded-3xl border border-line bg-card p-3 shadow-floating">
+            <p className="px-2 py-1 text-sm font-bold">Notifications</p>
+            <Link href="/alarms" onClick={() => setIsNotificationsOpen(false)} className="flex items-center gap-3 rounded-2xl px-2 py-3 text-sm hover:bg-fill">
+              <BellRing className="size-5 text-primary" />
+              <span>{hasActiveAlarms ? 'Your class alarms are active' : 'Set up class reminders'}</span>
+              <ArrowUpRight className="ml-auto size-4 text-muted-foreground" />
+            </Link>
+            {pendingDeadlinesCount > 0 && <Link href="/deadlines" onClick={() => setIsNotificationsOpen(false)} className="flex items-center gap-3 rounded-2xl px-2 py-3 text-sm hover:bg-fill"><CalendarClock className="size-5 text-primary" /><span>{pendingDeadlinesCount} upcoming {pendingDeadlinesCount === 1 ? 'deadline' : 'deadlines'}</span><ArrowUpRight className="ml-auto size-4 text-muted-foreground" /></Link>}
+          </div>
+        )}
       </header>
 
       <div className={cn('fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden', isSubRoute && 'hidden')}>

@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Calendar, Download, Palette, Plus, Sparkles } from 'lucide-react'
+import { BarChart3, Calendar, ChevronLeft, ChevronRight, Download, GraduationCap, NotebookText, Palette, Plus, Sparkles } from 'lucide-react'
 import { ScreenHeader } from '@/components/ios/screen-header'
 import { SegmentedControl } from '@/components/ios/segmented-control'
 import { PillButton } from '@/components/ios/pill-button'
@@ -21,7 +21,8 @@ import { subjectColorClass } from '@/lib/data'
 type View = 'day' | 'grid' | 'agenda'
 
 export default function SchedulePage() {
-  const [view, setView] = React.useState<View>('day')
+  const [view, setView] = React.useState<View>('grid')
+  const [weekOffset, setWeekOffset] = React.useState(0)
   const [exportOpen, setExportOpen] = React.useState(false)
   const [templateOpen, setTemplateOpen] = React.useState(false)
   const [addDeadlineOpen, setAddDeadlineOpen] = React.useState(false)
@@ -29,6 +30,11 @@ export default function SchedulePage() {
   const { classes, deadlines, addClass } = useSchedule()
 
   const pendingDeadlines = deadlines.filter((d) => !d.completed)
+  const weekStart = new Date()
+  weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7) + weekOffset * 7)
+  const weekEnd = new Date(weekStart)
+  weekEnd.setDate(weekStart.getDate() + 6)
+  const weekLabel = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${weekEnd.toLocaleDateString('en-US', { day: 'numeric', ...(weekStart.getMonth() !== weekEnd.getMonth() ? { month: 'short' as const } : {}) })}`
 
   // On larger desktop screens, default to full week grid
   React.useEffect(() => {
@@ -48,7 +54,7 @@ export default function SchedulePage() {
         onSave={(classData) => addClass(classData)}
       />
 
-      <ScreenHeader
+      <div className="hidden sm:block"><ScreenHeader
         title="Schedule"
         eyebrow="Semester Timetable"
         subtitle={
@@ -98,10 +104,16 @@ export default function SchedulePage() {
             </motion.button>
           </div>
         }
-      />
+      /></div>
+
+      <div className="mobile-page-intro sm:hidden">
+        <p className="mobile-eyebrow">Schedule</p>
+        <h1>Your week at a glance.</h1>
+        <p>Classes, deadlines, and more — all in one place.</p>
+      </div>
 
       <div className="flex flex-col gap-8 sm:gap-10">
-        <section className="schedule-summary" aria-label="Schedule overview">
+        <section className="schedule-summary hidden sm:flex" aria-label="Schedule overview">
           <div>
             <p className="route-label">Your planning board</p>
             <h2>Every class, one clear route.</h2>
@@ -113,9 +125,14 @@ export default function SchedulePage() {
             <div><strong>3</strong><span>views to plan</span></div>
           </div>
         </section>
+        <div className="mobile-stat-grid sm:hidden" aria-label="Schedule overview">
+          <div><span className="mobile-stat-icon"><GraduationCap /></span><strong>{classes.length}</strong><span>classes</span></div>
+          <div><span className="mobile-stat-icon is-neutral"><NotebookText /></span><strong>{pendingDeadlines.length}</strong><span>deadlines</span></div>
+          <div><span className="mobile-stat-icon"><BarChart3 /></span><strong>3</strong><span>views</span></div>
+        </div>
 
         {/* Wallpapers Spotlight Strip */}
-        <div className="schedule-spotlight">
+        <div className="schedule-spotlight mobile-theme-card">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="schedule-spotlight-icon">
@@ -124,14 +141,14 @@ export default function SchedulePage() {
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <span className="text-[13.5px] font-bold text-foreground tracking-tight">
-                    Schedule Wallpapers & Themes
+                    <span className="hidden sm:inline">Schedule Wallpapers & Themes</span><span className="sm:hidden">Schedule Themes</span>
                   </span>
-                  <span className="schedule-spotlight-badge">
+                  <span className="schedule-spotlight-badge hidden sm:inline">
                     7 STYLES
                   </span>
                 </div>
                 <p className="text-[11.5px] text-muted-foreground mt-0.5">
-                  Export your timetable as a phone lockscreen or PDF.
+                  <span className="hidden sm:inline">Export your timetable as a phone lockscreen or PDF.</span><span className="sm:hidden">Make your timetable yours.</span>
                 </p>
               </div>
             </div>
@@ -139,16 +156,17 @@ export default function SchedulePage() {
             <button
               type="button"
               onClick={() => setTemplateOpen(true)}
-              className="schedule-spotlight-action"
+              className="schedule-spotlight-action hidden sm:flex"
             >
               <Sparkles className="size-3.5" />
               <span>Choose Theme</span>
             </button>
           </div>
+          <button type="button" onClick={() => setTemplateOpen(true)} className="mobile-theme-preview sm:hidden" aria-label="Choose schedule theme"><img src="/templates/forest-whimsy.png" alt="" /><img src="/templates/ocean-party.png" alt="" /><img src="/templates/simple-modern.png" alt="" /><ChevronRight className="size-5" /></button>
         </div>
 
         {/* View Segmented Control (Day / Week / Agenda) */}
-        <div className="schedule-view-toolbar">
+        <div className="schedule-view-toolbar mobile-schedule-toolbar">
           <div>
             <p className="route-label">Timetable view</p>
             <p className="mt-1 text-xs text-muted-foreground">Choose the level of detail that helps right now.</p>
@@ -157,13 +175,14 @@ export default function SchedulePage() {
             value={view}
             onChange={(v) => setView(v as View)}
             options={[
-              { value: 'day', label: 'Day' },
               { value: 'grid', label: 'Week' },
+              { value: 'day', label: 'Day' },
               { value: 'agenda', label: 'Agenda' },
             ]}
             layoutId="schedule-view-mode"
             className="w-full sm:max-w-xs"
           />
+          <div className="mobile-week-picker sm:hidden" aria-label="Choose week"><button type="button" onClick={() => setWeekOffset((v) => v - 1)} aria-label="Previous week"><ChevronLeft /></button><span>{weekLabel}</span><button type="button" onClick={() => setWeekOffset((v) => v + 1)} aria-label="Next week"><ChevronRight /></button></div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -177,12 +196,14 @@ export default function SchedulePage() {
             {view === 'day' ? (
               <DayView />
             ) : view === 'grid' ? (
-              <WeekGrid />
+              <WeekGrid weekOffset={weekOffset} />
             ) : (
               <AgendaView />
             )}
           </motion.div>
         </AnimatePresence>
+
+        <div className="mobile-schedule-actions sm:hidden"><button type="button" onClick={() => setAddClassOpen(true)}><Plus className="size-4" /> Add class</button><button type="button" onClick={() => setExportOpen(true)}><Download className="size-4" /> Export</button></div>
 
         {/* Deadlines Section */}
         <section className="schedule-section mt-2 flex flex-col gap-3">

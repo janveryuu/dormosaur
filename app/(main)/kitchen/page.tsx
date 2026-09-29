@@ -1,8 +1,9 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Moon, Search, Sandwich, Sparkles, Sun, Utensils, X } from 'lucide-react'
+import { BookOpen, CalendarDays, Clock, CookingPot, Moon, Search, ShoppingCart, Sandwich, Sparkles, Sun, Utensils, X } from 'lucide-react'
 import { ScreenHeader } from '@/components/ios/screen-header'
 import { SegmentedControl, FilterChip } from '@/components/ios/segmented-control'
 import { RecipeCard } from '@/components/kitchen/recipe-card'
@@ -39,6 +40,7 @@ const meals = [
 ] as const
 
 const appliances = ['Microwave', 'Rice cooker', 'Kettle', 'Hot plate', 'No cook']
+const mobileViewIcons = { recipes: BookOpen, 'schedule-aware': CookingPot, planner: CalendarDays, grocery: ShoppingCart }
 
 export default function KitchenPage() {
   const { profile } = useSchedule()
@@ -94,13 +96,16 @@ export default function KitchenPage() {
 
   return (
     <div className="pb-4">
-      <ScreenHeader
+      <div className="hidden sm:block"><ScreenHeader
         eyebrow="Micro-Cooking"
         title="Dorm Kitchen"
         subtitle="Student-tested recipes for microwaves, electric kettles & rice cookers."
-      />
+      /></div>
 
-      <section className="kitchen-summary" aria-label="Kitchen overview">
+      <div className="mobile-page-intro mobile-kitchen-intro sm:hidden"><p className="mobile-eyebrow">Dorm kitchen</p><h1>Dorm Kitchen</h1><p>Simple, tasty meals for your space.</p><Image src="/chef-dormosaur.png" alt="Dormosaur in a chef hat" width={150} height={150} className="mobile-kitchen-mascot" /></div>
+      <div className="mobile-kitchen-setup sm:hidden"><div className="mobile-kitchen-setup-title"><Utensils className="size-5" /><span>Your setup</span><Link href="/profile">Edit</Link></div><div className="mobile-kitchen-setup-chips">{studentAppliances.map((item) => <span key={item}>{item.replace(/_/g, ' ')}</span>)}</div></div>
+
+      <section className="kitchen-summary hidden sm:flex" aria-label="Kitchen overview">
         <div>
           <p className="route-label">Dorm life, served</p>
           <h2>Cook something that fits your day.</h2>
@@ -112,7 +117,9 @@ export default function KitchenPage() {
         </div>
       </section>
 
-      <div className="kitchen-view-toolbar">
+      <div className="mobile-kitchen-tiles sm:hidden" role="tablist" aria-label="Kitchen sections">{[mainViews[0], mainViews[2], mainViews[3], mainViews[1]].map((item) => { const Icon = mobileViewIcons[item.value]; return <button key={item.value} type="button" role="tab" aria-selected={view === item.value} onClick={() => setView(item.value)} className={view === item.value ? 'is-active' : ''}><Icon /><span>{item.label}</span></button> })}</div>
+
+      <div className="kitchen-view-toolbar hidden sm:flex">
         <div>
           <p className="route-label">Kitchen board</p>
           <p className="mt-1 text-xs text-muted-foreground">Choose how you want to plan the next meal.</p>
@@ -129,6 +136,7 @@ export default function KitchenPage() {
         {view === 'recipes' && (
           <motion.div
             key="recipes"
+            className="kitchen-recipes-content"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -176,9 +184,9 @@ export default function KitchenPage() {
               </div>
             )}
 
-            <AiRecipeGenerator />
+            <div className="mobile-generator-order"><AiRecipeGenerator /></div>
 
-            <div className="flex flex-col gap-4">
+            <div className="mobile-kitchen-filters flex flex-col gap-4">
               <label className="kitchen-search">
                 <Search className="size-4 shrink-0 text-muted-foreground" strokeWidth={2.2} />
                 <input
@@ -204,9 +212,12 @@ export default function KitchenPage() {
               </div>
             </div>
 
+            {filtered.length > 0 && <section className="mobile-featured-recipe sm:hidden"><div className="mobile-section-title"><h2>{query || meal !== 'all' || appliance ? 'Recipes for you' : 'Featured Recipe'}</h2><button type="button" onClick={() => setShowAllSession((value) => !value)}>{showAllSession ? 'Fits setup' : 'See all'}</button></div><Link href={`/kitchen/${filtered[0].slug}`} className="mobile-featured-card"><div className="mobile-featured-photo"><Image src={filtered[0].image} alt={filtered[0].title} fill sizes="45vw" /></div><div className="mobile-featured-content"><span className="mobile-featured-badge">Popular</span><h3>{filtered[0].title}</h3><p><Clock className="size-4" /> {filtered[0].minutes} min <Utensils className="size-4" /> Easy</p><span>{filtered[0].appliance}</span></div></Link></section>}
+            <section className="mobile-quick-ideas sm:hidden"><div className="mobile-section-title"><h2>Quick Ideas</h2></div>{filtered.length > 1 ? <div className="mobile-quick-grid">{filtered.slice(1).map((recipe, i) => <RecipeCard key={recipe.slug} recipe={recipe} index={i} />)}</div> : <p className="text-sm text-muted-foreground">Try another category for more ideas.</p>}</section>
+
             {/* Recommended for your country section — Meal-Appropriate Curation */}
             {recommendedRecipes.length > 0 && (
-              <div className="mt-7 mb-6 flex flex-col gap-6">
+              <div className="mt-7 mb-6 hidden flex-col gap-6 sm:flex">
                 <div className="flex items-center justify-between px-1">
                   <span className="kitchen-recommendation">
                     <Sparkles className="size-3.5" />
@@ -264,12 +275,12 @@ export default function KitchenPage() {
               </div>
             )}
 
-            <p className="mt-6 mb-3 px-1 text-[13px] font-semibold tracking-[0.04em] text-muted-foreground uppercase">
+            <p className="mt-6 mb-3 hidden px-1 text-[13px] font-semibold tracking-[0.04em] text-muted-foreground uppercase sm:block">
               {recommendedRecipes.length > 0 ? 'All Dorm Recipes' : `${filtered.length} ${filtered.length === 1 ? 'recipe' : 'recipes'}`}
             </p>
 
             {remainingRecipes.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+              <div className="hidden grid-cols-2 gap-4 sm:grid lg:grid-cols-3">
                 {remainingRecipes.map((recipe, i) => (
                   <RecipeCard key={recipe.slug} recipe={recipe} index={i} />
                 ))}

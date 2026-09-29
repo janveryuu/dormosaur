@@ -1,0 +1,189 @@
+/* Mobile presentation shared by the main product routes. Desktop styles live in globals.css. */
+@media (max-width: 639px) {
+  .mobile-main { padding-inline: 1rem; padding-top: calc(6.25rem + env(safe-area-inset-top, 0px)); }
+  .mobile-app-header { background: color-mix(in oklab, var(--background) 94%, white); box-shadow: 0 8px 24px -22px #0b3e2e66; }
+  .mobile-app-header-inner { height: 5.65rem; padding-inline: 1.25rem; }
+  .mobile-app-header-inner > a[href='/dashboard'] span span:first-child { font-size: 1.35rem; letter-spacing: -0.07em; }
+  .mobile-menu-button svg { width: 1.9rem; height: 1.9rem; stroke-width: 2; }
+  .mobile-notification-button { width: 3.15rem; height: 3.15rem; background: #e7eee5; border-color: #ceddce; box-shadow: 0 3px 14px #244b3215; }
+  .mobile-notification-button svg { width: 1.45rem; height: 1.45rem; }
+  .mobile-notifications { color: var(--foreground); }
+
+  .mobile-page-intro { position: relative; padding: 0.15rem 0.15rem 1.1rem; }
+  .mobile-eyebrow { color: #075f3e; font-size: 0.72rem; font-weight: 850; letter-spacing: 0.22em; text-transform: uppercase; }
+  .mobile-page-intro h1 { color: #071a15; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(2.15rem, 9vw, 3.2rem); font-weight: 700; letter-spacing: -0.065em; line-height: 0.99; margin-top: 0.6rem; text-wrap: balance; }
+  .mobile-page-intro > p:last-of-type { color: #61706d; font-size: 0.97rem; line-height: 1.4; margin-top: 0.65rem; }
+  .mobile-stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
+  .mobile-stat-grid > div { align-items: center; background: #fffefa; border: 1px solid #e8ebe4; border-radius: 1.15rem; box-shadow: 0 7px 22px #2348320c; display: grid; grid-template-columns: auto 1fr; column-gap: 0.45rem; min-height: 4.75rem; padding: 0.65rem 0.48rem; }
+  .mobile-stat-icon { align-items: center; background: #dcefe3; border-radius: 50%; color: #006241; display: flex; grid-row: span 2; height: 2.55rem; justify-content: center; width: 2.55rem; }
+  .mobile-stat-icon svg { height: 1.25rem; width: 1.25rem; stroke-width: 2; }
+  .mobile-stat-icon.is-neutral { background: #ecebe2; color: #172821; }
+  .mobile-stat-icon.is-warm { background: #ffefd8; color: #dc8a15; }
+  .mobile-stat-icon.is-blue { background: #e6edff; color: #2354bd; }
+  .mobile-stat-grid strong { align-self: end; color: #071a15; font-size: 1.35rem; font-weight: 850; letter-spacing: -0.07em; line-height: 1; }
+  .mobile-stat-grid > div > span:last-child { align-self: start; color: #5d6a67; font-size: 0.66rem; line-height: 1.1; white-space: nowrap; }
+  .mobile-main .schedule-summary,
+  .mobile-main .task-summary,
+  .mobile-main .alarm-summary,
+  .mobile-main .kitchen-summary { display: none; }
+  .mobile-main .kitchen-view-toolbar { display: none; }
+
+  /* Schedule */
+  .mobile-main:has(.mobile-schedule-toolbar) .mobile-page-intro h1 { font-size: clamp(1.8rem, 7.5vw, 2.2rem); white-space: nowrap; }
+  .mobile-main:has(.mobile-schedule-toolbar) > div > .flex.flex-col { gap: 1rem; }
+  .mobile-theme-card { align-items: center; background: linear-gradient(115deg, #eff2e8, #e7efe5); border: 1px solid #b7d2bd; border-radius: 1.2rem; display: flex; gap: 0.4rem; min-height: 5.6rem; padding: 0.8rem; }
+  .mobile-theme-card > div { min-width: 0; flex: 1; }
+  .mobile-theme-card .schedule-spotlight-icon { border-radius: 0.9rem; height: 3.25rem; width: 3.25rem; }
+  .mobile-theme-card .schedule-spotlight-icon svg { height: 1.6rem; width: 1.6rem; }
+  .mobile-theme-card .text-\[13\.5px\] { font-size: 0.88rem; }
+  .mobile-theme-card .text-\[11\.5px\] { font-size: 0.73rem; }
+  .mobile-theme-preview { align-items: center; display: flex; gap: 0.3rem; flex-shrink: 0; }
+  .mobile-theme-preview img { border: 2px solid #fffefa; border-radius: 0.55rem; height: 3.4rem; object-fit: cover; width: 1.7rem; box-shadow: 0 2px 7px #063c231c; }
+  .mobile-theme-preview svg { color: #235c44; width: 1rem; }
+  .mobile-theme-card .schedule-spotlight-action { display: none; }
+  .mobile-schedule-toolbar { align-items: center; display: grid; grid-template-columns: 1fr auto; gap: 0.65rem; }
+  .mobile-schedule-toolbar > div:first-child { display: none; }
+  .mobile-schedule-toolbar [role='tablist'] { background: #f0efe8; border: 1px solid #e5e6de; width: 100%; padding: 0.22rem; }
+  .mobile-schedule-toolbar [role='tab'] { font-size: 0.7rem; min-height: 2.55rem; padding-inline: 0.3rem; }
+  .mobile-schedule-toolbar [role='tab'][aria-selected='true'] > span:first-child { background: #006440; box-shadow: 0 3px 9px #05452d30; }
+  .mobile-schedule-toolbar [role='tab'][aria-selected='true'] > span:last-child { color: white; }
+  .mobile-week-picker { align-items: center; background: #fffefa; border: 1px solid #e1e5de; border-radius: 999px; display: flex; gap: 0.15rem; height: 3rem; justify-content: space-between; white-space: nowrap; }
+  .mobile-week-picker button { align-items: center; display: flex; height: 2.5rem; justify-content: center; width: 1.7rem; }
+  .mobile-week-picker svg { height: 1rem; width: 1rem; }
+  .mobile-week-picker span { font-size: 0.7rem; font-weight: 750; }
+  .mobile-week-board { background: #fffefa; border-color: #e9ece6; border-radius: 1.2rem; box-shadow: 0 12px 28px #183a2812; padding: 0.55rem 0.3rem 0.8rem 0; }
+  .mobile-week-board > div:first-child { border-bottom: 0; background: transparent; }
+  .mobile-week-day { border: 0; color: #62716e; font-size: 0.68rem; line-height: 1.15; padding: 0.35rem 0 0.75rem; }
+  .mobile-week-day span, .mobile-week-day strong { display: block; }
+  .mobile-week-day strong { font-size: 0.78rem; font-weight: 650; margin-top: 0.18rem; }
+  .mobile-week-day.text-primary { background: #e0f1e6; border-radius: 0.8rem; color: #005e3d; }
+  .mobile-week-hour { font-size: 0.56rem; font-weight: 550; }
+  .mobile-class-block { border: 0; box-shadow: none; }
+  .mobile-class-content { min-width: 0; }
+  .mobile-class-code { font-size: clamp(0.46rem, 2.2vw, 0.67rem); line-height: 1.15; overflow: hidden; text-overflow: clip; white-space: nowrap; }
+  .mobile-class-time { font-size: clamp(0.42rem, 1.9vw, 0.56rem); line-height: 1.15; margin-top: 0.18rem; overflow: hidden; white-space: nowrap; }
+  .mobile-main:has(.mobile-week-board) .schedule-section-heading h2 { font-size: 0.75rem; }
+  .mobile-schedule-actions { display: flex; gap: 0.5rem; }
+  .mobile-schedule-actions button { align-items: center; background: #e7eee5; border-radius: 999px; color: #075d3b; display: inline-flex; font-size: 0.72rem; font-weight: 750; gap: 0.3rem; min-height: 2.45rem; padding: 0 0.85rem; }
+  .mobile-main:has(.mobile-week-board) .schedule-legend { display: none; }
+
+  /* Tasks */
+  .mobile-task-intro { min-height: 9rem; padding-right: 5.2rem; }
+  .mobile-task-intro h1 { font-size: clamp(2rem, 8.5vw, 2.8rem); }
+  .mobile-task-mascot { bottom: 0.55rem; height: 6.3rem; object-fit: contain; position: absolute; right: -0.35rem; width: 6.3rem; }
+  .mobile-task-add { align-items: center; background: #00613f; border-radius: 999px; color: white; display: inline-flex; font-size: 0.76rem; font-weight: 750; gap: 0.3rem; margin-top: 0.9rem; min-height: 2.35rem; padding: 0 0.85rem; }
+  .mobile-task-stats > div { min-height: 5rem; }
+  .mobile-task-scanner { background: #eaf1e8; border: 1px solid #c9dac9; border-radius: 1.15rem; padding: 0.9rem; }
+  .mobile-task-scanner > div { align-items: center; flex-direction: row; }
+  .mobile-task-scanner .task-scanner-icon { height: 3rem; width: 3rem; }
+  .mobile-task-scanner .task-scanner-badge { display: none; }
+  .mobile-task-scanner .task-scanner-action { border-radius: 50%; flex: 0 0 2.5rem; height: 2.5rem; padding: 0; }
+  .task-view-toolbar > div:first-child { display: none; }
+  .task-view-toolbar [role='tablist'] { background: #eeefe8; }
+  .task-view-toolbar [role='tab'] { font-size: 0.74rem; }
+  .task-view-toolbar [aria-selected='true'] > span:first-child { background: #00613f; }
+  .task-view-toolbar [aria-selected='true'] > span:last-child { color: white; }
+  .task-list { gap: 0.7rem; }
+  .task-card { background: #fffefa; border: 1px solid #ebeee8; border-radius: 1.25rem; box-shadow: 0 7px 20px #2744310d; gap: 0.55rem; min-height: 5.2rem; padding: 0.8rem; }
+  .task-card .task-card-accent { height: 2.6rem; }
+  .task-card .task-course-code { font-size: 0.55rem; }
+  .task-card .text-\[16px\] { font-size: 0.83rem; }
+
+  /* Alarms */
+  .mobile-alarm-intro { min-height: 11.9rem; overflow: hidden; padding-right: 5.1rem; }
+  .mobile-alarm-intro h1 { font-family: var(--font-sans); font-size: clamp(2.1rem, 9.25vw, 3.2rem); font-weight: 850; letter-spacing: -0.07em; line-height: 0.95; }
+  .mobile-alarm-intro > p:last-of-type { max-width: 13rem; }
+  .mobile-alarm-mascot { bottom: 0.1rem; height: 9.2rem; object-fit: contain; position: absolute; right: -1.7rem; width: 9.2rem; }
+  .mobile-alarm-stats { background: #fffefa; border-radius: 1.5rem; gap: 0.35rem; padding: 0.45rem; }
+  .mobile-alarm-stats > div { background: #e8f2eb; border: 0; box-shadow: none; min-height: 5.6rem; }
+  .mobile-alarm-stats > div:nth-child(2) { background: #fff1dc; }
+  .mobile-alarm-stats > div:nth-child(3) { background: #e9efff; }
+  .mobile-alarm-stats > div > span:last-child { font-size: 0.59rem; white-space: normal; }
+  .mobile-alarm-filters { background: #eeefe9; border-radius: 999px; display: flex; gap: 0.15rem; padding: 0.25rem; }
+  .mobile-alarm-filters button { border-radius: 999px; color: #5d6f69; flex: 1; font-size: 0.8rem; font-weight: 700; min-height: 2.6rem; }
+  .mobile-alarm-filters button.is-active { background: #00623f; box-shadow: 0 4px 10px #164a3426; color: white; }
+  .mobile-alarm-ai-panel { order: 10; }
+  .mobile-alarm-group { gap: 0.5rem; }
+  .mobile-alarm-group > div:first-child { background: transparent; border: 0; position: static; padding: 0 0.3rem; }
+  .mobile-alarm-list, .alarm-list { background: transparent; border: 0; box-shadow: none; display: flex; flex-direction: column; gap: 0.7rem; overflow: visible; }
+  .alarm-row { background: #fffefa; border: 1px solid #e9ece7 !important; border-radius: 1.45rem; box-shadow: 0 8px 22px #1e4a3010; padding: 0.9rem !important; }
+  .alarm-row > div:first-child { gap: 0.65rem; }
+  .mobile-alarm-main { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) auto; }
+  .mobile-alarm-main > :nth-child(3) { grid-column: 2 / 4; grid-row: 2; }
+  .mobile-alarm-main > :nth-child(3) button { min-height: 2rem; font-size: 0.7rem; }
+  .mobile-alarm-main > :nth-child(4) { grid-column: 3; grid-row: 1; }
+  .alarm-row-accent { align-items: center; border-radius: 50%; display: flex; height: 3.2rem; justify-content: center; width: 3.2rem; }
+  .mobile-alarm-time { color: #081e18; font-size: 1.34rem; font-variant-numeric: tabular-nums; font-weight: 850; letter-spacing: -0.055em; line-height: 1; }
+  .mobile-alarm-room { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .alarm-row .text-\[15\.5px\] { font-size: 0.86rem; line-height: 1.2; margin-top: 0.18rem; }
+  .alarm-row-nudge { border: 0; border-radius: 999px; font-size: 0.69rem; margin-left: 0; }
+
+  /* Kitchen */
+  .mobile-kitchen-intro { min-height: 9.4rem; overflow: hidden; padding-right: 6rem; }
+  .mobile-kitchen-intro h1 { font-family: var(--font-sans); font-size: clamp(2.2rem, 9vw, 3.2rem); font-weight: 850; }
+  .mobile-kitchen-intro > p:last-of-type { max-width: 13rem; }
+  .mobile-kitchen-mascot { bottom: -1.8rem; height: 9rem; object-fit: contain; position: absolute; right: -0.6rem; width: 9rem; }
+  .mobile-kitchen-setup { background: #e9f0e6; border-radius: 1.25rem; margin-bottom: 0.75rem; padding: 0.8rem; }
+  .mobile-kitchen-setup-title { align-items: center; color: #075d3d; display: flex; gap: 0.6rem; font-size: 0.86rem; font-weight: 700; }
+  .mobile-kitchen-setup-title a { background: #fffefa; border-radius: 999px; color: #133c2a; font-size: 0.73rem; margin-left: auto; padding: 0.35rem 0.75rem; }
+  .mobile-kitchen-setup-chips { display: flex; gap: 0.4rem; margin-top: 0.65rem; overflow-x: auto; scrollbar-width: none; }
+  .mobile-kitchen-setup-chips span { background: #fffefa; border-radius: 999px; box-shadow: 0 2px 5px #1b49300c; color: #143d2b; flex: 0 0 auto; font-size: 0.68rem; font-weight: 650; padding: 0.42rem 0.65rem; text-transform: capitalize; }
+  .mobile-kitchen-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.42rem; margin-bottom: 1.25rem; }
+  .mobile-kitchen-tiles button { align-items: center; background: #eaece4; border-radius: 1rem; color: #0d5136; display: flex; flex-direction: column; font-size: 0.65rem; font-weight: 700; gap: 0.35rem; justify-content: center; min-height: 4.7rem; padding: 0.35rem 0.1rem; text-align: center; }
+  .mobile-kitchen-tiles button.is-active { background: #00623e; color: white; }
+  .mobile-kitchen-tiles svg { height: 1.35rem; width: 1.35rem; stroke-width: 2; }
+  .kitchen-recipes-content { display: flex; flex-direction: column; }
+  .mobile-kitchen-filters { order: 1; }
+  .mobile-featured-recipe { order: 0; }
+  .mobile-quick-ideas { order: 2; }
+  .kitchen-setup-banner { order: 3; }
+  .mobile-generator-order { order: 4; }
+  .kitchen-recipes-content > .kitchen-dietary-note { order: 5; }
+  .kitchen-recipes-content > .schedule-empty-state { order: 6; }
+  .kitchen-setup-banner { margin-bottom: 0.8rem; }
+  .kitchen-setup-banner > div { font-size: 0.72rem; }
+  .kitchen-search { margin-bottom: 0.25rem; }
+  .mobile-section-title { align-items: center; display: flex; justify-content: space-between; margin-bottom: 0.6rem; }
+  .mobile-section-title h2 { color: #0b2019; font-size: 1.22rem; font-weight: 850; letter-spacing: -0.055em; }
+  .mobile-section-title button { color: #006340; font-size: 0.79rem; font-weight: 750; }
+  .mobile-featured-recipe { margin-top: 1.3rem; }
+  .mobile-featured-card { background: #fffefa; border: 1px solid #ebeee7; border-radius: 1.25rem; box-shadow: 0 8px 22px #2b49300d; display: grid; grid-template-columns: 41% 1fr; min-height: 9.8rem; overflow: hidden; }
+  .mobile-featured-photo { min-height: 9.8rem; position: relative; }
+  .mobile-featured-photo img { object-fit: cover; }
+  .mobile-featured-content { min-width: 0; padding: 0.8rem 0.65rem; }
+  .mobile-featured-badge { background: #fff0e1; border-radius: 999px; color: #df5f14; display: inline-block; font-size: 0.63rem; font-weight: 800; padding: 0.25rem 0.45rem; text-transform: uppercase; }
+  .mobile-featured-content h3 { color: #081d16; font-size: 1rem; font-weight: 850; letter-spacing: -0.05em; line-height: 1.12; margin-top: 0.55rem; }
+  .mobile-featured-content p { align-items: center; color: #667671; display: flex; font-size: 0.72rem; gap: 0.25rem; margin-top: 0.6rem; }
+  .mobile-featured-content p svg:nth-of-type(2) { margin-left: 0.35rem; }
+  .mobile-featured-content > span:last-child { background: #edf1e9; border-radius: 999px; color: #4b6458; display: inline-block; font-size: 0.65rem; margin-top: 0.6rem; padding: 0.25rem 0.5rem; }
+  .mobile-quick-ideas { margin-top: 1.35rem; }
+  .mobile-kitchen-filters > div:last-child { scrollbar-width: none; }
+  .mobile-kitchen-filters > div:last-child::-webkit-scrollbar { display: none; }
+  .mobile-quick-grid { display: flex; gap: 0.65rem; margin-inline: -1rem; overflow-x: auto; padding: 0.15rem 1rem 0.6rem; scroll-snap-type: x proximity; scrollbar-width: none; }
+  .mobile-quick-grid > div { flex: 0 0 44%; scroll-snap-align: start; }
+  .mobile-quick-grid .recipe-card { border-radius: 1rem; height: 100%; }
+  .mobile-quick-grid .recipe-card-tag, .mobile-quick-grid .recipe-card p, .mobile-quick-grid .recipe-card .font-semibold.text-foreground { display: none; }
+  .mobile-quick-grid .recipe-card h3 { font-size: 0.78rem; line-height: 1.18; }
+  .mobile-quick-grid .recipe-card > div:last-child { padding: 0.6rem; }
+
+  /* Copilot sheet */
+  .ai-drawer { background: #fffefa; border-radius: 2rem 2rem 0 0; max-height: 90dvh; min-height: min(43rem, 87dvh); }
+  .ai-header { background: linear-gradient(110deg, #f7f8f1, #f1f4ea); padding: 0.8rem 1rem 1rem; }
+  .ai-header img { height: 3.7rem; width: 3.7rem; }
+  .ai-header h2 { font-size: 1.12rem; letter-spacing: -0.045em; white-space: nowrap; }
+  .ai-model-badge { font-size: 0.64rem; padding: 0.25rem 0.55rem; white-space: nowrap; }
+  .ai-context-line { align-items: center; display: flex; flex-wrap: wrap; font-size: 0.66rem; gap: 0.18rem; margin-top: 0.3rem; }
+  .ai-context-line svg { color: #006340; height: 0.75rem; width: 0.75rem; }
+  .ai-drawer [role='log'] { max-height: none; min-height: 0; padding: 1rem; }
+  .ai-drawer [role='log'] img { height: 2.8rem; width: 2.8rem; }
+  .ai-message { font-size: 0.95rem; line-height: 1.45; max-width: 80%; padding: 0.9rem 1rem; }
+  .ai-message-assistant { background: #f1f2e9; border: 0; border-radius: 1.2rem 1.2rem 1.2rem 0.5rem; }
+  .ai-message-user { border-radius: 1.2rem 1.2rem 0.5rem 1.2rem; }
+  .ai-drawer .ai-suggestion { align-items: center; border-radius: 1rem; flex: 0 0 40%; flex-direction: column; font-size: 0.74rem; justify-content: center; min-height: 4.4rem; text-align: center; white-space: normal; }
+  .ai-drawer .ai-suggestion svg { height: 1.3rem; width: 1.3rem; }
+  .ai-drawer > div:nth-last-child(2) { gap: 0.45rem; padding-block: 0.85rem; }
+  .ai-drawer > div:nth-last-child(2) { scrollbar-width: none; }
+  .ai-drawer > div:nth-last-child(2)::-webkit-scrollbar { display: none; }
+  .ai-input { background: #f2f3ea; border: 0; border-radius: 999px; min-height: 3.6rem; }
+  .ai-input button { height: 2.8rem; width: 2.8rem; }
+}
