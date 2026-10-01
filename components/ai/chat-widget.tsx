@@ -12,12 +12,19 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useSchedule } from '@/components/schedule-provider'
+import { createClient } from '@/lib/supabase/client'
+import { MAX_MESSAGE_LENGTH, sanitizeMessages } from '@/lib/copilot/input'
 
 type Message = {
   id: string
   role: 'user' | 'assistant'
   content: string
-  model?: string
+  mode?: 'ai' | 'local' | 'limited'
+}
+
+const welcomeMessage: Message = {
+  id: 'welcome', role: 'assistant',
+  content: 'Ready to help with classes, alarms, and dorm meals.\n\nWhat do you need today? 🌱',
 }
 
 const quickPrompts = [
@@ -31,38 +38,36 @@ export function DormosaurAiChat() {
   const { classes, alarms, profile, deadlines } = useSchedule()
   const reduceMotion = useReducedMotion()
   const [isOpen, setIsOpen] = React.useState(false)
-  const [messages, setMessages] = React.useState<Message[]>([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: `Ready to help with classes, alarms, and dorm meals.\n\nWhat do you need today? 🌱`,
-    },
-  ])
+  const [messages, setMessages] = React.useState<Message[]>([welcomeMessage])
   const [input, setInput] = React.useState('')
   const [isTyping, setIsTyping] = React.useState(false)
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null)
   const drawerRef = React.useRef<HTMLDivElement | null>(null)
   const closeButtonRef = React.useRef<HTMLButtonElement | null>(null)
   const dialogTitleId = React.useId()
+  const conversationVersion = React.useRef(0)
+  const pendingRequest = React.useRef<AbortController | null>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' })
   }
 
-  // Keep welcome message synced with the logged-in user's real profile name
+  // Conversation and in-flight responses must not survive an account change.
   React.useEffect(() => {
-    setMessages((prev) => {
-      const updatedWelcome: Message = {
-        id: 'welcome',
-        role: 'assistant',
-        content: `Ready to help with classes, alarms, and dorm meals.\n\nWhat do you need today? 🌱`,
+    let account: string | null | undefined
+    const { data: { subscription } } = createClient().auth.onAuthStateChange((_event, session) => {
+      const nextAccount = session?.user.id ?? null
+      if (account !== undefined && account !== nextAccount) {
+        conversationVersion.current += 1
+        pendingRequest.current?.abort()
+        setMessages([welcomeMessage])
+        setInput('')
+        setIsTyping(false)
       }
-      if (prev.length === 0 || prev[0].id === 'welcome') {
-        return [updatedWelcome, ...prev.slice(1)]
-      }
-      return prev
+      account = nextAccount
     })
-  }, [profile.name, classes.length, alarms.length])
+    return () => { subscription.unsubscribe(); pendingRequest.current?.abort() }
+  }, [])
 
   React.useEffect(() => {
     if (isOpen) {
@@ -138,43 +143,44 @@ export function DormosaurAiChat() {
     setMessages((prev) => [...prev, userMessage])
     if (!textToSend) setInput('')
     setIsTyping(true)
+    const version = conversationVersion.current
+    const controller = new AbortController()
+    pendingRequest.current = controller
 
     try {
-      const now = new Date()
       const clientPayload = {
+        // Guest/demo workflows can use local data. Authenticated server data wins.
+        dataSource: 'local',
         profile: {
           name: profile.name,
           school: profile.school,
           year: profile.year,
           dorm: profile.dorm,
-          dietary: profile.dietary_preference || 'none',
+          dietary: profile.dietary_preference,
           dietaryNote: profile.dietary_note || '',
           appliances: profile.appliances,
         },
         classes,
         alarms,
         deadlines,
-        clientTime: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
-        clientDay: now.toLocaleDateString('en-US', { weekday: 'short' }),
-        clientFullDate: now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Manila',
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       }
 
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({ role: m.role, content: m.content })),
+          messages: sanitizeMessages([...messages, userMessage].map((m) => ({ role: m.role, content: m.content }))),
           context: clientPayload,
-          userContext: clientPayload,
         }),
       })
 
       const data = await res.json()
-      const replyContent =
-        data.content ||
-        data.error ||
-        "I'm here! What would you like to check about your schedule or classes?"
+      if (version !== conversationVersion.current) return
+      const replyContent = typeof data.content === 'string' && data.content.trim()
+        ? data.content
+        : typeof data.error === 'string' ? data.error : 'Copilot couldn’t complete that request. Please try again.'
 
       setMessages((prev) => [
         ...prev,
@@ -182,22 +188,24 @@ export function DormosaurAiChat() {
           id: `ai-${Date.now()}`,
           role: 'assistant',
           content: replyContent,
-          model: data.model || 'Dormosaur AI',
+          mode: !res.ok ? 'limited' : data.mode === 'ai' || data.mode === 'local' ? data.mode : 'limited',
         },
       ])
-    } catch (err) {
-      console.error('Chat error:', err)
+    } catch {
+      if (version !== conversationVersion.current || controller.signal.aborted) return
       setMessages((prev) => [
         ...prev,
         {
           id: `err-${Date.now()}`,
           role: 'assistant',
-          content:
-            "Hey! I'm ready to help with your classes, alarms, or dorm meals! What would you like to know?",
+          content: prev.at(-2)?.content === 'I couldn’t reach Copilot. Check your connection and try sending that again.'
+            ? 'The connection still isn’t working. Please retry in a moment.'
+            : 'I couldn’t reach Copilot. Check your connection and try sending that again.',
+          mode: 'limited',
         },
       ])
     } finally {
-      setIsTyping(false)
+      if (version === conversationVersion.current) setIsTyping(false)
     }
   }
 
@@ -281,7 +289,7 @@ export function DormosaurAiChat() {
                   <div className="flex items-center gap-1.5">
                     <h2 id={dialogTitleId} className="text-[14.5px] font-bold text-foreground">Dormosaur Copilot</h2>
                     <span className="ai-model-badge px-2 py-0.5 text-[10px] font-bold text-primary">
-                      Llama 3
+                      Dormosaur AI
                     </span>
                   </div>
                   <p className="ai-context-line text-[11px] text-muted-foreground"><Calendar className="size-3.5" /> {classes.length} classes <span>·</span> <Clock className="size-3.5" /> {alarms.length} alarms <span>·</span> <CookingPot className="size-3.5" /> kitchen prefs</p>
@@ -324,11 +332,11 @@ export function DormosaurAiChat() {
                     }`}
                   >
                     <div className="whitespace-pre-wrap">
-                      {msg.content.replace(/\*{1,2}/g, '')}
+                      {msg.content.replace(/\*\*(.*?)\*\*/g, '$1')}
                     </div>
-                    {msg.model && (
+                    {msg.mode && (
                       <p className="mt-1 text-[9.5px] opacity-60">
-                        {msg.model}
+                        {msg.mode === 'limited' ? 'Limited mode' : msg.mode === 'local' ? 'Dormosaur' : 'Dormosaur AI'}
                       </p>
                     )}
                   </div>
@@ -386,6 +394,7 @@ export function DormosaurAiChat() {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask Dormosaur AI…"
                   autoComplete="off"
+                  maxLength={MAX_MESSAGE_LENGTH}
                   disabled={isTyping}
                   className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground/60"
                 />
