@@ -1,148 +1,43 @@
-/**
- * lib/template-registry.ts
- * Registry and metadata for Schedule Visual Templates.
- */
-
-export type ScheduleTemplateId =
-  | 'simple-modern'
-  | 'ultra-pink'
-  | 'pink-notebook'
-  | 'cute-cat-blue'
-  | 'ocean-party'
-  | 'sage-green'
-  | 'forest-whimsy'
-  | 'dormosaur-classic'
-  | 'dormosaur-adventure'
-  | 'dormosaur-night-mode'
-
+/** Active wallpapers; legacy IDs stay accepted for existing consumers. */
+export type ActiveScheduleTemplateId = 'ultra-pink' | 'pink-notebook' | 'cute-cat-blue' | 'ocean-party' | 'sage-green' | 'forest-whimsy' | 'dormosaur-adventure' | 'dormosaur-night-mode'
+export type ScheduleTemplateId = ActiveScheduleTemplateId | 'simple-modern' | 'dormosaur-classic'
 export type ExportFormat = 'png' | 'jpeg' | 'pdf'
 export type PresetSize = 'phone' | 'desktop' | 'print'
-
+export interface WallpaperTheme { text: string; accent: string; panel: string; card: string; border: string; headerFont?: string; artworkSpace: number }
 export interface TemplateMetadata {
-  id: ScheduleTemplateId
+  id: ActiveScheduleTemplateId
   name: string
-  category: 'Minimal' | 'Cute' | 'Aesthetic' | 'Nature'
+  category: 'Cute' | 'Aesthetic' | 'Nature' | 'Dormosaur'
   description: string
   imagePath: string
+  thumbnailPath: string
   bgPreview: string
   accentColor: string
   supportsGrid: boolean
   hasNameClassFields: boolean
+  theme: WallpaperTheme
 }
-
+function theme(id: ActiveScheduleTemplateId, name: string, category: TemplateMetadata['category'], description: string, bgPreview: string, colors: WallpaperTheme, supportsGrid = false): TemplateMetadata {
+  return { id, name, category, description, bgPreview, imagePath: `/templates/backgrounds/${id}.png`, thumbnailPath: `/templates/thumbnails/${id}.png`, accentColor: colors.accent, supportsGrid, hasNameClassFields: true, theme: colors }
+}
 export const SCHEDULE_TEMPLATES: TemplateMetadata[] = [
-  {
-    id: 'simple-modern',
-    name: 'Simple Modern',
-    category: 'Minimal',
-    description: 'Clean monochrome timetable with bold CLASS SCHEDULE header & structured time grid.',
-    imagePath: '/templates/simple-modern.png',
-    bgPreview: '#ffffff',
-    accentColor: '#18181b',
-    supportsGrid: true,
-    hasNameClassFields: false,
-  },
-  {
-    id: 'ultra-pink',
-    name: 'Ultra Pink',
-    category: 'Cute',
-    description: 'Bubblegum pink theme with bubble title, floral accents & 6 pink day cards.',
-    imagePath: '/templates/ultra-pink.png',
-    bgPreview: '#fbcfe8',
-    accentColor: '#ec4899',
-    supportsGrid: false,
-    hasNameClassFields: true,
-  },
-  {
-    id: 'pink-notebook',
-    name: 'Pink Notebook',
-    category: 'Aesthetic',
-    description: 'Spiral-bound ring binder pads in a 3x2 grid with soft pink grid paper background.',
-    imagePath: '/templates/pink-notebook.png',
-    bgPreview: '#fce7f3',
-    accentColor: '#db2777',
-    supportsGrid: false,
-    hasNameClassFields: false,
-  },
-  {
-    id: 'cute-cat-blue',
-    name: 'Cute Cat Blue',
-    category: 'Cute',
-    description: 'Powder blue background with winking cat speech bubble title & cat paw illustrations.',
-    imagePath: '/templates/cute-cat-blue.png',
-    bgPreview: '#bfe0f2',
-    accentColor: '#0284c7',
-    supportsGrid: false,
-    hasNameClassFields: true,
-  },
-  {
-    id: 'ocean-party',
-    name: 'Ocean Party',
-    category: 'Aesthetic',
-    description: 'Periwinkle blue theme with sea-creatures in party hats & 7 rounded day cards.',
-    imagePath: '/templates/ocean-party.png',
-    bgPreview: '#6366f1',
-    accentColor: '#4f46e5',
-    supportsGrid: false,
-    hasNameClassFields: false,
-  },
-  {
-    id: 'sage-green',
-    name: 'Sage Green Nature',
-    category: 'Nature',
-    description: 'Olive & terracotta palette with Name/Class card & full Time × Day timetable.',
-    imagePath: '/templates/sage-green.png',
-    bgPreview: '#b5c99a',
-    accentColor: '#65a30d',
-    supportsGrid: true,
-    hasNameClassFields: true,
-  },
-  {
-    id: 'forest-whimsy',
-    name: 'Forest Whimsy',
-    category: 'Nature',
-    description: 'Teal-to-cream gradient background with whimsical trees, flying books & 6 dashed day cards.',
-    imagePath: '/templates/forest-whimsy.png',
-    bgPreview: '#047857',
-    accentColor: '#059669',
-    supportsGrid: false,
-    hasNameClassFields: true,
-  },
-  {
-    id: 'dormosaur-classic',
-    name: 'Dormosaur Classic',
-    category: 'Nature',
-    description: 'Deep forest green timetable with subtle mascot line-art header & structured time grid.',
-    imagePath: '/templates/dormosaur-classic.png',
-    bgPreview: '#1F6F50',
-    accentColor: '#1F6F50',
-    supportsGrid: true,
-    hasNameClassFields: true,
-  },
-  {
-    id: 'dormosaur-adventure',
-    name: 'Dormosaur Adventure',
-    category: 'Nature',
-    description: 'Forest-to-sage gradient background with abstract shapes, rounded day cards & Dormosaur mascot.',
-    imagePath: '/templates/dormosaur-adventure.png',
-    bgPreview: '#2E8B65',
-    accentColor: '#1F6F50',
-    supportsGrid: false,
-    hasNameClassFields: true,
-  },
-  {
-    id: 'dormosaur-night-mode',
-    name: 'Dormosaur Night Mode',
-    category: 'Aesthetic',
-    description: 'Dark forest green to near-black gradient with soft mint accent highlights & subtle silhouette mascot watermark.',
-    imagePath: '/templates/dormosaur-night-mode.png',
-    bgPreview: '#0F1714',
-    accentColor: '#38D399',
-    supportsGrid: true,
-    hasNameClassFields: true,
-  },
+  theme('ultra-pink', 'Ultra Pink', 'Cute', 'Cherry blossoms and soft rose stationery.', '#fbe2e8', { text: '#56273b', accent: '#9d375e', panel: 'rgba(255,248,251,.90)', card: '#fff6fa', border: '#ebc3d2', headerFont: 'Georgia, serif', artworkSpace: 105 }),
+  theme('pink-notebook', 'Pink Notebook', 'Aesthetic', 'A paper planner with pink notebook details.', '#fce7f3', { text: '#59343f', accent: '#a94368', panel: 'rgba(255,251,249,.92)', card: '#fff8f5', border: '#e9c2cb', headerFont: 'Georgia, serif', artworkSpace: 100 }),
+  theme('cute-cat-blue', 'Cute Cat Blue', 'Cute', 'Blue study stationery and little companions.', '#d7eaff', { text: '#253c63', accent: '#3869a5', panel: 'rgba(248,252,255,.91)', card: '#eef6ff', border: '#bfd5ec', artworkSpace: 140 }),
+  theme('ocean-party', 'Ocean Party', 'Aesthetic', 'An underwater week with coral and bubbles.', '#b5e9f7', { text: '#174656', accent: '#087b95', panel: 'rgba(247,255,255,.90)', card: '#eafafa', border: '#acdadd', artworkSpace: 130 }),
+  theme('sage-green', 'Sage Green Nature', 'Nature', 'A calm botanical weekly timetable.', '#e2e7cb', { text: '#304532', accent: '#416247', panel: 'rgba(255,255,243,.93)', card: '#eff3e4', border: '#cad5b7', headerFont: 'Georgia, serif', artworkSpace: 95 }, true),
+  theme('forest-whimsy', 'Forest Whimsy', 'Nature', 'A forest study week with room for the artwork.', '#e5efd9', { text: '#284630', accent: '#356e4b', panel: 'rgba(255,254,241,.91)', card: '#edf3e5', border: '#bdd0b9', headerFont: 'Georgia, serif', artworkSpace: 310 }),
+  theme('dormosaur-adventure', 'Dormosaur Adventure', 'Dormosaur', 'Your week, ready for the next adventure.', '#dae8d7', { text: '#264835', accent: '#1f6f50', panel: 'rgba(255,253,239,.92)', card: '#edf3e7', border: '#bacdb8', headerFont: 'Georgia, serif', artworkSpace: 160 }),
+  theme('dormosaur-night-mode', 'Dormosaur Night Mode', 'Dormosaur', 'A quiet timetable with mint and moonlight.', '#14211e', { text: '#edf8ef', accent: '#a6e4c4', panel: 'rgba(5,15,14,.90)', card: '#203c35', border: '#45695b', artworkSpace: 125 }, true),
 ]
-
-export function getTemplateById(id: ScheduleTemplateId): TemplateMetadata {
-  return SCHEDULE_TEMPLATES.find((t) => t.id === id) || SCHEDULE_TEMPLATES[0]
+export function resolveScheduleTemplateId(id: unknown): ActiveScheduleTemplateId {
+  if (id === 'simple-modern') return 'sage-green'
+  if (id === 'dormosaur-classic') return 'dormosaur-adventure'
+  return SCHEDULE_TEMPLATES.some((entry) => entry.id === id) ? id as ActiveScheduleTemplateId : 'dormosaur-adventure'
+}
+export function getTemplateById(id: unknown): TemplateMetadata {
+  return SCHEDULE_TEMPLATES.find((entry) => entry.id === resolveScheduleTemplateId(id))!
+}
+export const ARTBOARD_SIZES: Record<PresetSize, { width: number; height: number }> = {
+  phone: { width: 390, height: 390 * 16 / 9 }, desktop: { width: 1200, height: 750 }, print: { width: 794, height: 1123 },
 }

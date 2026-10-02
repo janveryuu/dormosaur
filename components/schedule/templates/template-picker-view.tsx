@@ -1,164 +1,33 @@
 'use client'
-
-import * as React from 'react'
-import { Check, X, Sparkles } from 'lucide-react'
-import { motion } from 'framer-motion'
-import {
-  SCHEDULE_TEMPLATES,
-  getTemplateById,
-  type ScheduleTemplateId,
-} from '@/lib/template-registry'
-import { TemplateRenderer } from './template-renderer'
-import { useSchedule } from '@/components/schedule-provider'
+import { Check, X } from 'lucide-react'
+import { SCHEDULE_TEMPLATES, resolveScheduleTemplateId, type ScheduleTemplateId } from '@/lib/template-registry'
 import { cn } from '@/lib/utils'
 
-interface TemplatePickerViewProps {
-  selectedTemplate: ScheduleTemplateId
-  onSelectTemplate: (id: ScheduleTemplateId) => void
-  onNext: () => void
-  onClose: () => void
-}
-
-export function TemplatePickerView({
-  selectedTemplate,
-  onSelectTemplate,
-  onNext,
-  onClose,
-}: TemplatePickerViewProps) {
-  const { classes, profile } = useSchedule()
-  const activeMetadata = getTemplateById(selectedTemplate)
-
-  return (
-    <div className="flex h-full w-full flex-col bg-background text-foreground">
-      {/* Sticky Frosted Header */}
-      <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border/60 bg-background/80 px-6 py-4 backdrop-blur-xl">
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex size-11 items-center justify-center rounded-full bg-fill text-muted-foreground hover:bg-accent hover:text-foreground transition-[color,background-color,transform]"
-        >
-          <X className="size-5" />
-          <span className="sr-only">Close</span>
-        </button>
-
-        <div className="text-center">
-          <h2 className="text-[17px] font-bold tracking-tight">Choose a Template</h2>
-          <p className="text-[12px] text-muted-foreground">We&apos;ll fill it in with your real schedule</p>
-        </div>
-
-        <div className="w-9" /> {/* Spacer */}
-      </div>
-
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-        <div className="mx-auto flex max-w-5xl flex-col gap-6">
-          {/* Template Cards Grid */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {SCHEDULE_TEMPLATES.map((tmpl) => {
-              const isSelected = selectedTemplate === tmpl.id
-              return (
-                <motion.button
-                  key={tmpl.id}
-                  type="button"
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => onSelectTemplate(tmpl.id)}
-                  className={cn(
-                    'group relative flex flex-col overflow-hidden rounded-2xl border p-3 text-left transition-[color,background-color,border-color,box-shadow,transform] shadow-xs',
-                    isSelected
-                      ? 'border-emerald-600 bg-emerald-500/10 ring-2 ring-emerald-600/30'
-                      : 'border-border/60 bg-card hover:border-border hover:bg-accent/40',
-                  )}
-                >
-                  {/* Thumbnail Image Preview Box */}
-                  <div
-                    className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-black/10 shadow-xs flex items-center justify-center"
-                    style={{ backgroundColor: tmpl.bgPreview }}
-                  >
-                    <img
-                      src={tmpl.imagePath}
-                      alt={tmpl.name}
-                      width={480}
-                      height={360}
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none'
-                      }}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center bg-black/15 backdrop-blur-[0.5px]">
-                      <span className="text-[12px] font-black uppercase tracking-wider drop-shadow-sm text-white">
-                        {tmpl.name}
-                      </span>
-                      <span className="mt-0.5 rounded-full bg-white/20 px-2 py-0.5 text-[9px] font-bold text-white uppercase backdrop-blur-xs">
-                        {tmpl.category}
-                      </span>
-                    </div>
-
-                    {/* Selected Checkmark Badge */}
-                    {isSelected && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-emerald-600 text-white shadow-md z-10"
-                      >
-                        <Check className="size-3.5" strokeWidth={3} />
-                      </motion.div>
-                    )}
-                  </div>
-
-                  {/* Card Title & Desc */}
-                  <div className="mt-2.5 flex flex-col">
-                    <span className="text-[13.5px] font-bold text-foreground group-hover:text-primary">
-                      {tmpl.name}
-                    </span>
-                    <span className="text-[11.5px] text-muted-foreground line-clamp-1 mt-0.5">
-                      {tmpl.description}
-                    </span>
-                  </div>
-                </motion.button>
-              )
-            })}
-          </div>
-
-          {/* Live Interactive Preview Box */}
-          <div className="mt-2 flex flex-col gap-3 rounded-3xl border border-border/60 bg-card p-4 sm:p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-primary font-bold text-[14px]">
-                <Sparkles className="size-4 text-primary" />
-                <span>Live Preview — {activeMetadata.name}</span>
-              </div>
-              <span className="text-[12px] font-semibold text-muted-foreground">
-                {classes.length} {classes.length === 1 ? 'course' : 'courses'} loaded
-              </span>
+export function TemplatePickerView({ selectedTemplate, onSelectTemplate, onClose }: {
+  selectedTemplate: ScheduleTemplateId; onSelectTemplate: (id: ScheduleTemplateId) => void; onClose: () => void
+}) {
+  return <div className="flex h-full min-h-0 w-full flex-col bg-background text-foreground">
+    <header className="flex shrink-0 items-center justify-between gap-2 border-b border-border/60 px-4 py-3">
+      <div className="size-11 shrink-0" />
+      <div className="text-center"><h2 className="text-[17px] font-bold">Choose a Template</h2><p className="mt-1 text-xs text-muted-foreground">We&apos;ll fill it in with your real schedule</p></div>
+      <button type="button" onClick={onClose} aria-label="Close template picker" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-fill"><X className="size-5" /></button>
+    </header>
+    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6">
+      <div data-template-picker-grid className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        {SCHEDULE_TEMPLATES.map((metadata) => {
+          const selected = resolveScheduleTemplateId(selectedTemplate) === metadata.id
+          return <button key={metadata.id} type="button" aria-label={`Preview ${metadata.name}`} aria-pressed={selected} onClick={() => onSelectTemplate(metadata.id)} className={cn('group min-w-0 overflow-hidden rounded-2xl border bg-card text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary', selected ? 'border-emerald-600 ring-2 ring-emerald-600/25' : 'border-border/60 hover:border-primary/50')}>
+            <div className="relative aspect-[3/4] overflow-hidden" style={{ background: metadata.bgPreview }}>
+              {/* The small thumbnail is a lossless resize of this exact background. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={metadata.thumbnailPath} alt="" width={240} height={426} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+              <div aria-hidden="true" className="absolute inset-x-[18%] top-[27%] h-[40%] rounded-lg border bg-white/80 p-2 shadow-sm" style={{ borderColor: metadata.theme.border, background: metadata.theme.panel }}><div className="mx-auto mb-2 h-1.5 w-3/4 rounded" style={{ background: metadata.accentColor, opacity: .65 }} />{[0, 1, 2].map((row) => <div key={row} className="mb-1 h-3 rounded border" style={{ background: metadata.theme.card, borderColor: metadata.theme.border }} />)}</div>
+              {selected && <span className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-emerald-600 text-white"><Check className="size-4" /></span>}
             </div>
-
-            {/* Rendered Live Template */}
-            <div className="w-full overflow-hidden rounded-2xl border border-border/40 shadow-inner bg-muted/20 p-2 flex justify-center">
-              <div className="w-full max-w-full overflow-hidden">
-                <TemplateRenderer
-                  templateId={selectedTemplate}
-                  classes={classes}
-                  name={profile.name}
-                  school={profile.school}
-                  presetSize="phone"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Sticky Bottom Action Bar */}
-      <div className="sticky bottom-0 z-20 border-t border-border/60 bg-background/80 p-4 backdrop-blur-xl">
-        <div className="mx-auto max-w-xl">
-          <button
-            type="button"
-            onClick={onNext}
-            className="flex h-12 w-full items-center justify-center rounded-full bg-emerald-600 font-semibold text-white shadow-md transition-[color,background-color,box-shadow,transform] hover:bg-emerald-700 active:scale-[0.99]"
-          >
-            Use This Template
+            <div className="flex min-h-20 flex-col gap-1 p-3"><span className="text-[13px] font-bold leading-snug [overflow-wrap:anywhere]">{metadata.name}</span><span className="text-[11px] text-muted-foreground">{metadata.category}</span><span className="hidden text-xs text-muted-foreground lg:block">{metadata.description}</span></div>
           </button>
-        </div>
+        })}
       </div>
     </div>
-  )
+  </div>
 }

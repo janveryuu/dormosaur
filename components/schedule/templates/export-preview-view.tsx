@@ -6,11 +6,13 @@ import { toPng, toJpeg } from 'html-to-image'
 import { jsPDF } from 'jspdf'
 import {
   getTemplateById,
+  ARTBOARD_SIZES,
   type ScheduleTemplateId,
   type ExportFormat,
   type PresetSize,
 } from '@/lib/template-registry'
 import { TemplateRenderer } from './template-renderer'
+import { ScaledTemplatePreview } from './scaled-template-preview'
 import { useSchedule } from '@/components/schedule-provider'
 import { IosToast } from '@/components/ios/toast'
 
@@ -29,29 +31,41 @@ export function ExportPreviewView({
   const templateMeta = getTemplateById(selectedTemplate)
 
   const [format, setFormat] = React.useState<ExportFormat>('png')
-  const [presetSize, setPresetSize] = React.useState<PresetSize>('desktop')
+  const [presetSize, setPresetSize] = React.useState<PresetSize>(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px), (pointer: coarse)').matches ? 'phone' : 'desktop')
   const [nameText, setNameText] = React.useState(profile.name || '')
   const [schoolText, setSchoolText] = React.useState(profile.school || '')
   const [isExporting, setIsExporting] = React.useState(false)
   const [toastMessage, setToastMessage] = React.useState<string | null>(null)
+  const [exportFailed, setExportFailed] = React.useState(false)
 
   const handleDownload = async () => {
     if (isExporting) return
     setIsExporting(true)
+    setExportFailed(false)
 
     try {
       const artboard = document.getElementById('schedule-export-artboard')
       if (!artboard) {
         throw new Error('Artboard container not found')
       }
+      await document.fonts.ready
+      await Promise.all(Array.from(artboard.querySelectorAll('img')).map(async (image) => {
+        await image.decode()
+        if (!image.naturalWidth) throw new Error('Background image is unavailable')
+      }))
+      // Allow measured schedule content to settle after fonts and images load.
+      await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
 
-      const fileName = `dormosaur-schedule-${selectedTemplate}-${presetSize}`
+      const fileName = `dormosaur-schedule-${templateMeta.id}-${presetSize}`
+      const exportSize = ARTBOARD_SIZES[presetSize]
 
       if (format === 'png' || format === 'jpeg') {
         const exporter = format === 'png' ? toPng : toJpeg
         const dataUrl = await exporter(artboard, {
           quality: 0.98,
           pixelRatio: 3, // High-res 3x render
+          width: exportSize.width,
+          height: exportSize.height,
         })
 
         const link = document.createElement('a')
@@ -59,27 +73,31 @@ export function ExportPreviewView({
         link.href = dataUrl
         link.click()
       } else if (format === 'pdf') {
-        const dataUrl = await toPng(artboard, { pixelRatio: 3 })
+        const dataUrl = await toPng(artboard, { pixelRatio: 3, width: exportSize.width, height: exportSize.height })
         const pdf = new jsPDF({
           orientation: presetSize === 'desktop' ? 'landscape' : 'portrait',
           unit: 'mm',
-          format: 'a4',
+          format: presetSize === 'phone' ? [117, 208] : 'a4',
         })
 
         const pageWidth = pdf.internal.pageSize.getWidth()
         const pageHeight = pdf.internal.pageSize.getHeight()
 
-        const margin = 8
+        const margin = presetSize === 'phone' ? 0 : 8
         const availWidth = pageWidth - margin * 2
         const availHeight = pageHeight - margin * 2
 
-        pdf.addImage(dataUrl, 'PNG', margin, margin, availWidth, availHeight)
+        const size = ARTBOARD_SIZES[presetSize]
+        const ratio = Math.min(availWidth / size.width, availHeight / size.height)
+        const width = size.width * ratio, height = size.height * ratio
+        pdf.addImage(dataUrl, 'PNG', (pageWidth - width) / 2, (pageHeight - height) / 2, width, height)
         pdf.save(`${fileName}.pdf`)
       }
 
       setToastMessage(`Saved ${fileName}.${format} to your device`)
     } catch (err) {
       console.error('Export error:', err)
+      setExportFailed(true)
       setToastMessage('Failed to generate export file. Please try again.')
     } finally {
       setIsExporting(false)
@@ -92,8 +110,8 @@ export function ExportPreviewView({
       {toastMessage && (
         <IosToast
           toast={{
-            type: 'success',
-            title: 'Schedule Saved',
+            type: exportFailed ? 'error' : 'success',
+            title: exportFailed ? 'Export unavailable' : 'Schedule Saved',
             message: toastMessage,
           }}
           onClose={() => setToastMessage(null)}
@@ -108,7 +126,7 @@ export function ExportPreviewView({
           className="flex items-center gap-1 text-[15px] font-semibold text-primary hover:underline"
         >
           <ArrowLeft className="size-4" />
-          <span>Back</span>
+          <span>Preview</span>
         </button>
 
         <h2 className="text-[17px] font-bold tracking-tight">Your Schedule</h2>
@@ -116,6 +134,7 @@ export function ExportPreviewView({
         <button
           type="button"
           onClick={onClose}
+          aria-label="Close schedule export"
           className="flex size-8 items-center justify-center rounded-full bg-fill text-muted-foreground hover:bg-accent"
         >
           <X className="size-4" />
@@ -123,7 +142,7 @@ export function ExportPreviewView({
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+      <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="mx-auto flex max-w-4xl flex-col gap-6">
           {/* Format & Preset Controls */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -138,6 +157,8 @@ export function ExportPreviewView({
                     key={fmt}
                     type="button"
                     onClick={() => setFormat(fmt)}
+                    disabled={isExporting}
+                    aria-pressed={format === fmt}
                     className={`min-h-11 rounded-lg py-1.5 text-[13px] font-bold uppercase transition-[color,background-color,border-color,box-shadow,transform] ${
                       format === fmt
                         ? 'bg-card text-foreground shadow-xs'
@@ -165,6 +186,8 @@ export function ExportPreviewView({
                     key={preset.id}
                     type="button"
                     onClick={() => setPresetSize(preset.id as PresetSize)}
+                    disabled={isExporting}
+                    aria-pressed={presetSize === preset.id}
                     className={`min-h-11 rounded-lg py-1.5 text-[12px] font-bold transition-[color,background-color,border-color,box-shadow,transform] ${
                       presetSize === preset.id
                         ? 'bg-card text-foreground shadow-xs'
@@ -190,6 +213,7 @@ export function ExportPreviewView({
                   <input
                     type="text"
                     value={nameText}
+                    disabled={isExporting}
                     onChange={(e) => setNameText(e.target.value)}
                     className="rounded-xl border border-border/80 bg-fill px-3 py-1.5 text-[13.5px] text-foreground focus:border-primary focus:outline-none font-medium"
                   />
@@ -199,6 +223,7 @@ export function ExportPreviewView({
                   <input
                     type="text"
                     value={schoolText}
+                    disabled={isExporting}
                     onChange={(e) => setSchoolText(e.target.value)}
                     className="rounded-xl border border-border/80 bg-fill px-3 py-1.5 text-[13.5px] text-foreground focus:border-primary focus:outline-none font-medium"
                   />
@@ -209,8 +234,8 @@ export function ExportPreviewView({
 
           {/* High Quality Live Preview Artwork */}
           <div className="flex flex-col items-center justify-center rounded-3xl border border-border/60 bg-card p-4 sm:p-6 shadow-md">
-            <div className="w-full">
-              <TemplateRenderer
+            <div className="h-[min(44dvh,420px)] min-h-[200px] w-full">
+              <ScaledTemplatePreview
                 templateId={selectedTemplate}
                 classes={classes}
                 name={nameText}
@@ -222,8 +247,13 @@ export function ExportPreviewView({
         </div>
       </div>
 
+      {/* The full-size export artboard never inherits the preview transform. */}
+      <div aria-hidden="true" className="pointer-events-none fixed left-[-10000px] top-0">
+        <TemplateRenderer artboardId="schedule-export-artboard" templateId={selectedTemplate} classes={classes} name={nameText} school={schoolText} presetSize={presetSize} />
+      </div>
+
       {/* Sticky Bottom Action Bar */}
-      <div className="sticky bottom-0 z-20 border-t border-border/60 bg-background/80 p-4 backdrop-blur-xl">
+      <div className="sticky bottom-0 z-20 border-t border-border/60 bg-background/80 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-xl">
         <div className="mx-auto max-w-xl">
           <button
             type="button"

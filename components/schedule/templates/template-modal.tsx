@@ -1,10 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import type { ScheduleTemplateId } from '@/lib/template-registry'
 import { TemplatePickerView } from './template-picker-view'
 import { ExportPreviewView } from './export-preview-view'
+import { TemplatePreviewView } from './template-preview-view'
 import { useModalA11y } from '@/hooks/use-modal-a11y'
 
 interface TemplateModalProps {
@@ -12,17 +13,19 @@ interface TemplateModalProps {
   onClose: () => void
 }
 
-type ModalStep = 'picker' | 'export'
+type ModalStep = 'picker' | 'preview' | 'export'
 
 export function TemplateModal({ open, onClose }: TemplateModalProps) {
   const [step, setStep] = React.useState<ModalStep>('picker')
-  const [selectedTemplate, setSelectedTemplate] = React.useState<ScheduleTemplateId>('simple-modern')
+  const [selectedTemplate, setSelectedTemplate] = React.useState<ScheduleTemplateId>('dormosaur-adventure')
   const dialogRef = useModalA11y(open, onClose)
+  const reducedMotion = useReducedMotion()
 
   // Reset to picker when closed
   React.useEffect(() => {
     if (!open) {
-      setTimeout(() => setStep('picker'), 300)
+      const timer = setTimeout(() => setStep('picker'), 300)
+      return () => clearTimeout(timer)
     }
   }, [open])
 
@@ -32,11 +35,6 @@ export function TemplateModal({ open, onClose }: TemplateModalProps) {
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
           {/* Backdrop */}
           <motion.div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Choose and export a schedule template"
-            tabIndex={-1}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -46,23 +44,29 @@ export function TemplateModal({ open, onClose }: TemplateModalProps) {
 
           {/* Modal Container with iOS Spring Motion */}
           <motion.div
-            initial={{ y: '100%', opacity: 0 }}
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Choose and export a schedule template"
+            tabIndex={-1}
+            initial={{ y: reducedMotion ? 0 : '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: '100%', opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 350, damping: 32 }}
-            className="relative z-10 flex h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-background shadow-2xl"
+            exit={{ y: reducedMotion ? 0 : '100%', opacity: 0 }}
+            transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 350, damping: 32 }}
+            className="relative z-10 flex h-[92dvh] max-h-[900px] w-full max-w-5xl flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-background shadow-2xl"
           >
             {step === 'picker' ? (
               <TemplatePickerView
                 selectedTemplate={selectedTemplate}
-                onSelectTemplate={setSelectedTemplate}
-                onNext={() => setStep('export')}
+                onSelectTemplate={(id) => { setSelectedTemplate(id); setStep('preview') }}
                 onClose={onClose}
               />
+            ) : step === 'preview' ? (
+              <TemplatePreviewView selectedTemplate={selectedTemplate} onBack={() => setStep('picker')} onNext={() => setStep('export')} onClose={onClose} />
             ) : (
               <ExportPreviewView
                 selectedTemplate={selectedTemplate}
-                onBack={() => setStep('picker')}
+                onBack={() => setStep('preview')}
                 onClose={onClose}
               />
             )}
