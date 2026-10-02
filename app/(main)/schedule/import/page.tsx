@@ -62,7 +62,7 @@ export default function ImportSchedulePage() {
     setCameraError(null)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: { facingMode: 'environment', width: { ideal: 3200 }, height: { ideal: 2400 } },
       })
       if (videoRef.current) {
         videoRef.current.srcObject = stream
@@ -106,11 +106,11 @@ export default function ImportSchedulePage() {
     setRaw('')
 
     try {
-      // 1. Client-side compression & downscaling to ~1800px (< 400KB)
-      const compressedDataUrl = await compressImageForOcr(rawImageInput, 1800, 0.85)
+      // Keep originals when practical; oversized images retain up to 3200px.
+      const compressedDataUrl = await compressImageForOcr(rawImageInput)
       setCapturedImage(compressedDataUrl)
 
-      // 2. Perform Single-Pass Gemini Vision Extraction
+      // The API retries an empty extraction once with dense-grid instructions.
       const scanPromise = fetch('/api/schedule/parse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -126,13 +126,13 @@ export default function ImportSchedulePage() {
         return data.classes
       } else {
         setParsedClasses(null)
-        setOcrError(data.error || "We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.")
+        setOcrError(data.error || 'No class entries were found. Try uploading the timetable itself or paste the schedule text.')
         return null
       }
     } catch (err) {
       console.warn('Gemini vision processing error:', err)
       setParsedClasses(null)
-      setOcrError("We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.")
+      setOcrError('The schedule scan could not complete. Please try again or paste the schedule text.')
       return null
     } finally {
       setIsOcrScanning(false)
@@ -149,7 +149,7 @@ export default function ImportSchedulePage() {
     const ctx = canvas.getContext('2d')
     if (ctx) {
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height)
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.85)
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95)
       setCapturedImage(dataUrl)
       stopCamera()
       processImageWithGemini(dataUrl)
@@ -262,14 +262,20 @@ export default function ImportSchedulePage() {
 
     // If active background scan is running, await its completion
     if (activeScanPromiseRef.current) {
-      const data = await activeScanPromiseRef.current
-      if (data?.success && Array.isArray(data.classes) && data.classes.length > 0) {
-        try {
-          sessionStorage.setItem('dormosaur_parsed_draft', JSON.stringify(data.classes))
-        } catch (e) {}
-        setLoading(true)
-        return
+      try {
+        const data = await activeScanPromiseRef.current
+        if (data?.success && Array.isArray(data.classes) && data.classes.length > 0) {
+          try {
+            sessionStorage.setItem('dormosaur_parsed_draft', JSON.stringify(data.classes))
+          } catch (e) {}
+          setLoading(true)
+          return
+        }
+        setOcrError(data?.error || 'No class entries were found. Try uploading the timetable itself or paste the schedule text.')
+      } catch {
+        setOcrError('The schedule scan could not complete. Please try again or paste the schedule text.')
       }
+      return
     }
 
     let classesToSave: ClassEntry[] = []
@@ -290,12 +296,12 @@ export default function ImportSchedulePage() {
         const scanned = await processImageWithGemini(capturedImage)
         if (scanned && scanned.length > 0) {
           classesToSave = scanned
-        }
+        } else return // Keep the specific scan error set by processImageWithGemini.
       }
     }
 
     if (!classesToSave || classesToSave.length === 0) {
-      setOcrError("We couldn't read this schedule file — please try another file format or paste the text.")
+      setOcrError('No class entries were found. Try uploading the timetable itself or paste the schedule text.')
       return
     }
 

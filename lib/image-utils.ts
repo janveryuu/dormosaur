@@ -1,13 +1,12 @@
 /**
  * lib/image-utils.ts
- * Client-side image compression & optimization helper for fast OCR processing.
- * Reduces 10MB camera photos to ~300KB while preserving ultra-crisp text sharpness.
+ * Preserve schedule text; optimize only oversized images for the inline upload.
  */
 
 export async function compressImageForOcr(
   input: File | string,
-  maxDimension = 1800,
-  quality = 0.85
+  maxDimension = 3200,
+  quality = 0.95
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // 1. Read input into Data URL if it is a File
@@ -15,12 +14,12 @@ export async function compressImageForOcr(
       const reader = new FileReader()
       reader.onload = (e) => {
         const rawDataUrl = e.target?.result as string
-        processDataUrl(rawDataUrl, maxDimension, quality, resolve, reject)
+        processDataUrl(rawDataUrl, maxDimension, quality, resolve)
       }
       reader.onerror = (err) => reject(err)
       reader.readAsDataURL(input)
     } else {
-      processDataUrl(input, maxDimension, quality, resolve, reject)
+      processDataUrl(input, maxDimension, quality, resolve)
     }
   })
 }
@@ -29,9 +28,11 @@ function processDataUrl(
   dataUrl: string,
   maxDimension: number,
   quality: number,
-  resolve: (res: string) => void,
-  reject: (err: any) => void
+  resolve: (res: string) => void
 ) {
+  // PDFs are native Gemini inputs, not images to rasterize or re-encode.
+  if (dataUrl.startsWith('data:application/pdf;')) return resolve(dataUrl)
+
   // If not in browser environment (SSR), return as-is
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return resolve(dataUrl)
@@ -42,6 +43,12 @@ function processDataUrl(
     try {
       let width = img.width
       let height = img.height
+      // 3 MiB binary leaves room for base64/JSON in a 4.5 MB request body.
+      const maxBytes = 3 * 1024 * 1024
+      const sourceBytes = Math.ceil((dataUrl.split(',')[1]?.length || 0) * 3 / 4)
+      if (sourceBytes <= maxBytes) {
+        return resolve(dataUrl)
+      }
 
       // Scale down proportionally if larger than maxDimension
       if (width > maxDimension || height > maxDimension) {
@@ -73,8 +80,12 @@ function processDataUrl(
 
       ctx.drawImage(img, 0, 0, width, height)
 
-      // Convert to JPEG for maximum compression efficiency
-      const compressedDataUrl = canvas.toDataURL('image/jpeg', quality)
+      // Keep PNG screenshots lossless where they fit the upload budget.
+      const isPng = dataUrl.startsWith('data:image/png;')
+      let compressedDataUrl = canvas.toDataURL(isPng ? 'image/png' : 'image/jpeg', quality)
+      if (isPng && compressedDataUrl.length > maxBytes * 4 / 3) {
+        compressedDataUrl = canvas.toDataURL('image/jpeg', quality)
+      }
       resolve(compressedDataUrl)
     } catch (err) {
       console.warn('[Image Compression Notice] Falling back to original data URL:', err)
@@ -161,4 +172,3 @@ export async function cropAndCompressAvatar(
     }
   })
 }
-
