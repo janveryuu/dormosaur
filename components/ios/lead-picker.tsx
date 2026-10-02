@@ -6,6 +6,7 @@ import { Check, ChevronRight } from 'lucide-react'
 import { buttonTapScale, buttonHoverScale, springButton, springSmooth } from '@/lib/motion-presets'
 
 const options = [15, 30, 60] as const
+const pickerOpenEvent = 'dormosaur:lead-picker-open'
 export type Lead = (typeof options)[number]
 
 export function LeadPicker({
@@ -19,6 +20,7 @@ export function LeadPicker({
 }) {
   const [open, setOpen] = React.useState(false)
   const ref = React.useRef<HTMLDivElement>(null)
+  const listId = React.useId()
   React.useEffect(() => {
     if (!open) return
     const onDown = (e: PointerEvent) => {
@@ -27,24 +29,31 @@ export function LeadPicker({
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false)
     }
+    const onOtherPickerOpen = () => setOpen(false)
     document.addEventListener('pointerdown', onDown)
     document.addEventListener('keydown', onKeyDown)
+    document.addEventListener(pickerOpenEvent, onOtherPickerOpen)
     return () => {
       document.removeEventListener('pointerdown', onDown)
       document.removeEventListener('keydown', onKeyDown)
+      document.removeEventListener(pickerOpenEvent, onOtherPickerOpen)
     }
   }, [open])
 
   return (
-    <div ref={ref} className="relative select-none">
+    <div ref={ref} className="flex max-w-full shrink-0 flex-col items-start select-none sm:items-end">
       <motion.button
         type="button"
         whileTap={buttonTapScale}
         whileHover={buttonHoverScale}
         transition={springButton}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          if (!open) document.dispatchEvent(new Event(pickerOpenEvent))
+          setOpen((o) => !o)
+        }}
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-controls={open ? listId : undefined}
         aria-label={`${label} lead time`}
         className="flex min-h-11 items-center gap-1 rounded-full bg-fill px-3 py-1.5 text-[13.5px] font-semibold tabular-nums cursor-pointer hover:bg-accent transition-colors"
       >
@@ -59,11 +68,13 @@ export function LeadPicker({
         {open && (
           <motion.ul
             role="listbox"
-            initial={{ opacity: 0, scale: 0.94, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -4 }}
+            id={listId}
+            aria-label={`${label} lead time options`}
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 8 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
             transition={springSmooth}
-            className="ios-glass absolute top-full right-0 z-30 mt-2 w-44 origin-top-right overflow-hidden rounded-2xl border border-border shadow-ios-lg p-1"
+            className="ios-glass w-44 max-w-full overflow-hidden rounded-2xl border border-border shadow-ios-lg p-1"
           >
             {options.map((option) => {
               const active = option === value

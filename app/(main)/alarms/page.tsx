@@ -270,19 +270,19 @@ export default function AlarmsPage() {
                         key={alarm.id}
                         className="alarm-row flex flex-col gap-2.5 p-4 sm:p-4.5 transition-colors"
                       >
-                        <div className="mobile-alarm-main flex items-center gap-3">
+                        <div className="mobile-alarm-main flex items-start gap-3">
                           <span className={`alarm-row-accent h-10 w-1.5 shrink-0 ${color.bg}`}><GraduationCap className="size-6 text-white sm:hidden" /></span>
                           <div className="min-w-0 flex-1">
                             <p className="mobile-alarm-time sm:hidden">{formatTime(ringAt)}</p>
                             <p
-                              className={`text-[15.5px] font-bold tracking-tight ${
+                              className={`break-words text-[15.5px] font-bold tracking-tight ${
                                 alarm.enabled ? 'text-foreground' : 'text-muted-foreground'
                               }`}
                             >
                               {alarm.subject}
                             </p>
                             <p className="mobile-alarm-room mt-0.5 flex items-center gap-1 text-xs text-muted-foreground sm:hidden"><MapPin className="size-3.5" />{room || 'Class reminder'}</p>
-                            <p className="mt-0.5 hidden text-xs text-muted-foreground tabular-nums sm:block">
+                            <p className="mt-0.5 text-xs text-muted-foreground tabular-nums">
                               Class {formatTime(alarm.time)} · Rings {formatTime(ringAt)}
                             </p>
                           </div>
