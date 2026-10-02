@@ -1,10 +1,53 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readFileSync, mkdtempSync, mkdirSync, copyFileSync, rmSync, statSync } from 'node:fs'
+import path from 'node:path'
+import { tmpdir } from 'node:os'
 import vm from 'node:vm'
 import ts from 'typescript'
 import { createRequire } from 'node:module'
 
 const require = createRequire(import.meta.url)
+if (process.argv.includes('--trace')) {
+  const files = JSON.parse(readFileSync('.next/server/app/api/schedule/parse/route.js.nft.json', 'utf8')).files
+  for (const dependency of ['bmp-js', 'wasm-feature-detect', 'regenerator-runtime', 'is-url', 'tesseract.js-core', '@tesseract.js-data/eng']) {
+    assert.ok(files.some((file) => file.includes(`/node_modules/${dependency}/`)), `Production tracing must include OCR worker dependency ${dependency}`)
+  }
+  assert.ok(files.some((file) => file.includes('worker-script/node/index.js')))
+  assert.ok(files.some((file) => file.endsWith('eng.traineddata.gz')))
+  console.log('PASS: production bundle includes worker-only dependencies, WASM and English OCR data')
+  // Run a real worker from ONLY traced files. A normal local Next server can
+  // accidentally resolve missing deployment dependencies from node_modules.
+  const temporaryRoot = path.resolve(tmpdir())
+  const isolatedRoot = mkdtempSync(path.join(temporaryRoot, 'dormosaur-ocr-bundle-'))
+  let worker
+  try {
+    for (const file of files) {
+      const source = path.resolve('.next/server/app/api/schedule/parse', file)
+      if (!statSync(source).isFile()) continue
+      const relative = path.relative(process.cwd(), source)
+      if (relative.startsWith('..') || path.isAbsolute(relative)) continue
+      const destination = path.join(isolatedRoot, relative)
+      mkdirSync(path.dirname(destination), { recursive: true })
+      copyFileSync(source, destination)
+    }
+    const isolatedRequire = createRequire(path.join(isolatedRoot, 'package.json'))
+    const { createWorker, OEM } = isolatedRequire('tesseract.js')
+    worker = await createWorker('eng', OEM.LSTM_ONLY, {
+      workerPath: path.join(isolatedRoot, 'node_modules/tesseract.js/src/worker-script/node/index.js'),
+      langPath: path.join(isolatedRoot, 'node_modules/@tesseract.js-data/eng/4.0.0'),
+      cacheMethod: 'none', logger() {}, errorHandler() {},
+    })
+    const image = await require('sharp')(Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="900" height="120"><rect width="900" height="120" fill="white"/><text x="25" y="75" font-family="Arial" font-size="40">CpE 408 Mon 08:00-09:00</text></svg>')).png().toBuffer()
+    const { data } = await worker.recognize(image)
+    assert.match(data.text, /408/)
+    assert.match(data.text, /Mon/)
+    console.log('PASS: real OCR worker runs successfully from the isolated deployment bundle')
+  } finally {
+    await worker?.terminate()
+    if (path.dirname(path.resolve(isolatedRoot)) !== temporaryRoot) throw new Error('Unexpected isolated bundle path')
+    rmSync(isolatedRoot, { recursive: true, force: true })
+  }
+}
 function loadTs(path, overrides = {}, globals = {}) {
   const exports = {}
   const code = ts.transpileModule(readFileSync(path, 'utf8'), {
