@@ -53,3 +53,16 @@ extracted_*/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Android local tools, private release signing, and generated packages
+/.android-signing/
+/android/.gradle/
+/android/.idea/
+/android/local.properties
+/android/**/build/
+*.jks
+*.keystore
+*.apk
+*.aab
+*.apk.sha256
+*.log

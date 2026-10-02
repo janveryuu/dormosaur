@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.dormly.dormosaur",
+      "sha256_cert_fingerprints": [
+        "E2:28:1A:CE:68:FB:8E:0C:9B:79:47:D1:4C:00:E4:B0:EB:8C:A4:42:32:52:DC:17:87:21:20:F5:4F:E3:C3:2F"
+      ]
+    }
+  }
+]
