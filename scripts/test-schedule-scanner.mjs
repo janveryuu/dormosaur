@@ -14,6 +14,7 @@ if (process.argv.includes('--trace')) {
   }
   assert.ok(files.some((file) => file.includes('worker-script/node/index.js')))
   assert.ok(files.some((file) => file.endsWith('eng.traineddata.gz')))
+  assert.ok(files.some((file) => file.endsWith('/pdfjs-dist/package.json')), 'PDF runtime resolves its package root dynamically')
   console.log('PASS: production bundle includes worker-only dependencies, WASM and English OCR data')
   // Run a real worker from ONLY traced files. A normal local Next server can
   // accidentally resolve missing deployment dependencies from node_modules.
@@ -42,6 +43,14 @@ if (process.argv.includes('--trace')) {
     assert.match(data.text, /408/)
     assert.match(data.text, /Mon/)
     console.log('PASS: real OCR worker runs successfully from the isolated deployment bundle')
+    const pdfModule = loadTs('lib/schedule-pdf.ts', {}, { process: { cwd: () => isolatedRoot } })
+    const { jsPDF } = require('jspdf')
+    const fixturePdf = new jsPDF({ compress: true })
+    fixturePdf.text('CpE 408 Mon 08:00-09:00', 25, 50)
+    const pages = await pdfModule.renderSchedulePdf(Buffer.from(fixturePdf.output('arraybuffer')))
+    const pdfOcr = await worker.recognize(pages[0])
+    assert.match(pdfOcr.data.text, /408/)
+    console.log('PASS: PDF rendering resolves worker and package assets from the isolated deployment bundle')
   } finally {
     await worker?.terminate()
     if (path.dirname(path.resolve(isolatedRoot)) !== temporaryRoot) throw new Error('Unexpected isolated bundle path')
@@ -374,7 +383,7 @@ if (process.argv.includes('--live') || process.argv.includes('--ocr')) {
   const png = await sharp(Buffer.from(svg)).png().toBuffer()
   const jpg = await sharp(png).jpeg({ quality: 95 }).toBuffer()
   const photo = await sharp(png).rotate(1, { background: '#ddd' }).modulate({ brightness: 0.93 }).jpeg({ quality: 94 }).toBuffer()
-  const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [3000, 1600] })
+  const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [3000, 1600], compress: true })
   pdf.addImage(`data:image/png;base64,${png.toString('base64')}`, 'PNG', 0, 0, 3000, 1600)
   const fixtures = [
     ['dense PNG', 'image/png', png], ['dense JPG', 'image/jpeg', jpg],
@@ -382,6 +391,8 @@ if (process.argv.includes('--live') || process.argv.includes('--ocr')) {
   ]
   const failures = []
   for (const [name, mime, bytes] of fixtures) {
+    const selectedFixture = process.argv.find((arg) => arg.startsWith('--fixture='))?.slice(10)
+    if (selectedFixture && name !== selectedFixture) continue
     const request = new Request(targetUrl || 'http://localhost/api/schedule/parse', {
       method: 'POST', body: JSON.stringify({ image: `data:${mime};base64,${bytes.toString('base64')}` }),
       headers: { 'Content-Type': 'application/json' },
@@ -410,7 +421,7 @@ if (process.argv.includes('--live') || process.argv.includes('--ocr')) {
       else if (!localFallback) failures.push(`${name}: missing ${meeting.code} ${days[meeting.day]} ${time(meeting.row)}-${time(meeting.row + meeting.span)}`)
     }
     if (localFallback) assert.ok(verifiedMeetings >= 10, 'Dense OCR must recover a useful partial schedule with source-backed course/day/time relationships')
-    console.log(`LIVE: ${name}: ${data.classes.length} draft entries, ${verifiedMeetings}/${meetings.length} source meetings recovered, ${failures.filter((failure) => failure.startsWith(name)).length} verification failures`)
+    console.log(`LIVE: ${name}: ${data.provider}, ${data.classes.length} draft entries, ${verifiedMeetings}/${meetings.length} source meetings recovered, ${failures.filter((failure) => failure.startsWith(name)).length} verification failures`)
   }
   assert.deepEqual(failures, [], 'Live scan failures')
 }

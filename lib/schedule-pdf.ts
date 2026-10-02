@@ -12,6 +12,7 @@ export async function renderSchedulePdf(bytes: Buffer): Promise<Buffer[]> {
   const task = pdfjs.getDocument({
     data: new Uint8Array(bytes),
     standardFontDataUrl: path.join(root, 'standard_fonts').replace(/\\/g, '/') + '/',
+    wasmUrl: path.join(root, 'wasm').replace(/\\/g, '/') + '/',
     useSystemFonts: false,
     verbosity: 0,
   })
