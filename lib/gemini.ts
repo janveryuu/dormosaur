@@ -1,10 +1,28 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import type { ClassEntry, SubjectColor } from '@/lib/data'
 
-export const GEMINI_MODEL_NAME = 'gemini-3.6-flash'
+export const GEMINI_MODEL_NAME = process.env.DORMOSAUR_SCHEDULE_MODEL?.trim() || 'gemini-3.8-flash'
 
-const apiKey = process.env.GEMINI_API_KEY || ''
+const apiKey = process.env.GEMINI_API_KEY?.trim() || ''
 const genAI = apiKey && !apiKey.includes('placeholder') ? new GoogleGenerativeAI(apiKey) : null
+
+export type ScheduleProviderCategory = 'api_key_missing' | 'authentication_failure' | 'quota_rate_limit' | 'model_unavailable' | 'provider_unavailable' | 'network_failure' | 'malformed_response'
+
+function providerCategory(status?: number): ScheduleProviderCategory {
+  if (status === 401 || status === 403) return 'authentication_failure'
+  if (status === 429) return 'quota_rate_limit'
+  if (status === 404) return 'model_unavailable'
+  if (status && status >= 500) return 'provider_unavailable'
+  return status ? 'provider_unavailable' : 'network_failure'
+}
+
+export function getScheduleProviderConfiguration() {
+  return { keyConfigured: Boolean(genAI), model: GEMINI_MODEL_NAME }
+}
+
+export async function checkScheduleProvider() {
+  decodeScheduleResponse(await generateScheduleContent('Return only this JSON: {"classes": []}'))
+}
 
 export type GeminiParsedClass = {
   code?: string | null
@@ -24,6 +42,7 @@ export class ScheduleParseError extends Error {
     public readonly code: ScheduleParseErrorCode,
     message: string,
     public readonly providerStatus?: number,
+    public readonly category: ScheduleProviderCategory = code === 'invalid_response' ? 'malformed_response' : providerCategory(providerStatus),
   ) {
     super(message)
     this.name = 'ScheduleParseError'
@@ -147,7 +166,7 @@ export async function parseScheduleTextWithGemini(text: string): Promise<ClassEn
 
 async function generateScheduleContent(parts: Parameters<ReturnType<GoogleGenerativeAI['getGenerativeModel']>['generateContent']>[0]): Promise<string> {
   if (!genAI) {
-    throw new ScheduleParseError('provider_failure', 'GEMINI_API_KEY is not configured.')
+    throw new ScheduleParseError('provider_failure', 'GEMINI_API_KEY is not configured.', undefined, 'api_key_missing')
   }
 
   const model = genAI.getGenerativeModel({
@@ -160,12 +179,14 @@ async function generateScheduleContent(parts: Parameters<ReturnType<GoogleGenera
 
   let responseText: string
   try {
-    const result = await model.generateContent(parts)
+    const result = await model.generateContent(parts, { timeout: 25000 })
     responseText = result.response.text()
   } catch (error: unknown) {
     const status = (error as { status?: number })?.status
+    const details = (error as { errorDetails?: { reason?: string }[] })?.errorDetails
+    const invalidCredential = Array.isArray(details) && details.some((detail) => /^(API_KEY_INVALID|API_KEY_SERVICE_BLOCKED|API_KEY_EXPIRED)$/.test(detail?.reason || ''))
     // Never propagate provider messages/URLs, which can contain credentials or input.
-    throw new ScheduleParseError('provider_failure', 'Gemini request failed.', typeof status === 'number' ? status : undefined)
+    throw new ScheduleParseError('provider_failure', 'Gemini request failed.', typeof status === 'number' ? status : undefined, invalidCredential ? 'authentication_failure' : providerCategory(status))
   }
   if (!responseText) {
     throw new ScheduleParseError('invalid_response', 'Gemini returned an empty or blocked response.')
@@ -195,22 +216,16 @@ function processParsedClasses(items: GeminiParsedClass[]): ClassEntry[] {
     return []
   }
 
-  const defaultSlots = [
-    { start: '08:00', end: '09:15' },
-    { start: '09:30', end: '10:45' },
-    { start: '11:00', end: '12:15' },
-    { start: '13:00', end: '14:15' },
-    { start: '14:30', end: '15:45' },
-    { start: '16:00', end: '17:15' },
-  ]
-
   const DAY_NAMES = ['MON', 'TUE', 'WED', 'THU', 'THURS', 'FRI', 'SAT', 'SUN', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
+  const validTime = (time: unknown): time is string => typeof time === 'string' && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time)
 
   return items
     .filter((item) => {
       // Discard items where subject/code is literally a day name
       const cleanSubj = (typeof item.code === 'string' && item.code.trim() ? item.code : typeof item.subject === 'string' ? item.subject : '').trim().toUpperCase()
       return cleanSubj && !DAY_NAMES.includes(cleanSubj)
+        && validTime(item.start) && validTime(item.end) && item.end > item.start
+        && Array.isArray(item.days) && item.days.some((day) => typeof day === 'string' && /^(mon|tue|wed|thu|fri|sat|sun)/i.test(day.trim()))
     })
     .map((item, index) => {
       const lowFields: string[] = Array.isArray(item.lowFields)
@@ -235,12 +250,8 @@ function processParsedClasses(items: GeminiParsedClass[]): ClassEntry[] {
 
       if (!rawSubject && !rawCode) lowFields.push('subject')
 
-      const validTime = (time: unknown): time is string => typeof time === 'string' && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time)
-      const hasExplicitTime = validTime(item.start) && validTime(item.end) && item.end > item.start
-      const slot = defaultSlots[index % defaultSlots.length]
-      const start = hasExplicitTime ? (item.start as string) : slot.start
-      const end = hasExplicitTime ? (item.end as string) : slot.end
-      if (!hasExplicitTime) lowFields.push('time')
+      const start = item.start as string
+      const end = item.end as string
 
       const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
       const visibleDays = Array.isArray(item.days) ? item.days.flatMap((day) => {
@@ -248,8 +259,7 @@ function processParsedClasses(items: GeminiParsedClass[]): ClassEntry[] {
         const normalized = weekdays.find((name) => name.toLowerCase() === day.trim().slice(0, 3).toLowerCase())
         return normalized ? [normalized] : []
       }) : []
-      const days = visibleDays.length > 0 ? [...new Set(visibleDays)] : ['Mon']
-      if (visibleDays.length === 0) lowFields.push('days')
+      const days = [...new Set(visibleDays)]
 
       // Clean room string: remove corrupted time patterns like "00pm-5"
       let room = (typeof item.room === 'string' && item.room.trim() ? item.room : 'Room TBA').trim().replace(/^\(|\)$/g, '')

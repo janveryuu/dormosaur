@@ -8,11 +8,11 @@ const require = createRequire(import.meta.url)
 function loadTs(path, overrides = {}, globals = {}) {
   const exports = {}
   const code = ts.transpileModule(readFileSync(path, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
   }).outputText
   vm.runInNewContext(code, {
     exports, require: (name) => overrides[name] ?? require(name),
-    process, console, Buffer, ...globals,
+    process, console, Buffer, URL, Uint8Array, setTimeout, clearTimeout, ...globals,
   }, { filename: path })
   return exports
 }
@@ -90,14 +90,24 @@ const gemini = loadTs('lib/gemini.ts', {
   } },
 }, { process: { env: { GEMINI_API_KEY: 'test-credential' } } })
 const parser = loadTs('lib/parser.ts')
+let ocrText = ''
+let ocrCalls = 0
+let ocrUnavailable = false
+const ocrStub = { recognizeScheduleWithTesseract: async () => {
+  ocrCalls++
+  if (ocrUnavailable) throw new Error('Synthetic OCR failure')
+  return { text: ocrText, words: [] }
+} }
 const route = loadTs('app/api/schedule/parse/route.ts', {
   '@/lib/gemini': gemini,
   '@/lib/parser': parser,
+  '@/lib/schedule-ocr': ocrStub,
   'next/server': { NextResponse: { json: (body, init) => Response.json(body, init) } },
 }, { console: fakeConsole })
 const entry = { code: 'CpE 408', subject: null, instructor: null, room: null, days: ['Wednesday'], start: '07:30', end: '10:30' }
 async function scan(image, responses) {
   calls.length = 0
+  ocrCalls = 0
   replies = [...responses]
   const response = await route.POST(new Request('http://localhost/api/schedule/parse', {
     method: 'POST', body: JSON.stringify({ image }), headers: { 'Content-Type': 'application/json' },
@@ -139,7 +149,7 @@ assert.equal(result.status, 422)
 assert.equal(result.data.errorCode, 'zero_entries')
 assert.equal(calls.length, 2)
 result = await scan(tinyPng, [{ scheduleDetected: false, classes: [] }, { scheduleDetected: false, classes: [] }])
-assert.equal(result.data.errorCode, 'no_schedule')
+assert.equal(result.data.errorCode, 'zero_entries')
 assert.equal(calls.length, 2)
 result = await scan('data:image/png;base64,aGVsbG8=', [])
 assert.equal(result.status, 400)
@@ -148,16 +158,19 @@ assert.equal(calls.length, 0)
 result = await scan({ malformed: true }, [])
 assert.equal(result.data.errorCode, 'invalid_image')
 const providerError = Object.assign(new Error('https://provider/?key=SECRET_INPUT'), { status: 429 })
+ocrText = 'CpE 408 Mon 07:30-10:30'
 result = await scan(tinyJpg, [providerError])
-assert.equal(result.status, 503)
-assert.equal(result.data.errorCode, 'provider_failure')
+assert.equal(result.status, 200, 'A provider outage must still produce a draft from Tesseract and the local parser')
+assert.equal(result.data.provider, 'tesseract-local')
+assert.equal(result.data.classes[0].code, 'CPE 408')
+assert.equal(ocrCalls, 1)
+ocrText = ''
 assert.equal(calls.length, 1)
-assert.doesNotMatch(result.data.error, /clearer|blurry/i)
 assert.doesNotMatch(JSON.stringify(logs), /SECRET_INPUT|test-credential|base64/)
-assert.ok(logs.some((log) => log[1]?.providerStatus === 429))
+assert.ok(logs.some((log) => log[1]?.status === 429 && log[1]?.category === 'quota_rate_limit'))
 result = await scan(tinyPng, ['broken json'])
-assert.equal(result.status, 502)
-assert.equal(result.data.errorCode, 'invalid_response')
+assert.equal(result.status, 422)
+assert.equal(result.data.errorCode, 'zero_entries')
 assert.equal(calls.length, 1)
 console.log('PASS: bounded retry and distinct safe diagnostics for empty, non-schedule, invalid and provider responses')
 
@@ -171,6 +184,69 @@ const textResponse = await route.POST(new Request('http://localhost/api/schedule
 }))
 assert.equal((await textResponse.json()).provider, 'parser-local')
 console.log('PASS: JPG/PDF routes and existing local text fallback')
+
+assert.equal(gemini.GEMINI_MODEL_NAME, 'gemini-3.8-flash')
+for (const [status, category] of [[401, 'authentication_failure'], [403, 'authentication_failure'], [429, 'quota_rate_limit'], [404, 'model_unavailable'], [503, 'provider_unavailable']]) {
+  ocrText = 'CpE 408 Wednesday 07:30-10:30'
+  const failure = Object.assign(new Error('secret provider payload'), { status })
+  result = await scan(tinyPng, [failure])
+  assert.equal(result.status, 200)
+  assert.equal(result.data.provider, 'tesseract-local')
+  assert.deepEqual(result.data.classes[0].days, ['Wed'])
+  assert.equal(result.data.classes[0].instructor, 'TBA')
+  assert.equal(calls.length, 1, 'A known outage must not repeat the vision/provider request')
+  assert.equal(ocrCalls, 1)
+  assert.ok(logs.some((log) => log[1]?.status === status && log[1]?.category === category))
+}
+ocrText = 'CpE 408 Mon 07:30-10:30'
+result = await scan(tinyPng, [{ classes: [] }, { classes: [] }])
+assert.equal(result.data.provider, 'tesseract-local')
+assert.equal(calls.length, 2)
+result = await scan(tinyPdf, [providerError])
+assert.equal(result.status, 200)
+assert.equal(result.data.provider, 'tesseract-local')
+result = await scan(tinyPng, ['malformed response'])
+assert.equal(result.data.provider, 'tesseract-local')
+assert.ok(logs.some((log) => log[1]?.category === 'malformed_response'))
+ocrText = 'Unreadable timetable cells'
+result = await scan(tinyPng, [Object.assign(new Error('transient'), { status: 503 }), { classes: [entry] }])
+assert.equal(result.data.provider, 'tesseract-gemini-text')
+assert.equal(calls.length, 2)
+result = await scan(tinyPng, [providerError])
+assert.equal(result.status, 422)
+assert.equal(result.data.error, "We found the timetable, but couldn't confidently extract the classes. Try cropping to the timetable area or continue with Paste Text.")
+assert.equal(calls.length, 1)
+ocrUnavailable = true
+result = await scan(tinyPng, [providerError])
+assert.equal(result.status, 503)
+assert.equal(result.data.errorCode, 'provider_failure')
+ocrUnavailable = false
+
+const missingKeyGemini = loadTs('lib/gemini.ts', {}, { process: { env: {} } })
+const missingKeyRoute = loadTs('app/api/schedule/parse/route.ts', {
+  '@/lib/gemini': missingKeyGemini, '@/lib/parser': parser, '@/lib/schedule-ocr': ocrStub,
+  'next/server': { NextResponse: { json: (body, init) => Response.json(body, init) } },
+}, { console: fakeConsole })
+ocrText = 'CpE 408 Mon 07:30-10:30'
+const missingKeyResponse = await missingKeyRoute.POST(new Request('http://localhost/api/schedule/parse', { method: 'POST', body: JSON.stringify({ image: tinyPng }) }))
+assert.equal(missingKeyResponse.status, 200)
+assert.equal((await missingKeyResponse.json()).provider, 'tesseract-local')
+const missingHealth = await missingKeyRoute.GET(new Request('http://localhost/api/schedule/parse?probe=1'))
+assert.deepEqual(await missingHealth.json(), { keyConfigured: false, model: 'gemini-3.8-flash', ready: false, status: null, category: 'api_key_missing' })
+const configuredGemini = loadTs('lib/gemini.ts', {}, { process: { env: { DORMOSAUR_SCHEDULE_MODEL: 'custom-schedule-model' } } })
+assert.equal(configuredGemini.GEMINI_MODEL_NAME, 'custom-schedule-model')
+assert.doesNotMatch(JSON.stringify(logs), /SECRET_INPUT|test-credential|secret provider payload|base64/)
+for (const log of logs.filter((log) => log[0] === '[Schedule Parse API]' && ['authentication_failure', 'quota_rate_limit', 'model_unavailable', 'provider_unavailable'].includes(log[1]?.category))) {
+  assert.deepEqual(Object.keys(log[1]).sort(), ['category', 'model', 'status'])
+}
+for (const invalid of ['Course code only: CpE 408', 'CpE 408 Mon', 'CpE 408 08:00-09:00', 'Room 202 Mon 08:00-09:00', 'CpE 408 Mon 99:00-99:30', 'Subject Room Time Monday']) {
+  assert.equal(parser.parseRawSchedule(invalid, { requireExplicitMeeting: true }).length, 0, 'Strict OCR parser must not fabricate meetings')
+}
+assert.equal(parser.parseRawSchedule('Mon\nCpE 408 07:30-10:30', { requireExplicitMeeting: true }).length, 1)
+assert.deepEqual([...parser.parseRawSchedule('CpE 408 Wednesday 07:30-10:30 (CpE 408/Online)', { requireExplicitMeeting: true })[0].days], ['Wed'])
+replies = [{ classes: [{ code: 'CpE 408' }, { ...entry, days: [] }, { ...entry, start: null }] }]
+assert.equal((await gemini.parseScheduleImageWithGemini(tinyPng)).length, 0, 'Gemini drafts must not substitute invented days/times')
+console.log('PASS: missing key, 401/403/429/404/5xx, malformed response, dense retry, text recovery, total failure, safe health and strict local OCR parsing')
 
 // Exercise the import action itself: it must not hide API errors or start a
 // second scan while the background scan has already exhausted its one retry.
@@ -198,14 +274,17 @@ assert.equal(actionError, 'AI scanner unavailable')
 assert.equal(rescanCount, 1)
 console.log('PASS: import button preserves provider errors and does not duplicate an active scan')
 
-if (process.argv.includes('--live')) {
+if (process.argv.includes('--live') || process.argv.includes('--ocr')) {
+  const targetUrl = process.argv.find((arg) => arg.startsWith('--url='))?.slice(6)
   require('@next/env').loadEnvConfig(process.cwd())
-  assert.ok(process.env.GEMINI_API_KEY, 'Live tests require GEMINI_API_KEY')
+  if (!process.argv.includes('--ocr') && !targetUrl) assert.ok(process.env.GEMINI_API_KEY, 'Live tests require GEMINI_API_KEY')
   const sharp = require('sharp')
   const { jsPDF } = require('jspdf')
-  const liveGemini = loadTs('lib/gemini.ts')
+  const realPdf = loadTs('lib/schedule-pdf.ts')
+  const realOcr = loadTs('lib/schedule-ocr.ts', { '@/lib/schedule-pdf': realPdf }, { setTimeout, clearTimeout })
+  const liveGemini = process.argv.includes('--ocr') ? missingKeyGemini : loadTs('lib/gemini.ts')
   const liveRoute = loadTs('app/api/schedule/parse/route.ts', {
-    '@/lib/gemini': liveGemini, '@/lib/parser': parser,
+    '@/lib/gemini': liveGemini, '@/lib/parser': parser, '@/lib/schedule-ocr': realOcr,
     'next/server': { NextResponse: { json: (body, init) => Response.json(body, init) } },
   })
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -260,23 +339,35 @@ if (process.argv.includes('--live')) {
   ]
   const failures = []
   for (const [name, mime, bytes] of fixtures) {
-    const response = await liveRoute.POST(new Request('http://localhost/api/schedule/parse', {
+    const request = new Request(targetUrl || 'http://localhost/api/schedule/parse', {
       method: 'POST', body: JSON.stringify({ image: `data:${mime};base64,${bytes.toString('base64')}` }),
-    }))
+      headers: { 'Content-Type': 'application/json' },
+    })
+    const response = targetUrl ? await fetch(request) : await liveRoute.POST(request)
     const data = await response.json()
     if (response.status !== 200) {
       failures.push(`${name}: ${data.errorCode} (HTTP ${response.status})`)
       console.log(`FAIL LIVE: ${failures.at(-1)}`)
       continue
     }
+    const localFallback = data.provider === 'tesseract-local'
+    for (const entry of data.classes) {
+      assert.ok(meetings.some((meeting) => meeting.code.toUpperCase().replace(/\s/g, '') === entry.code.replace(/\s/g, '') && entry.days.includes(days[meeting.day])), 'OCR must not invent course codes or weekdays')
+      assert.match(entry.start, /^(?:[01]\d|2[0-3]):[0-5]\d$/)
+      assert.ok(entry.end > entry.start)
+      if (localFallback) assert.equal(entry.confidence, 'low')
+    }
+    let verifiedMeetings = 0
     for (const meeting of meetings) {
       const code = meeting.code.toUpperCase().replace(/\s/g, '')
       const found = data.classes.some((entry) => entry.code.replace(/\s/g, '') === code
         && entry.days.includes(days[meeting.day]) && entry.start === time(meeting.row)
-        && entry.end === time(meeting.row + meeting.span))
-      if (!found) failures.push(`${name}: missing ${meeting.code} ${days[meeting.day]} ${time(meeting.row)}-${time(meeting.row + meeting.span)}`)
+        && (entry.end === time(meeting.row + meeting.span) || (localFallback && entry.lowFields?.includes('time'))))
+      if (found) verifiedMeetings++
+      else if (!localFallback) failures.push(`${name}: missing ${meeting.code} ${days[meeting.day]} ${time(meeting.row)}-${time(meeting.row + meeting.span)}`)
     }
-    console.log(`LIVE: ${name}: ${data.classes.length} draft entries, ${failures.filter((failure) => failure.startsWith(name)).length} verification failures`)
+    if (localFallback) assert.ok(verifiedMeetings >= 10, 'Dense OCR must recover a useful partial schedule with source-backed course/day/time relationships')
+    console.log(`LIVE: ${name}: ${data.classes.length} draft entries, ${verifiedMeetings}/${meetings.length} source meetings recovered, ${failures.filter((failure) => failure.startsWith(name)).length} verification failures`)
   }
   assert.deepEqual(failures, [], 'Live scan failures')
 }

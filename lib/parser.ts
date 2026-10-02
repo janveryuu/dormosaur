@@ -35,7 +35,7 @@ function parseDays(text: string): string[] {
   // Check common combined abbreviations first
   const normalized = text.replace(/tth/gi, 'Tue Thu').replace(/mwf/gi, 'Mon Wed Fri').replace(/mw/gi, 'Mon Wed')
 
-  const tokens = normalized.split(/[\s,/\-+]+/)
+  const tokens = normalized.split(/[\s,/\-+&]+/)
   for (const token of tokens) {
     const clean = token.toLowerCase().trim()
     if (DAY_MAP[clean]) {
@@ -69,7 +69,7 @@ function parseTimeRange(text: string): { start: string; end: string } {
   if (!match) return { start: '09:00', end: '10:15' }
 
   let rawStart = match[1].trim()
-  let rawEnd = match[2].trim()
+  const rawEnd = match[2].trim()
 
   // If end has am/pm but start doesn't, infer am/pm for start
   const endPeriod = rawEnd.match(/(am|pm)$/i)?.[0]
@@ -104,7 +104,7 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
   }
 
   // 1. Course code detection (e.g. FE 407, ENGG 409, Fili 102, ChE 434, MATH 101, CS150)
-  const codeMatch = trimmed.match(/([A-Za-z]{2,5})\s*[-_]?\s*(\d{2,4}[A-Za-z]?)/)
+  const codeMatch = trimmed.match(/\b([A-Za-z]{2,8})\s*[-_]?\s*(\d{2,4}[A-Za-z]?)\b/)
   const detectedCode = codeMatch ? `${codeMatch[1].toUpperCase()} ${codeMatch[2]}` : ''
 
   // Clean unit notes like "(1 units)" or "(3 units)"
@@ -134,7 +134,7 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
   const textWithoutTime = trimmed.replace(timeRegex, '').trim()
 
   // 3. Days
-  const hasExplicitDays = /\b(mon|tue|wed|thu|fri|sat|sun|mwf|tth|mw)\b/i.test(trimmed)
+  const hasExplicitDays = /\b(mon(?:day)?|tue(?:sday|s)?|wed(?:nesday)?|thu(?:rsday|rs)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?|mwf|tth|mw)\b/i.test(trimmed)
   const days = parseDays(trimmed)
 
   // 4. Room (must not be a time fragment like "00pm-5")
@@ -151,7 +151,7 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
   // 6. Subject Title
   let subject = textWithoutTime
     .replace(codeMatch ? codeMatch[0] : '', '')
-    .replace(/\b(mon|tue|wed|thu|fri|sat|sun|mwf|tth|mw)\b/gi, '')
+    .replace(/\b(mon(?:day)?|tue(?:sday|s)?|wed(?:nesday)?|thu(?:rsday|rs)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?|mwf|tth|mw)\b/gi, '')
     .replace(/^[-_\s:]+/, '')
     .replace(/[-_\s:]+$/, '')
     .trim()
@@ -184,7 +184,7 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
   }
 }
 
-export function parseRawSchedule(text: string): ClassEntry[] {
+export function parseRawSchedule(text: string, options: { requireExplicitMeeting?: boolean } = {}): ClassEntry[] {
   const rawLines = text
     .split(/\r?\n/)
     .map((l) => l.trim())
@@ -206,6 +206,7 @@ export function parseRawSchedule(text: string): ClassEntry[] {
 
   const result: ClassEntry[] = []
   let currentDay: string = 'Mon'
+  let hasDayHeader = false
   let index = 0
 
   for (const line of rawLines) {
@@ -215,7 +216,18 @@ export function parseRawSchedule(text: string): ClassEntry[] {
     // Check if standalone line is purely a Day Header (e.g. "MON", "MON:", "THURS", "TUESDAY")
     if (DAY_NAME_MAP[cleanLower]) {
       currentDay = DAY_NAME_MAP[cleanLower]
+      hasDayHeader = true
       continue // Skip creating a class entry for day headers!
+    }
+
+    if (options.requireExplicitMeeting) {
+      const code = cleanLine.match(/\b([A-Za-z]{2,8})\s*[-_]?\s*(\d{2,4}[A-Za-z]?)\b/)
+      const range = cleanLine.match(/\b(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:-|to|–|—)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\b/i)
+      const hasDays = hasDayHeader || /\b(mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?|mwf|tth|mw)\b/i.test(cleanLine)
+      // OCR must not turn headers, rooms or arbitrary text into invented classes.
+      if (!code || /^(room|rm|lab|hall|time|bsu|year)$/i.test(code[1]) || !range || !hasDays) continue
+      const { start, end } = parseTimeRange(range[0].replace(/—/g, '-'))
+      if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(start) || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(end) || end <= start) continue
     }
 
     // Check if line matches parenthetical entry: e.g. "7:00am - 10:00am (Food Chem/Even-Lab 2)"
@@ -245,11 +257,12 @@ export function parseRawSchedule(text: string): ClassEntry[] {
         code,
         instructor: 'TBA',
         room,
-        days: [currentDay],
+        days: options.requireExplicitMeeting && /\b(mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?|mwf|tth|mw)\b/i.test(cleanLine) ? parseDays(cleanLine) : [currentDay],
         start,
         end,
         color,
-        confidence: 'high',
+        confidence: options.requireExplicitMeeting ? 'low' : 'high',
+        lowFields: options.requireExplicitMeeting ? ['subject', 'instructor', 'code', ...(room === 'Room TBA' ? ['room'] : [])] : undefined,
       })
       index++
       continue
@@ -270,6 +283,14 @@ export function parseRawSchedule(text: string): ClassEntry[] {
         entry.days = [currentDay]
       }
 
+      if (options.requireExplicitMeeting) {
+        // OCR names are not reliable evidence of an instructor. Keep uncertain
+        // titles/rooms editable without inventing a teacher from the course code.
+        entry.instructor = 'TBA'
+        entry.subject = entry.code
+        entry.confidence = 'low'
+        entry.lowFields = [...new Set([...(entry.lowFields || []), 'subject', 'instructor', 'code'])]
+      }
       result.push(entry)
       index++
     }

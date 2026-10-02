@@ -1,16 +1,37 @@
 import { NextResponse } from 'next/server'
-import { GEMINI_MODEL_NAME, ScheduleParseError, parseScheduleImageWithGemini, parseScheduleTextWithGemini } from '@/lib/gemini'
+import { GEMINI_MODEL_NAME, ScheduleParseError, checkScheduleProvider, getScheduleProviderConfiguration, parseScheduleImageWithGemini, parseScheduleTextWithGemini } from '@/lib/gemini'
 import { parseRawSchedule } from '@/lib/parser'
+import { recognizeScheduleWithTesseract } from '@/lib/schedule-ocr'
 
-function logFailure(error: unknown, attempt?: number) {
+export const runtime = 'nodejs'
+export const maxDuration = 120
+
+function logFailure(error: unknown) {
   // Log controlled diagnostics only: no raw image, schedule, SDK URLs or API keys.
   console.warn('[Schedule Parse API]', {
-    reason: error instanceof ScheduleParseError ? error.code : 'unexpected_failure',
-    detail: error instanceof ScheduleParseError ? error.message : 'Unexpected schedule parsing error.',
-    providerStatus: error instanceof ScheduleParseError ? error.providerStatus : undefined,
+    status: error instanceof ScheduleParseError ? error.providerStatus ?? null : null,
+    category: error instanceof ScheduleParseError ? (error.code === 'provider_failure' || error.code === 'invalid_response' ? error.category : error.code) : 'unexpected_failure',
     model: GEMINI_MODEL_NAME,
-    attempt,
   })
+}
+
+// Configuration is safe metadata, never the key. A probe makes one small text
+// request so production can diagnose the actual runtime independently of OCR.
+export async function GET(req: Request) {
+  const configuration = getScheduleProviderConfiguration()
+  const headers = { 'Cache-Control': 'no-store' }
+  if (!configuration.keyConfigured) {
+    logFailure(new ScheduleParseError('provider_failure', 'Missing key', undefined, 'api_key_missing'))
+    return NextResponse.json({ ...configuration, ready: false, status: null, category: 'api_key_missing' }, { headers })
+  }
+  if (new URL(req.url).searchParams.get('probe') !== '1') return NextResponse.json(configuration, { headers })
+  try {
+    await checkScheduleProvider()
+    return NextResponse.json({ ...configuration, ready: true, status: 200, category: 'available' }, { headers })
+  } catch (error: unknown) {
+    logFailure(error)
+    return NextResponse.json({ ...configuration, ready: false, status: error instanceof ScheduleParseError ? error.providerStatus ?? null : null, category: error instanceof ScheduleParseError ? error.category : 'unexpected_failure' }, { headers })
+  }
 }
 
 function failure(error: ScheduleParseError) {
@@ -19,10 +40,39 @@ function failure(error: ScheduleParseError) {
     provider_failure: 'The AI schedule scanner is currently unavailable. Please try again shortly or paste your schedule text.',
     invalid_response: 'The AI scanner could not finish reading the schedule. Please try again or paste your schedule text.',
     no_schedule: 'No timetable was detected in this file. Upload the schedule itself or paste your schedule text.',
-    zero_entries: 'A schedule scan completed, but no class entries could be extracted. Try a crop of just the timetable or paste your schedule text.',
+    zero_entries: "We found the timetable, but couldn't confidently extract the classes. Try cropping to the timetable area or continue with Paste Text.",
   }
   const status = error.code === 'provider_failure' ? 503 : error.code === 'invalid_response' ? 502 : error.code === 'invalid_image' ? 400 : 422
   return NextResponse.json({ success: false, errorCode: error.code, error: messages[error.code] }, { status })
+}
+
+async function ocrFallback(image: string, providerError?: ScheduleParseError) {
+  let ocr: Awaited<ReturnType<typeof recognizeScheduleWithTesseract>>
+  try {
+    ocr = await recognizeScheduleWithTesseract(image)
+  } catch {
+    console.warn('[Schedule OCR]', { category: image.startsWith('data:application/pdf') ? 'pdf_ocr_unavailable' : 'ocr_unavailable' })
+    return failure(providerError || new ScheduleParseError('zero_entries', 'No OCR draft could be extracted.'))
+  }
+  const classes = parseRawSchedule(ocr.meetingText || ocr.text, { requireExplicitMeeting: true })
+  if (classes.length > 0) {
+    if (ocr.uncertainTimes) for (const entry of classes) entry.lowFields = [...new Set([...(entry.lowFields || []), 'time'])]
+    return NextResponse.json({ success: true, provider: 'tesseract-local', classes })
+  }
+  // Known missing credentials/auth/quota/model failures cannot recover by
+  // repeating the same provider request. Only a transient failure gets a single
+  // text pass when local parsing could not preserve a recognizable meeting.
+  if (ocr.text.trim() && getScheduleProviderConfiguration().keyConfigured && (!providerError || ['provider_unavailable', 'network_failure'].includes(providerError.category))) {
+    try {
+      const aiClasses = await parseScheduleTextWithGemini(`${ocr.text}\n\n${ocr.meetingText || ''}`)
+      if (aiClasses.length > 0) return NextResponse.json({ success: true, provider: 'tesseract-gemini-text', classes: aiClasses })
+    } catch (error: unknown) {
+      logFailure(error)
+    }
+  }
+  // OCR ran, but it did not yield a safe meeting: do not blame image quality or
+  // hide the available Paste Text path behind the original provider error.
+  return failure(new ScheduleParseError('zero_entries', 'No confident OCR meeting could be extracted.'))
 }
 
 export async function POST(req: Request) {
@@ -58,13 +108,14 @@ export async function POST(req: Request) {
           if (error instanceof ScheduleParseError && error.code === 'no_schedule') {
             emptyResult = error
           } else {
-            logFailure(error, attempt)
-            return failure(error instanceof ScheduleParseError ? error : new ScheduleParseError('provider_failure', 'Gemini vision parsing failed.'))
+            logFailure(error)
+            if (error instanceof ScheduleParseError && error.code === 'invalid_image') return failure(error)
+            return ocrFallback(body.image, error instanceof ScheduleParseError && error.code === 'provider_failure' ? error : undefined)
           }
         }
-        logFailure(emptyResult, attempt)
+        logFailure(emptyResult)
       }
-      return failure(emptyResult)
+      return ocrFallback(body.image)
     }
 
     // Retain the existing text parser fallback when AI is unavailable.
