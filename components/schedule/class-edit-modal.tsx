@@ -48,7 +48,10 @@ const colorOptions: { id: SubjectColor; name: string }[] = [
   { id: 5, name: 'Rose' },
 ]
 
-export function ClassEditModal({
+export function ClassEditModal(props: ClassEditModalProps) {
+  return props.open ? <ClassEditForm key={props.initialData?.id || 'new'} {...props} /> : null
+}
+function ClassEditForm({
   open,
   onClose,
   initialData,
@@ -57,44 +60,17 @@ export function ClassEditModal({
 }: ClassEditModalProps) {
   const isEditing = Boolean(initialData)
 
-  const [subject, setSubject] = React.useState('')
-  const [code, setCode] = React.useState('')
-  const [instructor, setInstructor] = React.useState('')
-  const [room, setRoom] = React.useState('')
-  const [days, setDays] = React.useState<string[]>(['Mon'])
-  const [start, setStart] = React.useState('08:00')
-  const [end, setEnd] = React.useState('09:30')
-  const [color, setColor] = React.useState<SubjectColor>(1)
+  const [subject, setSubject] = React.useState(initialData?.subject || '')
+  const [code, setCode] = React.useState(initialData?.code || '')
+  const [instructor, setInstructor] = React.useState(initialData?.instructor || '')
+  const [room, setRoom] = React.useState(initialData?.room || '')
+  const [days, setDays] = React.useState<string[]>(initialData?.days?.length ? initialData.days : ['Mon'])
+  const [start, setStart] = React.useState(initialData?.start || '08:00')
+  const [end, setEnd] = React.useState(initialData?.end || '09:30')
+  const [color, setColor] = React.useState<SubjectColor>(initialData?.color || 1)
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false)
   const dialogRef = useModalA11y(open, onClose)
-
-  // Populate state whenever modal opens or initialData changes
-  React.useEffect(() => {
-    if (open) {
-      setErrorMsg(null)
-      setDeleteConfirmOpen(false)
-      if (initialData) {
-        setSubject(initialData.subject || '')
-        setCode(initialData.code || '')
-        setInstructor(initialData.instructor || '')
-        setRoom(initialData.room || '')
-        setDays(Array.isArray(initialData.days) && initialData.days.length > 0 ? initialData.days : ['Mon'])
-        setStart(initialData.start || '08:00')
-        setEnd(initialData.end || '09:30')
-        setColor(initialData.color || 1)
-      } else {
-        setSubject('')
-        setCode('')
-        setInstructor('')
-        setRoom('')
-        setDays(['Mon'])
-        setStart('08:00')
-        setEnd('09:30')
-        setColor(1)
-      }
-    }
-  }, [open, initialData])
 
   if (!open) return null
 

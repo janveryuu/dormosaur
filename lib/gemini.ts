@@ -164,6 +164,15 @@ export async function parseScheduleTextWithGemini(text: string): Promise<ClassEn
   return decodeScheduleResponse(await generateScheduleContent([prompt]))
 }
 
+// Reuse the supported vision runtime and strict file validation for deadline
+// extraction. It must never send base64 to a text-only model as an OCR substitute.
+export async function generateStructuredJson(prompt: string, dataUrl?: string): Promise<unknown> {
+  const image = dataUrl ? parseDataUrl(dataUrl) : null
+  if (dataUrl && !image) throw new ScheduleParseError('invalid_image', 'Invalid image/PDF.')
+  const response = await generateScheduleContent(image ? [prompt, image] : [prompt])
+  try { return JSON.parse(response) } catch { throw new ScheduleParseError('invalid_response', 'Invalid JSON.') }
+}
+
 async function generateScheduleContent(parts: Parameters<ReturnType<GoogleGenerativeAI['getGenerativeModel']>['generateContent']>[0]): Promise<string> {
   if (!genAI) {
     throw new ScheduleParseError('provider_failure', 'GEMINI_API_KEY is not configured.', undefined, 'api_key_missing')

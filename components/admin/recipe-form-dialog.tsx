@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -54,7 +54,11 @@ function recipeToDraft(recipe?: Recipe): RecipeDraft {
   }
 }
 
-export function RecipeFormDialog({
+type FormProps = { open: boolean; onOpenChange: (open: boolean) => void; recipe?: Recipe; onSave: (recipe: Recipe) => void }
+export function RecipeFormDialog(props: FormProps) {
+  return props.open ? <RecipeForm key={props.recipe?.id || 'new'} {...props} /> : null
+}
+function RecipeForm({
   open,
   onOpenChange,
   recipe,
@@ -66,10 +70,6 @@ export function RecipeFormDialog({
   onSave: (recipe: Recipe) => void
 }) {
   const [draft, setDraft] = useState<RecipeDraft>(() => recipeToDraft(recipe))
-
-  useEffect(() => {
-    if (open) setDraft(recipeToDraft(recipe))
-  }, [open, recipe])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

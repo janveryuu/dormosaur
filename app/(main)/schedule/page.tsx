@@ -36,13 +36,6 @@ export default function SchedulePage() {
   weekEnd.setDate(weekStart.getDate() + 6)
   const weekLabel = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${weekEnd.toLocaleDateString('en-US', { day: 'numeric', ...(weekStart.getMonth() !== weekEnd.getMonth() ? { month: 'short' as const } : {}) })}`
 
-  // On larger desktop screens, default to full week grid
-  React.useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
-      setView('grid')
-    }
-  }, [])
-
   return (
     <>
       <ExportModal open={exportOpen} onClose={() => setExportOpen(false)} />

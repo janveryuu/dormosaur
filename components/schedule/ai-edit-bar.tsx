@@ -35,7 +35,7 @@ export function AiEditBar() {
 
       const data = await res.json()
       if (data.error) {
-        setStatusMessage('Could not understand edit instruction. Try rephrasing!')
+        setStatusMessage(data.error || 'Could not understand edit instruction. Try rephrasing!')
       } else {
         setDiff(data as ScheduleEditDiff)
         if (!customPrompt) setPrompt('')
@@ -85,7 +85,7 @@ export function AiEditBar() {
               Natural-Language Schedule Editor
             </span>
           </div>
-          <span className="text-[11.5px] font-medium text-primary">Powered by Llama 3</span>
+          <span className="text-[11.5px] font-medium text-primary">Review before applying</span>
         </div>
 
         {/* Input Form */}
@@ -97,11 +97,13 @@ export function AiEditBar() {
           className="relative flex items-center rounded-2xl border border-border bg-fill px-3.5 py-2 transition-within:border-primary/50 focus-within:ring-2 focus-within:ring-ring"
         >
           <input
+            aria-label="Schedule edit instruction"
+            maxLength={2000}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             disabled={loading}
             placeholder='e.g. "Move Chem lab to 3pm" or "Change Calculus room to Sci Hall 210"'
-            className="flex-1 bg-transparent text-[14px] outline-none placeholder:text-muted-foreground/60 disabled:opacity-50"
+            className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-muted-foreground/60 disabled:opacity-50"
           />
           <button
             type="submit"

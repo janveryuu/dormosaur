@@ -42,29 +42,21 @@ const PHASES = [
   },
 ]
 
-export function ScheduleScanProgress({
+export function ScheduleScanProgress(props: ScanProgressProps) {
+  return <ScanProgress key={`${props.isScanning}-${props.isCompleted}-${props.error || ''}`} {...props} />
+}
+function ScanProgress({
   isScanning,
   isCompleted = false,
   error = null,
   className = '',
 }: ScanProgressProps) {
   const [phaseIndex, setPhaseIndex] = React.useState(0)
-  const [progress, setProgress] = React.useState(10)
+  const [currentProgress, setProgress] = React.useState(isScanning ? 15 : 10)
+  const progress = isCompleted ? 100 : currentProgress
 
   React.useEffect(() => {
-    if (!isScanning) {
-      if (isCompleted) {
-        setProgress(100)
-      } else {
-        setPhaseIndex(0)
-        setProgress(10)
-      }
-      return
-    }
-
-    setPhaseIndex(0)
-    setProgress(15)
-
+    if (!isScanning) return
     const timer1 = setTimeout(() => {
       setPhaseIndex(1)
       setProgress(45)

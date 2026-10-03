@@ -4,11 +4,8 @@
  * Each function accepts a userId so data is always scoped correctly.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import {
-  classes as defaultClasses,
-  alarms as defaultAlarms,
-  profile as defaultProfile,
-} from '@/lib/data'
+import { deadlineFields, localDateTimeToIso, validTime } from '@/lib/date-time'
+import { DAYS } from '@/lib/copilot/time'
 import type { ClassEntry, Alarm, SubjectColor } from '@/lib/data'
 import type { DeadlineItem, GroceryItem, MealPlanEntry } from '@/components/schedule-provider'
 
@@ -66,8 +63,7 @@ export async function upsertPushSubscription(
     .single()
 
   if (error) {
-    console.warn('Push subscription upsert notice:', error.message)
-    return { ...payload, id: `sub-${Date.now()}` }
+    throw new Error('We could not save this device. Please try enabling notifications again.')
   }
 
   return data as PushSubscriptionRecord
@@ -82,18 +78,21 @@ export async function getUserPushSubscriptions(
     .select('*')
     .eq('user_id', userId)
     .order('last_seen_at', { ascending: false })
-  if (error || !data) return []
+  if (error) throw new Error('We could not load your notification devices. Please try again.')
+  if (!data) return []
   return data as PushSubscriptionRecord[]
 }
 
 export async function updateSubscriptionLastSeen(
   supabase: SupabaseClient,
   endpoint: string,
+  userId: string,
 ) {
   await supabase
     .from('push_subscriptions')
     .update({ last_seen_at: new Date().toISOString() })
     .eq('endpoint', endpoint)
+    .eq('user_id', userId)
 }
 
 export async function deletePushSubscriptionById(
@@ -101,11 +100,12 @@ export async function deletePushSubscriptionById(
   userId: string,
   id: string,
 ) {
-  await supabase
+  const { error } = await supabase
     .from('push_subscriptions')
     .delete()
     .eq('id', id)
     .eq('user_id', userId)
+  if (error) throw new Error('We could not remove this device. Please try again.')
 }
 
 export async function deletePushSubscriptionByEndpoint(
@@ -113,18 +113,12 @@ export async function deletePushSubscriptionByEndpoint(
   userId: string,
   endpoint: string,
 ) {
-  await supabase
+  const { error } = await supabase
     .from('push_subscriptions')
     .delete()
     .eq('endpoint', endpoint)
     .eq('user_id', userId)
-}
-
-export async function deletePushSubscription(
-  supabase: SupabaseClient,
-  endpoint: string,
-) {
-  await supabase.from('push_subscriptions').delete().eq('endpoint', endpoint)
+  if (error) throw new Error('We could not remove this device. Please try again.')
 }
 
 // ─── Profile ──────────────────────────────────────────────────────────────────
@@ -133,17 +127,14 @@ export async function getUserProfile(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<DbProfile | null> {
-  console.log('[Dormosaur DB Read] Fetching profile for user:', userId)
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', userId)
-    .single()
+    .maybeSingle()
   if (error) {
-    console.warn('[Dormosaur DB Read Notice] getUserProfile:', error.message)
-    return null
+    throw new Error('We could not load your profile. Please try again.')
   }
-  console.log('[Dormosaur DB Read Success] Profile loaded:', data)
   return data as DbProfile
 }
 
@@ -153,12 +144,10 @@ export async function upsertUserProfile(
   profile: Partial<DbProfile> & Record<string, unknown>,
 ) {
   const ALLOWED_COLUMNS: Array<keyof DbProfile> = [
-    'id',
     'name',
     'school',
     'dorm',
     'year',
-    'avatar_url',
     'initials',
     'is_dorm_student',
     'onboarding_completed',
@@ -181,18 +170,14 @@ export async function upsertUserProfile(
     return null
   }
 
-  console.log('[Dormosaur DB Write] Saving profile update for user:', userId, filteredPayload)
   const { data, error } = await supabase
     .from('profiles')
     .upsert(filteredPayload, { onConflict: 'id' })
     .select('*')
 
   if (error) {
-    console.warn('[Dormosaur DB Write Notice] upsertUserProfile notice:', error.message, error.details)
-    return null
+    throw new Error('We could not save your profile. Please try again.')
   }
-
-  console.log('[Dormosaur DB Write SUCCESS] Profile updated in Supabase:', data)
   return data
 }
 
@@ -207,7 +192,8 @@ export async function getClasses(
     .select('*')
     .eq('user_id', userId)
     .order('start_time')
-  if (error || !data) return []
+  if (error) throw new Error('We could not load your classes. Please try again.')
+  if (!data) return []
   return data.map(rowToClass)
 }
 
@@ -216,12 +202,7 @@ export async function setClasses(
   userId: string,
   classes: ClassEntry[],
 ) {
-  // Delete all then insert fresh (replaces entire schedule)
-  await supabase.from('classes').delete().eq('user_id', userId)
-  if (classes.length === 0) return
-  const rows = classes.map((c) => classToRow(userId, c))
-  const { error } = await supabase.from('classes').insert(rows)
-  if (error) throw error
+  await replaceOwnedRows(supabase, 'classes', userId, classes.map(c => classToRow(userId, c)))
 }
 
 // ─── Alarms ───────────────────────────────────────────────────────────────────
@@ -235,7 +216,8 @@ export async function getAlarms(
     .select('*')
     .eq('user_id', userId)
     .order('time')
-  if (error || !data) return []
+  if (error) throw new Error('We could not load your alarms. Please try again.')
+  if (!data) return []
   return data.map(rowToAlarm)
 }
 
@@ -244,11 +226,7 @@ export async function setAlarms(
   userId: string,
   alarms: Alarm[],
 ) {
-  await supabase.from('alarms').delete().eq('user_id', userId)
-  if (alarms.length === 0) return
-  const rows = alarms.map((a) => alarmToRow(userId, a))
-  const { error } = await supabase.from('alarms').insert(rows)
-  if (error) throw error
+  await replaceOwnedRows(supabase, 'alarms', userId, alarms.map(a => alarmToRow(userId, a)))
 }
 
 // ─── Deadlines ────────────────────────────────────────────────────────────────
@@ -256,33 +234,25 @@ export async function setAlarms(
 export async function getDeadlines(
   supabase: SupabaseClient,
   userId: string,
+  timezone = 'Asia/Manila',
 ): Promise<DeadlineItem[]> {
   const { data, error } = await supabase
     .from('deadlines')
     .select('*')
     .eq('user_id', userId)
     .order('due_date')
-  if (error || !data) return []
-  return data.map(rowToDeadline)
+  if (error) throw new Error('We could not load your deadlines. Please try again.')
+  if (!data) return []
+  return data.map(row => rowToDeadline(row, timezone))
 }
 
 export async function setDeadlines(
   supabase: SupabaseClient,
   userId: string,
   deadlines: DeadlineItem[],
+  timezone = 'Asia/Manila',
 ) {
-  const { error: delErr } = await supabase.from('deadlines').delete().eq('user_id', userId)
-  if (delErr) {
-    console.warn('[Dormosaur DB Notice] Deadlines cleanup:', delErr.message)
-  }
-  if (deadlines.length === 0) return
-
-  const rows = deadlines.map((d) => deadlineToRow(userId, d))
-  const { error } = await supabase.from('deadlines').insert(rows)
-  if (error) {
-    console.error('[Supabase DB Error] setDeadlines insert failed:', error.message)
-    throw new Error(error.message)
-  }
+  await replaceOwnedRows(supabase, 'deadlines', userId, deadlines.map(d => deadlineToRow(userId, d, timezone)))
 }
 
 // ─── Meal Plan ────────────────────────────────────────────────────────────────
@@ -295,7 +265,8 @@ export async function getMealPlan(
     .from('meal_plan')
     .select('*')
     .eq('user_id', userId)
-  if (error || !data) return []
+  if (error) throw new Error('We could not load your meal plan. Please try again.')
+  if (!data) return []
   return data.map((row) => ({
     day: row.day,
     meal: row.meal as MealPlanEntry['meal'],
@@ -308,8 +279,6 @@ export async function setMealPlan(
   userId: string,
   plan: MealPlanEntry[],
 ) {
-  await supabase.from('meal_plan').delete().eq('user_id', userId)
-  if (plan.length === 0) return
   const rows = plan.map((p, i) => ({
     id: `mp-${userId}-${i}`,
     user_id: userId,
@@ -317,8 +286,7 @@ export async function setMealPlan(
     meal: p.meal,
     recipe_slug: p.recipeSlug,
   }))
-  const { error } = await supabase.from('meal_plan').insert(rows)
-  if (error) throw error
+  await replaceOwnedRows(supabase, 'meal_plan', userId, rows)
 }
 
 // ─── Grocery ──────────────────────────────────────────────────────────────────
@@ -331,7 +299,8 @@ export async function getGrocery(
     .from('grocery_items')
     .select('*')
     .eq('user_id', userId)
-  if (error || !data) return []
+  if (error) throw new Error('We could not load your grocery list. Please try again.')
+  if (!data) return []
   return data.map((row) => ({
     id: row.id,
     name: row.name,
@@ -345,8 +314,6 @@ export async function setGrocery(
   userId: string,
   items: GroceryItem[],
 ) {
-  await supabase.from('grocery_items').delete().eq('user_id', userId)
-  if (items.length === 0) return
   const rows = items.map((g) => ({
     id: g.id,
     user_id: userId,
@@ -354,8 +321,27 @@ export async function setGrocery(
     checked: g.checked,
     custom: g.custom ?? false,
   }))
-  const { error } = await supabase.from('grocery_items').insert(rows)
-  if (error) throw error
+  await replaceOwnedRows(supabase, 'grocery_items', userId, rows)
+}
+
+// Write first, then remove only rows explicitly absent from this saved snapshot.
+// A rejected insert/upsert must never erase the student's existing collection.
+async function replaceOwnedRows(supabase: SupabaseClient, table: string, userId: string, rows: { id: string }[]) {
+  if (!userId || new Set(rows.map(r => r.id)).size !== rows.length || rows.some(r => !r.id)) {
+    throw new Error('We could not save these entries. Please review them and try again.')
+  }
+  const { data: existing, error: readError } = await supabase.from(table).select('id').eq('user_id', userId)
+  if (readError) throw new Error('We could not check your saved entries. Please try again.')
+  if (rows.length) {
+    const { error } = await supabase.from(table).upsert(rows, { onConflict: 'id' })
+    if (error) throw new Error('We could not save your changes. Your existing entries are still saved.')
+  }
+  const ids = new Set(rows.map(r => r.id))
+  const removed = (existing || []).map(r => r.id as string).filter(id => !ids.has(id))
+  if (removed.length) {
+    const { error } = await supabase.from(table).delete().eq('user_id', userId).in('id', removed)
+    if (error) throw new Error('Your changes were saved, but some removed entries need another try.')
+  }
 }
 
 // ─── Seed new user ────────────────────────────────────────────────────────────
@@ -365,49 +351,37 @@ export async function seedNewUser(
   userId: string,
   partialProfile: Partial<DbProfile> = {},
 ) {
-  console.log('[Dormosaur DB Seed] Seeding new user profile in database for user:', userId)
-  const defaultMealPlan: MealPlanEntry[] = [
-    { day: 'Mon', meal: 'Breakfast', recipeSlug: 'no-cook-overnight-oats' },
-    { day: 'Wed', meal: 'Dinner', recipeSlug: 'rice-cooker-congee' },
-    { day: 'Fri', meal: 'Lunch', recipeSlug: 'upgraded-instant-ramen' },
-  ]
-
-  await Promise.all([
-    upsertUserProfile(supabase, userId, {
-      name: defaultProfile.name,
-      school: defaultProfile.school,
-      dorm: defaultProfile.dorm,
-      year: defaultProfile.year,
-      initials: defaultProfile.initials,
-      is_dorm_student: true,
-      onboarding_completed: false,
-      country: 'PH',
-      timezone: 'Asia/Manila',
-      ...partialProfile,
-    }),
-    setClasses(supabase, userId, []),
-    setAlarms(supabase, userId, []),
-    setDeadlines(supabase, userId, []),
-    setMealPlan(supabase, userId, defaultMealPlan),
-  ])
-  console.log('[Dormosaur DB Seed SUCCESS] New user seeded successfully for user:', userId)
+  // Ignore an existing profile and never replace student collections here.
+  // This is also safe when callback and hydration run concurrently.
+  const { error } = await supabase.from('profiles').upsert({
+    id: userId, name: partialProfile.name || '', school: partialProfile.school || '',
+    dorm: partialProfile.dorm || '', year: partialProfile.year || '',
+    initials: partialProfile.initials || '', is_dorm_student: true,
+    onboarding_completed: false, country: 'PH', timezone: 'Asia/Manila',
+  }, { onConflict: 'id', ignoreDuplicates: true })
+  if (error) throw new Error('We could not prepare your profile. Please try again.')
 }
 
 // ─── Row Mappers ──────────────────────────────────────────────────────────────
 
 function rowToClass(row: Record<string, unknown>): ClassEntry {
+  const text = (value: unknown) => typeof value === 'string' ? value : ''
+  const days = Array.isArray(row.days) ? row.days.filter(day => typeof day === 'string' && DAYS.includes(day)) : []
+  const start = text(row.start_time).slice(0, 5)
+  const end = text(row.end_time).slice(0, 5)
+  const missing = [!text(row.subject) && 'subject', !days.length && 'days', !validTime(start) && 'start', !validTime(end) && 'end'].filter(Boolean) as string[]
   return {
     id: row.id as string,
-    subject: row.subject as string,
-    code: row.code as string,
-    instructor: (row.instructor as string) || '',
-    room: (row.room as string) || '',
-    days: row.days as string[],
-    start: row.start_time as string,
-    end: row.end_time as string,
+    subject: text(row.subject),
+    code: text(row.code),
+    instructor: text(row.instructor),
+    room: text(row.room),
+    days,
+    start: validTime(start) ? start : '',
+    end: validTime(end) ? end : '',
     color: (row.color as SubjectColor) || 1,
-    confidence: (row.confidence as 'high' | 'low') || 'high',
-    lowFields: (row.low_fields as string[]) || [],
+    confidence: missing.length || row.confidence === 'low' ? 'low' : 'high',
+    lowFields: [...new Set([...(Array.isArray(row.low_fields) ? row.low_fields.filter(field => typeof field === 'string') : []), ...missing])],
   }
 }
 
@@ -431,13 +405,13 @@ function classToRow(userId: string, c: ClassEntry) {
 function rowToAlarm(row: Record<string, unknown>): Alarm {
   return {
     id: row.id as string,
-    classId: row.class_id as string,
-    subject: row.subject as string,
-    code: row.code as string,
-    time: row.time as string,
+    classId: typeof row.class_id === 'string' ? row.class_id : '',
+    subject: typeof row.subject === 'string' ? row.subject : '',
+    code: typeof row.code === 'string' ? row.code : '',
+    time: typeof row.time === 'string' ? row.time.slice(0, 5) : '',
     day: (row.day as string) || 'Today',
     lead: (row.lead as 15 | 30 | 60) || 30,
-    enabled: row.enabled as boolean,
+    enabled: row.enabled === true,
     color: (row.color as SubjectColor) || 1,
   }
 }
@@ -457,51 +431,22 @@ function alarmToRow(userId: string, a: Alarm) {
   }
 }
 
-function rowToDeadline(row: Record<string, unknown>): DeadlineItem {
-  let dueDate = (row.due_date as string) || ''
-  let dueTime = '23:59'
-
-  if (dueDate.includes('T')) {
-    const [dPart, tPart] = dueDate.split('T')
-    dueDate = dPart
-    if (tPart) {
-      dueTime = tPart.slice(0, 5)
-    }
-  }
-
+function rowToDeadline(row: Record<string, unknown>, timezone: string): DeadlineItem {
+  const fields = deadlineFields(typeof row.due_date === 'string' ? row.due_date : '', timezone)
   return {
-    id: row.id as string,
-    title: (row.title as string) || 'Deadline',
-    code: (row.code as string) || '',
-    type: (row.type as DeadlineItem['type']) || 'assignment',
-    dueDate,
-    dueTime,
-    color: (row.color as SubjectColor) || 1,
-    completed: Boolean(row.completed),
-    source: 'manual',
-    confidence: 'high',
+    id: row.id as string, title: (row.title as string) || 'Deadline',
+    code: (row.code as string) || '', type: (row.type as DeadlineItem['type']) || 'assignment',
+    ...fields, color: (row.color as SubjectColor) || 1, completed: Boolean(row.completed),
+    source: 'manual', confidence: 'high',
   }
 }
 
-function deadlineToRow(userId: string, d: DeadlineItem) {
-  let isoDueDate = d.dueDate || new Date().toISOString().split('T')[0]
-  if (!isoDueDate.includes('T')) {
-    const timeStr = d.dueTime || '23:59'
-    try {
-      isoDueDate = new Date(`${isoDueDate}T${timeStr}:00`).toISOString()
-    } catch {
-      isoDueDate = new Date().toISOString()
-    }
-  }
-
+function deadlineToRow(userId: string, d: DeadlineItem, timezone: string) {
+  const dueDate = /[Zz]$|[+-]\d{2}:\d{2}$/.test(d.dueDate)
+    ? new Date(d.dueDate).toISOString()
+    : localDateTimeToIso(d.dueDate.slice(0, 10), d.dueTime || d.dueDate.split('T')[1]?.slice(0, 5) || '23:59', timezone)
   return {
-    id: d.id,
-    user_id: userId,
-    title: d.title || 'Deadline',
-    code: d.code || '',
-    type: d.type || 'assignment',
-    due_date: isoDueDate,
-    color: typeof d.color === 'number' ? d.color : 1,
-    completed: Boolean(d.completed),
+    id: d.id, user_id: userId, title: d.title, code: d.code || '', type: d.type || 'assignment',
+    due_date: dueDate, color: typeof d.color === 'number' ? d.color : 1, completed: Boolean(d.completed),
   }
 }

@@ -1,147 +1,62 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { NextResponse } from 'next/server'
+import { timingSafeEqual } from 'node:crypto'
+import { getSupabaseAdminClient } from '@/lib/admin-db'
 import { sendClassReminder } from '@/lib/notification-service'
-import { getUserProfile, getClasses, getAlarms, getDeadlines } from '@/lib/db'
+import { getClasses, getAlarms, getDeadlines } from '@/lib/db'
+import { dueReminders } from '@/lib/reminder-events'
+import { clockAt, validTimeZone } from '@/lib/copilot/time'
 
-export async function GET(req: NextRequest) {
+export const runtime = 'nodejs'
+export const maxDuration = 120
+export async function GET(req: Request) {
+  const secret = process.env.CRON_SECRET
+  if (!secret) return NextResponse.json({ error: 'Scheduled reminders are not configured.' }, { status: 503 })
+  const actual = Buffer.from(req.headers.get('authorization') || '')
+  const expected = Buffer.from(`Bearer ${secret}`)
+  if (actual.length !== expected.length || !timingSafeEqual(actual, expected)) return NextResponse.json({ error: 'Unauthorized cron request.' }, { status: 401 })
   try {
-    // 0. Verify Vercel Cron Secret authorization if configured
-    const cronSecret = process.env.CRON_SECRET
-    if (cronSecret) {
-      const authHeader = req.headers.get('authorization')
-      if (authHeader !== `Bearer ${cronSecret}`) {
-        return NextResponse.json({ error: 'Unauthorized cron request.' }, { status: 401 })
-      }
+    const supabase = getSupabaseAdminClient()
+    // Fail closed before any send until the separately reviewed ledger is ready.
+    const { error: ledgerError } = await supabase.from('notification_deliveries').select('event_key').limit(1)
+    if (ledgerError) return NextResponse.json({ error: 'Scheduled reminders need delivery tracking configuration.' }, { status: 503 })
+    const eligible = new Set<string>()
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await supabase.from('push_subscriptions').select('user_id').order('id').range(offset, offset + 999)
+      if (error) throw new Error('subscription_read_failed')
+      for (const row of data || []) eligible.add(row.user_id)
+      if (!data || data.length < 1000) break
     }
-
-    const supabase = await createClient()
-
-    // 1. Get current logged in user
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ success: true, message: 'Cron check complete, no active session.' })
-    }
-
-    // 2. Fetch user's profile, classes, alarms, and deadlines
-    const [profile, classesList, alarmsList, deadlinesList] = await Promise.all([
-      getUserProfile(supabase, user.id),
-      getClasses(supabase, user.id),
-      getAlarms(supabase, user.id),
-      getDeadlines(supabase, user.id),
-    ])
-
-    const userTimezone = profile?.timezone || 'Asia/Manila'
-    const activeAlarms = alarmsList.filter((a) => a.enabled)
-    const pendingDeadlines = deadlinesList.filter((d) => !d.completed)
-
-    let notificationsDispatched = 0
     const now = new Date()
-
-    // ─── 3. Process Class Alarms ─────────────────────────────────────────────
-    if (activeAlarms.length > 0) {
-      const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: userTimezone,
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-        weekday: 'short',
-      })
-
-      const parts = formatter.formatToParts(now)
-      const hourStr = parts.find((p) => p.type === 'hour')?.value || '00'
-      const minStr = parts.find((p) => p.type === 'minute')?.value || '00'
-      const nowMinutes = parseInt(hourStr, 10) * 60 + parseInt(minStr, 10)
-
-      for (const alarm of activeAlarms) {
-        const [aHour, aMin] = alarm.time.split(':').map(Number)
-        const alarmStartMinutes = aHour * 60 + aMin
-        const triggerMinutes = alarmStartMinutes - alarm.lead
-
-        if (Math.abs(nowMinutes - triggerMinutes) <= 5) {
-          const cls = classesList.find((c) => c.id === alarm.classId)
-          const roomName = cls?.room || 'Dorm'
-          const instructor = cls?.instructor ? ` • ${cls.instructor}` : ''
-          const bodyText = `${alarm.subject} in ${alarm.lead}m — ${roomName}${instructor}`
-
-          const res = await sendClassReminder({
-            userId: user.id,
-            title: `🔔 ${alarm.subject} Class Nudge`,
-            body: bodyText,
-            tag: `alarm-${alarm.id}-${Date.now()}`,
-            url: '/dashboard',
-          })
-
-          if (res.successCount > 0) {
-            notificationsDispatched++
+    let usersProcessed = 0, notificationsDispatched = 0, failures = 0
+    const userIds = [...eligible]
+    for (let offset = 0; offset < userIds.length; offset += 100) {
+      const { data: profiles, error } = await supabase.from('profiles').select('id,timezone').in('id', userIds.slice(offset, offset + 100))
+      if (error) throw new Error('profile_read_failed')
+      for (const profile of profiles || []) {
+        try {
+          const timezone = validTimeZone(profile.timezone) || 'Asia/Manila'
+          const { data: authData, error: authError } = await supabase.auth.admin.getUserById(profile.id)
+          if (authError || !authData.user) throw new Error('preferences_read_failed')
+          const preferences = authData.user.user_metadata || {}
+          const minutes = clockAt(now, timezone).minutes
+          if (preferences.quiet_hours === true && (minutes >= 23 * 60 || minutes < 7 * 60)) { usersProcessed++; continue }
+          const [classes, alarms, deadlines] = await Promise.all([getClasses(supabase, profile.id), getAlarms(supabase, profile.id), getDeadlines(supabase, profile.id, timezone)])
+          for (const event of dueReminders(profile.id, classes, alarms, deadlines, now, timezone)) {
+            if (event.url === '/schedule' && preferences.class_alerts === false || event.url === '/deadlines' && preferences.deadline_alerts === false) continue
+            const { error: claimError } = await supabase.from('notification_deliveries').insert({ event_key: event.key, user_id: profile.id })
+            if (claimError?.code === '23505') continue
+            if (claimError) { failures++; continue } // Never send without a durable claim.
+            const result = await sendClassReminder({ userId: profile.id, title: event.title, body: event.body, tag: event.key, url: event.url }, supabase)
+            const { error: updateError } = await supabase.from('notification_deliveries').update({
+              status: result.successCount ? 'sent' : 'failed', completed_at: new Date().toISOString(), success_count: result.successCount, failure_count: result.failureCount,
+            }).eq('event_key', event.key).eq('user_id', profile.id)
+            if (updateError || result.failureCount) failures++
+            if (result.successCount) notificationsDispatched++
           }
-        }
+          usersProcessed++
+        } catch { failures++; console.warn('[Reminder Cron]', { category: 'user_processing_failed' }) }
       }
     }
-
-    // ─── 4. Process Upcoming Deadlines (1 Day, 1 Hour, 3 Mins) ────────────────
-    for (const deadline of pendingDeadlines) {
-      const dueDate = new Date(deadline.dueDate)
-      const diffMs = dueDate.getTime() - now.getTime()
-      const diffMinutes = Math.floor(diffMs / (1000 * 60))
-
-      let title = ''
-      let body = ''
-      let milestoneTag = ''
-
-      if (diffMinutes >= 1430 && diffMinutes <= 1450) {
-        title = `⏰ 1 Day Left: ${deadline.title}`
-        body = `Due tomorrow • Make sure your project is ready for submission!`
-        milestoneTag = '1day'
-      } else if (diffMinutes >= 55 && diffMinutes <= 65) {
-        title = `🚨 1 Hour Left: ${deadline.title}`
-        body = `Due in 60 minutes! Final stretch — finish and submit now.`
-        milestoneTag = '1hour'
-      } else if (diffMinutes >= 1 && diffMinutes <= 5) {
-        title = `🔥 URGENT — 3 Mins Left: ${deadline.title}`
-        body = `Due in 3 minutes! Submit your assignment right now!`
-        milestoneTag = '3mins'
-      }
-
-      if (milestoneTag) {
-        const res = await sendClassReminder({
-          userId: user.id,
-          title,
-          body,
-          tag: `deadline-${deadline.id}-${milestoneTag}-${Date.now()}`,
-          url: '/schedule',
-        })
-
-        if (res.successCount > 0) {
-          notificationsDispatched++
-        }
-      }
-    }
-
-    // ─── 5. Process Meal Gap Nudges ──────────────────────────────────────────
-    const currentHour = now.getHours()
-    // Meal gap check around 11:30 AM or 5:30 PM
-    if ((currentHour === 11 || currentHour === 17) && classesList.length >= 2) {
-      const res = await sendClassReminder({
-        userId: user.id,
-        title: '🍳 Meal Gap Ahead!',
-        body: 'You have a break coming up between classes. Check out quick dorm recipes in the Kitchen!',
-        tag: `meal-gap-${Date.now()}`,
-        url: '/kitchen',
-      })
-      if (res.successCount > 0) {
-        notificationsDispatched++
-      }
-    }
-
-    return NextResponse.json({
-      success: true,
-      timezone: userTimezone,
-      notificationsDispatched,
-      activeAlarmsCount: activeAlarms.length,
-      pendingDeadlinesCount: pendingDeadlines.length,
-    })
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: msg }, { status: 500 })
-  }
+    return NextResponse.json({ success: failures === 0, usersProcessed, notificationsDispatched, failures }, { status: failures ? 503 : 200 })
+  } catch { console.warn('[Reminder Cron]', { category: 'cron_failed' }); return NextResponse.json({ error: 'Scheduled reminders could not complete. Please retry shortly.' }, { status: 503 }) }
 }

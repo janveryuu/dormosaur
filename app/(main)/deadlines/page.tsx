@@ -18,11 +18,14 @@ import { AddDeadlineModal } from '@/components/schedule/add-deadline-modal'
 import { DeadlineCard } from '@/components/schedule/deadline-card'
 import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 import { useSchedule } from '@/components/schedule-provider'
+import { useNow } from '@/hooks/use-browser-state'
+import { localDateTimeToIso } from '@/lib/date-time'
 
 type FilterStatus = 'pending' | 'completed' | 'all'
 
 export default function DeadlinesPage() {
-  const { deadlines } = useSchedule()
+  const { deadlines, profile } = useSchedule()
+  const now = useNow()
   const [filter, setFilter] = React.useState<FilterStatus>('pending')
   const [addModalOpen, setAddModalOpen] = React.useState(false)
 
@@ -30,8 +33,9 @@ export default function DeadlinesPage() {
   const completedCount = deadlines.filter((d) => d.completed).length
   const dueSoonCount = deadlines.filter((d) => {
     if (d.completed) return false
-    const due = new Date(d.dueDate).getTime()
-    return due >= Date.now() && due - Date.now() <= 48 * 60 * 60 * 1000
+    let due: number
+    try { due = Date.parse(localDateTimeToIso(d.dueDate.slice(0, 10), d.dueTime || d.dueDate.split('T')[1]?.slice(0, 5) || '23:59', profile.timezone)) } catch { return false }
+    return now > 0 && due >= now && due - now <= 48 * 60 * 60 * 1000
   }).length
 
   const filteredDeadlines = deadlines.filter((d) => {

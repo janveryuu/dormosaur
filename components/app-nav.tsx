@@ -99,10 +99,10 @@ export function AppNav() {
     [alarms],
   )
 
-  React.useEffect(() => {
-    setIsQuickOpen(false)
-    setIsNotificationsOpen(false)
-  }, [pathname])
+  const [menuPath, setMenuPath] = React.useState(pathname)
+  if (menuPath !== pathname) {
+    setMenuPath(pathname); setIsQuickOpen(false); setIsNotificationsOpen(false)
+  }
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

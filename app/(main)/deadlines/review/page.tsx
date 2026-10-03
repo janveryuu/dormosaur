@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useClientReady } from '@/hooks/use-browser-state'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -18,32 +19,23 @@ import { ScreenHeader } from '@/components/ios/screen-header'
 import { PillButton } from '@/components/ios/pill-button'
 import { useSchedule, type DeadlineItem } from '@/components/schedule-provider'
 import { createClient } from '@/lib/supabase/client'
-import { setDeadlines } from '@/lib/db'
+import { validDate, validTime } from '@/lib/date-time'
 import type { SubjectColor } from '@/lib/data'
 import { cn } from '@/lib/utils'
 
 export default function ReviewDeadlinesPage() {
+  const ready = useClientReady()
+  return ready ? <ReviewDeadlinesForm /> : null
+}
+function ReviewDeadlinesForm() {
   const router = useRouter()
-  const { classes, deadlines: existingDeadlines, setDeadlines: setContextDeadlines } = useSchedule()
-  const [draftItems, setDraftItems] = React.useState<DeadlineItem[]>([])
-  const [sourceImage, setSourceImage] = React.useState<string | null>(null)
+  const { classes, profile, deadlines: existingDeadlines, saveDeadlines } = useSchedule()
+  const [draftItems, setDraftItems] = React.useState<DeadlineItem[]>(() => {
+    try { const value: unknown = JSON.parse(sessionStorage.getItem('dormosaur_parsed_deadlines_draft') || sessionStorage.getItem('dormly_parsed_deadlines_draft') || '[]'); return Array.isArray(value) ? value : [] } catch { return [] }
+  })
+  const [sourceImage] = React.useState(() => sessionStorage.getItem('dormosaur_parsed_deadlines_image') || sessionStorage.getItem('dormly_parsed_deadlines_image'))
   const [saving, setSaving] = React.useState(false)
-
-  // Read draft items from sessionStorage on mount
-  React.useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem('dormosaur_parsed_deadlines_draft') || sessionStorage.getItem('dormly_parsed_deadlines_draft')
-      const img = sessionStorage.getItem('dormosaur_parsed_deadlines_image') || sessionStorage.getItem('dormly_parsed_deadlines_image')
-      if (stored) {
-        setDraftItems(JSON.parse(stored))
-      } else {
-        setDraftItems([])
-      }
-      if (img) setSourceImage(img)
-    } catch (e) {
-      console.error('Draft load error:', e)
-    }
-  }, [classes])
+  const [saveError, setSaveError] = React.useState<string | null>(null)
 
   // Field edit handler
   const updateItem = (id: string, field: keyof DeadlineItem, value: unknown) => {
@@ -62,34 +54,29 @@ export default function ReviewDeadlinesPage() {
     const newItem: DeadlineItem = {
       id: `dl-manual-${Date.now()}`,
       title: 'New Deadline',
-      code: classes[0]?.code || 'GEN 101',
+      code: '',
       type: 'assignment',
-      dueDate: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
-      dueTime: '23:59',
+      dueDate: '',
+      dueTime: '',
       color: (((draftItems.length + 1) % 5) + 1) as SubjectColor,
       completed: false,
       source: 'manual',
-      confidence: 'high',
+      confidence: 'low',
+      lowFields: ['code', 'dueDate', 'dueTime'],
     }
     setDraftItems((prev) => [...prev, newItem])
   }
 
   // Confirm and Save handler
   const handleConfirm = async () => {
+    if (saving) return
+    setSaveError(null)
+    if (draftItems.some(d => !d.title.trim() || !validDate(d.dueDate) || !validTime(d.dueTime))) { setSaveError('Review each title, date and time before saving. Course codes can be left unset.'); return }
     setSaving(true)
     try {
       // Combine with existing deadlines
       const merged = [...existingDeadlines, ...draftItems]
-      setContextDeadlines(merged)
-
-      const supabase = createClient()
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      if (user) {
-        await setDeadlines(supabase, user.id, merged)
-      }
+      await saveDeadlines(merged)
 
       sessionStorage.removeItem('dormosaur_parsed_deadlines_draft')
       sessionStorage.removeItem('dormly_parsed_deadlines_draft')
@@ -98,8 +85,9 @@ export default function ReviewDeadlinesPage() {
 
       router.push('/deadlines')
     } catch (err) {
-      console.error('Confirm deadlines save error:', err)
-      router.push('/deadlines')
+      setSaveError('We could not save these deadlines. Your draft is still here. Please try again.')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -112,7 +100,8 @@ export default function ReviewDeadlinesPage() {
         subtitle={`We extracted ${draftItems.length} deadlines. Review course matches, dates, and times before saving.`}
       />
 
-      <div className="mx-auto flex w-full max-w-xl flex-col gap-6 pb-28">
+      <div className="mx-auto flex w-full max-w-xl flex-col gap-6 pb-44">
+        {saveError && <p role="alert" className="rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">{saveError}</p>}
 
         {/* Source Image Thumbnail Preview (if imported via photo/camera) */}
         {sourceImage && (
@@ -176,6 +165,7 @@ export default function ReviewDeadlinesPage() {
                       </div>
                       <input
                         type="text"
+                        aria-label={`Deadline ${index + 1} title`}
                         value={item.title}
                         onChange={(e) => updateItem(item.id, 'title', e.target.value)}
                         placeholder="Deadline title"
@@ -198,6 +188,7 @@ export default function ReviewDeadlinesPage() {
                         Course Code
                       </label>
                       <select
+                        aria-label={`Deadline ${index + 1} course code`}
                         value={item.code}
                         onChange={(e) => updateItem(item.id, 'code', e.target.value)}
                         className="w-full rounded-xl border border-border/80 bg-fill px-3 py-2 text-[13.5px] font-semibold text-foreground outline-none focus:border-emerald-600"
@@ -208,7 +199,8 @@ export default function ReviewDeadlinesPage() {
                           </option>
                         ))}
                         {!classes.some((c) => c.code === item.code) && (
-                          <option value={item.code}>{item.code || 'Custom Course'}</option>
+                          <option aria-label={`Deadline ${index + 1} course code`}
+                        value={item.code}>{item.code || 'Custom Course'}</option>
                         )}
                       </select>
                     </div>
@@ -219,6 +211,7 @@ export default function ReviewDeadlinesPage() {
                         Type
                       </label>
                       <select
+                        aria-label={`Deadline ${index + 1} type`}
                         value={item.type}
                         onChange={(e) => updateItem(item.id, 'type', e.target.value as DeadlineItem['type'])}
                         className="w-full rounded-xl border border-border/80 bg-fill px-3 py-2 text-[13.5px] font-semibold text-foreground outline-none focus:border-emerald-600 uppercase"
@@ -240,6 +233,7 @@ export default function ReviewDeadlinesPage() {
                       </label>
                       <input
                         type="date"
+                        aria-label={`Deadline ${index + 1} due date`}
                         value={item.dueDate}
                         onChange={(e) => updateItem(item.id, 'dueDate', e.target.value)}
                         className="w-full rounded-xl border border-border/80 bg-fill px-3 py-2 text-[13.5px] font-semibold text-foreground outline-none focus:border-emerald-600"
@@ -253,7 +247,8 @@ export default function ReviewDeadlinesPage() {
                       </label>
                       <input
                         type="time"
-                        value={item.dueTime || '23:59'}
+                        aria-label={`Deadline ${index + 1} due time`}
+                        value={item.dueTime || ''}
                         onChange={(e) => updateItem(item.id, 'dueTime', e.target.value)}
                         className="w-full rounded-xl border border-border/80 bg-fill px-3 py-2 text-[13.5px] font-semibold text-foreground outline-none focus:border-emerald-600"
                       />
@@ -278,7 +273,7 @@ export default function ReviewDeadlinesPage() {
         </div>
 
         {/* Sticky Confirm Button */}
-        <div className="fixed inset-x-0 bottom-0 z-40 bg-background/80 backdrop-blur-md p-4 pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] border-t border-border lg:left-72">
+        <div className="fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] lg:bottom-0 z-40 bg-background/80 backdrop-blur-md p-4 pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] border-t border-border lg:left-72">
           <div className="mx-auto max-w-xl">
             <PillButton
               size="lg"

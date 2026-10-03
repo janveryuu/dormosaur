@@ -44,16 +44,17 @@ function parseDays(text: string): string[] {
   }
 
   const result = Array.from(found).sort((a, b) => WEEKDAYS.indexOf(a) - WEEKDAYS.indexOf(b))
-  return result.length > 0 ? result : ['Mon', 'Wed', 'Fri']
+  return result
 }
 
 function parseTime(timeStr: string): string {
   const match = timeStr.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/i)
-  if (!match) return '09:00'
+  if (!match) return ''
 
   let hours = parseInt(match[1], 10)
   const minutes = match[2] ? parseInt(match[2], 10) : 0
   const period = match[3] ? match[3].toLowerCase() : null
+  if (minutes > 59 || (period ? hours < 1 || hours > 12 : hours > 23)) return ''
 
   if (period === 'pm' && hours < 12) hours += 12
   if (period === 'am' && hours === 12) hours = 0
@@ -66,7 +67,7 @@ function parseTimeRange(text: string): { start: string; end: string } {
   const rangeRegex = /(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:-|to|–)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i
   const match = text.match(rangeRegex)
 
-  if (!match) return { start: '09:00', end: '10:15' }
+  if (!match) return { start: '', end: '' }
 
   let rawStart = match[1].trim()
   const rawEnd = match[2].trim()
@@ -94,18 +95,19 @@ function parseTimeRange(text: string): { start: string; end: string } {
   }
 }
 
-export function parseRawScheduleLine(line: string, index: number): ClassEntry {
+export function parseRawScheduleLine(line: string, index: number): ClassEntry | null {
   let trimmed = line.trim()
-  if (!trimmed) return null as unknown as ClassEntry
+  if (!trimmed) return null
 
   // Skip year/semester header lines
   if (/^(first|second|third|fourth|fifth)\s+(year|semester|sem)(\s*[-–]\s*(first|second)\s+semester)?$/i.test(trimmed)) {
-    return null as unknown as ClassEntry
+    return null
   }
 
   // 1. Course code detection (e.g. FE 407, ENGG 409, Fili 102, ChE 434, MATH 101, CS150)
   const codeMatch = trimmed.match(/\b([A-Za-z]{2,8})\s*[-_]?\s*(\d{2,4}[A-Za-z]?)\b/)
   const detectedCode = codeMatch ? `${codeMatch[1].toUpperCase()} ${codeMatch[2]}` : ''
+  if (codeMatch && /^(room|rm|lab|hall|time|bsu|year)$/i.test(codeMatch[1])) return null
 
   // Clean unit notes like "(1 units)" or "(3 units)"
   trimmed = trimmed.replace(/\(\s*\d+\s*(?:units?|credits?)\s*\)/gi, '').trim()
@@ -113,22 +115,7 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
   // 2. Times
   const timeRegex = /(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:-|to|–)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/gi
   const hasExplicitTime = /(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:-|to|–)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i.test(trimmed)
-  let { start, end } = parseTimeRange(trimmed)
-
-  // Stagger default times if no explicit time in line
-  if (!hasExplicitTime) {
-    const defaultSlots = [
-      { start: '08:00', end: '09:15' },
-      { start: '09:30', end: '10:45' },
-      { start: '11:00', end: '12:15' },
-      { start: '13:00', end: '14:15' },
-      { start: '14:30', end: '15:45' },
-      { start: '16:00', end: '17:15' },
-    ]
-    const slot = defaultSlots[index % defaultSlots.length]
-    start = slot.start
-    end = slot.end
-  }
+  const { start, end } = parseTimeRange(trimmed)
 
   // Strip time strings out before attempting room or subject extraction
   const textWithoutTime = trimmed.replace(timeRegex, '').trim()
@@ -139,24 +126,26 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
 
   // 4. Room (must not be a time fragment like "00pm-5")
   const roomMatch = textWithoutTime.match(/(?:sci hall|hall|lab|tech center|west wing|humanities|room|bldg|building)\s*([A-Za-z0-9\s-]+\s*\d{1,4}[A-Za-z]?)/i)
-  let room = roomMatch ? roomMatch[0].trim() : 'Room TBA'
+  let room = roomMatch ? roomMatch[0].trim() : ''
   if (/(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)|00pm/i.test(room) && !/hall|lab|room|bldg/i.test(room)) {
-    room = 'Room TBA'
+    room = ''
   }
 
   // 5. Instructor
-  const instructorMatch = textWithoutTime.match(/(?:dr\.?|prof\.?|coach)?\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/)
-  const instructor = instructorMatch && instructorMatch[0].length > 2 ? instructorMatch[0].trim() : 'TBA'
+  const instructorMatch = textWithoutTime.match(/\b(?:instructor\s*:|dr\.?|prof\.?|coach)\s+([A-Za-z][A-Za-z.'-]+(?:\s+[A-Za-z][A-Za-z.'-]+)?)/i)
+  const instructor = instructorMatch ? instructorMatch[1].trim() : ''
 
   // 6. Subject Title
   let subject = textWithoutTime
     .replace(codeMatch ? codeMatch[0] : '', '')
+    .replace(room, '')
+    .replace(instructorMatch ? instructorMatch[0] : '', '')
     .replace(/\b(mon(?:day)?|tue(?:sday|s)?|wed(?:nesday)?|thu(?:rsday|rs)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?|mwf|tth|mw)\b/gi, '')
     .replace(/^[-_\s:]+/, '')
     .replace(/[-_\s:]+$/, '')
     .trim()
 
-  const finalCode = detectedCode || subject.toUpperCase() || 'Untitled Class'
+  const finalCode = detectedCode
   if (!subject || subject.length < 2) {
     subject = finalCode
   }
@@ -165,9 +154,10 @@ export function parseRawScheduleLine(line: string, index: number): ClassEntry {
 
   const lowFields: string[] = []
   if (!codeMatch) lowFields.push('code')
-  if (!hasExplicitTime) lowFields.push('time')
-  if (!hasExplicitDays) lowFields.push('days')
-  if (room === 'Room TBA') lowFields.push('room')
+  if (!hasExplicitTime || !start || !end || end <= start) lowFields.push('time', 'start', 'end')
+  if (!hasExplicitDays || !days.length) lowFields.push('days')
+  if (!room) lowFields.push('room')
+  if (!instructor) lowFields.push('instructor')
 
   return {
     id: `parsed-${Date.now()}-${index}`,
@@ -205,7 +195,7 @@ export function parseRawSchedule(text: string, options: { requireExplicitMeeting
   }
 
   const result: ClassEntry[] = []
-  let currentDay: string = 'Mon'
+  let currentDay = ''
   let hasDayHeader = false
   let index = 0
 
@@ -240,7 +230,7 @@ export function parseRawSchedule(text: string, options: { requireExplicitMeeting
       const { start, end } = parseTimeRange(`${startStr} - ${endStr}`)
 
       let subject = insideParen
-      let room = 'Room TBA'
+      let room = ''
 
       if (insideParen.includes('/')) {
         const parts = insideParen.split('/')
@@ -248,21 +238,22 @@ export function parseRawSchedule(text: string, options: { requireExplicitMeeting
         room = parts[1].trim()
       }
 
-      const code = subject.toUpperCase()
+      const codeMatch = subject.match(/\b([A-Za-z]{2,8})\s*[-_]?\s*(\d{2,4}[A-Za-z]?)\b/)
+      const code = codeMatch ? `${codeMatch[1].toUpperCase()} ${codeMatch[2]}` : ''
       const color = ((index % 5) + 1) as SubjectColor
 
       result.push({
         id: `parsed-${Date.now()}-${index}`,
         subject: subject.charAt(0).toUpperCase() + subject.slice(1),
         code,
-        instructor: 'TBA',
+        instructor: '',
         room,
-        days: options.requireExplicitMeeting && /\b(mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?|mwf|tth|mw)\b/i.test(cleanLine) ? parseDays(cleanLine) : [currentDay],
+        days: parseDays(cleanLine).length ? parseDays(cleanLine) : currentDay ? [currentDay] : [],
         start,
         end,
         color,
-        confidence: options.requireExplicitMeeting ? 'low' : 'high',
-        lowFields: options.requireExplicitMeeting ? ['subject', 'instructor', 'code', ...(room === 'Room TBA' ? ['room'] : [])] : undefined,
+        confidence: 'low',
+        lowFields: ['instructor', ...(!code ? ['code'] : []), ...(!room ? ['room'] : []), ...(!currentDay && !parseDays(cleanLine).length ? ['days'] : [])],
       })
       index++
       continue
@@ -286,7 +277,7 @@ export function parseRawSchedule(text: string, options: { requireExplicitMeeting
       if (options.requireExplicitMeeting) {
         // OCR names are not reliable evidence of an instructor. Keep uncertain
         // titles/rooms editable without inventing a teacher from the course code.
-        entry.instructor = 'TBA'
+        entry.instructor = ''
         entry.subject = entry.code
         entry.confidence = 'low'
         entry.lowFields = [...new Set([...(entry.lowFields || []), 'subject', 'instructor', 'code'])]

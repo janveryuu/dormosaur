@@ -204,4 +204,51 @@
   .ai-drawer > div:nth-last-child(2)::-webkit-scrollbar { display: none; }
   .ai-input { background: #f2f3ea; border: 0; border-radius: 999px; min-height: 3.6rem; }
   .ai-input button { height: 2.8rem; width: 2.8rem; }
+
+  /* Mobile reference colors were fixed to light paper, hiding theme-colored text
+     at night. Preserve the approved geometry and use existing semantic colors. */
+  .dark .mobile-page-intro h1,
+  .dark .mobile-section-title h2,
+  .dark .mobile-alarm-time,
+  .dark .mobile-featured-content h3,
+  .dark .mobile-stat-grid strong { color: var(--foreground); }
+  .dark .mobile-eyebrow,
+  .dark .mobile-section-title button,
+  .dark .mobile-theme-preview svg { color: var(--primary); }
+  .dark .mobile-page-intro > p:last-of-type,
+  .dark .mobile-stat-grid > div > span:last-child,
+  .dark .mobile-featured-content p,
+  .dark .mobile-week-day,
+  .dark .mobile-alarm-filters button { color: var(--muted-foreground); }
+  .dark .task-card,
+  .dark .alarm-row,
+  .dark .mobile-week-board,
+  .dark .mobile-week-picker,
+  .dark .mobile-stat-grid > div,
+  .dark .mobile-alarm-stats,
+  .dark .mobile-featured-card { background: var(--card); border-color: var(--line); }
+  .dark .alarm-row { border-color: var(--line) !important; }
+  .dark .mobile-theme-card,
+  .dark .mobile-task-scanner,
+  .dark .mobile-kitchen-setup { background: var(--secondary); border-color: var(--line); }
+  .dark .mobile-kitchen-setup-title { color: var(--primary); }
+  .dark .mobile-kitchen-setup-title a,
+  .dark .mobile-kitchen-setup-chips span,
+  .dark .mobile-kitchen-tiles button,
+  .dark .mobile-schedule-actions button,
+  .dark .mobile-featured-content > span:last-child { background: var(--secondary); color: var(--foreground); }
+  .dark .mobile-schedule-toolbar [role='tablist'],
+  .dark .task-view-toolbar [role='tablist'],
+  .dark .mobile-alarm-filters { background: var(--secondary); }
+  .dark .mobile-week-day.text-primary { background: var(--secondary); color: var(--primary); }
+  .dark .mobile-schedule-toolbar [role='tab'][aria-selected='true'] > span:first-child,
+  .dark .task-view-toolbar [aria-selected='true'] > span:first-child { background: var(--primary); }
+  .dark .mobile-schedule-toolbar [role='tab'][aria-selected='true'] > span:last-child,
+  .dark .task-view-toolbar [aria-selected='true'] > span:last-child { color: var(--primary-foreground); }
+  .dark .mobile-kitchen-tiles button.is-active,
+  .dark .mobile-alarm-filters button.is-active { background: var(--primary); color: var(--background); }
+  .dark .ai-drawer { background: var(--card); }
+  .dark .ai-header { background: var(--secondary); }
+  .dark .ai-message-assistant,
+  .dark .ai-input { background: var(--fill); }
 }

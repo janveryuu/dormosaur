@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useStoredBoolean } from '@/hooks/use-browser-state'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -38,7 +39,7 @@ import { SegmentedControl } from '@/components/ios/segmented-control'
 import { PillButton } from '@/components/ios/pill-button'
 import { useTheme } from '@/components/theme-provider'
 import { useSchedule } from '@/components/schedule-provider'
-import { useSignOut } from '@/hooks/use-auth'
+import { useAuth, useSignOut } from '@/hooks/use-auth'
 import { createClient } from '@/lib/supabase/client'
 import { upsertUserProfile } from '@/lib/db'
 import { getCountryByCode, searchCountries, type CountryInfo } from '@/lib/countries-data'
@@ -105,10 +106,6 @@ function EditableField({
   const [editing, setEditing] = React.useState(false)
   const [draft, setDraft] = React.useState(value)
   const inputRef = React.useRef<HTMLInputElement>(null)
-
-  React.useEffect(() => {
-    setDraft(value)
-  }, [value])
 
   function save() {
     const trimmed = draft.trim()
@@ -187,14 +184,15 @@ export default function ProfilePage() {
   const { theme, setTheme } = useTheme()
   const { profile, setProfile, classes, resetToDemo, isSyncing } = useSchedule()
   const signOut = useSignOut()
+  const { user } = useAuth()
 
   // Preference Toggles
-  const [dorm, setDormState] = React.useState(true)
-  const [classAlerts, setClassAlertsState] = React.useState(true)
-  const [deadlineAlerts, setDeadlineAlertsState] = React.useState(true)
-  const [mealNudge, setMealNudgeState] = React.useState(true)
-  const [quietHours, setQuietHoursState] = React.useState(false)
-  const [haptics, setHaptics] = React.useState(true)
+  const [dorm, setDormState] = useStoredBoolean(`dormosaur_dorm_student:${user?.id || 'guest'}`, typeof user?.user_metadata?.dorm_student === 'boolean' ? user.user_metadata.dorm_student : true)
+  const [classAlerts, setClassAlertsState] = useStoredBoolean(`dormosaur_class_alerts:${user?.id || 'guest'}`, typeof user?.user_metadata?.class_alerts === 'boolean' ? user.user_metadata.class_alerts : true)
+  const [deadlineAlerts, setDeadlineAlertsState] = useStoredBoolean(`dormosaur_deadline_alerts:${user?.id || 'guest'}`, typeof user?.user_metadata?.deadline_alerts === 'boolean' ? user.user_metadata.deadline_alerts : true)
+  const [mealNudge, setMealNudgeState] = useStoredBoolean(`dormosaur_meal_nudges:${user?.id || 'guest'}`, typeof user?.user_metadata?.meal_nudges === 'boolean' ? user.user_metadata.meal_nudges : true)
+  const [quietHours, setQuietHoursState] = useStoredBoolean(`dormosaur_quiet_hours:${user?.id || 'guest'}`, typeof user?.user_metadata?.quiet_hours === 'boolean' ? user.user_metadata.quiet_hours : false)
+  const [haptics, setHaptics] = useStoredBoolean(`dormosaur_haptics:${user?.id || 'guest'}`, typeof user?.user_metadata?.haptics === 'boolean' ? user.user_metadata.haptics : true)
 
   // Dedicated Modals
   const [isSchoolModalOpen, setIsSchoolModalOpen] = React.useState(false)
@@ -265,58 +263,23 @@ export default function ProfilePage() {
   } | null>(null)
   const [toast, setToast] = React.useState<ToastMessage | null>(null)
 
-  // Sync draft state whenever profile updates
-  React.useEffect(() => {
-    setModalDraft({
-      name: profile.name,
-      school: profile.school,
-      dorm: profile.dorm,
-      year: profile.year,
-      country: profile.country || 'PH',
-      timezone: profile.timezone || 'Asia/Manila',
-    })
-  }, [profile])
-
-  // Load saved preferences from localStorage on mount
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const qh = localStorage.getItem('dormosaur_quiet_hours') ?? localStorage.getItem('dormly_quiet_hours')
-      if (qh !== null) setQuietHoursState(qh === 'true')
-
-      const ca = localStorage.getItem('dormosaur_class_alerts') ?? localStorage.getItem('dormly_class_alerts')
-      if (ca !== null) setClassAlertsState(ca === 'true')
-
-      const da = localStorage.getItem('dormosaur_deadline_alerts') ?? localStorage.getItem('dormly_deadline_alerts')
-      if (da !== null) setDeadlineAlertsState(da === 'true')
-
-      const mn = localStorage.getItem('dormosaur_meal_nudges') ?? localStorage.getItem('dormly_meal_nudges')
-      if (mn !== null) setMealNudgeState(mn === 'true')
-
-      const dm = localStorage.getItem('dormosaur_dorm_student') ?? localStorage.getItem('dormly_dorm_student')
-      if (dm !== null) setDormState(dm === 'true')
-
-      const hp = localStorage.getItem('dormosaur_haptics') ?? localStorage.getItem('dormly_haptics')
-      if (hp !== null) setHaptics(hp === 'true')
-    }
-  }, [])
-
   // Helper to save settings directly to Supabase DB
   const saveSettingToSupabase = async (patch: Record<string, unknown>) => {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        await upsertUserProfile(supabase, user.id, patch)
+        const { error } = await supabase.auth.updateUser({ data: patch })
+        if (error) throw new Error('preferences_save_failed')
       }
     } catch (e) {
-      console.warn('Setting save notice:', e)
+      setToast({ type: 'error', title: 'Preferences not saved online', message: 'Please reconnect and try changing this setting again.' })
     }
   }
 
   // Toggle Handlers with Toast & DB Save
   const handleSetQuietHours = (val: boolean) => {
     setQuietHoursState(val)
-    if (typeof window !== 'undefined') localStorage.setItem('dormosaur_quiet_hours', String(val))
     saveSettingToSupabase({ quiet_hours: val })
     setToast({
       type: 'info',
@@ -327,7 +290,6 @@ export default function ProfilePage() {
 
   const handleSetClassAlerts = (val: boolean) => {
     setClassAlertsState(val)
-    if (typeof window !== 'undefined') localStorage.setItem('dormosaur_class_alerts', String(val))
     saveSettingToSupabase({ class_alerts: val })
     setToast({
       type: 'info',
@@ -338,7 +300,6 @@ export default function ProfilePage() {
 
   const handleSetDeadlineAlerts = (val: boolean) => {
     setDeadlineAlertsState(val)
-    if (typeof window !== 'undefined') localStorage.setItem('dormosaur_deadline_alerts', String(val))
     saveSettingToSupabase({ deadline_alerts: val })
     setToast({
       type: 'info',
@@ -349,7 +310,6 @@ export default function ProfilePage() {
 
   const handleSetMealNudge = (val: boolean) => {
     setMealNudgeState(val)
-    if (typeof window !== 'undefined') localStorage.setItem('dormosaur_meal_nudges', String(val))
     saveSettingToSupabase({ meal_nudges: val })
     setToast({
       type: 'info',
@@ -360,7 +320,6 @@ export default function ProfilePage() {
 
   const handleSetDorm = (val: boolean) => {
     setDormState(val)
-    if (typeof window !== 'undefined') localStorage.setItem('dormosaur_dorm_student', String(val))
     const newDormStr = val ? 'Dorm Room' : 'Off-campus'
     updateProfileField('dorm', newDormStr)
     setToast({
@@ -396,7 +355,7 @@ export default function ProfilePage() {
           ? (localStorage.getItem('dormosaur_web_push_enabled') ?? localStorage.getItem('dormly_web_push_enabled')) === 'true'
           : false
 
-      if ((isGranted || storedPref) && !endpoint) {
+      if (isGranted && storedPref && !endpoint) {
         const subRes = await requestAndSubscribePush()
         if (subRes.success) {
           endpoint = await getCurrentEndpoint()
@@ -419,7 +378,7 @@ export default function ProfilePage() {
         console.warn('Devices fetch notice:', err)
       }
 
-      if (endpoint || isGranted) {
+      if (endpoint) {
         setPushEnabled(true)
         if (typeof window !== 'undefined') localStorage.setItem('dormosaur_web_push_enabled', 'true')
 
@@ -450,11 +409,12 @@ export default function ProfilePage() {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
       setUserEmail(data.user?.email ?? '')
-    })
-    loadDevices()
+      void loadDevices()
+    }).catch(() => setUserEmail(''))
   }, [loadDevices])
 
   const handleTogglePush = async (enable: boolean) => {
+    if (isPushToggling) return
     setIsPushToggling(true)
     setPushFeedback(null)
 
@@ -465,23 +425,13 @@ export default function ProfilePage() {
         if (typeof window !== 'undefined') localStorage.setItem('dormosaur_web_push_enabled', 'true')
         setPushFeedback({
           type: 'success',
-          message: 'Test notification sent — check your device.',
+          message: 'This browser is subscribed. Scheduled reminders depend on server configuration.',
         })
         setToast({
           type: 'success',
           title: 'Web Push enabled',
           message: 'Notifications are active for this browser.',
         })
-
-        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-          try {
-            new Notification('Dormosaur', {
-              body: "You're all set — notifications are on for this device.",
-              icon: '/android-chrome-192x192.png',
-              tag: `test-push-instant-${Date.now()}`,
-            })
-          } catch (_) {}
-        }
 
         await loadDevices()
       } else {
@@ -498,7 +448,7 @@ export default function ProfilePage() {
         })
       }
     } else {
-      await unsubscribePush()
+      if (!await unsubscribePush()) { setIsPushToggling(false); setPushFeedback({ type: 'error', message: 'We could not disable this device online. Please reconnect and retry.' }); return }
       setPushEnabled(false)
       if (typeof window !== 'undefined') localStorage.setItem('dormosaur_web_push_enabled', 'false')
       setPushFeedback(null)
@@ -515,10 +465,11 @@ export default function ProfilePage() {
   const handleRemoveDevice = async (id: string, endpoint: string) => {
     try {
       if (endpoint === currentEndpoint) {
-        await unsubscribePush()
+        if (!await unsubscribePush()) throw new Error('device_unsubscribe_failed')
         setPushEnabled(false)
       } else {
-        await fetch(`/api/push/devices/${id}`, { method: 'DELETE' })
+        const response = await fetch(`/api/push/devices/${id}`, { method: 'DELETE' })
+        if (!response.ok) throw new Error('device_remove_failed')
       }
       await loadDevices()
       setToast({
@@ -526,8 +477,8 @@ export default function ProfilePage() {
         title: 'Device removed',
         message: 'Device subscription unlinked successfully.',
       })
-    } catch (e) {
-      console.warn('Remove device notice:', e)
+    } catch {
+      setToast({ type: 'error', title: 'Device still needs removal', message: 'Please reconnect and try removing it again.' })
     }
   }
 
@@ -559,7 +510,7 @@ export default function ProfilePage() {
         })
       }
     } catch (err) {
-      console.warn('Profile save notice:', err)
+      setToast({ type: 'error', title: 'Profile not saved online', message: 'Your changes remain on this device. Please reconnect and use Retry to save them.' }); return
     }
 
     const fieldLabels: Record<string, string> = {
@@ -635,8 +586,9 @@ export default function ProfilePage() {
           console.warn('[Avatar Storage Notice] Using compressed base64 profile image:', storageErr)
         }
 
-        // 4. Save to user profile in Supabase DB
-        await upsertUserProfile(supabase, user.id, { avatar_url: avatarUrl })
+        if (avatarUrl.startsWith('data:')) throw new Error('avatar_upload_unavailable')
+        const { error } = await supabase.auth.updateUser({ data: { avatar_url: avatarUrl } })
+        if (error) throw new Error('avatar_save_failed')
       }
 
       // 5. Update local state immediately
@@ -666,10 +618,11 @@ export default function ProfilePage() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        await upsertUserProfile(supabase, user.id, { avatar_url: null })
+        const { error } = await supabase.auth.updateUser({ data: { avatar_url: null } })
+        if (error) throw new Error('avatar_save_failed')
       }
     } catch (e) {
-      console.warn('Remove avatar notice:', e)
+      setToast({ type: 'error', title: 'Avatar not removed online', message: 'Please reconnect and try again.' }); return
     }
 
     setToast({
@@ -717,7 +670,7 @@ export default function ProfilePage() {
         })
       }
     } catch (e) {
-      console.error('Modal save profile error:', e)
+      setToast({ type: 'error', title: 'Profile not saved online', message: 'Please reconnect and try saving again.' }); return
     }
 
     setIsEditModalOpen(false)
@@ -730,7 +683,7 @@ export default function ProfilePage() {
 
   async function handleSignOut() {
     setSigningOut(true)
-    await signOut()
+    try { await signOut() } catch { setSigningOut(false); setToast({ type: 'error', title: 'Could not sign out', message: 'Please reconnect and try again.' }) }
   }
 
   const filteredCountries = searchCountries(countrySearch)
@@ -770,7 +723,7 @@ export default function ProfilePage() {
         <motion.section
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
-          onClick={() => setIsEditModalOpen(true)}
+          onClick={() => { setModalDraft({ name: profile.name, school: profile.school, dorm: profile.dorm, year: profile.year, country: profile.country || 'PH', timezone: profile.timezone || 'Asia/Manila' }); setIsEditModalOpen(true) }}
           className="profile-identity-card group relative flex cursor-pointer items-center gap-4.5"
         >
           {/* Avatar Container with Camera Overlay */}
@@ -1073,13 +1026,13 @@ export default function ProfilePage() {
               </div>
             }
           />
-          <ListRow
+          {!user && <ListRow
             icon={<RotateCcw className="size-4.5 text-muted-foreground" strokeWidth={1.9} />}
-            label="Restore Demo Schedule"
-            detail="Reset timetable and alarms to default sample values"
+            label="Clear local demo data"
+            detail="Clear this guest schedule on this device"
             onClick={() => setIsResetModalOpen(true)}
             trailing={<ChevronRight className="size-4.5 text-muted-foreground" />}
-          />
+          />}
         </ListGroup>
 
         {/* Sign Out Button */}

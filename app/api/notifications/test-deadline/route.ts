@@ -1,19 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendClassReminder } from '@/lib/notification-service'
+import { apiError, boundedText, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
 
 export async function POST(req: NextRequest) {
+  if (process.env.NODE_ENV === 'production') return NextResponse.json({ error: 'Not found.' }, { status: 404 })
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const body = await req.json().catch(() => ({}))
+    const { user } = await requireAuthenticated('push-test', 2)
+    const body = await readJson(req, 4096)
     const milestone = body.milestone || '3mins' // '1day' | '1hour' | '3mins'
-    const title = body.title || 'CS150 Programming Project'
+    const title = boundedText(body.title || 'Test deadline', 150, 'deadline title')
+    if (!['1day', '1hour', '3mins'].includes(milestone as string)) throw new InputError('Please choose a valid reminder interval.')
 
     let pushTitle = ''
     let pushBody = ''
@@ -45,7 +42,6 @@ export async function POST(req: NextRequest) {
       result,
     })
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return apiError(err, 'We could not send this test notification.')
   }
 }

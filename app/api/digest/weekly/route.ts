@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Groq from 'groq-sdk'
+import { apiError, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
 
 const groqApiKey = process.env.GROQ_API_KEY || ''
-const groq = groqApiKey ? new Groq({ apiKey: groqApiKey }) : null
+const groq = groqApiKey ? new Groq({ apiKey: groqApiKey, timeout: 8000, maxRetries: 0 }) : null
 
 export async function POST(req: NextRequest) {
   try {
+    await requireAuthenticated('weekly-digest', 5)
     const {
-      week_start_date = '2026-08-10',
+      week_start_date = '',
       days = [],
       upcoming_deadlines = [],
-    } = await req.json()
+    } = await readJson(req, 32 * 1024)
+    if (!Array.isArray(days) || days.length > 7 || !Array.isArray(upcoming_deadlines) || upcoming_deadlines.length > 30 ||
+      days.some(d => !d || typeof d.day_name !== 'string' || d.day_name.length > 15 || typeof d.total_class_hours !== 'number' || !Number.isFinite(d.total_class_hours) || d.total_class_hours < 0 || d.total_class_hours > 24)) throw new InputError('Please check the weekly schedule data.')
+    if (!days.length || days.every(d => !d.total_class_hours)) return NextResponse.json({ digest: 'No classes are saved for this week yet. Add your schedule to see weekly insights.', source: 'local' })
 
     const inputData = JSON.stringify(
       {
@@ -42,26 +47,28 @@ Output: one short paragraph, nothing else.`
 
     // 1. Call Groq Llama 3 if API Key is configured
     if (groq) {
+      try {
       const completion = await groq.chat.completions.create({
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: inputData },
         ],
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-20b',
         temperature: 0.4,
         max_tokens: 180,
       })
 
       const content = completion.choices[0]?.message?.content?.trim() || ''
       if (content) {
-        return NextResponse.json({ digest: content, source: 'groq/llama-3.3-70b' })
+        return NextResponse.json({ digest: content, source: 'ai' })
       }
+      } catch { console.warn('[Weekly Digest]', { category: 'provider_unavailable' }) }
     }
 
     // 2. Intelligent Local Fallback Digest Generator
     // Find busiest day (highest total_class_hours) and lightest day
-    let busiestDay = days[0] || { day_name: 'Tuesday', total_class_hours: 4, classes: [] }
-    let lightestDay = days[0] || { day_name: 'Wednesday', total_class_hours: 1, longest_gap_minutes: 180 }
+    let busiestDay = days[0]
+    let lightestDay = days[0]
 
     if (days.length > 0) {
       days.forEach((d: { total_class_hours: number }) => {
@@ -79,7 +86,6 @@ Output: one short paragraph, nothing else.`
 
     return NextResponse.json({ digest: fallbackText, source: 'dormosaur/local-ai-fallback' })
   } catch (error) {
-    console.error('Weekly Digest API Error:', error)
-    return NextResponse.json({ error: 'Failed to generate weekly digest' }, { status: 500 })
+    return apiError(error, 'We could not load your weekly digest. Please try again shortly.')
   }
 }

@@ -64,7 +64,7 @@ export default function KitchenPage() {
   // Step 2: Apply meal, appliance, and search filters
   const filtered = baseRecipes.filter((r) => {
     if (meal !== 'all') {
-      const targetMeal = meal.toLowerCase() as any
+      const targetMeal = meal.toLowerCase() as 'breakfast' | 'lunch' | 'dinner' | 'snack'
       const matchesMeal =
         r.mealType === targetMeal ||
         r.mealTypes?.includes(targetMeal) ||

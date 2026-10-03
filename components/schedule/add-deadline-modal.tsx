@@ -7,6 +7,7 @@ import { PillButton } from '@/components/ios/pill-button'
 import { useSchedule, type DeadlineItem } from '@/components/schedule-provider'
 import { type SubjectColor } from '@/lib/data'
 import { useModalA11y } from '@/hooks/use-modal-a11y'
+import { validDate, validTime } from '@/lib/date-time'
 
 export function AddDeadlineModal({
   open,
@@ -17,16 +18,15 @@ export function AddDeadlineModal({
 }) {
   const { classes, addDeadline } = useSchedule()
   const [title, setTitle] = React.useState('')
-  const [code, setCode] = React.useState(classes[0]?.code || 'MATH 101')
+  const [code, setCode] = React.useState('')
   const [type, setType] = React.useState<DeadlineItem['type']>('exam')
-  const [dueDate, setDueDate] = React.useState(
-    new Date(Date.now() + 86400000 * 2).toISOString().slice(0, 16),
-  )
+  const [dueDate, setDueDate] = React.useState('')
   const dialogRef = useModalA11y(open, onClose)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!title.trim()) return
+    const [date, time] = dueDate.split('T')
+    if (!title.trim() || !validDate(date) || !validTime(time)) return
 
     const matchedClass = classes.find((c) => c.code === code)
     const color: SubjectColor = matchedClass ? matchedClass.color : 1
@@ -35,7 +35,8 @@ export function AddDeadlineModal({
       title: title.trim(),
       code,
       type,
-      dueDate,
+      dueDate: date,
+      dueTime: time,
       color,
     })
 
@@ -48,11 +49,6 @@ export function AddDeadlineModal({
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <motion.div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="add-deadline-title"
-            tabIndex={-1}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -61,11 +57,16 @@ export function AddDeadlineModal({
           />
 
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="add-deadline-title"
+            tabIndex={-1}
             initial={{ opacity: 0, scale: 0.94, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 12 }}
             transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-            className="ios-glass relative z-10 w-full max-w-md overflow-hidden rounded-4xl border border-border p-6 shadow-ios-lg"
+            className="ios-glass relative z-10 w-full max-w-md max-h-[85dvh] overflow-y-auto rounded-4xl border border-border p-6 shadow-ios-lg"
           >
             <div className="flex items-center justify-between border-b border-separator pb-3">
               <div className="flex items-center gap-2">

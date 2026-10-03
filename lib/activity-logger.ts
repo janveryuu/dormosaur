@@ -5,7 +5,7 @@ export type ActivityLogParams = {
   description: string
   relatedUserId?: string
   performedBy?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 /**

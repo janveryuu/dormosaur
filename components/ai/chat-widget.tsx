@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
   Calendar,
@@ -20,6 +21,7 @@ type Message = {
   role: 'user' | 'assistant'
   content: string
   mode?: 'ai' | 'local' | 'limited'
+  model?: string
 }
 
 const welcomeMessage: Message = {
@@ -41,16 +43,14 @@ export function DormosaurAiChat() {
   const [messages, setMessages] = React.useState<Message[]>([welcomeMessage])
   const [input, setInput] = React.useState('')
   const [isTyping, setIsTyping] = React.useState(false)
+  const latestReply = messages.findLast(message => message.role === 'assistant' && message.mode)
+  const replyBadge = (message?: Message) => message?.mode === 'limited' ? 'Limited mode' : message?.mode === 'local' ? 'Local reply' : message?.model?.split('/').at(-1) || 'Dormosaur AI'
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null)
   const drawerRef = React.useRef<HTMLDivElement | null>(null)
   const closeButtonRef = React.useRef<HTMLButtonElement | null>(null)
   const dialogTitleId = React.useId()
   const conversationVersion = React.useRef(0)
   const pendingRequest = React.useRef<AbortController | null>(null)
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' })
-  }
 
   // Conversation and in-flight responses must not survive an account change.
   React.useEffect(() => {
@@ -71,7 +71,7 @@ export function DormosaurAiChat() {
 
   React.useEffect(() => {
     if (isOpen) {
-      scrollToBottom()
+      messagesEndRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' })
     }
   }, [messages, isOpen, reduceMotion])
 
@@ -135,7 +135,7 @@ export function DormosaurAiChat() {
     if (!query || isTyping) return
 
     const userMessage: Message = {
-      id: `user-${Date.now()}`,
+      id: crypto.randomUUID(),
       role: 'user',
       content: query,
     }
@@ -185,10 +185,11 @@ export function DormosaurAiChat() {
       setMessages((prev) => [
         ...prev,
         {
-          id: `ai-${Date.now()}`,
+          id: crypto.randomUUID(),
           role: 'assistant',
           content: replyContent,
           mode: !res.ok ? 'limited' : data.mode === 'ai' || data.mode === 'local' ? data.mode : 'limited',
+          model: res.ok && data.mode === 'ai' && typeof data.model === 'string' && /^[\w./:-]{1,100}$/.test(data.model) ? data.model : undefined,
         },
       ])
     } catch {
@@ -222,7 +223,7 @@ export function DormosaurAiChat() {
           aria-controls="dormosaur-ai-dialog"
           className="ai-launcher relative flex items-center gap-2.5 pl-3 pr-4.5 py-2 text-white"
         >
-          <img
+          <Image
             src="/ai-dormosaur.png"
             alt=""
             aria-hidden="true"
@@ -277,7 +278,7 @@ export function DormosaurAiChat() {
             {/* Drawer Header */}
             <div className="ai-header flex items-center justify-between px-4 py-3">
               <div className="flex items-center gap-3">
-                <img
+                <Image
                   src="/ai-dormosaur.png"
                   alt=""
                   aria-hidden="true"
@@ -286,10 +287,10 @@ export function DormosaurAiChat() {
                   className="size-12 object-contain filter drop-shadow-sm shrink-0"
                 />
                 <div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <h2 id={dialogTitleId} className="text-[14.5px] font-bold text-foreground">Dormosaur Copilot</h2>
-                    <span className="ai-model-badge px-2 py-0.5 text-[10px] font-bold text-primary">
-                      Dormosaur AI
+                    <span title={latestReply?.model} className="ai-model-badge px-2 py-0.5 text-[10px] font-bold text-primary">
+                      {replyBadge(latestReply)}
                     </span>
                   </div>
                   <p className="ai-context-line text-[11px] text-muted-foreground"><Calendar className="size-3.5" /> {classes.length} classes <span>·</span> <Clock className="size-3.5" /> {alarms.length} alarms <span>·</span> <CookingPot className="size-3.5" /> kitchen prefs</p>
@@ -314,7 +315,7 @@ export function DormosaurAiChat() {
                   className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {msg.role === 'assistant' && (
-                    <img
+                    <Image
                       src="/ai-dormosaur.png"
                       alt=""
                       aria-hidden="true"
@@ -336,7 +337,7 @@ export function DormosaurAiChat() {
                     </div>
                     {msg.mode && (
                       <p className="mt-1 text-[9.5px] opacity-60">
-                        {msg.mode === 'limited' ? 'Limited mode' : msg.mode === 'local' ? 'Dormosaur' : 'Dormosaur AI'}
+                        {replyBadge(msg)}
                       </p>
                     )}
                   </div>

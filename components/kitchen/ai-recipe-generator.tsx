@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Activity, Sparkles, Wand2, Plus, Check, AlertCircle, RotateCcw } from 'lucide-react'
 import { AiRecipeModal, type GeneratedRecipe } from './ai-recipe-modal'
@@ -39,14 +40,11 @@ export function AiRecipeGenerator() {
       induction_burner: 'Induction Burner',
     }
     const matched = studentApps.map((a) => map[a]).filter(Boolean)
-    return matched.length > 0 ? matched : ['Microwave']
+    return matched
   }, [profile.appliances])
 
-  const [selectedAppliances, setSelectedAppliances] = React.useState<string[]>(initialAppliances)
-
-  React.useEffect(() => {
-    setSelectedAppliances(initialAppliances)
-  }, [initialAppliances])
+  const [applianceOverride, setSelectedAppliances] = React.useState<string[] | null>(null)
+  const selectedAppliances = applianceOverride?.filter(a => initialAppliances.includes(a)) ?? initialAppliances
   const [customPrompt, setCustomPrompt] = React.useState('')
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
@@ -54,10 +52,7 @@ export function AiRecipeGenerator() {
   const [loadingStage, setLoadingStage] = React.useState(0)
 
   React.useEffect(() => {
-    if (!loading) {
-      setLoadingStage(0)
-      return
-    }
+    if (!loading) return
     const interval = setInterval(() => {
       setLoadingStage((prev) => (prev + 1) % 3)
     }, 600)
@@ -79,13 +74,12 @@ export function AiRecipeGenerator() {
 
   const toggleAppliance = (name: string) => {
     setError(null)
-    setSelectedAppliances((prev) =>
-      prev.includes(name) ? prev.filter((a) => a !== name) : [...prev, name]
-    )
+    setSelectedAppliances(selectedAppliances.includes(name) ? selectedAppliances.filter(a => a !== name) : [...selectedAppliances, name])
   }
 
   const handleGenerate = async (queryText?: string) => {
     if (loading) return
+    setLoadingStage(0)
     setLoading(true)
     setError(null)
 
@@ -120,7 +114,7 @@ export function AiRecipeGenerator() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <img
+            <Image
               src="/chef-dormosaur.png"
               alt="Chef Dormosaur"
               width={52}
@@ -137,7 +131,7 @@ export function AiRecipeGenerator() {
             </div>
           </div>
           <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-800 dark:text-emerald-300 shrink-0">
-            Llama 3
+            Dormosaur Chef
           </span>
         </div>
 

@@ -11,10 +11,10 @@ import { BrandPanel } from '@/components/signup/brand-panel'
 import { GoogleIcon } from '@/components/signup/google-icon'
 import { PasswordStrength } from '@/components/signup/password-strength'
 import { PillButton } from '@/components/ios/pill-button'
+import { authErrorMessage } from '@/lib/auth-errors'
 import {
   isEduOrSchoolEmail,
   isValidEmailFormat,
-  getFallbackAuthEmail,
   detectSchoolFromEmail,
 } from '@/lib/email-utils'
 
@@ -54,7 +54,7 @@ export default function SignUpPage() {
 
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault()
-    if (!name || !email || !password || !agreed) return
+    if (!name.trim() || !email || !password || !agreed || loading || googleLoading) return
 
     if (!isValidEmailFormat(email)) {
       setError('Please enter a valid email address.')
@@ -71,7 +71,7 @@ export default function SignUpPage() {
 
     try {
       const cleanEmail = email.trim()
-      let authRes = await supabase.auth.signUp({
+      const authRes = await supabase.auth.signUp({
         email: cleanEmail,
         password,
         options: {
@@ -84,37 +84,21 @@ export default function SignUpPage() {
         },
       })
 
-      // Fallback: If Supabase GoTrue rejects BSU / Philippine email domain format
-      if (
-        authRes.error &&
-        (authRes.error.message.toLowerCase().includes('is invalid') ||
-          authRes.error.message.toLowerCase().includes('invalid email'))
-      ) {
-        const fallbackEmail = getFallbackAuthEmail(cleanEmail)
-        authRes = await supabase.auth.signUp({
-          email: fallbackEmail,
-          password,
-          options: {
-            data: {
-              full_name: name.trim(),
-              school: detectedSchool || '',
-              school_email: cleanEmail,
-            },
-            emailRedirectTo: `${window.location.origin}/api/auth/callback`,
-          },
-        })
-      }
-
       if (authRes.error) {
-        setError(authRes.error.message)
+        setError(authErrorMessage(authRes.error, 'signup'))
         setLoading(false)
         return
       }
 
+      if (authRes.data.user?.identities?.length === 0) {
+        setError('An account may already exist for this email. Please sign in or check your inbox.')
+        setLoading(false)
+        return
+      }
       if (authRes.data.session && authRes.data.user) {
         await seedNewUser(supabase, authRes.data.user.id, {
           name: name.trim(),
-          school: detectedSchool || 'Batangas State University',
+          school: detectedSchool || '',
           initials: getInitials(name.trim()),
         })
         router.push('/onboarding')
@@ -124,23 +108,29 @@ export default function SignUpPage() {
         setLoading(false)
       }
     } catch (err: unknown) {
-      console.error('Sign up error:', err)
+      console.warn('[Auth]', { category: 'signup_failed' })
       setError('An unexpected error occurred. Please try again.')
       setLoading(false)
     }
   }
 
   async function handleGoogleSignUp() {
+    if (loading || googleLoading) return
     setGoogleLoading(true)
     setError(null)
-    const { error } = await supabase.auth.signInWithOAuth({
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/api/auth/callback?next=/dashboard`,
       },
     })
-    if (error) {
-      setError(error.message)
+      if (error) {
+        setError(authErrorMessage(error, 'signup'))
+        setGoogleLoading(false)
+      }
+    } catch {
+      setError('Google sign-in is unavailable. Please try again shortly.')
       setGoogleLoading(false)
     }
   }
@@ -173,12 +163,12 @@ export default function SignUpPage() {
       const data = await res.json()
 
       if (res.ok && data.success) {
-        setResendMessage('Confirmation email sent! Please check your inbox or spam folder.')
+        setResendMessage(data.message || 'Please check your inbox and spam folder for a confirmation link.')
         setResendCooldown(60)
       } else {
         setResendError(data.error || 'Failed to resend confirmation email. Please try again.')
       }
-    } catch (err) {
+    } catch {
       setResendError('Network error — please check your connection and try again.')
     } finally {
       setResendLoading(false)

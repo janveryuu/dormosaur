@@ -1,3 +1,4 @@
+import 'server-only'
 import { createClient } from '@supabase/supabase-js'
 
 export function getSupabaseAdminClient() {
@@ -47,9 +48,9 @@ export type AdminUserDetail = {
     dietary_preference: string
     dietary_note: string
   }
-  classes: any[]
-  alarms: any[]
-  deadlines: any[]
+  classes: { id: string; subject: string; code: string; days: string[]; start_time: string; end_time: string; start?: string; end?: string; room: string; instructor: string }[]
+  alarms: { id: string; subject: string; code: string; time: string; lead: number; enabled: boolean; day: string; label?: string; days?: string[] }[]
+  deadlines: { id: string; title: string; code: string; due_date: string; type: string; completed: boolean; subject?: string; date?: string; priority?: string }[]
 }
 
 // ─── 1. OVERVIEW STATS ────────────────────────────────────────────────────────
@@ -484,7 +485,8 @@ export async function updateAdminSettings(settings: Record<string, boolean>) {
 
   const { error } = await admin.from('admin_settings').upsert(payload)
   if (error) {
-    console.warn('Admin settings upsert notice:', error.message)
+    console.warn('[Admin settings]', { category: 'write_failed' })
+    throw new Error('Settings could not be saved. Please try again.')
   }
   return payload
 }

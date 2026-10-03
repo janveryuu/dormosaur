@@ -1,19 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Groq from 'groq-sdk'
+import { apiError, boundedText, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
 
 const groqApiKey = process.env.GROQ_API_KEY || ''
-const groq = groqApiKey ? new Groq({ apiKey: groqApiKey }) : null
+const groq = groqApiKey ? new Groq({ apiKey: groqApiKey, timeout: 8000, maxRetries: 0 }) : null
 
 export async function POST(req: NextRequest) {
   try {
+    await requireAuthenticated('alarm-nudge', 30)
     const {
-      subject = 'Class',
-      room = 'Dorm',
+      subject = '',
+      room = '',
       minutes_until = 15,
       is_first_class_today = false,
       gap_before_minutes = null,
       reminder_item = null,
-    } = await req.json()
+    } = await readJson(req, 8192)
+    boundedText(subject, 150, 'subject', true)
+    boundedText(room, 150, 'room')
+    if (typeof minutes_until !== 'number' || !Number.isFinite(minutes_until) || minutes_until < 0 || minutes_until > 1440) throw new InputError('Please check the reminder time.')
+    if (reminder_item !== null) boundedText(reminder_item, 120, 'reminder item')
 
     const inputJson = JSON.stringify(
       {
@@ -44,12 +50,13 @@ Output: one plain sentence, nothing else.`
 
     // 1. Call Groq Llama 3 if API Key is configured
     if (groq) {
+      try {
       const completion = await groq.chat.completions.create({
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: inputJson },
         ],
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-20b',
         temperature: 0.3,
         max_tokens: 60,
       })
@@ -58,8 +65,9 @@ Output: one plain sentence, nothing else.`
       if (rawContent) {
         // Strip quotes or newlines if any
         const cleaned = rawContent.replace(/^["']|["']$/g, '').trim()
-        return NextResponse.json({ nudge: cleaned, source: 'groq/llama-3.3-70b' })
+        return NextResponse.json({ nudge: cleaned, source: 'ai' })
       }
+      } catch { console.warn('[Alarm Nudge]', { category: 'provider_unavailable' }) }
     }
 
     // 2. Instant Graceful Fallback Rule
@@ -76,7 +84,8 @@ Output: one plain sentence, nothing else.`
 
     return NextResponse.json({ nudge: fallback, source: 'dormosaur/local-ai-fallback' })
   } catch (error) {
-    console.error('Smart Alarm Nudge API Error:', error)
+    if (error instanceof InputError) return apiError(error, 'We could not load this reminder.')
+    console.warn('[Alarm Nudge]', { category: 'request_failed' })
     // Always degrade gracefully! Never block or delay reminders
     return NextResponse.json({
       nudge: 'Class starts soon — check your schedule room number.',

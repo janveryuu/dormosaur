@@ -4,6 +4,7 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
+import { unsubscribePush } from '@/lib/push-notifications'
 
 interface AuthState {
   user: User | null
@@ -19,27 +20,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     const supabase = createClient()
 
+    let disposed = false
+    let authChanged = false
+    let previousAccount: string | null | undefined
     // Get initial session
     supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user)
-      setLoading(false)
-    })
+      if (!disposed && !authChanged) { setUser(data.user); setLoading(false) }
+    }).catch(() => { if (!disposed && !authChanged) { setUser(null); setLoading(false) } })
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      authChanged = true
+      if (disposed) return
+      const account = session?.user.id ?? null
+      if (previousAccount !== undefined && previousAccount !== account) {
+        for (const key of [
+          'dormosaur_parsed_draft', 'dormly_parsed_draft',
+          'dormosaur_parsed_deadlines_draft', 'dormly_parsed_deadlines_draft',
+          'dormosaur_parsed_deadlines_image', 'dormly_parsed_deadlines_image',
+        ]) {
+          try { sessionStorage.removeItem(key) } catch {}
+        }
+      }
+      previousAccount = account
       setUser(session?.user ?? null)
       setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
+    return () => { disposed = true; subscription.unsubscribe() }
   }, [])
 
   return React.createElement(
     AuthContext.Provider,
     { value: { user, loading } },
-    children,
+    // Reset open forms and dialogs when another account replaces this session.
+    React.createElement(React.Fragment, { key: user?.id ?? 'signed-out' }, children),
   )
 }
 
@@ -52,7 +69,11 @@ export function useSignOut() {
 
   return async () => {
     const supabase = createClient()
-    await supabase.auth.signOut()
+    // Stop this device receiving the previous student's reminders on sign-out.
+    // Other devices stay subscribed; expired endpoints are also pruned server-side.
+    await unsubscribePush().catch(() => false)
+    const { error } = await supabase.auth.signOut()
+    if (error) throw new Error('We could not sign out. Please reconnect and try again.')
     router.push('/')
     router.refresh()
   }

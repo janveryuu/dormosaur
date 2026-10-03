@@ -1,3 +1,4 @@
+import 'server-only'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -65,7 +66,7 @@ export async function requireAdminSession(): Promise<AdminUser> {
   const isEmailInAllowlist = ADMIN_ALLOWED_EMAILS.includes(userEmail)
 
   if (!isEmailInAllowlist) {
-    console.warn(`[Security Block] Access denied: email '${userEmail}' is NOT in ADMIN_ALLOWED_EMAILS allowlist. User ID: ${user.id}`)
+    console.warn('[Admin access]', { category: 'allowlist_denied' })
     redirect('/dashboard')
   }
 
@@ -73,7 +74,7 @@ export async function requireAdminSession(): Promise<AdminUser> {
   const adminClient = getSupabaseAdminClient()
   const { data: profile } = await adminClient
     .from('profiles')
-    .select('id, name, school, initials, is_admin')
+    .select('*')
     .eq('id', user.id)
     .maybeSingle()
 
@@ -81,16 +82,16 @@ export async function requireAdminSession(): Promise<AdminUser> {
   const isProfileAdmin = Boolean(profile?.is_admin) || user.id === 'bfa33a51-9caf-4a49-89e5-df9aedbb96a3'
 
   if (!isProfileAdmin) {
-    console.warn(`[Security Block] Access denied: email '${userEmail}' is in allowlist but database is_admin check failed. User ID: ${user.id}`)
+    console.warn('[Admin access]', { category: 'role_denied' })
     redirect('/dashboard')
   }
 
   return {
     id: user.id,
     email: userEmail,
-    name: profile?.name || user.user_metadata?.full_name || 'Janver Manlapaz',
-    school: profile?.school || 'Batangas State University',
-    initials: profile?.initials || 'JM',
+    name: profile?.name || user.user_metadata?.full_name || 'Admin',
+    school: profile?.school || '',
+    initials: profile?.initials || '',
     is_admin: true,
   }
 }

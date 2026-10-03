@@ -1,93 +1,37 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import Groq from 'groq-sdk'
 import { recipes } from '@/lib/data'
-import type { ClassEntry } from '@/lib/data'
+import { getDietaryFilteredRecipes, getFeasibleRecipes, type ApplianceType, type DietaryPreference } from '@/lib/appliances-data'
 import { analyzeTodaySchedule } from '@/lib/schedule-gap-analyzer'
+import { getClasses, getUserProfile } from '@/lib/db'
+import { clockAt } from '@/lib/copilot/time'
+import { apiError, readJson, requireAuthenticated } from '@/lib/api-security'
 
-const groqApiKey = process.env.GROQ_API_KEY || ''
-const groq = groqApiKey ? new Groq({ apiKey: groqApiKey }) : null
-
-export async function POST(req: NextRequest) {
+const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY, timeout: 10_000, maxRetries: 0 }) : null
+export async function POST(req: Request) {
   try {
-    const { classes = [], dayName = 'Mon' } = await req.json()
-
-    // Analyze gaps in today's timetable
-    const analysis = analyzeTodaySchedule(classes as ClassEntry[], dayName)
-
-    const recipeSummaries = recipes.map((r) => ({
-      slug: r.slug,
-      title: r.title,
-      cookTimeMinutes: r.minutes,
-      appliance: r.appliance,
-      meal: r.meal,
-      blurb: r.blurb,
-    }))
-
-    const systemPrompt = `You are an expert AI Campus Meal Advisor for college students.
-Given today's class schedule analysis and available recipe library, select 3 ideal recipes that fit the student's exact time constraints today.
-
-SCHEDULE ANALYSIS:
-- Summary: ${analysis.summaryHeadline}
-- Packed until: ${analysis.packedUntil || 'No classes'}
-- Max recommended cook time: ${analysis.maxRecommendedCookTime} minutes
-- Today's Gaps: ${JSON.stringify(analysis.gaps)}
-
-AVAILABLE RECIPES:
-${JSON.stringify(recipeSummaries, null, 2)}
-
-Return ONLY a valid JSON object matching this schema without any markdown formatting:
-{
-  "headline": "${analysis.summaryHeadline}",
-  "subtext": "Here are 3 quick meals that fit your schedule perfectly today.",
-  "recommendedSlugs": ["microwave-mac-and-cheese", "kettle-ramen-egg", "quesadilla"],
-  "scheduleInsights": [
-    {
-      "recipeSlug": "microwave-mac-and-cheese",
-      "reason": "Cooks in 5 mins — fits your break between lectures."
-    }
-  ]
-}`
-
-    // 1. Call Groq Llama 3 if API Key is configured
-    if (groq) {
+    const { supabase, user } = await requireAuthenticated()
+    await readJson(req, 64 * 1024)
+    const [classes, profile] = await Promise.all([getClasses(supabase, user.id), getUserProfile(supabase, user.id)])
+    const day = clockAt(new Date(), profile?.timezone || 'Asia/Manila').day
+    const analysis = analyzeTodaySchedule(classes, day)
+    const feasible = getDietaryFilteredRecipes(getFeasibleRecipes(recipes, (profile?.appliances || []) as ApplianceType[]), (profile?.dietary_preference || 'none') as DietaryPreference)
+    const suitable = feasible.filter(r => r.minutes <= analysis.maxRecommendedCookTime + 5)
+    let selected = suitable.slice(0, 3)
+    let source = 'local'
+    if (groq && suitable.length) {
       try {
-        const completion = await groq.chat.completions.create({
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: 'Suggest schedule-aware meals for today.' },
-          ],
-          model: 'llama-3.3-70b-versatile',
-          response_format: { type: 'json_object' },
-          temperature: 0.3,
-        })
-
-        const rawContent = completion.choices[0]?.message?.content || '{}'
-        const aiData = JSON.parse(rawContent)
-        if (aiData && Array.isArray(aiData.recommendedSlugs)) {
-          return NextResponse.json({ ...aiData, analysis, source: 'groq/llama-3.3-70b' })
+        const completion = await groq.chat.completions.create({ model: 'openai/gpt-oss-20b', response_format: { type: 'json_object' }, temperature: 0.2, max_tokens: 500,
+          messages: [{ role: 'system', content: `Select up to 3 recipes from this allowed list that fit the student's schedule. Return JSON {recommendedSlugs:string[]}. Analysis: ${JSON.stringify(analysis)}. Recipes: ${JSON.stringify(suitable.map(r => ({ slug: r.slug, title: r.title, minutes: r.minutes })))}` }, { role: 'user', content: 'Suggest meals for today.' }] })
+        const data = JSON.parse(completion.choices[0]?.message?.content || '{}')
+        if (Array.isArray(data.recommendedSlugs) && data.recommendedSlugs.length && data.recommendedSlugs.length <= 3 && data.recommendedSlugs.every((s: unknown) => typeof s === 'string' && suitable.some(r => r.slug === s))) {
+          selected = [...new Set<string>(data.recommendedSlugs)].map(slug => suitable.find(r => r.slug === slug)!)
+          source = 'ai'
         }
-      } catch (groqErr: any) {
-        console.warn('[Schedule-Aware Recipe API Notice] Groq call failed, falling back to local engine:', groqErr?.message || groqErr)
-      }
+      } catch { console.warn('[Schedule Meals]', { category: 'provider_unavailable' }) }
     }
-
-    // 2. Local Fallback Engine
-    const suitableRecipes = recipes.filter((r) => r.minutes <= analysis.maxRecommendedCookTime + 5)
-    const selected = (suitableRecipes.length >= 3 ? suitableRecipes : recipes).slice(0, 3)
-
-    return NextResponse.json({
-      headline: analysis.summaryHeadline,
-      subtext: `Here are ${selected.length} quick meals under ${analysis.maxRecommendedCookTime + 5} minutes tailored to your schedule!`,
-      recommendedSlugs: selected.map((r) => r.slug),
-      scheduleInsights: selected.map((r) => ({
-        recipeSlug: r.slug,
-        reason: `Cooks in ${r.minutes} mins — fits your schedule constraints today.`,
-      })),
-      analysis,
-      source: 'dormosaur/local-ai-fallback',
-    })
-  } catch (error) {
-    console.error('Schedule-Aware Recipe API Error:', error)
-    return NextResponse.json({ error: 'Failed to generate schedule-aware meal suggestions' }, { status: 500 })
-  }
+    return NextResponse.json({ headline: analysis.summaryHeadline,
+      subtext: selected.length ? `Here are ${selected.length} meals that fit your saved equipment and schedule.` : 'No recipes match this break and your saved equipment. Check your profile or browse the Kitchen.',
+      recommendedSlugs: selected.map(r => r.slug), scheduleInsights: selected.map(r => ({ recipeSlug: r.slug, reason: `Cooks in ${r.minutes} minutes.` })), analysis, source })
+  } catch (error) { return apiError(error, 'We could not load meal suggestions. Please try again shortly.') }
 }

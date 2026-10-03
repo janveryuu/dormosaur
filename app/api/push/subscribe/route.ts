@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import webpush from 'web-push'
-import { createClient } from '@/lib/supabase/server'
 import { upsertPushSubscription, deletePushSubscriptionByEndpoint, updateSubscriptionLastSeen } from '@/lib/db'
+import { apiError, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
+import { validatePushSubscription, validPushEndpoint } from '@/lib/push-validation'
 
 // Configure VAPID details
 const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''
@@ -11,26 +12,15 @@ const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:admin@dormosaur.app'
 if (vapidPublicKey && vapidPrivateKey) {
   try {
     webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey)
-  } catch (e) {
-    console.warn('VAPID init notice:', e)
+  } catch {
+    console.warn('[Web Push]', { category: 'vapid_configuration_invalid' })
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const payload = await req.json()
-    const { endpoint, keys, deviceLabel } = payload || {}
-
-    if (!endpoint || !keys || !keys.p256dh || !keys.auth) {
-      return NextResponse.json({ error: 'Invalid push subscription payload' }, { status: 400 })
-    }
+    const { supabase, user } = await requireAuthenticated('push-subscribe', 5)
+    const { endpoint, keys, deviceLabel } = validatePushSubscription(await readJson(req, 8192))
 
     // 1. Upsert subscription row in database
     const record = await upsertPushSubscription(supabase, user.id, {
@@ -44,14 +34,14 @@ export async function POST(req: NextRequest) {
       title: 'Dormosaur',
       body: "You're all set — notifications are on for this device.",
       tag: 'test-push-confirmation',
-      icon: '/icon-192.png',
-      badge: '/badge-96.png',
+      icon: '/android-chrome-192x192.png',
+      badge: '/apple-icon.png',
       data: { url: '/dashboard' },
     })
 
     try {
-      await webpush.sendNotification({ endpoint, keys }, testPushPayload)
-      await updateSubscriptionLastSeen(supabase, endpoint)
+      await webpush.sendNotification({ endpoint, keys }, testPushPayload, { timeout: 8000, TTL: 60 })
+      await updateSubscriptionLastSeen(supabase, endpoint, user.id)
     } catch (pushErr: unknown) {
       const statusCode = (pushErr as { statusCode?: number }).statusCode
       // If 404/410, endpoint is invalid or revoked — delete row and report failure
@@ -62,7 +52,7 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         )
       }
-      console.warn('Instant test push notice:', pushErr)
+      console.warn('[Web Push]', { category: 'confirmation_failed', status: statusCode ?? null })
     }
 
     return NextResponse.json({
@@ -71,30 +61,20 @@ export async function POST(req: NextRequest) {
       subscriptionId: record?.id || endpoint,
     })
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return apiError(err, 'We could not enable notifications on this device. Please try again.')
   }
 }
 
 export async function DELETE(req: NextRequest) {
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { endpoint } = await req.json().catch(() => ({}))
-    if (!endpoint) {
-      return NextResponse.json({ error: 'Endpoint required' }, { status: 400 })
-    }
+    const { supabase, user } = await requireAuthenticated('push-remove', 10)
+    const { endpoint } = await readJson(req, 4096)
+    if (!validPushEndpoint(endpoint)) throw new InputError('Please choose a valid notification device.')
 
     await deletePushSubscriptionByEndpoint(supabase, user.id, endpoint)
 
     return NextResponse.json({ success: true })
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return apiError(err, 'We could not remove this notification device. Please try again.')
   }
 }

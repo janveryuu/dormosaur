@@ -2,16 +2,19 @@ import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { getUserProfile, seedNewUser } from '@/lib/db'
+import { safeNextPath } from '@/lib/auth-errors'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const tokenHash = requestUrl.searchParams.get('token_hash')
+  const type = requestUrl.searchParams.get('type')
   const nextParam = requestUrl.searchParams.get('next')
-  const defaultNext = nextParam && nextParam !== '/onboarding' ? nextParam : '/dashboard'
+  const defaultNext = safeNextPath(nextParam)
   const origin = requestUrl.origin
 
-  if (!code) {
-    return NextResponse.redirect(`${origin}/sign-in`)
+  if (!code && !(tokenHash && (type === 'email' || type === 'signup'))) {
+    return NextResponse.redirect(`${origin}/sign-in?error=confirmation_expired`)
   }
 
   try {
@@ -37,7 +40,9 @@ export async function GET(request: Request) {
       },
     )
 
-    const { error, data } = await supabase.auth.exchangeCodeForSession(code)
+    const { error, data } = tokenHash && (type === 'email' || type === 'signup')
+      ? await supabase.auth.verifyOtp({ token_hash: tokenHash, type })
+      : await supabase.auth.exchangeCodeForSession(code!)
 
     if (!error && data?.user) {
       const userId = data.user.id
@@ -63,10 +68,9 @@ export async function GET(request: Request) {
               school: '',
               dorm: 'Dorm Room',
               year: '',
-              avatar_url: meta?.avatar_url || meta?.picture || '',
               initials,
               onboarding_completed: false,
-            }).catch((e) => console.error('seed error:', e))
+            })
           }
 
           return NextResponse.redirect(`${origin}/onboarding`)
@@ -74,11 +78,11 @@ export async function GET(request: Request) {
 
         return NextResponse.redirect(`${origin}${defaultNext}`)
       } catch (dbErr) {
-        console.error('DB error in callback:', dbErr)
+        console.warn('[Auth Callback]', { category: 'profile_unavailable' })
         return NextResponse.redirect(`${origin}/onboarding`)
       }
     } else {
-      console.warn('OAuth code exchange notice:', error?.message)
+      console.warn('[Auth Callback]', { category: 'confirmation_failed' })
       // If code was already used or expired, user is likely already signed in -> check session
       const { data: sessionData } = await supabase.auth.getUser()
       if (sessionData?.user) {
@@ -90,9 +94,9 @@ export async function GET(request: Request) {
       }
     }
   } catch (err) {
-    console.error('Top-level auth callback catch:', err)
+    console.warn('[Auth Callback]', { category: 'callback_failed' })
   }
 
   // Graceful fallback redirect on any code failure
-  return NextResponse.redirect(`${origin}/onboarding`)
+  return NextResponse.redirect(`${origin}/sign-in?error=confirmation_expired`)
 }

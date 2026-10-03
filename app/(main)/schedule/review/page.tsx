@@ -1,6 +1,8 @@
 'use client'
 
 import * as React from 'react'
+import { validTime } from '@/lib/date-time'
+import { useClientReady } from '@/hooks/use-browser-state'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { CircleCheckBig, Plus, Trash2, TriangleAlert } from 'lucide-react'
@@ -11,20 +13,20 @@ import { subjectColorClass, weekDays, type ClassEntry, type SubjectColor } from 
 
 type Field = 'subject' | 'code' | 'start' | 'end' | 'room' | 'instructor'
 
-function sanitizeClassEntry(e: any, index: number): ClassEntry {
+function sanitizeClassEntry(e: Partial<ClassEntry> | null, index: number): ClassEntry {
   const safeColor = (e && e.color && subjectColorClass[e.color as SubjectColor])
     ? (e.color as SubjectColor)
     : ((((index % 5) + 1)) as SubjectColor)
 
   return {
     id: e?.id || `draft-${Date.now()}-${index}`,
-    subject: e?.subject || e?.code || 'Untitled Course',
-    code: e?.code || e?.subject || 'COURSE',
+    subject: e?.subject || e?.code || '',
+    code: e?.code || '',
     instructor: e?.instructor || '',
     room: e?.room || '',
-    days: Array.isArray(e?.days) && e.days.length > 0 ? e.days : ['Mon'],
-    start: e?.start || '08:00',
-    end: e?.end || '09:00',
+    days: Array.isArray(e?.days) ? e.days : [],
+    start: e?.start || '',
+    end: e?.end || '',
     color: safeColor,
     confidence: e?.confidence === 'low' ? 'low' : 'high',
     lowFields: Array.isArray(e?.lowFields) ? e.lowFields : [],
@@ -32,29 +34,18 @@ function sanitizeClassEntry(e: any, index: number): ClassEntry {
 }
 
 export default function ReviewSchedulePage() {
+  const ready = useClientReady()
+  return ready ? <ReviewScheduleForm /> : null
+}
+function ReviewScheduleForm() {
   const router = useRouter()
-  const { classes, addClasses } = useSchedule()
+  const { classes, saveClasses } = useSchedule()
   const [entries, setEntries] = React.useState<ClassEntry[]>(
-    classes.map((c, i) => sanitizeClassEntry(c, i))
+    () => { try { const draft: unknown = JSON.parse(sessionStorage.getItem('dormosaur_parsed_draft') || sessionStorage.getItem('dormly_parsed_draft') || 'null'); return (Array.isArray(draft) ? draft : classes).map((c, i) => sanitizeClassEntry(c, i)) } catch { return classes.map((c, i) => sanitizeClassEntry(c, i)) } }
   )
   const [confirmed, setConfirmed] = React.useState(false)
 
-  // Hydrate from draft if available
-  React.useEffect(() => {
-    try {
-      const rawDraft = sessionStorage.getItem('dormosaur_parsed_draft') || sessionStorage.getItem('dormly_parsed_draft')
-      if (rawDraft) {
-        const parsed = JSON.parse(rawDraft)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const sanitized = parsed.map((item, idx) => sanitizeClassEntry(item, idx))
-          setEntries(sanitized)
-        }
-      }
-    } catch (e) {
-      console.warn('Draft load notice:', e)
-    }
-  }, [])
-
+  const [saveError, setSaveError] = React.useState<string | null>(null)
   const lowCount = entries.filter((e) => e.confidence === 'low').length
 
   const update = (id: string, field: Field, value: string) => {
@@ -101,10 +92,10 @@ export default function ReviewSchedulePage() {
     const newColor = ((entries.length % 5) + 1) as SubjectColor
     const newClass: ClassEntry = {
       id: newId,
-      subject: 'New Course Title',
-      code: 'COURSE 101',
-      instructor: 'Prof. Name',
-      room: 'Hall 101',
+      subject: '',
+      code: '',
+      instructor: '',
+      room: '',
       days: ['Mon', 'Wed'],
       start: '10:00',
       end: '11:15',
@@ -114,16 +105,20 @@ export default function ReviewSchedulePage() {
     setEntries((prev) => [...prev, newClass])
   }
 
-  const confirm = () => {
-    setConfirmed(true)
-    addClasses(entries)
-    sessionStorage.removeItem('dormosaur_parsed_draft')
-    sessionStorage.removeItem('dormly_parsed_draft')
-    setTimeout(() => router.push('/schedule'), 900)
+  const confirm = async () => {
+    if (confirmed) return
+    if (entries.some(e => !(e.code.trim() || e.subject.trim()) || !e.days.length || !validTime(e.start) || !validTime(e.end) || e.end <= e.start)) { setSaveError('Please review each class name, meeting day, start and end time.'); return }
+    setConfirmed(true); setSaveError(null)
+    try {
+      await saveClasses(entries)
+      sessionStorage.removeItem('dormosaur_parsed_draft'); sessionStorage.removeItem('dormly_parsed_draft')
+      router.push('/schedule')
+    } catch { setConfirmed(false); setSaveError('Your schedule could not be saved. Your draft is still here. Please try again.') }
   }
 
   return (
     <>
+      {saveError && <p role="alert" className="mb-4 rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">{saveError}</p>}
       <ScreenHeader
         title="Review & confirm"
         backHref="/schedule/import"

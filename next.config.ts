@@ -16,9 +16,21 @@ const nextConfig = {
       './node_modules/pdfjs-dist/standard_fonts/**',
       './node_modules/@napi-rs/canvas*/**',
     ],
+    '/api/deadlines/parse': [
+      './node_modules/tesseract.js/**',
+      './node_modules/tesseract.js-core/**',
+      './node_modules/bmp-js/**',
+      './node_modules/wasm-feature-detect/**',
+      './node_modules/@tesseract.js-data/eng/**',
+      './node_modules/pdfjs-dist/legacy/build/pdf*.mjs',
+      './node_modules/pdfjs-dist/package.json',
+      './node_modules/pdfjs-dist/wasm/**',
+      './node_modules/pdfjs-dist/standard_fonts/**',
+      './node_modules/@napi-rs/canvas*/**',
+    ],
   },
   images: {
-    unoptimized: true,
+    unoptimized: false,
   },
 }
 

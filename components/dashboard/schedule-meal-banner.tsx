@@ -3,6 +3,8 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Clock, CookingPot, Sparkles, ArrowRight, Utensils, Check } from 'lucide-react'
+import { useNow } from '@/hooks/use-browser-state'
+import { clockAt } from '@/lib/copilot/time'
 import { useSchedule } from '@/components/schedule-provider'
 import { recipes, type Recipe } from '@/lib/data'
 
@@ -14,32 +16,40 @@ type AiMealSuggestion = {
 }
 
 export function ScheduleMealBanner() {
-  const { classes, setMealPlanItem } = useSchedule()
+  const { classes, profile, isHydrated, setMealPlanItem } = useSchedule()
+  const now = useNow()
+  const day = now ? clockAt(new Date(now), profile.timezone).day : ''
+  const [retry, setRetry] = React.useState(0)
+  const [error, setError] = React.useState(false)
   const [data, setData] = React.useState<AiMealSuggestion | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [savedSlug, setSavedSlug] = React.useState<string | null>(null)
 
   React.useEffect(() => {
+    if (!isHydrated || !day) return
+    const controller = new AbortController()
     async function fetchSuggestions() {
-      setLoading(true)
       try {
         const res = await fetch('/api/recipes/schedule-aware', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ classes, dayName: 'Mon' }),
+          body: '{}', signal: controller.signal,
         })
         const json = await res.json()
-        if (json.recommendedSlugs) {
-          setData(json)
+        if (!res.ok) throw new Error('recommendations_unavailable')
+        if (controller.signal.aborted) return
+        if (Array.isArray(json.recommendedSlugs)) {
+          setData(json); setError(false)
         }
       } catch (err) {
-        console.error('Failed to load schedule-aware meals:', err)
+        if (!controller.signal.aborted) setError(true)
       } finally {
-        setLoading(false)
+        if (!controller.signal.aborted) setLoading(false)
       }
     }
-    fetchSuggestions()
-  }, [classes])
+    void fetchSuggestions()
+    return () => controller.abort()
+  }, [classes, profile.appliances, profile.dietary_preference, isHydrated, day, retry])
 
   if (loading) {
     return (
@@ -52,12 +62,13 @@ export function ScheduleMealBanner() {
     )
   }
 
+  if (error) return <div role="alert" className="rounded-3xl border border-line bg-field p-5 text-sm">Meal suggestions are unavailable right now. <button type="button" className="min-h-11 font-semibold text-primary" onClick={() => { setLoading(true); setRetry(n => n + 1) }}>Retry</button></div>
   if (!data) return null
 
   const recommendedRecipes = recipes.filter((r) => data.recommendedSlugs.includes(r.slug))
 
   const handleSaveToPlan = (slug: string) => {
-    setMealPlanItem('Mon', 'Dinner', slug)
+    setMealPlanItem(day, 'Dinner', slug)
     setSavedSlug(slug)
     setTimeout(() => setSavedSlug(null), 2500)
   }

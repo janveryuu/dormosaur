@@ -132,11 +132,6 @@ export function MealPlanner() {
         {selectedSlot && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
-              ref={dialogRef}
-              role="dialog"
-              aria-modal="true"
-              aria-label={`Plan ${selectedSlot.meal} for ${selectedSlot.day}`}
-              tabIndex={-1}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -145,11 +140,16 @@ export function MealPlanner() {
             />
 
             <motion.div
+              ref={dialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Plan ${selectedSlot.meal} for ${selectedSlot.day}`}
+              tabIndex={-1}
               initial={{ opacity: 0, scale: 0.94, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94, y: 12 }}
               transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-              className="ios-glass relative z-10 w-full max-w-lg overflow-hidden rounded-4xl border border-border p-6 shadow-ios-lg"
+              className="ios-glass relative z-10 w-full max-w-lg max-h-[85dvh] overflow-y-auto rounded-4xl border border-border p-6 shadow-ios-lg"
             >
               <div className="flex items-center justify-between border-b border-separator pb-3">
                 <div>

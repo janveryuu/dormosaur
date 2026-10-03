@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getUserPushSubscriptions } from '@/lib/db'
+import { apiError } from '@/lib/api-security'
 
 export async function GET(_req: NextRequest) {
   try {
@@ -23,7 +24,6 @@ export async function GET(_req: NextRequest) {
       })),
     })
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return apiError(err, 'We could not load your notification devices. Please try again.')
   }
 }

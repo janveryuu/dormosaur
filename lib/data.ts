@@ -259,7 +259,7 @@ export const recipes: Recipe[] = [
     steps: [
       'Sauté minced garlic in oil or butter until golden and fragrant.',
       'Add cold rice, breaking up clumps, and toss with garlic and salt for 3 minutes.',
-      'Push rice to the side, crack in the egg, and scramble or fry to desired doneness.',
+      'Push rice to the side, add the beaten egg, and cook until fully set with no liquid egg remaining and the egg mixture reaches 71°C (160°F).',
     ],
     tip: 'Day-old cold rice from the mini fridge is essential — fresh warm rice will turn soggy instead of crisping up in garlic oil.',
     cuisine_region: 'Filipino',
@@ -288,7 +288,7 @@ export const recipes: Recipe[] = [
     ],
     steps: [
       'Beat egg in a microwave-safe mug with salt, pepper, and butter.',
-      'Microwave on high for 45 seconds until fluffed and set.',
+      'Cover with a vented microwave-safe cover. Microwave in 30-second bursts, stirring between bursts, until the egg is fully set with no liquid remaining and reaches 71°C (160°F). Let stand before eating; time varies by microwave.',
       'Slice bread roll horizontally, insert egg and cheese, and warm in microwave for 10 seconds.',
     ],
     tip: 'Splitting and microwaving the bread with cheese for 10 seconds softens the dense crumb and melts the cheese into the warm egg. You can add a slice of fried luncheon meat for extra protein!',
@@ -385,7 +385,7 @@ export const recipes: Recipe[] = [
     ],
     steps: [
       'Combine chicken, soy sauce, garlic, bay leaf, and pepper in a small saucepan over medium heat.',
-      'Simmer for 8 minutes until chicken is cooked through.',
+      'Simmer until the chicken reaches 74°C (165°F) in its thickest pieces, checked with a food thermometer. Eight minutes is only an estimate; continue cooking if needed.',
       'Pour in vinegar and let bubble uncovered for 3 minutes without stirring.',
       'Serve sizzling over a hot bowl of rice.',
     ],
@@ -480,7 +480,7 @@ export const recipes: Recipe[] = [
     steps: [
       'Broil or microwave eggplant for 3 minutes until soft, then peel off skin keeping stem intact.',
       'Flatten eggplant with a fork, dip thoroughly into beaten egg mixture with salt and pepper.',
-      'Fry in hot oil for 3 minutes per side until golden brown.',
+      'Fry until the egg is fully set with no liquid remaining and the center reaches 71°C (160°F). Three minutes per side is an estimate; continue cooking if needed.',
     ],
     tip: 'Tortang Talong is 100% vegetarian. You can also mix in seasoned ground pork (Tortang Giniling variant) if you have meat on hand!',
     cuisine_region: 'Filipino',
@@ -510,7 +510,7 @@ export const recipes: Recipe[] = [
     steps: [
       'Soak noodles and veggies in boiling kettle water for 3 minutes, then drain thoroughly.',
       'Mix flavor packets in a plate, then toss in drained hot noodles.',
-      'Top with a microwave-poached or fried egg.',
+      'Beat the egg in a separate microwave-safe bowl with a vented cover. Cook in 30-second bursts, stirring between bursts, until fully set and 71°C (160°F). Let stand, then place on the noodles; never microwave eggs in their shells.',
     ],
     tip: 'Add a drizzle of sesame oil or calamansi juice to elevate cheap instant noodles into a bistro-level meal.',
     cuisine_region: 'Filipino',
@@ -545,7 +545,7 @@ export const recipes: Recipe[] = [
       'Sauté garlic and onion in pan or rice cooker pot until soft.',
       'Add pork/chicken and cook 5 minutes until browned.',
       'Add potato, carrot, hotdog, and tomato sauce with 1/4 cup water.',
-      'Simmer covered for 10 minutes until potatoes are tender.',
+      'Simmer covered until the vegetables are tender and every piece of pork or chicken reaches 74°C (165°F), checked with a food thermometer. Ten minutes is an estimate; continue cooking if needed.',
     ],
     tip: 'Dicing potatoes and meat small (<1cm) cuts cook time in half so it boils tender in under 15 minutes!',
     cuisine_region: 'Filipino',
@@ -608,7 +608,7 @@ export const recipes: Recipe[] = [
     steps: [
       'Warm rice in microwave for 60 seconds with soy sauce and butter.',
       'Top with crispy fried garlic chips.',
-      'Add a poached or sunny-side-up egg and mix into hot rice for a creamy finish.',
+      'Cook the egg separately until the white and yolk are firm and the egg reaches 71°C (160°F), then add it to the rice. Hot rice alone does not reliably cook raw egg.',
     ],
     tip: 'Store a jar of pre-made fried garlic chips in your dorm room for instant aroma on any late-night rice bowl!',
     cuisine_region: 'Filipino',
@@ -638,10 +638,10 @@ export const recipes: Recipe[] = [
     ],
     steps: [
       'Boil water and ginger in kettle or pot to create ginger broth.',
-      'Add thin chicken slices and sayote wedges; simmer for 10 minutes until chicken is white and sayote is tender.',
+      'Add thin chicken slices and sayote wedges. Simmer until the chicken reaches 74°C (165°F) in its thickest pieces and the sayote is tender. Color and a fixed ten-minute time do not prove safe doneness.',
       'Season with fish sauce and stir in spinach leaves for 1 minute.',
     ],
-    tip: 'Thinly slicing the chicken breast allows it to cook through completely in boiling ginger broth within 8 minutes!',
+    tip: 'Thinly sliced chicken cooks more evenly. Confirm it reaches 74°C (165°F) with a food thermometer; cooking time varies.',
     cuisine_region: 'Filipino',
   },
   {
@@ -699,11 +699,11 @@ export const recipes: Recipe[] = [
       'Furikake or nori strips',
     ],
     steps: [
-      'Crack egg into hot rice bowl.',
+      'Check the egg is commercially pasteurized and labeled suitable for uncooked dishes; an ordinary fresh egg is unsuitable. Crack the pasteurized egg into the rice bowl.',
       'Add soy sauce and whip vigorously with chopsticks for 30 seconds until foamy and custard-like.',
       'Top with furikake seasoning.',
     ],
-    tip: 'The rice must be steaming hot so it lightly cooks the whipped egg into a creamy sauce.',
+    tip: 'Hot rice does not reliably cook raw eggs. Use only commercially pasteurized eggs labeled suitable for uncooked dishes and follow their storage directions. If unavailable, choose a cooked recipe.',
     cuisine_region: 'Japanese',
   },
   {
@@ -733,7 +733,7 @@ export const recipes: Recipe[] = [
     steps: [
       'Mix rice, kimchi, juice, gochujang, and sesame oil in a bowl.',
       'Microwave for 2 minutes until hot.',
-      'Top with a microwave-steamed or kettle egg and scallions.',
+      'Beat the egg in a separate microwave-safe bowl with a vented cover. Microwave in 30-second bursts, stirring between bursts, until fully set with no liquid egg and 71°C (160°F). Let stand before topping the rice. Do not cook food inside an electric kettle.',
     ],
     tip: 'Add a slice of American cheese on top for instant Korean cheese kimchi bokkeumbap!',
     cuisine_region: 'Korean',
@@ -800,7 +800,7 @@ export const recipes: Recipe[] = [
       'Rinse the rice until the water runs mostly clear, then add it to the rice cooker.',
       'Add water, salt and ginger. Run the porridge setting, or the normal cycle twice.',
       'Stir once halfway through so the rice does not stick to the base.',
-      'Crack an egg into the hot congee and stir for 30 seconds until silky.',
+      'Beat the egg separately, stir into the congee, then continue cooking according to your rice cooker instructions until the egg is fully set and the mixture reaches 71°C (160°F). Skip the egg if your cooker does not support continued cooking.',
       'Finish with scallions, a few drops of sesame oil and soy sauce.',
     ],
     tip: 'Keep the lid vent clear of the wall — congee foams more than rice and can spit starchy water down the back of your desk.',
@@ -851,22 +851,22 @@ export const recipes: Recipe[] = [
     meal: 'Breakfast',
     mealType: 'breakfast',
     countryTags: ['US'],
-    blurb: 'Runny yolks from nothing but boiled water.',
+    blurb: 'Gently poached pasteurized eggs using kettle-heated water.',
     requiredAppliances: ['kettle'],
     dietary_tags: ['vegetarian', 'halal'],
     ingredients: [
-      '2 eggs',
+      '2 commercially pasteurized eggs labeled suitable for uncooked dishes',
       'Boiling water from a kettle',
       '1 tsp vinegar',
       'Toast, salt, cracked pepper',
     ],
     steps: [
-      'Boil a full kettle and pour it into a deep heatproof bowl or mug.',
+      'Use only commercially pasteurized eggs labeled suitable for uncooked dishes. Boil a full kettle and pour the water into a deep heatproof bowl or mug; never put eggs inside the kettle.',
       'Stir in the vinegar, then gently slide in one cracked egg.',
-      'Cover with a plate and wait 4 minutes for a soft yolk, 6 for firm.',
+      'Cover and poach until the white is set. Warm water and a fixed waiting time do not reliably make ordinary raw eggs safe.',
       'Lift out with a spoon, drain, and serve on toast with salt and pepper.',
     ],
-    tip: 'Crack the egg into a small cup first. Sliding it in gently keeps the white together instead of shredding into wisps.',
+    tip: 'Follow the pasteurized egg storage directions. If suitable commercially pasteurized eggs are unavailable, choose a fully cooked recipe with another appliance.',
     cuisine_region: 'General',
   },
   {
@@ -883,7 +883,7 @@ export const recipes: Recipe[] = [
     mealType: 'lunch',
     countryTags: ['JP', 'KR'],
     blurb: 'Four cheap additions turn a packet into a real bowl.',
-    requiredAppliances: ['kettle'],
+    requiredAppliances: ['induction_burner'],
     dietary_tags: ['halal', 'contains_meat'],
     ingredients: [
       '1 pack instant ramen',
@@ -896,7 +896,7 @@ export const recipes: Recipe[] = [
     steps: [
       'Boil 400ml water, add the noodles and corn, and cook for 2 minutes.',
       'Add only half the seasoning packet so the broth is not overly salty.',
-      'Crack the egg into the middle and cover for 90 seconds.',
+      'Crack the egg into the simmering noodles and continue cooking until the white and yolk are firm and the egg reaches 71°C (160°F), checked with a food thermometer. A fixed 90-second wait is not a safety check.',
       'Slide everything into a bowl, then finish with scallions and chili oil.',
     ],
     tip: 'Half the seasoning plus a splash of soy sauce gives a rounder broth with far less sodium than the packet intends.',

@@ -35,11 +35,6 @@ export function AiEditConfirmModal({ diff, onConfirm, onCancel }: Props) {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         {/* Backdrop */}
         <motion.div
-          ref={dialogRef}
-          role="alertdialog"
-          aria-modal="true"
-          aria-labelledby="ai-edit-confirm-title"
-          tabIndex={-1}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -49,11 +44,16 @@ export function AiEditConfirmModal({ diff, onConfirm, onCancel }: Props) {
 
         {/* Modal Card */}
         <motion.div
+          ref={dialogRef}
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="ai-edit-confirm-title"
+          tabIndex={-1}
           initial={{ opacity: 0, scale: 0.94, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 12 }}
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-          className="relative w-full max-w-md overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-2xl"
+          className="relative max-h-[85dvh] w-full max-w-md overflow-y-auto rounded-3xl border border-border bg-card p-6 shadow-2xl"
         >
           {/* Header Badge */}
           <div className="flex items-center justify-between">

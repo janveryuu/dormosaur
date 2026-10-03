@@ -31,7 +31,7 @@ try {
   }
   assert.ok(ready, 'QA server did not become ready')
   browser = await chromium.launch({ headless: true, ...(process.env.QA_BROWSER_EXECUTABLE ? { executablePath: process.env.QA_BROWSER_EXECUTABLE } : { channel: 'chrome' }) })
-  for (const width of [1440, 768, 390, 320]) {
+  for (const width of [375, 390, 414, 430, 768, 1280, 1440]) {
     const page = await browser.newPage({ viewport: { width, height: 1000 } })
     await page.route('**/api/alarms/smart-nudge', (route) => route.fulfill({ json: { nudge: 'Test reminder' } }))
     await page.addInitScript((data) => {

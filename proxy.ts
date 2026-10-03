@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 // Routes that require authentication
-const PROTECTED_ROUTES = ['/dashboard', '/schedule', '/alarms', '/kitchen', '/profile']
+const PROTECTED_ROUTES = ['/dashboard', '/schedule', '/alarms', '/deadlines', '/kitchen', '/profile', '/onboarding']
 
 // Routes only for unauthenticated users
 const AUTH_ROUTES = ['/sign-in', '/sign-up']
@@ -10,6 +10,11 @@ const AUTH_ROUTES = ['/sign-in', '/sign-up']
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const { supabaseResponse, user, supabase } = await updateSession(request)
+  const redirectWithCookies = (url: URL) => {
+    const response = NextResponse.redirect(url)
+    for (const cookie of supabaseResponse.cookies.getAll()) response.cookies.set(cookie)
+    return response
+  }
 
   const isProtected = PROTECTED_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
@@ -39,7 +44,7 @@ export async function proxy(request: NextRequest) {
   if (user && !isOnboarded && pathname !== '/onboarding' && !pathname.startsWith('/api')) {
     const url = request.nextUrl.clone()
     url.pathname = '/onboarding'
-    return NextResponse.redirect(url)
+    return redirectWithCookies(url)
   }
 
   // 2. Unauthenticated user trying to access a protected page -> /sign-in
@@ -47,14 +52,14 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/sign-in'
     url.searchParams.set('next', pathname)
-    return NextResponse.redirect(url)
+    return redirectWithCookies(url)
   }
 
   // 3. Fully onboarded user trying to access sign-in/sign-up or root route on mobile/desktop -> /dashboard
   if ((isAuthRoute || pathname === '/') && user && isOnboarded) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+    return redirectWithCookies(url)
   }
 
   return supabaseResponse

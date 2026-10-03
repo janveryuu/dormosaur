@@ -11,32 +11,16 @@ const ThemeContext = React.createContext<{
 }>({ theme: 'light', setTheme: () => {} })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = React.useState<Theme>('light')
-
+  const [override, setThemeState] = React.useState<Theme | null>(null)
+  const stored = React.useSyncExternalStore<Theme>(
+    React.useCallback((notify: () => void) => { window.addEventListener('storage', notify); return () => window.removeEventListener('storage', notify) }, []),
+    () => { try { return window.localStorage.getItem('dormosaur-theme') === 'dark' ? 'dark' : 'light' } catch { return 'light' } },
+    () => 'light',
+  )
+  const theme: Theme = override || stored
   const setTheme = React.useCallback((nextTheme: Theme) => {
     setThemeState(nextTheme)
-    try {
-      window.localStorage.setItem('dormosaur-theme', nextTheme)
-    } catch {
-      // Theme persistence is a convenience; the UI still works when storage is unavailable.
-    }
-  }, [])
-
-  React.useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem('dormosaur-theme')
-      if (stored === 'light' || stored === 'dark') {
-        setThemeState(stored)
-        return
-      }
-    } catch {
-      // Fall through to the device preference.
-    }
-
-    // Daylight is the Dormosaur default; students can opt into the deep-green
-    // night theme from Profile & Settings without inheriting an OS theme that
-    // may make the first-run experience unexpectedly dark.
-    setThemeState('light')
+    try { window.localStorage.setItem('dormosaur-theme', nextTheme) } catch {}
   }, [])
 
   React.useEffect(() => {

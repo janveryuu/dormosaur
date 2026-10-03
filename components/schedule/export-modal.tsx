@@ -9,7 +9,7 @@ import { useSchedule } from '@/components/schedule-provider'
 import { useModalA11y } from '@/hooks/use-modal-a11y'
 
 export function ExportModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { classes } = useSchedule()
+  const { classes, profile } = useSchedule()
   const dialogRef = useModalA11y(open, onClose)
 
   return (
@@ -17,11 +17,6 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <motion.div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="export-schedule-title"
-            tabIndex={-1}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -30,11 +25,16 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
           />
 
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="export-schedule-title"
+            tabIndex={-1}
             initial={{ opacity: 0, scale: 0.94, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 12 }}
             transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-            className="ios-glass relative z-10 w-full max-w-md overflow-hidden rounded-4xl border border-border p-6 shadow-ios-lg"
+            className="ios-glass relative z-10 w-full max-w-md max-h-[85dvh] overflow-y-auto rounded-4xl border border-border p-6 shadow-ios-lg"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -62,7 +62,7 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
                 size="lg"
                 full
                 onClick={() => {
-                  downloadIcsFile(classes)
+                  downloadIcsFile(classes, profile.timezone)
                   onClose()
                 }}
               >
@@ -78,7 +78,7 @@ export function ExportModal({ open, onClose }: { open: boolean; onClose: () => v
                   {classes.map((cls) => (
                     <a
                       key={cls.id}
-                      href={getGoogleCalendarUrl(cls)}
+                      href={getGoogleCalendarUrl(cls, profile.timezone)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center justify-between rounded-2xl bg-fill p-3 text-[14px] font-medium transition-colors hover:bg-accent hover:text-accent-foreground"

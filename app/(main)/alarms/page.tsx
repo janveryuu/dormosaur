@@ -12,11 +12,14 @@ import { useSchedule } from '@/components/schedule-provider'
 import { formatTime, subjectColorClass } from '@/lib/data'
 import { triggerPushNotification } from '@/lib/push-notifications'
 import { IosToast, type ToastMessage } from '@/components/ios/toast'
+import { useNow } from '@/hooks/use-browser-state'
+import { clockAt, nextClass, timeMinutes } from '@/lib/copilot/time'
 import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 
 export default function AlarmsPage() {
-  const { alarms, classes, toggleAlarm, updateAlarmLead } = useSchedule()
+  const { alarms, classes, profile, toggleAlarm, updateAlarmLead } = useSchedule()
   const [preview, setPreview] = React.useState(false)
+  const now = useNow()
   const [aiNudges, setAiNudges] = React.useState<Record<string, string>>({})
   const [toast, setToast] = React.useState<ToastMessage | null>(null)
   const [alarmFilter, setAlarmFilter] = React.useState<'upcoming' | 'on' | 'off' | 'all'>('upcoming')
@@ -36,48 +39,34 @@ export default function AlarmsPage() {
   const activeAlarms = alarms.filter((a) => a.enabled)
   const activeCount = activeAlarms.length
 
-  // Find next upcoming active alarm
-  const nextAlarm = activeAlarms[0] || alarms[0]
-
-  // Calculate ring time for nextAlarm
-  const nextAlarmRingTime = React.useMemo(() => {
-    if (!nextAlarm) return null
-    const [h, m] = nextAlarm.time.split(':').map(Number)
-    const total = h * 60 + m - nextAlarm.lead
-    const ringH = String(Math.floor(total / 60)).padStart(2, '0')
-    const ringM = String(total % 60).padStart(2, '0')
-    return `${ringH}:${ringM}`
-  }, [nextAlarm])
-
-  // Fetch AI Smart Nudges for active alarms
+  const eligibleClasses = classes.filter(cls => alarms.some(alarm => alarm.enabled && alarm.classId === cls.id))
+  const occurrence = now ? nextClass(eligibleClasses, clockAt(new Date(now), profile.timezone)) : null
+  const nextAlarm = alarms.find(alarm => alarm.enabled && alarm.classId === occurrence?.class.id)
+  const nextRoom = occurrence?.class.room || ''
+  const previewTitle = nextAlarm ? `${nextAlarm.subject} reminder` : 'Dormosaur notification preview'
+  const previewBody = nextAlarm ? `${nextRoom ? `${nextRoom} · ` : ''}Class at ${formatTime(nextAlarm.time)}. Your lead time is ${nextAlarm.lead} minutes.` : 'Add a class to receive timetable reminders.'
+  const ringTime = (anchor: string, lead: number) => {
+    const total = ((timeMinutes(anchor) ?? 0) - lead + 1440) % 1440
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+  }
+  const nextAlarmRingTime = nextAlarm ? ringTime(nextAlarm.time, nextAlarm.lead) : null
+  const nudgeId = nextAlarm?.id
+  const nudgeSubject = nextAlarm?.subject
+  const nudgeLead = nextAlarm?.lead
+  const nudgeMinutes = occurrence && now ? occurrence.daysAhead * 1440 + (timeMinutes(occurrence.class.start) ?? 0) - clockAt(new Date(now), profile.timezone).minutes : null
   React.useEffect(() => {
-    async function loadNudges() {
-      const nudges: Record<string, string> = {}
-      for (const a of alarms) {
-        if (!a.enabled) continue
-        try {
-          const res = await fetch('/api/alarms/smart-nudge', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              subject: a.subject,
-              room: 'Sci Hall 204',
-              minutes_until: a.lead,
-              is_first_class_today: a.id === 'a1',
-              gap_before_minutes: a.id === 'a2' ? 0 : 45,
-              reminder_item: a.subject.includes('Calculus') ? 'calculator' : null,
-            }),
-          })
-          const data = await res.json()
-          if (data.nudge) nudges[a.id] = data.nudge
-        } catch (e) {
-          console.warn('Smart nudge notice:', e)
-        }
-      }
-      setAiNudges(nudges)
-    }
-    loadNudges()
-  }, [alarms])
+    if (!nudgeId || !nudgeSubject || !nudgeLead || nudgeMinutes === null || nudgeMinutes < 0 || nudgeMinutes > nudgeLead) return
+    const controller = new AbortController()
+    void fetch('/api/alarms/smart-nudge', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: controller.signal,
+      body: JSON.stringify({ subject: nudgeSubject, room: nextRoom, minutes_until: nudgeMinutes }),
+    }).then(async res => {
+      if (!res.ok) return
+      const data = await res.json()
+      if (!controller.signal.aborted && typeof data.nudge === 'string') setAiNudges(prev => ({ ...prev, [nudgeId]: data.nudge }))
+    }).catch(() => {})
+    return () => controller.abort()
+  }, [nudgeId, nudgeSubject, nudgeLead, nudgeMinutes, nextRoom])
 
   return (
     <>
@@ -145,9 +134,9 @@ export default function AlarmsPage() {
             {nextAlarm.enabled && (
               <div className="alarm-nudge mt-4 flex items-center gap-2.5">
                 <Sparkles className="size-4 shrink-0" />
-                <span className="truncate">
+                <span className="break-words">
                   {aiNudges[nextAlarm.id] ||
-                    `AI Nudge: ${nextAlarm.subject} in ${nextAlarm.lead} min — Sci Hall 204`}
+                    previewBody}
                 </span>
               </div>
             )}
@@ -167,7 +156,7 @@ export default function AlarmsPage() {
             />
             <div className="min-w-0 flex-1">
               <h2 className="text-[14.5px] font-bold text-foreground">
-                Groq Llama 3 AI Smart Nudges
+                Smart class reminders
               </h2>
               <p className="text-[12px] text-muted-foreground mt-0.5">
                 Calculates walking buffer and suggests items to bring (e.g. lab coat, calculator).
@@ -180,11 +169,10 @@ export default function AlarmsPage() {
               inline
               open={preview}
               onClose={() => setPreview(false)}
-              title="Calculus I starts in 15 min"
-              body="Sci Hall 204 · Leave the dorm now to be on time."
+              title={previewTitle}
+              body={previewBody}
               aiNudge={
-                aiNudges[alarms[0]?.id] ||
-                "Calc I in 15 — it's in Sci Hall 204, grab your calculator."
+                (nextAlarm && aiNudges[nextAlarm.id]) || previewBody
               }
             />
           </div>
@@ -199,17 +187,16 @@ export default function AlarmsPage() {
               setPreview(nextState)
               if (nextState) {
                 const nudgeBody =
-                  aiNudges[alarms[0]?.id] ||
-                  'Calc I in 15 — Sci Hall 204, grab your calculator.'
+                  (nextAlarm && aiNudges[nextAlarm.id]) || previewBody
                 await triggerPushNotification({
-                  title: 'Calculus I starts in 15 min',
+                  title: previewTitle,
                   body: nudgeBody,
                   tag: `dormosaur-ai-nudge-${Date.now()}`,
                   url: '/alarms',
                 })
                 setToast({
                   type: 'success',
-                  title: 'Calculus I starts in 15 min',
+                  title: previewTitle,
                   message: nudgeBody,
                 })
               }
@@ -256,11 +243,7 @@ export default function AlarmsPage() {
                 <div className="alarm-list">
                   {groupAlarms.map((alarm) => {
                     const color = subjectColorClass[alarm.color] || subjectColorClass[1]
-                    const [h, m] = alarm.time.split(':').map(Number)
-                    const total = h * 60 + m - alarm.lead
-                    const ringAt = `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(
-                      total % 60,
-                    ).padStart(2, '0')}`
+                    const ringAt = ringTime(alarm.time, alarm.lead)
 
                     const nudge = aiNudges[alarm.id]
                     const room = classes.find((entry) => entry.id === alarm.classId)?.room
@@ -304,9 +287,9 @@ export default function AlarmsPage() {
                         {alarm.enabled && (
                           <div className="alarm-row-nudge ml-4.5 flex items-center gap-2">
                             <Sparkles className="size-3 shrink-0 text-primary" />
-                            <span className="truncate text-muted-foreground">
+                            <span className="break-words text-muted-foreground">
                               {nudge ||
-                                `Lead time: ${alarm.lead}m walking buffer`}
+                                `Lead time: ${alarm.lead} minutes before class`}
                             </span>
                           </div>
                         )}

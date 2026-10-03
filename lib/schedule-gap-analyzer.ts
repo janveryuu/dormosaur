@@ -22,8 +22,8 @@ export type TodayScheduleAnalysis = {
 export function parseTimeToMinutes(timeStr: string): number {
   if (!timeStr) return 0
   const clean = timeStr.trim().toUpperCase()
-  let isPM = clean.includes('PM')
-  let isAM = clean.includes('AM')
+  const isPM = clean.includes('PM')
+  const isAM = clean.includes('AM')
 
   const timeOnly = clean.replace(/AM|PM/g, '').trim()
   const [hStr, mStr] = timeOnly.split(':')

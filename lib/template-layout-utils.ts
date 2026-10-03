@@ -34,7 +34,7 @@ export function calculateSlotGridForDay(
   const totalSlots = Math.floor((gridEndMins - gridStartMins) / slotDurationMins)
 
   const items = classes.map((c) => {
-    let startMins = parseMinutesFromTimeString(c.start)
+    const startMins = parseMinutesFromTimeString(c.start)
     let endMins = parseMinutesFromTimeString(c.end)
 
     if (!endMins || endMins <= startMins || isNaN(endMins)) {
@@ -43,7 +43,7 @@ export function calculateSlotGridForDay(
 
     // Clamp to grid boundaries
     const clampedStart = Math.max(gridStartMins, Math.min(gridEndMins, startMins))
-    let clampedEnd = Math.max(clampedStart + slotDurationMins, Math.min(gridEndMins, endMins))
+    const clampedEnd = Math.max(clampedStart + slotDurationMins, Math.min(gridEndMins, endMins))
 
     // Calculate 0-based slot indices
     const startSlot = Math.floor((clampedStart - gridStartMins) / slotDurationMins)
@@ -52,11 +52,6 @@ export function calculateSlotGridForDay(
     // CSS Grid line numbers (Line 1 is top of slot 0)
     const gridRowStart = startSlot + 1
     const gridRowEnd = Math.max(gridRowStart + 1, endSlot + 1)
-
-    // Console logging for verification as required by Part 1 Step 5
-    console.log(
-      `[GridSlotMap] Class: "${c.subject}" (${c.start} - ${c.end}) -> Slots: ${startSlot} to ${endSlot} | CSS grid-row: ${gridRowStart} / ${gridRowEnd}`,
-    )
 
     return {
       classEntry: c,

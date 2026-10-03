@@ -59,14 +59,6 @@ export function DayView() {
     return () => clearInterval(id)
   }, [])
 
-  // Sync to today's day on initial client mount
-  React.useEffect(() => {
-    const today = JS_DAY_TO_KEY[new Date().getDay()]
-    if (weekDays.includes(today)) {
-      setSelectedDay(today)
-    }
-  }, [])
-
   // Format current time
   const nowHours = Math.floor(nowMins / 60)
   const nowMinutesRem = nowMins % 60

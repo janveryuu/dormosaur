@@ -4,9 +4,12 @@
  * Decouples notification dispatch logic from Web Push delivery details.
  */
 
+import 'server-only'
 import webpush from 'web-push'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
-import { getUserPushSubscriptions, deletePushSubscription } from '@/lib/db'
+import { getUserPushSubscriptions, deletePushSubscriptionByEndpoint } from '@/lib/db'
+import { validPushEndpoint } from '@/lib/push-validation'
 
 // Configure VAPID details if set in environment
 const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''
@@ -16,8 +19,8 @@ const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:admin@dormosaur.app'
 if (vapidPublicKey && vapidPrivateKey) {
   try {
     webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey)
-  } catch (e) {
-    console.warn('VAPID initialization notice:', e)
+  } catch {
+    console.warn('[Web Push]', { category: 'vapid_configuration_invalid' })
   }
 }
 
@@ -34,7 +37,7 @@ export type ClassReminderPayload = {
  * Decoupled Notification Dispatcher:
  * Sends class reminders to all active device subscriptions for a given user.
  */
-export async function sendClassReminder(payload: ClassReminderPayload): Promise<{
+export async function sendClassReminder(payload: ClassReminderPayload, client?: SupabaseClient): Promise<{
   successCount: number
   failureCount: number
 }> {
@@ -44,7 +47,7 @@ export async function sendClassReminder(payload: ClassReminderPayload): Promise<
   let failureCount = 0
 
   try {
-    const supabase = await createClient()
+    const supabase = client || await createClient()
     const subscriptions = await getUserPushSubscriptions(supabase, userId)
 
     if (subscriptions.length === 0) {
@@ -55,12 +58,13 @@ export async function sendClassReminder(payload: ClassReminderPayload): Promise<
       title,
       body,
       tag,
-      icon: '/icon-192.png',
-      badge: '/badge-96.png',
+      icon: '/android-chrome-192x192.png',
+      badge: '/apple-icon.png',
       data: { ...data, url },
     })
 
     const sendPromises = subscriptions.map(async (sub) => {
+      if (!validPushEndpoint(sub.endpoint)) { failureCount++; return }
       const pushSub = {
         endpoint: sub.endpoint,
         keys: {
@@ -70,24 +74,24 @@ export async function sendClassReminder(payload: ClassReminderPayload): Promise<
       }
 
       try {
-        await webpush.sendNotification(pushSub, pushPayload)
+        await webpush.sendNotification(pushSub, pushPayload, { timeout: 8000, TTL: 300 })
         successCount++
       } catch (err: unknown) {
         failureCount++
         const statusCode = (err as { statusCode?: number }).statusCode
         // If 404 or 410, subscription is expired or unsubscribed — clean up from database
         if (statusCode === 404 || statusCode === 410) {
-          console.warn(`Cleaning up expired push subscription endpoint: ${sub.endpoint.slice(0, 30)}...`)
-          await deletePushSubscription(supabase, sub.endpoint).catch(() => {})
+          await deletePushSubscriptionByEndpoint(supabase, userId, sub.endpoint).catch(() => {})
         } else {
-          console.warn('Web push send error:', err)
+          console.warn('[Web Push]', { category: 'delivery_failed', status: statusCode ?? null })
         }
       }
     })
 
     await Promise.all(sendPromises)
-  } catch (err) {
-    console.warn('sendClassReminder notice:', err)
+  } catch {
+    failureCount++
+    console.warn('[Web Push]', { category: 'subscription_unavailable' })
   }
 
   return { successCount, failureCount }

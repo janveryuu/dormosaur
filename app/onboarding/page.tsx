@@ -1,6 +1,8 @@
 'use client'
 
 import * as React from 'react'
+import type { ClassEntry } from '@/lib/data'
+import { useCamera } from '@/hooks/use-camera'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -36,9 +38,10 @@ import { ActivityIndicator } from '@/components/ios/activity-indicator'
 import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 import { rawScheduleSample } from '@/lib/data'
 import { parseRawSchedule } from '@/lib/parser'
+import { parseIcsContent } from '@/lib/ical'
 import { useSchedule } from '@/components/schedule-provider'
 import { createClient } from '@/lib/supabase/client'
-import { upsertUserProfile } from '@/lib/db'
+import { getUserProfile, seedNewUser, upsertUserProfile } from '@/lib/db'
 import { compressImageForOcr } from '@/lib/image-utils'
 import { ScheduleScanProgress } from '@/components/schedule/scan-progress'
 import { COUNTRIES, getCountryByCode, type CountryInfo } from '@/lib/countries-data'
@@ -72,6 +75,8 @@ export default function OnboardingPage() {
   const [isCountryPickerOpen, setIsCountryPickerOpen] = React.useState(false)
   const [raw, setRaw] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [saveError, setSaveError] = React.useState<string | null>(null)
+  const [stepSaving, setStepSaving] = React.useState(false)
   const [mode, setMode] = React.useState<ImportMode>('text')
   const [notifStatus, setNotifStatus] = React.useState<'idle' | 'enabling' | 'granted' | 'denied'>('idle')
   const [notifFeedback, setNotifFeedback] = React.useState<string | null>(null)
@@ -110,11 +115,7 @@ export default function OnboardingPage() {
         const fullName: string = meta?.full_name || meta?.name || ''
         
         try {
-          const { data: existing } = await supabase
-            .from('profiles')
-            .select('id, name, school, dorm, country, timezone')
-            .eq('id', data.user.id)
-            .single()
+          const existing = await getUserProfile(supabase, data.user.id)
 
           if (existing) {
             if (existing.name) setName(existing.name)
@@ -122,8 +123,7 @@ export default function OnboardingPage() {
             if (existing.school) setSchool(existing.school)
           } else {
             if (fullName) setName(fullName)
-            console.log('[Dormosaur Onboarding Mount] Creating initial row for user:', data.user.id)
-            await upsertUserProfile(supabase, data.user.id, {
+            await seedNewUser(supabase, data.user.id, {
               name: fullName || '',
               school: '',
               dorm: 'Dorm Room',
@@ -140,14 +140,12 @@ export default function OnboardingPage() {
         }
       }
       setIsSessionLoaded(true)
-    })
+    }).catch(() => { setSaveError('We could not check your session. Please reconnect and reload.'); setIsSessionLoaded(true) })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   // Camera & File state
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
-  const [cameraActive, setCameraActive] = React.useState(false)
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null)
-  const [cameraError, setCameraError] = React.useState<string | null>(null)
   const [uploadedFile, setUploadedFile] = React.useState<{ name: string; size: string } | null>(null)
   const [dragOver, setDragOver] = React.useState(false)
   const photoInputRef = React.useRef<HTMLInputElement | null>(null)
@@ -158,7 +156,7 @@ export default function OnboardingPage() {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      if (!user) throw new Error('session_unavailable')
 
       let partial: Record<string, unknown> = {}
       if (stepNumber === 0) {
@@ -197,60 +195,27 @@ export default function OnboardingPage() {
       }
 
       if (Object.keys(partial).length > 0) {
-        console.log(`[Dormosaur DB Step Write] Writing Step ${stepNumber} data to Supabase:`, partial)
         await upsertUserProfile(supabase, user.id, partial)
       }
     } catch (err) {
-      console.error(`[Dormosaur DB Step Write ERROR] Step ${stepNumber} save failed:`, err)
+      throw new Error('We could not save this step. Please reconnect and try again.')
     }
   }
 
-  const go = (next: number) => {
-    saveStepData(step)
-    setDirection(next > step ? 1 : -1)
-    setStep(next)
+  const go = async (next: number) => {
+    if (stepSaving) return
+    setStepSaving(true); setSaveError(null)
+    try { await saveStepData(step); setDirection(next > step ? 1 : -1); setStep(next) }
+    catch { setSaveError('We could not save this step. Please reconnect and try again.') }
+    finally { setStepSaving(false) }
   }
 
-  // Camera Stream Controls
-  const startCamera = async () => {
-    setCameraError(null)
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-      })
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        videoRef.current.play()
-        setCameraActive(true)
-      }
-    } catch (err) {
-      console.warn('Camera restricted:', err)
-      setCameraError('Camera access unavailable. Upload a photo instead!')
-    }
-  }
-
-  const stopCamera = () => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream
-      stream.getTracks().forEach((track) => track.stop())
-      videoRef.current.srcObject = null
-    }
-    setCameraActive(false)
-  }
-
-  React.useEffect(() => {
-    if (step === 3 && mode === 'camera' && !capturedImage) {
-      startCamera()
-    } else {
-      stopCamera()
-    }
-    return () => stopCamera()
-  }, [step, mode, capturedImage])
+  const { cameraActive, cameraError, stopCamera, startCamera } = useCamera(videoRef, step === 5 && mode === 'camera' && !capturedImage)
 
   const [isOcrScanning, setIsOcrScanning] = React.useState(false)
   const [ocrError, setOcrError] = React.useState<string | null>(null)
-  const [parsedClasses, setParsedClasses] = React.useState<any[] | null>(null)
-  const activeScanPromiseRef = React.useRef<Promise<any> | null>(null)
+  const [parsedClasses, setParsedClasses] = React.useState<ClassEntry[] | null>(null)
+  const activeScanPromiseRef = React.useRef<Promise<{ success?: boolean; classes?: ClassEntry[]; error?: string }> | null>(null)
 
   const processImageWithGemini = async (rawImageInput: File | string) => {
     setIsOcrScanning(true)
@@ -259,8 +224,8 @@ export default function OnboardingPage() {
     setRaw('')
 
     try {
-      // 1. Client-side compression & downscaling to ~1800px (< 400KB)
-      const compressedDataUrl = await compressImageForOcr(rawImageInput, 1800, 0.85)
+      // Preserve small text and lossless screenshots; PDFs remain native inputs.
+      const compressedDataUrl = await compressImageForOcr(rawImageInput)
       setCapturedImage(compressedDataUrl)
 
       // 2. Perform Single-Pass Gemini Vision Extraction
@@ -279,13 +244,13 @@ export default function OnboardingPage() {
         return data.classes
       } else {
         setParsedClasses(null)
-        setOcrError(data.error || "We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.")
+        setOcrError(data.error || "No classes were extracted. Try again or paste your schedule text.")
         return null
       }
     } catch (err) {
       console.warn('Gemini vision processing error:', err)
       setParsedClasses(null)
-      setOcrError("We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.")
+      setOcrError("No classes were extracted. Try again or paste your schedule text.")
       return null
     } finally {
       setIsOcrScanning(false)
@@ -317,22 +282,35 @@ export default function OnboardingPage() {
 
   const handleFileSelect = (file: File) => {
     const sizeKb = (file.size / 1024).toFixed(1) + ' KB'
-    if (file.type.startsWith('image/')) {
+    if (file.type.startsWith('image/') || file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
       setUploadedFile({ name: file.name, size: sizeKb })
       processImageWithGemini(file)
-    } else {
+    } else if (/\.(txt|ics)$/i.test(file.name) || file.type === 'text/plain' || file.type === 'text/calendar') {
       const reader = new FileReader()
       reader.onload = (event) => {
         const content = (event.target?.result as string) || ''
         setUploadedFile({ name: file.name, size: sizeKb })
-        setRaw(content.trim())
+        if (/\.ics$/i.test(file.name) || file.type === 'text/calendar') {
+          const imported = parseIcsContent(content, selectedTimezone)
+          setParsedClasses(imported.length ? imported : null)
+          setRaw('')
+          setOcrError(imported.length ? null : 'No complete class meetings were found in this calendar. Try another file or paste your schedule text.')
+        } else {
+          setParsedClasses(null)
+          setRaw(content.trim())
+          setOcrError(null)
+        }
       }
+      reader.onerror = () => setOcrError('We could not read this file. Please choose it again.')
       reader.readAsText(file)
+    } else {
+      setOcrError('Choose a PNG, JPG, PDF, text file, or calendar (.ics) file.')
     }
   }
 
-  const finish = async () => {
-    setLoading(true)
+  const finish = async (skipSchedule = false) => {
+    if (loading) return
+    setLoading(true); setSaveError(null)
     const trimmedName = name.trim()
     const trimmedSchool = school.trim()
     const parts = (trimmedName || 'Student').split(' ')
@@ -340,6 +318,27 @@ export default function OnboardingPage() {
       parts.length >= 2
         ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
         : (trimmedName || 'ST').slice(0, 2).toUpperCase()
+
+    // Save complete profile + mark onboarding complete in Supabase
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('session_unavailable')
+      if (user) {
+        await upsertUserProfile(supabase, user.id, {
+          name: trimmedName || user.user_metadata?.full_name || '', school: trimmedSchool,
+          dorm: dorm ? 'Dorm Room' : 'Off-campus', initials: calculatedInitials,
+          is_dorm_student: dorm, onboarding_completed: true, country: selectedCountryCode,
+          timezone: selectedTimezone, appliances: selectedAppliances,
+          dietary_preference: dietaryPref, dietary_note: dietaryNote,
+        })
+        // The profile is authoritative. Refresh optimistic navigation metadata
+        // only after its successful write.
+        await supabase.auth.updateUser({ data: { full_name: trimmedName, onboarding_completed: true } })
+      }
+    } catch (err) {
+      setLoading(false); setSaveError('Your profile could not be saved. Please reconnect and try again.'); return
+    }
 
     if (trimmedName) {
       setProfile((prev) => ({
@@ -356,36 +355,7 @@ export default function OnboardingPage() {
       }))
     }
 
-    // Save complete profile + mark onboarding complete in Supabase
-    try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        console.log('[Dormosaur DB Onboarding Complete] Saving final profile & setting onboarding_completed = true for user:', user.id)
-        await Promise.all([
-          supabase.auth.updateUser({
-            data: { full_name: trimmedName || user.user_metadata?.full_name || '', onboarding_completed: true },
-          }),
-          upsertUserProfile(supabase, user.id, {
-            name: trimmedName || user.user_metadata?.full_name || '',
-            school: trimmedSchool,
-            dorm: dorm ? 'Dorm Room' : 'Off-campus',
-            initials: calculatedInitials,
-            is_dorm_student: dorm,
-            onboarding_completed: true,
-            country: selectedCountryCode,
-            timezone: selectedTimezone,
-            appliances: selectedAppliances,
-            dietary_preference: dietaryPref,
-            dietary_note: dietaryNote,
-          }),
-        ])
-        console.log('[Dormosaur DB Onboarding Complete SUCCESS] Saved onboarding_completed = true for user:', user.id)
-      }
-    } catch (err) {
-      console.error('[Dormosaur DB Onboarding Complete ERROR] Final save failed:', err)
-    }
-
+    if (skipSchedule) { router.push('/dashboard'); return }
     let parsed = []
     if (parsedClasses && parsedClasses.length > 0) {
       parsed = parsedClasses
@@ -408,16 +378,6 @@ export default function OnboardingPage() {
     if (res.success && res.permission === 'granted') {
       setNotifStatus('granted')
       setNotifFeedback("You're all set. We'll notify you before your next class.")
-
-      // Trigger instant test push notification so the user gets real push confirmation
-      fetch('/api/notifications/test-push', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'Dormosaur Enabled!',
-          message: 'Notifications active! We will notify you 15m before each class.',
-        }),
-      }).catch(() => {})
 
       // Smooth delay for confirmation animation payoff before redirecting
       setTimeout(() => finish(), 1600)
@@ -445,6 +405,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="onboarding-shell flex min-h-[100dvh] flex-col bg-background">
+      {saveError && <p role="alert" className="relative z-10 mx-auto max-w-xl rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">{saveError}</p>}
       {/* ── Native Mobile Header with Safe Area Inset ── */}
       <header
         className="onboarding-header sticky top-0 z-30 flex items-center justify-between border-b border-border/40 bg-background/85 px-4 backdrop-blur-xl shrink-0"
@@ -936,7 +897,7 @@ export default function OnboardingPage() {
                               </p>
                               <button
                                 type="button"
-                                onClick={startCamera}
+                                onClick={() => { setCapturedImage(null); startCamera() }}
                                 className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-white shadow-ios"
                               >
                                 Start Camera
@@ -1033,8 +994,8 @@ export default function OnboardingPage() {
                             const input = document.createElement('input')
                             input.type = 'file'
                             input.accept = '.pdf,.txt,.ics,image/*'
-                            input.onchange = (e: any) => {
-                              const file = e.target?.files?.[0]
+                            input.onchange = () => {
+                              const file = input.files?.[0]
                               if (file) handleFileSelect(file)
                             }
                             input.click()
@@ -1156,7 +1117,7 @@ export default function OnboardingPage() {
       >
         <div className="mx-auto flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-col gap-2">
           {step < 5 ? (
-            <PillButton size="lg" full onClick={() => go(step + 1)} disabled={!canContinue}>
+            <PillButton size="lg" full onClick={() => go(step + 1)} disabled={stepSaving || !canContinue}>
               Continue
             </PillButton>
           ) : step === 5 ? (
@@ -1178,7 +1139,7 @@ export default function OnboardingPage() {
                   }
                 }
 
-                let classesToSave: any[] = []
+                let classesToSave: ClassEntry[] = []
 
                 if (mode === 'text') {
                   const trimmedRaw = raw.trim()
@@ -1201,7 +1162,7 @@ export default function OnboardingPage() {
                 }
 
                 if (!classesToSave || classesToSave.length === 0) {
-                  setOcrError("We couldn't read this image clearly — try a clearer photo, better lighting, or paste the text instead.")
+                  setOcrError("No classes were extracted. Try again or paste your schedule text.")
                   return
                 }
 
@@ -1212,7 +1173,7 @@ export default function OnboardingPage() {
                 }
                 go(6)
               }}
-              disabled={isOcrScanning || !canOrganize}
+              disabled={stepSaving || isOcrScanning || !canOrganize}
             >
               {isOcrScanning ? (
                 <>
@@ -1231,7 +1192,7 @@ export default function OnboardingPage() {
               size="lg"
               full
               onClick={handleEnableNotifications}
-              disabled={notifStatus === 'enabling' || loading}
+              disabled={stepSaving || notifStatus === 'enabling' || loading}
             >
               {notifStatus === 'enabling' || loading ? (
                 <>
@@ -1248,38 +1209,8 @@ export default function OnboardingPage() {
           )}
           <button
             type="button"
-            onClick={async () => {
-              const trimmedName = name.trim()
-              const trimmedSchool = school.trim()
-              const parts = (trimmedName || 'Student').split(' ')
-              const calculatedInitials =
-                parts.length >= 2
-                  ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
-                  : (trimmedName || 'ST').slice(0, 2).toUpperCase()
-
-              try {
-                const supabase = createClient()
-                const { data: { user } } = await supabase.auth.getUser()
-                if (user) {
-                  await Promise.all([
-                    supabase.auth.updateUser({
-                      data: { onboarding_completed: true },
-                    }),
-                    upsertUserProfile(supabase, user.id, {
-                      name: trimmedName || user.user_metadata?.full_name || '',
-                      school: trimmedSchool,
-                      dorm: dorm ? 'Dorm Room' : 'Off-campus',
-                      initials: calculatedInitials,
-                      is_dorm_student: dorm,
-                      onboarding_completed: true,
-                      country: selectedCountryCode,
-                      timezone: selectedTimezone,
-                    }),
-                  ])
-                }
-              } catch (_) { /* silent */ }
-              router.push('/dashboard')
-            }}
+            disabled={loading || stepSaving}
+            onClick={() => finish(true)}
             className="py-1 text-center text-[13.5px] font-semibold text-muted-foreground hover:text-foreground transition-colors active:scale-95"
           >
             {step === 6 ? "I'll do this later" : 'Skip for now'}

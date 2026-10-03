@@ -1,6 +1,6 @@
 /**
  * lib/email-utils.ts
- * Helper for Philippine & international student email validation, school detection, and Supabase Auth email fallback.
+ * Student email validation and school detection. Auth always uses the real email.
  */
 
 export function isValidEmailFormat(email: string): boolean {
@@ -19,12 +19,6 @@ export function isEduOrSchoolEmail(email: string): boolean {
     lower.includes('.sch') ||
     lower.includes('.gov')
   )
-}
-
-export function getFallbackAuthEmail(rawEmail: string): string {
-  const email = rawEmail.trim().toLowerCase()
-  const cleanLocal = email.replace(/[^a-z0-9]/g, '_')
-  return `${cleanLocal}@dormosaur.app`
 }
 
 export function detectSchoolFromEmail(email: string): string | null {

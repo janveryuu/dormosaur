@@ -4,11 +4,13 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Calendar, Check, Clock, FileText, Flag, Trash2 } from 'lucide-react'
 import { useSchedule, type DeadlineItem } from '@/components/schedule-provider'
+import { useNow } from '@/hooks/use-browser-state'
+import { localDateTimeToIso } from '@/lib/date-time'
 import { subjectColorClass } from '@/lib/data'
 
-function getCountdownText(dueDateStr: string): { label: string; urgent: boolean } {
+function getCountdownText(dueDateStr: string, now: number): { label: string; urgent: boolean } {
   const due = new Date(dueDateStr).getTime()
-  const now = Date.now()
+  if (!Number.isFinite(due) || !now) return { label: 'Review due date', urgent: false }
   const diff = due - now
 
   if (diff < 0) {
@@ -31,8 +33,11 @@ function getCountdownText(dueDateStr: string): { label: string; urgent: boolean 
 import { buttonTapScale, springBouncy, springSmooth } from '@/lib/motion-presets'
 
 export function DeadlineCard({ deadline }: { deadline: DeadlineItem }) {
-  const { toggleDeadlineCompleted, deleteDeadline } = useSchedule()
-  const { label: countdown, urgent } = getCountdownText(deadline.dueDate)
+  const { toggleDeadlineCompleted, deleteDeadline, profile } = useSchedule()
+  const now = useNow()
+  let due = ''
+  try { due = localDateTimeToIso(deadline.dueDate, deadline.dueTime || '23:59', profile.timezone) } catch {}
+  const { label: countdown, urgent } = getCountdownText(due, now)
   const color = subjectColorClass[deadline.color || 1]
 
   const typeIcon = {
@@ -81,7 +86,7 @@ export function DeadlineCard({ deadline }: { deadline: DeadlineItem }) {
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span
-            className={`truncate text-[16px] font-semibold tracking-[-0.015em] ${
+            className={`break-words text-[16px] font-semibold tracking-[-0.015em] ${
               deadline.completed ? 'text-muted-foreground line-through' : 'text-foreground'
             }`}
           >

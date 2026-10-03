@@ -2,8 +2,6 @@
 
 import * as React from 'react'
 import {
-  alarms as defaultAlarms,
-  classes as defaultClasses,
   profile as defaultProfile,
   recipes,
   type Alarm,
@@ -74,6 +72,10 @@ interface ScheduleContextType {
   groceryItems: GroceryItem[]
   deadlines: DeadlineItem[]
   isSyncing: boolean
+  syncError: string | null
+  retrySync: () => void
+  saveClasses: (entries: ClassEntry[]) => Promise<void>
+  saveDeadlines: (entries: DeadlineItem[]) => Promise<void>
   setClasses: React.Dispatch<React.SetStateAction<ClassEntry[]>>
   setAlarms: React.Dispatch<React.SetStateAction<Alarm[]>>
   setProfile: React.Dispatch<React.SetStateAction<UserProfile>>
@@ -132,11 +134,21 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const [isHydrated, setIsHydrated] = React.useState(false)
   const [isSyncing, setIsSyncing] = React.useState(false)
   const [userId, setUserId] = React.useState<string | null>(null)
+  const [syncError, setSyncError] = React.useState<string | null>(null)
+  const [retryVersion, reloadSaved] = React.useReducer((n: number) => n + 1, 0)
+  const retrySync = () => {
+    if (syncError?.includes('load') || syncError?.includes('session')) reloadSaved()
+    else setSyncError(null)
+  }
+  const activeOwner = React.useRef<string | null>(null)
+  const saved = React.useRef<Record<string, string>>({})
+  const scheduled = React.useRef<Record<string, string>>({})
+  const writeQueue = React.useRef<Promise<void>>(Promise.resolve())
 
   // ─── Sync grocery items automatically when meal plan changes ───────────────
   const syncGroceryFromMealPlan = React.useCallback(
     (currentMealPlan: MealPlanEntry[], currentGrocery: GroceryItem[] = []) => {
-      const existingMap = new Map(currentGrocery.map((g) => [g.name.toLowerCase(), g.checked]))
+      const existingMap = new Map(currentGrocery.map((g) => [g.name.toLowerCase(), g]))
       const aggregated = new Set<string>()
 
       currentMealPlan.forEach((plan) => {
@@ -150,171 +162,175 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
         }
       })
 
-      return Array.from(aggregated).map((name, idx) => ({
-        id: `groc-${idx}-${name.replace(/\s+/g, '-').toLowerCase()}`,
-        name,
-        checked: existingMap.get(name.toLowerCase()) ?? false,
-      }))
+      return [...Array.from(aggregated).map((name) => ({
+        id: existingMap.get(name.toLowerCase())?.id || crypto.randomUUID(),
+        name, checked: existingMap.get(name.toLowerCase())?.checked ?? false,
+      })), ...currentGrocery.filter(g => g.custom)]
     },
     [],
   )
 
-  // ─── Hydration: localStorage first, then Supabase ────────────────────────────
+  // Resolve ownership before reading a cache. Old unscoped caches remain available
+  // to guests, but must never be attributed to another signed-in student.
   React.useEffect(() => {
     const supabase = createClient()
-
-    async function hydrate() {
-      // 1. Load from localStorage immediately (instant paint)
-      try {
-        const savedClasses = localStorage.getItem(STORAGE_KEYS.CLASSES) || localStorage.getItem('dormly_classes_v1')
-        const savedAlarms = localStorage.getItem(STORAGE_KEYS.ALARMS) || localStorage.getItem('dormly_alarms_v1')
-        const savedProfile = localStorage.getItem(STORAGE_KEYS.PROFILE) || localStorage.getItem('dormly_profile_v1')
-        const savedMealPlan = localStorage.getItem(STORAGE_KEYS.MEALPLAN) || localStorage.getItem('dormly_mealplan_v1')
-        const savedGrocery = localStorage.getItem(STORAGE_KEYS.GROCERY) || localStorage.getItem('dormly_grocery_v1')
-        const savedDeadlines = localStorage.getItem(STORAGE_KEYS.DEADLINES) || localStorage.getItem('dormly_deadlines_v1')
-
-        if (savedClasses) setClassesState(JSON.parse(savedClasses))
-        if (savedAlarms) setAlarmsState(JSON.parse(savedAlarms))
-        if (savedProfile) setProfileState(JSON.parse(savedProfile))
-        if (savedMealPlan) setMealPlanState(JSON.parse(savedMealPlan))
-        if (savedDeadlines) setDeadlinesState(JSON.parse(savedDeadlines))
-        if (savedGrocery) {
-          setGroceryItemsState(JSON.parse(savedGrocery))
-        } else {
-          const mp = savedMealPlan ? JSON.parse(savedMealPlan) : defaultMealPlan
-          setGroceryItemsState(syncGroceryFromMealPlan(mp, []))
-        }
-      } catch (err) {
-        console.error('localStorage hydration error', err)
+    let generation = 0
+    let disposed = false
+    let authChanged = false
+    let currentOwner: string | null | undefined
+    async function hydrate(user: { id: string; user_metadata?: Record<string, unknown> } | null, force = false) {
+      const owner = user?.id ?? null
+      if (!force && currentOwner === owner) return
+      currentOwner = owner
+      const version = ++generation
+      if (activeOwner.current !== owner) {
+        // Clear the previous account before any network wait can expose it.
+        setClassesState([]); setAlarmsState([]); setDeadlinesState([])
+        setMealPlanState([]); setGroceryItemsState([])
+        setProfileState({ ...defaultProfile, name: '', school: '', dorm: '', year: '', initials: '', avatar_url: '', appliances: [] })
       }
-
-      setIsHydrated(true)
-
-      // 2. Get Supabase user
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      setUserId(user.id)
-      setIsSyncing(true)
-
-      try {
-        // 3. Load from Supabase (source of truth)
-        const [dbProfile, dbClasses, dbAlarms, dbDeadlines, dbMealPlan, dbGrocery] =
-          await Promise.all([
-            getUserProfile(supabase, user.id),
-            getClasses(supabase, user.id),
-            getAlarms(supabase, user.id),
-            getDeadlines(supabase, user.id),
-            getMealPlan(supabase, user.id),
-            getGrocery(supabase, user.id),
+      activeOwner.current = owner
+      setIsHydrated(false)
+      setIsSyncing(Boolean(owner))
+      setUserId(owner)
+      setSyncError(null)
+      const cached: Record<string, unknown> = {}
+      for (const [name, key] of Object.entries(STORAGE_KEYS)) {
+        try {
+          const raw = localStorage.getItem(owner ? `${key}:${owner}` : key)
+          const value: unknown = raw ? JSON.parse(raw) : null
+          if (name === 'PROFILE' ? value && typeof value === 'object' && !Array.isArray(value) : Array.isArray(value)) cached[name] = value
+        } catch { /* Corrupt or unavailable browser cache does not replace cloud data. */ }
+      }
+      let nextProfile: UserProfile = { ...defaultProfile, ...(cached.PROFILE as Partial<UserProfile> || {}) }
+      let nextClasses = cached.CLASSES as ClassEntry[] || []
+      let nextAlarms = cached.ALARMS as Alarm[] || []
+      let nextDeadlines = cached.DEADLINES as DeadlineItem[] || []
+      let nextMealPlan = cached.MEALPLAN as MealPlanEntry[] || []
+      let nextGrocery = cached.GROCERY as GroceryItem[] || []
+      if (user) {
+        try {
+          const dbProfile = await getUserProfile(supabase, user.id)
+          if (!dbProfile) await seedNewUser(supabase, user.id, { name: typeof user.user_metadata?.full_name === 'string' ? user.user_metadata.full_name : '' })
+          nextProfile = { ...defaultProfile,
+            name: dbProfile?.name || '', school: dbProfile?.school || '', dorm: dbProfile?.dorm || '',
+            year: dbProfile?.year || '', initials: dbProfile?.initials || '',
+            avatar_url: typeof user.user_metadata?.avatar_url === 'string' ? user.user_metadata.avatar_url : '',
+            country: dbProfile?.country || 'PH', timezone: dbProfile?.timezone || 'Asia/Manila',
+            appliances: (dbProfile?.appliances as ApplianceType[]) || [],
+            dietary_preference: (dbProfile?.dietary_preference as DietaryPreference) || 'none', dietary_note: dbProfile?.dietary_note || '',
+          }
+          ;[nextClasses, nextAlarms, nextDeadlines, nextMealPlan, nextGrocery] = await Promise.all([
+            getClasses(supabase, user.id), getAlarms(supabase, user.id), getDeadlines(supabase, user.id, nextProfile.timezone),
+            getMealPlan(supabase, user.id), getGrocery(supabase, user.id),
           ])
-
-        // If brand new user with no data, seed them
-        if (!dbProfile) {
-          await seedNewUser(supabase, user.id)
-          return
+        } catch {
+          if (disposed || version !== generation) return
+          setSyncError('We could not load your saved data. Your existing data is still saved. Please retry.')
         }
-
-        // Map DB profile to local profile shape
-        if (dbProfile) {
-          setProfileState((prev) => ({
-            ...prev,
-            name: dbProfile.name || prev.name,
-            school: dbProfile.school || prev.school,
-            dorm: dbProfile.dorm || prev.dorm,
-            year: dbProfile.year !== undefined && dbProfile.year !== null ? dbProfile.year : (prev.year || ''),
-            avatar_url: dbProfile.avatar_url || prev.avatar_url || '',
-            initials: dbProfile.initials || prev.initials,
-            country: dbProfile.country || prev.country || 'PH',
-            timezone: dbProfile.timezone || prev.timezone || 'Asia/Manila',
-            appliances: (dbProfile.appliances as ApplianceType[]) || prev.appliances || ['microwave', 'kettle'],
-            dietary_preference: (dbProfile.dietary_preference as DietaryPreference) || prev.dietary_preference || 'none',
-            dietary_note: dbProfile.dietary_note ?? prev.dietary_note ?? '',
-          }))
-        }
-        setClassesState(dbClasses)
-        setAlarmsState(dbAlarms)
-        setDeadlinesState(dbDeadlines)
-        if (dbMealPlan.length > 0) setMealPlanState(dbMealPlan)
-        if (dbGrocery.length > 0) {
-          setGroceryItemsState(dbGrocery)
-        }
-      } catch (err) {
-        console.warn('Supabase sync notice:', err)
-      } finally {
-        setIsSyncing(false)
       }
+      if (disposed || version !== generation) return
+      const snapshots = { CLASSES: nextClasses, ALARMS: nextAlarms, PROFILE: nextProfile, DEADLINES: nextDeadlines, MEALPLAN: nextMealPlan, GROCERY: nextGrocery }
+      saved.current = Object.fromEntries(Object.entries(snapshots).map(([key, value]) => [key, JSON.stringify(value)]))
+      scheduled.current = { ...saved.current }
+      setClassesState(nextClasses); setAlarmsState(nextAlarms); setProfileState(nextProfile)
+      setDeadlinesState(nextDeadlines); setMealPlanState(nextMealPlan); setGroceryItemsState(nextGrocery)
+      setIsSyncing(false); setIsHydrated(true)
     }
-
-    hydrate()
-
-    // Listen for auth changes to re-sync
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') hydrate()
-      if (event === 'SIGNED_OUT') {
-        // Reset to defaults on sign out
-        setClassesState([])
-        setAlarmsState([])
-        setProfileState(defaultProfile)
-        setMealPlanState(defaultMealPlan)
-        setDeadlinesState([])
-        setGroceryItemsState(syncGroceryFromMealPlan(defaultMealPlan))
-        setUserId(null)
+    void supabase.auth.getUser().then(({ data }) => { if (!authChanged) return hydrate(data.user, true) }).catch(() => {
+      if (!disposed) { setIsHydrated(true); setSyncError('We could not check your session. Please reconnect and retry.') }
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        authChanged = true
+        // Leave the auth callback before requesting Supabase data (avoids auth locks).
+        queueMicrotask(() => { if (!disposed) void hydrate(session?.user ?? null) })
       }
     })
+    return () => { disposed = true; generation++; subscription.unsubscribe() }
+  }, [retryVersion])
 
-    return () => subscription.unsubscribe()
-  }, [syncGroceryFromMealPlan])
-
-  // ─── Sync grocery when meal plan changes ─────────────────────────────────────
+  // Persist committed React state, once, rather than doing I/O inside state
+  // updater callbacks (which React may invoke more than once).
   React.useEffect(() => {
-    if (!isHydrated) return
-    setGroceryItemsState((prev) => syncGroceryFromMealPlan(mealPlan, prev))
-  }, [mealPlan, isHydrated, syncGroceryFromMealPlan])
-
-  // ─── Save to localStorage (always, for offline/instant access) ───────────────
-  React.useEffect(() => {
-    if (!isHydrated) return
-    try {
-      localStorage.setItem(STORAGE_KEYS.CLASSES, JSON.stringify(classes))
-      localStorage.setItem(STORAGE_KEYS.ALARMS, JSON.stringify(alarms))
-      localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile))
-      localStorage.setItem(STORAGE_KEYS.MEALPLAN, JSON.stringify(mealPlan))
-      localStorage.setItem(STORAGE_KEYS.GROCERY, JSON.stringify(groceryItems))
-      localStorage.setItem(STORAGE_KEYS.DEADLINES, JSON.stringify(deadlines))
-    } catch (e) {
-      console.warn('LocalStorage save notice:', e)
+    if (!isHydrated || activeOwner.current !== userId) return
+    const snapshots = { CLASSES: classes, ALARMS: alarms, PROFILE: profile, DEADLINES: deadlines, MEALPLAN: mealPlan, GROCERY: groceryItems }
+    const owner = userId
+    for (const [name, value] of Object.entries(snapshots)) {
+      const serialized = JSON.stringify(value)
+      try { localStorage.setItem(owner ? `${STORAGE_KEYS[name as keyof typeof STORAGE_KEYS]}:${owner}` : STORAGE_KEYS[name as keyof typeof STORAGE_KEYS], serialized) } catch {}
+      if (!owner || syncError || serialized === scheduled.current[name]) continue
+      scheduled.current[name] = serialized
+      writeQueue.current = writeQueue.current.then(async () => {
+        if (activeOwner.current !== owner) return
+        const supabase = createClient()
+        if (name === 'CLASSES') await setClasses(supabase, owner, value as ClassEntry[])
+        if (name === 'ALARMS') await setAlarms(supabase, owner, value as Alarm[])
+        if (name === 'DEADLINES') await setDeadlinesCloud(supabase, owner, value as DeadlineItem[], profile.timezone)
+        if (name === 'MEALPLAN') await setMealPlan(supabase, owner, value as MealPlanEntry[])
+        if (name === 'GROCERY') await setGrocery(supabase, owner, value as GroceryItem[])
+        if (name === 'PROFILE') {
+          await upsertUserProfile(supabase, owner, { name: profile.name, school: profile.school, dorm: profile.dorm,
+            year: profile.year, initials: profile.initials, country: profile.country, timezone: profile.timezone,
+            appliances: profile.appliances, dietary_preference: profile.dietary_preference, dietary_note: profile.dietary_note })
+        }
+        if (activeOwner.current === owner) saved.current[name] = serialized
+      }).catch(() => {
+        if (activeOwner.current === owner) {
+          scheduled.current[name] = saved.current[name]
+          setSyncError('We could not save your latest changes online. They remain on this device. Please reconnect and try again.')
+        }
+      })
     }
-  }, [classes, alarms, profile, mealPlan, groceryItems, deadlines, isHydrated])
-
-  // ─── Helpers to write to Supabase in the background ──────────────────────────
-  function syncToCloud<T>(fn: () => Promise<T>) {
-    if (!userId) return
-    fn().catch((err) => console.warn('Cloud sync notice:', err))
-  }
+  }, [classes, alarms, profile, deadlines, mealPlan, groceryItems, isHydrated, userId, syncError])
 
   // ─── Actions ─────────────────────────────────────────────────────────────────
 
+  const saveClasses = async (entries: ClassEntry[]) => {
+    const owner = userId
+    const newAlarms = generateAlarmsFromClasses(entries).map(a => ({ ...a, ...(alarms.find(old => old.classId === a.classId) || {}), time: a.time, subject: a.subject, code: a.code }))
+    if (owner) {
+      if (syncError) throw new Error('Please reconnect before saving.')
+      const work = writeQueue.current.then(async () => {
+        if (activeOwner.current !== owner) throw new Error('Your session changed. Please sign in again.')
+        const supabase = createClient()
+        await setClasses(supabase, owner, entries)
+        await setAlarms(supabase, owner, newAlarms)
+      })
+      writeQueue.current = work.catch(() => {})
+      await work
+    }
+    if (activeOwner.current !== owner) throw new Error('Your session changed. Please sign in again.')
+    saved.current.CLASSES = scheduled.current.CLASSES = JSON.stringify(entries)
+    saved.current.ALARMS = scheduled.current.ALARMS = JSON.stringify(newAlarms)
+    setClassesState(entries); setAlarmsState(newAlarms)
+  }
+  const saveDeadlines = async (entries: DeadlineItem[]) => {
+    const owner = userId
+    if (owner) {
+      if (syncError) throw new Error('Please reconnect before saving.')
+      const work = writeQueue.current.then(async () => {
+        if (activeOwner.current !== owner) throw new Error('Your session changed. Please sign in again.')
+        await setDeadlinesCloud(createClient(), owner, entries, profile.timezone)
+      })
+      writeQueue.current = work.catch(() => {})
+      await work
+    }
+    if (activeOwner.current !== owner) throw new Error('Your session changed. Please sign in again.')
+    saved.current.DEADLINES = scheduled.current.DEADLINES = JSON.stringify(entries)
+    setDeadlinesState(entries)
+  }
+
   const addClasses = (newClasses: ClassEntry[]) => {
     setClassesState(newClasses)
-    const newAlarms = generateAlarmsFromClasses(newClasses)
+    const generated = generateAlarmsFromClasses(newClasses)
+    const newAlarms = generated.map(a => ({ ...a, ...(alarms.find(existing => existing.classId === a.classId) || {}), time: a.time, subject: a.subject, code: a.code }))
     setAlarmsState(newAlarms)
-    syncToCloud(async () => {
-      const supabase = createClient()
-      await Promise.all([
-        setClasses(supabase, userId!, newClasses),
-        setAlarms(supabase, userId!, newAlarms),
-      ])
-    })
   }
 
   const addClass = (newClass: ClassEntry) => {
     setClassesState((prev) => {
       const next = [...prev, newClass]
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setClasses(supabase, userId!, next)
-      })
       return next
     })
 
@@ -332,10 +348,6 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
 
     setAlarmsState((prev) => {
       const nextAlarms = [...prev, newAlarm]
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setAlarms(supabase, userId!, nextAlarms)
-      })
       return nextAlarms
     })
   }
@@ -343,10 +355,6 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const updateClass = (id: string, updated: Partial<ClassEntry>) => {
     setClassesState((prev) => {
       const next = prev.map((c) => (c.id === id ? { ...c, ...updated } : c))
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setClasses(supabase, userId!, next)
-      })
       return next
     })
     setAlarmsState((prev) => {
@@ -361,10 +369,6 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
             }
           : a,
       )
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setAlarms(supabase, userId!, nextAlarms)
-      })
       return nextAlarms
     })
   }
@@ -372,18 +376,10 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const deleteClass = (id: string) => {
     setClassesState((prev) => {
       const next = prev.filter((c) => c.id !== id)
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setClasses(supabase, userId!, next)
-      })
       return next
     })
     setAlarmsState((prev) => {
       const nextAlarms = prev.filter((a) => a.classId !== id)
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setAlarms(supabase, userId!, nextAlarms)
-      })
       return nextAlarms
     })
   }
@@ -391,10 +387,6 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const toggleAlarm = (id: string, enabled?: boolean) => {
     setAlarmsState((prev) => {
       const next = prev.map((a) => (a.id === id ? { ...a, enabled: enabled ?? !a.enabled } : a))
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setAlarms(supabase, userId!, next)
-      })
       return next
     })
   }
@@ -402,10 +394,6 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const updateAlarmLead = (id: string, lead: 15 | 30 | 60) => {
     setAlarmsState((prev) => {
       const next = prev.map((a) => (a.id === id ? { ...a, lead } : a))
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setAlarms(supabase, userId!, next)
-      })
       return next
     })
   }
@@ -414,32 +402,22 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
     setMealPlanState((prev) => {
       const filtered = prev.filter((p) => !(p.day === day && p.meal === meal))
       const next = [...filtered, { day, meal, recipeSlug }]
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setMealPlan(supabase, userId!, next)
-      })
       return next
     })
+    setGroceryItemsState(prev => syncGroceryFromMealPlan([...mealPlan.filter(p => !(p.day === day && p.meal === meal)), { day, meal, recipeSlug }], prev))
   }
 
   const removeMealPlanItem = (day: string, meal: MealPlanEntry['meal']) => {
     setMealPlanState((prev) => {
       const next = prev.filter((p) => !(p.day === day && p.meal === meal))
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setMealPlan(supabase, userId!, next)
-      })
       return next
     })
+    setGroceryItemsState(prev => syncGroceryFromMealPlan(mealPlan.filter(p => !(p.day === day && p.meal === meal)), prev))
   }
 
   const toggleGroceryItem = (id: string) => {
     setGroceryItemsState((prev) => {
       const next = prev.map((g) => (g.id === id ? { ...g, checked: !g.checked } : g))
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setGrocery(supabase, userId!, next)
-      })
       return next
     })
   }
@@ -448,17 +426,13 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
     const trimmed = name.trim()
     if (!trimmed) return
     const newItem: GroceryItem = {
-      id: `custom-${Date.now()}`,
+      id: crypto.randomUUID(),
       name: trimmed,
       checked: false,
       custom: true,
     }
     setGroceryItemsState((prev) => {
       const next = [...prev, newItem]
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setGrocery(supabase, userId!, next)
-      })
       return next
     })
   }
@@ -466,10 +440,6 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const removeGroceryItem = (id: string) => {
     setGroceryItemsState((prev) => {
       const next = prev.filter((g) => g.id !== id)
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setGrocery(supabase, userId!, next)
-      })
       return next
     })
   }
@@ -477,15 +447,11 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const addDeadline = (deadline: Omit<DeadlineItem, 'id' | 'completed'>) => {
     const newItem: DeadlineItem = {
       ...deadline,
-      id: `dl-${Date.now()}`,
+      id: crypto.randomUUID(),
       completed: false,
     }
     setDeadlinesState((prev) => {
       const next = [...prev, newItem]
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setDeadlinesCloud(supabase, userId!, next)
-      })
       return next
     })
   }
@@ -493,10 +459,6 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const toggleDeadlineCompleted = (id: string) => {
     setDeadlinesState((prev) => {
       const next = prev.map((d) => (d.id === id ? { ...d, completed: !d.completed } : d))
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setDeadlinesCloud(supabase, userId!, next)
-      })
       return next
     })
   }
@@ -504,35 +466,22 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const deleteDeadline = (id: string) => {
     setDeadlinesState((prev) => {
       const next = prev.filter((d) => d.id !== id)
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setDeadlinesCloud(supabase, userId!, next)
-      })
       return next
     })
   }
 
   const resetToDemo = () => {
-    setClassesState(defaultClasses)
-    setAlarmsState(defaultAlarms)
-    setProfileState(defaultProfile)
-    setMealPlanState([])
-    setDeadlinesState([])
-    setGroceryItemsState([])
-    localStorage.clear()
-    if (userId) {
-      const supabase = createClient()
-      seedNewUser(supabase, userId).catch((e) => console.warn('Seed notice:', e))
-    }
+    // Reset the local guest workspace only; authenticated data needs an explicit
+    // account-management operation, not a seed helper or localStorage.clear().
+    if (userId) return
+    setClassesState([]); setAlarmsState([]); setProfileState(defaultProfile)
+    setMealPlanState([]); setDeadlinesState([]); setGroceryItemsState([])
+    for (const key of Object.values(STORAGE_KEYS)) localStorage.removeItem(key)
   }
 
   const setDeadlines: React.Dispatch<React.SetStateAction<DeadlineItem[]>> = (value) => {
     setDeadlinesState((prev) => {
       const next = typeof value === 'function' ? value(prev) : value
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await setDeadlinesCloud(supabase, userId!, next)
-      })
       return next
     })
   }
@@ -540,23 +489,6 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const setProfile: React.Dispatch<React.SetStateAction<UserProfile>> = (value) => {
     setProfileState((prev) => {
       const next = typeof value === 'function' ? value(prev) : value
-      syncToCloud(async () => {
-        const supabase = createClient()
-        await upsertUserProfile(supabase, userId!, {
-          name: next.name,
-          school: next.school,
-          dorm: next.dorm,
-          year: next.year,
-          initials: next.initials,
-          is_dorm_student: next.dorm === 'Dorm Room' || next.dorm.toLowerCase().includes('dorm'),
-          onboarding_completed: true,
-          country: next.country,
-          timezone: next.timezone,
-          appliances: next.appliances,
-          dietary_preference: next.dietary_preference,
-          dietary_note: next.dietary_note,
-        })
-      })
       return next
     })
   }
@@ -571,6 +503,10 @@ export function ScheduleProvider({ children }: { children: React.ReactNode }) {
         groceryItems,
         deadlines,
         isSyncing,
+        syncError,
+        retrySync,
+        saveClasses,
+        saveDeadlines,
         setClasses: setClassesState,
         setAlarms: setAlarmsState,
         setProfile,

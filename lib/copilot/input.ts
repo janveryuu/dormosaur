@@ -1,4 +1,5 @@
 import type { ChatMessage, StudentContext } from './types'
+import { deadlineFields } from '../date-time'
 
 export const MAX_BODY_BYTES = 64 * 1024
 export const MAX_MESSAGES = 24
@@ -72,9 +73,8 @@ export function normalizeContext(value: unknown, source: StudentContext['sources
     })),
     deadlines: list(c.deadlines).map(v => ({
       title: text(v.title), code: text(v.code), type: text(v.type, 30),
-      // The DB stores these as local wall-clock timestamps, not UTC instants.
-      dueDate: text(v.due_date ?? v.dueDate, 40)?.slice(0, 10),
-      dueTime: text(v.dueTime, 10) ?? text(v.due_date, 40)?.split('T')[1]?.slice(0, 5),
+      ...deadlineFields(text(v.due_date ?? v.dueDate, 40) || '', text(p.timezone, 80) || 'Asia/Manila'),
+      ...(text(v.dueTime, 10) ? { dueTime: text(v.dueTime, 10) } : {}),
       completed: v.completed === true,
     })),
     sources: { profile: source, classes: source, alarms: source, deadlines: source },
@@ -88,8 +88,8 @@ export function resolveContext(authenticated: boolean, cloud: StudentContext | n
   return record(client).dataSource === 'local' ? normalizeContext(client, 'local') : emptyContext()
 }
 
-export async function readPayload(request: Request): Promise<Record<string, unknown>> {
-  if (Number(request.headers.get('content-length')) > MAX_BODY_BYTES) throw new InputError('Conversation payload is too large.', 413)
+export async function readPayload(request: Request, maxBytes = MAX_BODY_BYTES): Promise<Record<string, unknown>> {
+  if (Number(request.headers.get('content-length')) > maxBytes) throw new InputError('This upload is too large.', 413)
   if (!request.body) throw new InputError('Send a JSON conversation.')
   const reader = request.body.getReader()
   const chunks: Uint8Array[] = []
@@ -99,7 +99,7 @@ export async function readPayload(request: Request): Promise<Record<string, unkn
       const { value, done } = await reader.read()
       if (done) break
       size += value.byteLength
-      if (size > MAX_BODY_BYTES) { await reader.cancel(); throw new InputError('Conversation payload is too large.', 413) }
+      if (size > maxBytes) { await reader.cancel(); throw new InputError('This upload is too large.', 413) }
       chunks.push(value)
     }
     const joined = new Uint8Array(size)

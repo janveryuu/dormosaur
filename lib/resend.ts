@@ -38,8 +38,8 @@ export async function sendBrandedConfirmationEmail(params: SendConfirmationEmail
     })
 
     return { success: true, data }
-  } catch (error: any) {
-    console.error('[Resend Service Error]:', error)
-    return { success: false, error: error?.message || 'Failed to send confirmation email' }
+  } catch {
+    console.warn('[Resend Service]', { category: 'delivery_failed' })
+    return { success: false, error: 'Confirmation email could not be sent.' }
   }
 }

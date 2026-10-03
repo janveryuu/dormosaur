@@ -130,7 +130,7 @@
 
   /* Slightly lighter emerald for dark mode legibility */
   --primary: oklch(0.72 0.13 148);
-  --primary-foreground: oklch(0.99 0 0);
+  --primary-foreground: oklch(0.16 0.035 158);
 
   --secondary: oklch(0.27 0.045 158);
   --secondary-foreground: oklch(0.95 0.02 105);

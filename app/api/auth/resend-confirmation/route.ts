@@ -1,51 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { sendBrandedConfirmationEmail } from '@/lib/resend'
+import { isValidEmailFormat } from '@/lib/email-utils'
+import { authErrorMessage } from '@/lib/auth-errors'
+import { apiError, boundedText, consumeRateLimit, InputError, readJson } from '@/lib/api-security'
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const { email } = await req.json()
-
-    if (!email || !email.includes('@')) {
-      return NextResponse.json({ error: 'Valid email address is required' }, { status: 400 })
-    }
-
-    const cleanEmail = email.trim()
+    const body = await readJson(req, 4096)
+    const email = boundedText(body.email, 254, 'email address', true).toLowerCase()
+    if (!isValidEmailFormat(email)) throw new InputError('Please enter a valid email address.')
+    consumeRateLimit(`resend:${email}`, 1)
     const supabase = await createClient()
-    const origin = req.headers.get('origin') || 'https://dormosaur.vercel.app'
-    const redirectUrl = `${origin}/api/auth/callback`
-
-    // 1. Call Supabase Auth Resend
-    const { error: supabaseErr } = await supabase.auth.resend({
-      type: 'signup',
-      email: cleanEmail,
-      options: {
-        emailRedirectTo: redirectUrl,
-      },
-    })
-
-    if (supabaseErr) {
-      console.warn('[Resend API Notice] Supabase auth.resend warning:', supabaseErr.message)
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL
+    const origin = appUrl && /^https?:\/\//.test(appUrl) ? new URL(appUrl).origin : new URL(req.url).origin
+    // Supabase sends the real tokenized link using its configured provider/SMTP.
+    const { error } = await supabase.auth.resend({ type: 'signup', email,
+      options: { emailRedirectTo: `${origin}/api/auth/callback` } })
+    if (error) {
+      console.warn('[Auth Resend]', { category: error.status === 429 ? 'rate_limit' : 'delivery_failed' })
+      return NextResponse.json({ error: authErrorMessage(error, 'resend') }, { status: error.status === 429 ? 429 : 503 })
     }
-
-    // 2. If RESEND_API_KEY is present, also send direct branded email via Resend API
-    if (process.env.RESEND_API_KEY) {
-      const confirmationUrl = redirectUrl
-      await sendBrandedConfirmationEmail({
-        email: cleanEmail,
-        confirmationUrl,
-      })
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Confirmation email sent successfully. Please check your inbox or spam folder.',
-    })
-  } catch (err: any) {
-    console.error('[Resend API Error]:', err)
-    return NextResponse.json(
-      { error: err?.message || 'Failed to resend confirmation email. Please try again.' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: true, message: 'If your account needs confirmation, a new link is on its way. Check your inbox and spam folder.' })
+  } catch (error) {
+    return apiError(error, 'We could not send your confirmation email. Please try again shortly.')
   }
 }

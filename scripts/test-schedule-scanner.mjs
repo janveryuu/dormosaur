@@ -8,10 +8,15 @@ import { createRequire } from 'node:module'
 
 const require = createRequire(import.meta.url)
 if (process.argv.includes('--trace')) {
+  const deadlineFiles = JSON.parse(readFileSync('.next/server/app/api/deadlines/parse/route.js.nft.json', 'utf8')).files
   const files = JSON.parse(readFileSync('.next/server/app/api/schedule/parse/route.js.nft.json', 'utf8')).files
   for (const dependency of ['bmp-js', 'wasm-feature-detect', 'regenerator-runtime', 'is-url', 'tesseract.js-core', '@tesseract.js-data/eng']) {
     assert.ok(files.some((file) => file.includes(`/node_modules/${dependency}/`)), `Production tracing must include OCR worker dependency ${dependency}`)
+    assert.ok(deadlineFiles.some((file) => file.includes(`/node_modules/${dependency}/`)), `Deadline fallback must include OCR worker dependency ${dependency}`)
   }
+  assert.ok(deadlineFiles.some((file) => file.includes('worker-script/node/index.js')))
+  assert.ok(deadlineFiles.some((file) => file.endsWith('eng.traineddata.gz')))
+  assert.ok(deadlineFiles.some((file) => file.endsWith('/pdfjs-dist/package.json')))
   assert.ok(files.some((file) => file.includes('worker-script/node/index.js')))
   assert.ok(files.some((file) => file.endsWith('eng.traineddata.gz')))
   assert.ok(files.some((file) => file.endsWith('/pdfjs-dist/package.json')), 'PDF runtime resolves its package root dynamically')
@@ -150,7 +155,17 @@ const ocrStub = { recognizeScheduleWithTesseract: async () => {
   if (ocrUnavailable) throw new Error('Synthetic OCR failure')
   return { text: ocrText, words: [] }
 } }
+// Route tests use an isolated authenticated fixture; real HTTP requests still
+// require a real account. Security regressions exercise the actual guard.
+class FixtureInputError extends Error { constructor(message, status = 400) { super(message); this.status = status } }
+const apiSecurityStub = {
+  InputError: FixtureInputError,
+  requireAuthenticated: async () => ({ user: { id: 'scanner-fixture' }, supabase: {} }),
+  readJson: async request => request.json(),
+  apiError: (error, fallback) => Response.json({ success: false, error: error instanceof FixtureInputError ? error.message : fallback }, { status: error instanceof FixtureInputError ? error.status : 503 }),
+}
 const route = loadTs('app/api/schedule/parse/route.ts', {
+  '@/lib/api-security': apiSecurityStub,
   '@/lib/gemini': gemini,
   '@/lib/parser': parser,
   '@/lib/schedule-ocr': ocrStub,
@@ -245,7 +260,7 @@ for (const [status, category] of [[401, 'authentication_failure'], [403, 'authen
   assert.equal(result.status, 200)
   assert.equal(result.data.provider, 'tesseract-local')
   assert.deepEqual(result.data.classes[0].days, ['Wed'])
-  assert.equal(result.data.classes[0].instructor, 'TBA')
+  assert.equal(result.data.classes[0].instructor, '', 'Missing instructor remains unset for review')
   assert.equal(calls.length, 1, 'A known outage must not repeat the vision/provider request')
   assert.equal(ocrCalls, 1)
   assert.ok(logs.some((log) => log[1]?.status === status && log[1]?.category === category))
@@ -276,6 +291,7 @@ ocrUnavailable = false
 
 const missingKeyGemini = loadTs('lib/gemini.ts', {}, { process: { env: {} } })
 const missingKeyRoute = loadTs('app/api/schedule/parse/route.ts', {
+  '@/lib/api-security': apiSecurityStub,
   '@/lib/gemini': missingKeyGemini, '@/lib/parser': parser, '@/lib/schedule-ocr': ocrStub,
   'next/server': { NextResponse: { json: (body, init) => Response.json(body, init) } },
 }, { console: fakeConsole })
@@ -336,6 +352,7 @@ if (process.argv.includes('--live') || process.argv.includes('--ocr')) {
   const realOcr = loadTs('lib/schedule-ocr.ts', { '@/lib/schedule-pdf': realPdf }, { setTimeout, clearTimeout })
   const liveGemini = process.argv.includes('--ocr') ? missingKeyGemini : loadTs('lib/gemini.ts')
   const liveRoute = loadTs('app/api/schedule/parse/route.ts', {
+  '@/lib/api-security': apiSecurityStub,
     '@/lib/gemini': liveGemini, '@/lib/parser': parser, '@/lib/schedule-ocr': realOcr,
     'next/server': { NextResponse: { json: (body, init) => Response.json(body, init) } },
   })

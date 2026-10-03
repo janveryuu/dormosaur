@@ -20,20 +20,36 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
     return null
   }
+  let timer: ReturnType<typeof setTimeout> | undefined
   try {
-    const reg = await navigator.serviceWorker.register('/sw.js')
-    await navigator.serviceWorker.ready
-    return reg
-  } catch (err) {
-    console.warn('Service Worker registration notice:', err)
+    return await Promise.race([
+      (async () => {
+        const registration = await navigator.serviceWorker.register('/sw.js')
+        await navigator.serviceWorker.ready
+        return registration
+      })(),
+      new Promise<never>((_resolve, reject) => { timer = setTimeout(() => reject(new Error('worker_unavailable')), 8000) }),
+    ])
+  } catch {
+    console.warn('[Web Push]', { category: 'worker_unavailable' })
     return null
-  }
+  } finally { clearTimeout(timer) }
+}
+
+async function savePushDevice(method: 'POST' | 'DELETE', payload: unknown) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 10_000)
+  try {
+    return await fetch('/api/push/subscribe', { method, signal: controller.signal,
+      headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+  } finally { clearTimeout(timer) }
 }
 
 export async function getCurrentEndpoint(): Promise<string | null> {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return null
   try {
-    const reg = await navigator.serviceWorker.ready
+    const reg = await navigator.serviceWorker.getRegistration()
+    if (!reg) return null
     const sub = await reg.pushManager.getSubscription()
     return sub ? sub.endpoint : null
   } catch (e) {
@@ -74,7 +90,7 @@ export async function requestAndSubscribePush(): Promise<{
     // 3. Get VAPID public key
     const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
     if (!vapidPublicKey) {
-      return { success: false, deviceLabel, permission, error: 'VAPID public key is not configured.' }
+      return { success: false, deviceLabel, permission, error: 'Notifications are temporarily unavailable. Please try again later.' }
     }
 
     // 4. Subscribe to PushManager
@@ -85,17 +101,13 @@ export async function requestAndSubscribePush(): Promise<{
     })
 
     // 5. Send subscription + deviceLabel to backend API (triggers instant test push)
-    const res = await fetch('/api/push/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    const res = await savePushDevice('POST', {
         endpoint: subscription.endpoint,
         keys: {
           p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh') || []))),
           auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth') || []))),
         },
         deviceLabel,
-      }),
     })
 
     const data = await res.json()
@@ -114,25 +126,22 @@ export async function requestAndSubscribePush(): Promise<{
       permission,
     }
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err)
-    console.warn('Web push subscription notice:', msg)
-    return { success: false, deviceLabel, permission: Notification.permission, error: msg }
+    console.warn('[Web Push]', { category: 'subscription_failed' })
+    return { success: false, deviceLabel, permission: Notification.permission, error: 'We could not enable notifications. Check your browser permissions and try again.' }
   }
 }
 
 export async function unsubscribePush(): Promise<boolean> {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return false
   try {
-    const reg = await navigator.serviceWorker.ready
+    const reg = await navigator.serviceWorker.getRegistration()
+    if (!reg) return true
     const sub = await reg.pushManager.getSubscription()
     if (sub) {
       const endpoint = sub.endpoint
-      await sub.unsubscribe()
-      await fetch('/api/push/subscribe', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ endpoint }),
-      })
+      if (!await sub.unsubscribe()) return false
+      const response = await savePushDevice('DELETE', { endpoint })
+      if (!response.ok) return false
     }
     return true
   } catch (err) {
@@ -161,29 +170,12 @@ export async function triggerPushNotification(options: {
       await Notification.requestPermission()
     }
 
-    // 2. Spawn native OS browser notification
-    if ('Notification' in window && Notification.permission === 'granted') {
-      try {
-        new Notification(title, {
-          body,
-          icon: '/apple-icon.png',
-          tag: tag || `dormosaur-push-${Date.now()}`,
-          data: { url },
-        })
-      } catch (e) {
-        console.warn('Native notification spawn notice:', e)
-      }
-    }
-
-    // 3. Dispatch server-side Web Push to all registered student devices
-    fetch('/api/notifications/test-push', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title,
-        message: body,
-      }),
-    }).catch(() => {})
+    // Local previews use the service worker on mobile as well as desktop.
+    // Do not call development endpoints or notify all the student's devices.
+    if (!('Notification' in window) || Notification.permission !== 'granted') return false
+    const reg = await registerServiceWorker()
+    if (!reg) return false
+    await reg.showNotification(title, { body, icon: '/apple-icon.png', tag: tag || 'dormosaur-preview', data: { url } })
 
     return true
   } catch (err) {

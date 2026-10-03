@@ -14,18 +14,22 @@ import { useSchedule } from '@/components/schedule-provider'
 import { formatTime, recipes, subjectColorClass } from '@/lib/data'
 import { getNextUpcomingClass } from '@/lib/schedule-engine'
 import { DeadlineCard } from '@/components/schedule/deadline-card'
+import { useNow } from '@/hooks/use-browser-state'
+import { clockAt } from '@/lib/copilot/time'
+import { getFeasibleRecipes, getDietaryFilteredRecipes } from '@/lib/appliances-data'
 import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
-
-const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 export default function DashboardPage() {
   const { classes, alarms, profile, deadlines } = useSchedule()
   const [banner, setBanner] = React.useState(false)
-  const currentDayName = dayNames[new Date().getDay()]
+  const now = useNow()
+  const clock = now ? clockAt(new Date(now), profile.timezone) : null
+  const currentDayName = clock?.day || ''
+  const availableRecipes = getDietaryFilteredRecipes(getFeasibleRecipes(recipes, profile.appliances), profile.dietary_preference)
 
   const nextClassResult = React.useMemo(
-    () => getNextUpcomingClass(classes, new Date(), profile.timezone || 'Asia/Manila'),
-    [classes, profile.timezone],
+    () => now ? getNextUpcomingClass(classes, new Date(now), profile.timezone || 'Asia/Manila') : null,
+    [classes, profile.timezone, now],
   )
 
   React.useEffect(() => {
@@ -37,12 +41,10 @@ export default function DashboardPage() {
     }
   }, [])
 
-  const todayClasses = React.useMemo(
-    () => classes.filter((entry) => entry.days.includes(currentDayName)).sort((a, b) => (a.start || '00:00').localeCompare(b.start || '00:00')),
-    [classes, currentDayName],
-  )
+  const todayClasses = classes.filter((entry) => entry.days.includes(currentDayName))
+    .sort((a, b) => a.start.localeCompare(b.start))
 
-  const todayWithGaps = React.useMemo(() => {
+  const todayWithGaps = (() => {
     const items: Array<
       | { type: 'class'; data: (typeof todayClasses)[number] }
       | { type: 'gap'; minutes: number }
@@ -60,12 +62,12 @@ export default function DashboardPage() {
       if (gap >= 20) items.push({ type: 'gap', minutes: gap })
     }
     return items
-  }, [todayClasses])
+  })()
 
   const activeAlarmsCount = alarms.filter((alarm) => alarm.enabled).length
-  const pendingDeadlines = deadlines.filter((deadline) => !deadline.completed)
+  const pendingDeadlines = deadlines.filter((deadline) => !deadline.completed).sort((a,b) => a.dueDate.localeCompare(b.dueDate) || (a.dueTime || '').localeCompare(b.dueTime || ''))
   const firstName = profile.name ? profile.name.split(' ')[0] : 'Student'
-  const dateLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+  const dateLabel = now ? new Date(now).toLocaleDateString('en-US', { timeZone: clock?.timeZone, weekday: 'long', month: 'short', day: 'numeric' }) : ''
 
   return (
     <>
@@ -73,7 +75,7 @@ export default function DashboardPage() {
         open={banner && Boolean(nextClassResult?.entry)}
         onClose={() => setBanner(false)}
         title={`${nextClassResult?.entry.subject || nextClassResult?.entry.code || 'Class'} ${nextClassResult?.status === 'in_progress' ? 'is in session' : 'starts soon'}`}
-        body={`${nextClassResult?.entry.room || 'Online'}${nextClassResult?.entry.instructor && nextClassResult.entry.instructor !== 'TBA' ? ` · ${nextClassResult.entry.instructor}` : ''}`}
+        body={`${nextClassResult?.entry.room || 'Room not recorded'}${nextClassResult?.entry.instructor && nextClassResult.entry.instructor !== 'TBA' ? ` · ${nextClassResult.entry.instructor}` : ''}`}
       />
 
       <ScreenHeader
@@ -115,12 +117,12 @@ export default function DashboardPage() {
           </Link>
           <Link href="/kitchen" className="briefing-card briefing-card--meal">
             <Utensils className="briefing-card-icon" />
-            <h3>{recipes[0]?.title || 'Dorm dinner'}</h3>
-            <p>{recipes[0] ? `${recipes[0].minutes} min · ${recipes[0].appliance}` : 'Find something easy tonight'}</p>
-            {recipes[0]?.image && (
+            <h3>{availableRecipes[0]?.title || 'Dorm dinner'}</h3>
+            <p>{availableRecipes[0] ? `${availableRecipes[0].minutes} min · ${availableRecipes[0].appliance}` : 'Find something easy tonight'}</p>
+            {availableRecipes[0]?.image && (
               <span className="briefing-card-media" aria-hidden="true">
                 <Image
-                  src={recipes[0].image}
+                  src={availableRecipes[0].image}
                   alt=""
                   fill
                   sizes="(max-width: 480px) 70vw, 240px"
@@ -179,7 +181,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1"><Clock3 className="size-3" /><span className="tabular-nums">{formatTime(entry.start)} – {formatTime(entry.end)}</span></span>
-                        <span className="flex items-center gap-1"><MapPin className="size-3" />{entry.room || 'Online'}</span>
+                        <span className="flex items-center gap-1"><MapPin className="size-3" />{entry.room || 'Room not recorded'}</span>
                       </div>
                     </div>
                     {isCurrent && <span className="route-label mt-1 !text-[0.58rem]">Next</span>}
@@ -209,7 +211,7 @@ export default function DashboardPage() {
             <Link href="/kitchen">Explore kitchen <ChevronRight className="inline size-3.5" /></Link>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            {recipes.slice(0, 3).map((recipe) => (
+            {availableRecipes.slice(0, 3).map((recipe) => (
               <Link key={recipe.slug} href={`/kitchen/${recipe.slug}`} className="group block cursor-pointer overflow-hidden rounded-3xl border border-line bg-card transition-colors hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-fill">
                   <Image src={recipe.image || '/placeholder.svg'} alt={recipe.title} fill sizes="(max-width: 640px) 100vw, 240px" className="object-cover transition-transform duration-500 group-hover:scale-105" />

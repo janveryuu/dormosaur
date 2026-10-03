@@ -36,18 +36,14 @@ interface Props {
 import { buttonTapScale, springSmooth } from '@/lib/motion-presets'
 import { useModalA11y } from '@/hooks/use-modal-a11y'
 
-export function AiRecipeModal({ recipe, onClose }: Props) {
-  const { setMealPlanItem, addCustomGroceryItem } = useSchedule()
+export function AiRecipeModal(props: Props) {
+  return props.recipe ? <AiRecipeDialog key={props.recipe.slug} {...props} /> : null
+}
+function AiRecipeDialog({ recipe, onClose }: Props) {
+  const { addCustomGroceryItem } = useSchedule()
   const [completedSteps, setCompletedSteps] = React.useState<Record<number, boolean>>({})
-  const [savedMealPlan, setSavedMealPlan] = React.useState(false)
   const [addedGrocery, setAddedGrocery] = React.useState(false)
   const dialogRef = useModalA11y(Boolean(recipe), onClose)
-
-  React.useEffect(() => {
-    setCompletedSteps({})
-    setSavedMealPlan(false)
-    setAddedGrocery(false)
-  }, [recipe])
 
   if (!recipe) return null
 
@@ -55,14 +51,8 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
     setCompletedSteps((prev) => ({ ...prev, [idx]: !prev[idx] }))
   }
 
-  const handleSaveToMealPlan = () => {
-    // Add to Monday dinner or today's dinner
-    setMealPlanItem('Mon', 'Dinner', recipe.slug)
-    setSavedMealPlan(true)
-    setTimeout(() => setSavedMealPlan(false), 3000)
-  }
-
   const handleAddGrocery = () => {
+    if (addedGrocery) return
     recipe.ingredients.forEach((ing) => addCustomGroceryItem(ing))
     setAddedGrocery(true)
     setTimeout(() => setAddedGrocery(false), 3000)
@@ -73,11 +63,6 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         {/* Backdrop */}
         <motion.div
-          ref={dialogRef}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="generated-recipe-title"
-          tabIndex={-1}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -88,6 +73,11 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
 
         {/* Modal Card */}
         <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="generated-recipe-title"
+          tabIndex={-1}
           initial={{ opacity: 0, scale: 0.94, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 16 }}
@@ -210,12 +200,13 @@ export function AiRecipeModal({ recipe, onClose }: Props) {
             </button>
             <button
               type="button"
-              onClick={handleSaveToMealPlan}
+              disabled
+              title="Generated recipes need a saved recipe record before they can join the meal plan."
               aria-live="polite"
               className="flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-primary py-3 text-[13.5px] font-semibold text-white shadow-ios hover:bg-[#1a6148] active:scale-95 transition-[background-color,transform]"
             >
-              {savedMealPlan ? <Check className="size-4" /> : <Plus className="size-4" />}
-              {savedMealPlan ? 'Saved to Plan!' : 'Save to Meal Plan'}
+              <Plus className="size-4" />
+              Meal plan unavailable
             </button>
           </div>
         </motion.div>

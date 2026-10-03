@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useCamera } from '@/hooks/use-camera'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -49,54 +50,14 @@ export default function ImportDeadlinesPage() {
 
   // Camera state
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
-  const [cameraActive, setCameraActive] = React.useState(false)
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null)
-  const [cameraError, setCameraError] = React.useState<string | null>(null)
 
   // File upload state
   const [uploadedFile, setUploadedFile] = React.useState<{ name: string; size: string; previewUrl: string } | null>(null)
   const [dragOver, setDragOver] = React.useState(false)
   const photoInputRef = React.useRef<HTMLInputElement | null>(null)
 
-  // ─── Camera MediaStream Stream Handling ─────────────────────────────────────
-  const startCamera = async () => {
-    setCameraError(null)
-    try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setCameraError('Camera access is not supported by your browser. You can upload a photo instead!')
-        return
-      }
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-      })
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        videoRef.current.play().catch(() => {})
-        setCameraActive(true)
-      }
-    } catch (err) {
-      console.warn('Camera permission denied or unavailable:', err)
-      setCameraError('Camera access is needed to scan deadlines — you can also paste text or upload a photo instead.')
-    }
-  }
-
-  const stopCamera = () => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream
-      stream.getTracks().forEach((track) => track.stop())
-      videoRef.current.srcObject = null
-    }
-    setCameraActive(false)
-  }
-
-  React.useEffect(() => {
-    if (mode === 'camera' && !capturedImage) {
-      startCamera()
-    } else {
-      stopCamera()
-    }
-    return () => stopCamera()
-  }, [mode, capturedImage])
+  const { cameraActive, cameraError, stopCamera, startCamera } = useCamera(videoRef, mode === 'camera' && !capturedImage)
 
   // Capture photo from camera video stream
   const capturePhoto = () => {
@@ -144,10 +105,10 @@ export default function ImportDeadlinesPage() {
 
       if (mode === 'camera') {
         payloadMode = 'camera'
-        payloadContent = capturedImage || sampleDeadlinesText
+        payloadContent = capturedImage || ''
       } else if (mode === 'photo') {
         payloadMode = 'photo'
-        payloadContent = uploadedFile?.previewUrl || sampleDeadlinesText
+        payloadContent = uploadedFile?.previewUrl || ''
       }
 
       const res = await fetch('/api/deadlines/parse', {
@@ -166,7 +127,7 @@ export default function ImportDeadlinesPage() {
       if (!res.ok || !data.success) {
         setLoading(false)
         setErrorMessage(
-          data.error || "We couldn't read this clearly — try retaking the photo with better lighting, or paste the text instead."
+          data.error || 'The deadline scan could not complete. Please try again or paste the text.'
         )
         return
       }
@@ -307,7 +268,7 @@ export default function ImportDeadlinesPage() {
                   <p className="text-[14px] leading-relaxed max-w-sm text-gray-300">{cameraError}</p>
                   <button
                     type="button"
-                    onClick={startCamera}
+                    onClick={() => { setCapturedImage(null); startCamera() }}
                     className="mt-2 min-h-11 rounded-full bg-emerald-600 px-5 py-2 text-[13px] font-bold text-white shadow-sm"
                   >
                     Try Camera Again

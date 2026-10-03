@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useCamera } from '@/hooks/use-camera'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -22,6 +23,7 @@ import { rawScheduleSample, type ClassEntry } from '@/lib/data'
 import { compressImageForOcr } from '@/lib/image-utils'
 import { ScheduleScanProgress } from '@/components/schedule/scan-progress'
 import { parseIcsContent } from '@/lib/ical'
+import { useSchedule } from '@/components/schedule-provider'
 
 type ImportMode = 'text' | 'camera' | 'photo' | 'file'
 
@@ -40,6 +42,7 @@ psy 110 mon-fri 3:00-4:20 west wing 22 dr patel`
 
 export default function ImportSchedulePage() {
   const router = useRouter()
+  const { profile } = useSchedule()
   const [mode, setMode] = React.useState<ImportMode>('text')
   const [raw, setRaw] = React.useState('')
   const [loading, setLoading] = React.useState(false)
@@ -47,9 +50,7 @@ export default function ImportSchedulePage() {
 
   // Camera state
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
-  const [cameraActive, setCameraActive] = React.useState(false)
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null)
-  const [cameraError, setCameraError] = React.useState<string | null>(null)
 
   // File upload state
   const [uploadedFile, setUploadedFile] = React.useState<{ name: string; size: string; previewUrl?: string } | null>(null)
@@ -57,47 +58,12 @@ export default function ImportSchedulePage() {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null)
   const photoInputRef = React.useRef<HTMLInputElement | null>(null)
 
-  // Start Camera Stream
-  const startCamera = async () => {
-    setCameraError(null)
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 3200 }, height: { ideal: 2400 } },
-      })
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        videoRef.current.play()
-        setCameraActive(true)
-      }
-    } catch (err) {
-      console.warn('Camera access error or restricted:', err)
-      setCameraError('Camera access denied or unavailable. You can upload a photo instead!')
-    }
-  }
-
-  // Stop Camera Stream
-  const stopCamera = () => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream
-      stream.getTracks().forEach((track) => track.stop())
-      videoRef.current.srcObject = null
-    }
-    setCameraActive(false)
-  }
-
-  React.useEffect(() => {
-    if (mode === 'camera' && !capturedImage) {
-      startCamera()
-    } else {
-      stopCamera()
-    }
-    return () => stopCamera()
-  }, [mode, capturedImage])
+  const { cameraActive, cameraError, stopCamera, startCamera } = useCamera(videoRef, mode === 'camera' && !capturedImage)
 
   const [isOcrScanning, setIsOcrScanning] = React.useState(false)
   const [ocrError, setOcrError] = React.useState<string | null>(null)
   const [parsedClasses, setParsedClasses] = React.useState<ClassEntry[] | null>(null)
-  const activeScanPromiseRef = React.useRef<Promise<any> | null>(null)
+  const activeScanPromiseRef = React.useRef<Promise<{ success?: boolean; classes?: ClassEntry[]; error?: string }> | null>(null)
 
   const processImageWithGemini = async (rawImageInput: File | string) => {
     setIsOcrScanning(true)
@@ -185,14 +151,14 @@ export default function ImportSchedulePage() {
         const textContent = (event.target?.result as string) || ''
         setUploadedFile({ name: file.name, size: sizeKb })
         try {
-          const icsClasses = parseIcsContent(textContent)
+          const icsClasses = parseIcsContent(textContent, profile.timezone)
           if (icsClasses.length > 0) {
             setParsedClasses(icsClasses)
             setOcrError(null)
           } else {
             setOcrError('No recurring classes or events found in this calendar file.')
           }
-        } catch (err: any) {
+        } catch {
           setOcrError('Could not parse calendar file. Please try another file or paste text.')
         }
       }
@@ -435,7 +401,7 @@ export default function ImportSchedulePage() {
                         {cameraError || 'Allow camera permission to scan your printed timetable.'}
                       </p>
                       <button
-                        onClick={startCamera}
+                        onClick={() => { setCapturedImage(null); startCamera() }}
                         className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[14px] font-semibold text-white shadow-ios"
                       >
                         <Camera className="size-4" />
@@ -669,7 +635,7 @@ export default function ImportSchedulePage() {
         </AnimatePresence>
 
         <p className="px-4 text-center text-[13px] leading-relaxed text-muted-foreground">
-          Everything is processed locally. Review and adjust class times on the next screen before saving.
+          Review each class and meeting time on the next screen before saving.
         </p>
       </div>
     </>

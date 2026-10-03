@@ -9,14 +9,14 @@ import { createClient } from '@/lib/supabase/client'
 import { BrandPanel } from '@/components/signup/brand-panel'
 import { GoogleIcon } from '@/components/signup/google-icon'
 import { PillButton } from '@/components/ios/pill-button'
-import { getFallbackAuthEmail } from '@/lib/email-utils'
+import { authErrorMessage, safeNextPath } from '@/lib/auth-errors'
 
 const IOS_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 function SignInContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const nextPath = searchParams.get('next') || '/dashboard'
+  const nextPath = safeNextPath(searchParams.get('next'))
   const callbackError = searchParams.get('error')
 
   const [email, setEmail] = React.useState('')
@@ -25,48 +25,26 @@ function SignInContent() {
   const [loading, setLoading] = React.useState(false)
   const [googleLoading, setGoogleLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(
-    callbackError ? 'Sign-in failed. Please try again.' : null,
+    callbackError === 'confirmation_expired' ? 'This confirmation link has expired or was already used. Request a new link from Sign up, or sign in if you already confirmed your email.' : callbackError ? 'Sign-in failed. Please try again.' : null,
   )
 
   const supabase = createClient()
 
   async function handleEmailSignIn(e: React.FormEvent) {
     e.preventDefault()
-    if (!email || !password) return
+    if (!email || !password || loading || googleLoading) return
     setLoading(true)
     setError(null)
 
     try {
       const cleanEmail = email.trim()
-      let authRes = await supabase.auth.signInWithPassword({
+      const authRes = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password,
       })
 
-      // Fallback: If primary sign-in fails with invalid email syntax, try fallback email
-      if (
-        authRes.error &&
-        (authRes.error.message.toLowerCase().includes('is invalid') ||
-          authRes.error.message.toLowerCase().includes('invalid email'))
-      ) {
-        const fallbackEmail = getFallbackAuthEmail(cleanEmail)
-        authRes = await supabase.auth.signInWithPassword({
-          email: fallbackEmail,
-          password,
-        })
-      }
-
       if (authRes.error) {
-        const msg = authRes.error.message.toLowerCase()
-        if (
-          msg.includes('invalid login credentials') ||
-          msg.includes('user not found') ||
-          msg.includes('invalid grant')
-        ) {
-          setError('Incorrect email or password')
-        } else {
-          setError(authRes.error.message || 'Something went wrong, please try again.')
-        }
+        setError(authErrorMessage(authRes.error))
         setLoading(false)
         return
       }
@@ -93,23 +71,29 @@ function SignInContent() {
         setLoading(false)
       }
     } catch (err: unknown) {
-      console.error('Sign-in error:', err)
+      console.warn('[Auth]', { category: 'signin_failed' })
       setError('Something went wrong, please try again.')
       setLoading(false)
     }
   }
 
   async function handleGoogleSignIn() {
+    if (loading || googleLoading) return
     setGoogleLoading(true)
     setError(null)
-    const { error } = await supabase.auth.signInWithOAuth({
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/api/auth/callback?next=/dashboard`,
       },
     })
-    if (error) {
-      setError(error.message)
+      if (error) {
+        setError(authErrorMessage(error))
+        setGoogleLoading(false)
+      }
+    } catch {
+      setError('Google sign-in is unavailable. Please try again shortly.')
       setGoogleLoading(false)
     }
   }

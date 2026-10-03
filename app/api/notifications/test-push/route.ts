@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendClassReminder } from '@/lib/notification-service'
+import { apiError, boundedText, readJson, requireAuthenticated } from '@/lib/api-security'
 
 export async function POST(req: NextRequest) {
+  if (process.env.NODE_ENV === 'production') return NextResponse.json({ error: 'Not found.' }, { status: 404 })
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const body = await req.json().catch(() => ({}))
-    const customTitle = body.title || 'Dormosaur'
-    const customMessage = body.message || 'Calculus I in 15m — Sci Hall 204 • Dr. Elena Reyes'
+    const { user } = await requireAuthenticated('push-test', 2)
+    const body = await readJson(req, 4096)
+    const customTitle = boundedText(body.title || 'Dormosaur', 100, 'notification title')
+    const customMessage = boundedText(body.message || 'This is a notification test for your device.', 500, 'notification message')
 
     const result = await sendClassReminder({
       userId: user.id,
@@ -29,7 +25,6 @@ export async function POST(req: NextRequest) {
       result,
     })
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return apiError(err, 'We could not send this test notification.')
   }
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { GEMINI_MODEL_NAME, ScheduleParseError, checkScheduleProvider, getScheduleProviderConfiguration, parseScheduleImageWithGemini, parseScheduleTextWithGemini } from '@/lib/gemini'
 import { parseRawSchedule } from '@/lib/parser'
 import { recognizeScheduleWithTesseract } from '@/lib/schedule-ocr'
+import { apiError, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -18,6 +19,8 @@ function logFailure(error: unknown) {
 // Configuration is safe metadata, never the key. A probe makes one small text
 // request so production can diagnose the actual runtime independently of OCR.
 export async function GET(req: Request) {
+  if (process.env.NODE_ENV === 'production') return NextResponse.json({ error: 'Not found.' }, { status: 404 })
+  try { await requireAuthenticated('schedule-probe', 2) } catch (error) { return apiError(error, 'Scanner diagnostics are unavailable.') }
   const configuration = getScheduleProviderConfiguration()
   const headers = { 'Cache-Control': 'no-store' }
   if (!configuration.keyConfigured) {
@@ -78,10 +81,12 @@ async function ocrFallback(image: string, providerError?: ScheduleParseError) {
 export async function POST(req: Request) {
   let body: Record<string, unknown>
   try {
-    const input = await req.json()
+    await requireAuthenticated('schedule-import', 5)
+    const input = await readJson(req, 4 * 1024 * 1024)
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw new Error('Invalid request body')
     body = input
-  } catch {
+  } catch (error) {
+    if (error instanceof InputError) return apiError(error, 'The upload could not be read.')
     console.warn('[Schedule Parse API]', { reason: 'invalid_payload', detail: 'Expected a JSON object.' })
     return NextResponse.json({ success: false, errorCode: 'invalid_payload', error: 'The upload could not be read. Please select the file again.' }, { status: 400 })
   }
@@ -125,6 +130,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, errorCode: 'invalid_payload', error: 'Please provide schedule text or upload a timetable.' }, { status: 400 })
     }
     if (textToParse.trim()) {
+      if (textToParse.length > 30_000) throw new InputError('Please keep schedule text under 30,000 characters.', 413)
       try {
         const classes = await parseScheduleTextWithGemini(textToParse)
         if (classes.length > 0) return NextResponse.json({ success: true, provider: 'gemini-text', classes })
@@ -138,6 +144,7 @@ export async function POST(req: Request) {
     logFailure(error)
     return failure(error)
   } catch (error: unknown) {
+    if (error instanceof InputError) return apiError(error, 'The schedule import could not complete.')
     logFailure(error)
     return NextResponse.json({ success: false, errorCode: 'unexpected_failure', error: 'The schedule import could not complete. Please try again.' }, { status: 500 })
   }

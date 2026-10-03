@@ -1,8 +1,13 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "codex/release-hardening": false
+    }
+  },
   "crons": [
     {
       "path": "/api/notifications/cron",
-      "schedule": "0 8 * * *"
+      "schedule": "* * * * *"
     }
   ]
 }

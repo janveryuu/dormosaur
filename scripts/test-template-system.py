@@ -100,7 +100,7 @@ def run(url,out,presets_only=False):
                     for fmt in ['PNG','JPEG','PDF']: export(page,out,fmt,preset,'ultra-pink')
                 page.close()
                 return
-            for width in [375,390,414,430,768,1440]:
+            for width in [375,390,414,430,768,1280,1440]:
                 page=browser.new_page(viewport={'width':width,'height':844 if width<768 else 900},reduced_motion='reduce',accept_downloads=True)
                 page.on('pageerror',lambda error:errors.append(str(error)))
                 page.on('console',lambda message: errors.append(message.text) if message.type=='error' else None)
@@ -161,3 +161,8 @@ if __name__=='__main__':
     finally:
         if route.resolve().parent!=ROOT/'app/template-qa': raise RuntimeError('Unexpected temporary route path')
         route.unlink()
+        route.parent.rmdir()
+        for name in ['validator.ts','routes.d.ts']:
+            generated=ROOT/'.next/dev/types'/name
+            if generated.exists() and '/template-qa' in generated.read_text(encoding='utf-8'):
+                generated.unlink()

@@ -36,11 +36,6 @@ export function ClassDetailModal({ entry, onClose, onEdit }: ClassDetailModalPro
       <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-0 sm:p-4">
         {/* Backdrop */}
         <motion.div
-          ref={dialogRef}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="class-detail-title"
-          tabIndex={-1}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -50,11 +45,16 @@ export function ClassDetailModal({ entry, onClose, onEdit }: ClassDetailModalPro
 
         {/* Sheet / Card Container */}
         <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="class-detail-title"
+          tabIndex={-1}
           initial={{ y: '100%', opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative z-10 w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-border/80 bg-card p-6 shadow-2xl overflow-hidden"
+          className="relative z-10 w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-border/80 bg-card p-6 shadow-2xl max-h-[85dvh] overflow-y-auto"
         >
           {/* Header Colored Accent Bar */}
           <div className={`absolute inset-x-0 top-0 h-2 ${color.bg}`} />

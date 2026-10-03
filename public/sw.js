@@ -14,7 +14,7 @@ self.addEventListener('push', function (event) {
     body: "You're all set — notifications are on for this device.",
     icon: '/apple-icon.png',
     badge: '/apple-icon.png',
-    tag: 'dormosaur-notification-' + Date.now(),
+    tag: 'dormosaur-notification',
     data: { url: '/dashboard' },
   }
 
@@ -27,15 +27,12 @@ self.addEventListener('push', function (event) {
     }
   }
 
-  // Generate unique tag if static tag provided to prevent Chrome duplicate suppression
-  const uniqueTag = data.tag ? `${data.tag}-${Date.now()}` : `dormosaur-${Date.now()}`
-
   const options = {
     body: data.body,
     icon: data.icon || '/apple-icon.png',
     badge: data.badge || '/apple-icon.png',
-    tag: uniqueTag,
-    renotify: true,
+    tag: data.tag || 'dormosaur-notification',
+    renotify: false,
     requireInteraction: true,
     vibrate: [200, 100, 200],
     data: data.data || { url: '/dashboard' },
@@ -53,14 +50,18 @@ self.addEventListener('notificationclick', function (event) {
 
   if (event.action === 'dismiss') return
 
-  const targetUrl = (event.notification.data && event.notification.data.url) || '/dashboard'
+  let targetUrl = new URL('/dashboard', self.location.origin).href
+  try {
+    const requested = new URL((event.notification.data && event.notification.data.url) || '/dashboard', self.location.origin)
+    if (requested.origin === self.location.origin) targetUrl = requested.href
+  } catch { /* Use the dashboard for invalid/external links. */ }
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
       for (let i = 0; i < clientList.length; i++) {
         const client = clientList[i]
         if (client.url && 'focus' in client) {
-          return client.focus()
+          return client.navigate(targetUrl).then(() => client.focus())
         }
       }
       if (clients.openWindow) {
