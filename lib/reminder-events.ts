@@ -19,7 +19,7 @@ export function dueReminders(userId: string, classes: ClassEntry[], alarms: Alar
       let start: number
       try { start = Date.parse(localDateTimeToIso(date, cls.start, timezone)) } catch { continue }
       if (!triggered(start - alarm.lead * 60_000)) continue
-      const key = `${userId}:class:${cls.id}:${date}:${cls.start}`
+      const key = `${userId}:alarm:${alarm.id}:class:${cls.id}:${date}:${cls.start}`
       events.set(key, { key, title: `Class reminder: ${cls.code || cls.subject}`,
         body: `${cls.subject} in ${Math.max(0, Math.round((start - now.getTime()) / 60_000))} minutes${cls.room ? ` — ${cls.room}` : ''}.`, url: '/schedule' })
     }

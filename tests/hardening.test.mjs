@@ -265,7 +265,7 @@ function cronFixture({ ledgerReady = true, preferences = {} } = {}) {
   const route = load('app/api/notifications/cron/route.ts', {
     '@/lib/admin-db': { getSupabaseAdminClient: () => db },
     '@/lib/db': { getClasses: async () => [classA], getAlarms: async () => [{ id: 'alarm-a', classId: classA.id, time: '10:00', lead: 30, enabled: true }], getDeadlines: async () => [] },
-    '@/lib/notification-service': { sendClassReminder: async payload => { sent.push(payload); return { successCount: 1, failureCount: 0 } } },
+    '@/lib/notification-service': { sendClassReminder: async payload => { assert.ok(claims.has(payload.tag)); sent.push(payload); return { successCount: 1, failureCount: 0 } } },
   }, { CRON_SECRET: 'fixture-secret' }, { Date: FixedDate })
   return { route, sent, claims, request: () => new Request('http://localhost/api/notifications/cron', { headers: { Authorization: 'Bearer fixture-secret' } }) }
 }
@@ -277,6 +277,7 @@ test('cron sends across users without browser auth and concurrent requests claim
   assert.equal(fixture.sent[0].userId, 'student-a')
   assert.match(fixture.sent[0].body, /201/)
   assert.equal(fixture.claims.size, 1)
+  assert.equal(fixture.sent[0].tag, 'student-a:alarm:alarm-a:class:class-a:2026-10-05:10:00')
 })
 test('cron never sends if durable delivery tracking is unavailable', async () => {
   const fixture = cronFixture({ ledgerReady: false })
@@ -293,13 +294,38 @@ test('cron respects a student notification opt-out', async () => {
   assert.equal((await fixture.route.GET(fixture.request())).status, 200)
   assert.equal(fixture.sent.length, 0)
 })
-test('reminders handle previous-day leads, duplicate alarms, stale links and completed deadlines', () => {
+test('reminders handle previous-day leads, distinct alarm IDs, stale links and completed deadlines', () => {
   const { dueReminders } = load('lib/reminder-events.ts')
   const cls = { ...classA, start: '00:15' }
   const alarms = [{ id: 'a', classId: cls.id, lead: 30, enabled: true }, { id: 'b', classId: cls.id, lead: 30, enabled: true }, { id: 'orphan', classId: 'deleted', lead: 30, enabled: true }]
   const result = dueReminders('student-a', [cls], alarms, [{ id: 'done', title: 'Complete', dueDate: '2026-10-05', dueTime: '00:45', completed: true }], new Date('2026-10-04T15:45:00Z'), 'Asia/Manila')
-  assert.equal(result.length, 1)
-  assert.match(result[0].key, /2026-10-05/)
+  assert.equal(result.length, 2)
+  assert.equal(result[0].key, 'student-a:alarm:a:class:class-a:2026-10-05:00:15')
+  assert.equal(result[1].key, 'student-a:alarm:b:class:class-a:2026-10-05:00:15')
+  assert.equal(dueReminders('student-a', [cls], [...alarms, alarms[0]], [], new Date('2026-10-04T15:45:00Z'), 'Asia/Manila').length, 2)
+})
+
+test('reminders identify recurring occurrences and keep the same alarm key when lead changes', () => {
+  const { dueReminders } = load('lib/reminder-events.ts')
+  const alarm = { id: 'alarm-a', classId: classA.id, lead: 30, enabled: true }
+  const keyAt = (lead, now, userId = 'student-a') => dueReminders(userId, [classA], [{ ...alarm, lead }], [], new Date(now), 'Asia/Manila')[0].key
+  const key = keyAt(30, '2026-10-05T01:30:00Z')
+  assert.equal(key, 'student-a:alarm:alarm-a:class:class-a:2026-10-05:10:00')
+  assert.equal(keyAt(15, '2026-10-05T01:45:00Z'), key)
+  assert.equal(keyAt(60, '2026-10-05T01:00:00Z'), key)
+  assert.equal(keyAt(30, '2026-10-12T01:30:00Z'), 'student-a:alarm:alarm-a:class:class-a:2026-10-12:10:00')
+  assert.equal(keyAt(30, '2026-10-05T01:30:00Z', 'student-b'), 'student-b:alarm:alarm-a:class:class-a:2026-10-05:10:00')
+})
+
+test('reminders preserve deadline keys for all milestones', () => {
+  const { dueReminders } = load('lib/reminder-events.ts')
+  const deadline = { id: 'deadline-a', title: 'Assignment', type: 'assignment', dueDate: '2026-10-06', dueTime: '10:00', completed: false }
+  const due = Date.parse('2026-10-06T02:00:00Z')
+  for (const minutes of [1440, 60, 3]) {
+    const result = dueReminders('student-a', [], [], [deadline], new Date(due - minutes * 60_000), 'Asia/Manila')
+    assert.equal(result.length, 1)
+    assert.equal(result[0].key, `student-a:deadline:deadline-a:2026-10-06T02:00:00.000Z:${minutes}`)
+  }
 })
 
 test('calendar import never creates fabricated meetings from an incomplete event', () => {
