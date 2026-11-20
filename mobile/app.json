@@ -1,0 +1,72 @@
+{
+  "expo": {
+    "name": "Dormosaur",
+    "slug": "dormosaur",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "dormosaur",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "app.dormosaur.mobile",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "app.dormosaur.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#1E5C40",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F3F3EF",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 180
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#1E5C40"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Dormosaur reads a photo of your class schedule.",
+          "cameraPermission": "Dormosaur scans your printed class schedule."
+        }
+      ],
+      "@react-native-community/datetimepicker"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "c863d48a-42f8-475a-8518-c8eb12624b1c"
+      }
+    },
+    "owner": "janveryu1"
+  }
+}

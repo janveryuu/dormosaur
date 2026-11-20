@@ -11,6 +11,7 @@ export function authErrorMessage(error: { code?: string; status?: number; messag
   return action === 'signup' ? 'We could not create your account right now. Please try again shortly.' : 'We could not sign you in right now. Please try again shortly.'
 }
 export function safeNextPath(value: string | null): string {
-  if (!value || /[\\\r\n]/.test(value)) return '/dashboard'
-  return ['/dashboard', '/schedule', '/alarms', '/deadlines', '/kitchen', '/profile'].some(p => value === p || value.startsWith(`${p}/`) || value.startsWith(`${p}?`)) ? value : '/dashboard'
+  // The web app only hosts the admin console now; students use the native app.
+  if (!value || /[\\\r\n]/.test(value)) return '/admin'
+  return value === '/admin' || value.startsWith('/admin/') || value.startsWith('/admin?') ? value : '/admin'
 }

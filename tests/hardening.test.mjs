@@ -241,8 +241,8 @@ test('auth callback without a verification token is an expired confirmation', as
 })
 test('safe auth destinations reject external and deceptive redirects', () => {
   const { safeNextPath } = load('lib/auth-errors.ts')
-  for (const bad of ['https://attacker.test', '//attacker.test', '/\\attacker.test', '/admin', '/dashboard\r\nLocation: https://attacker.test']) assert.equal(safeNextPath(bad), '/dashboard')
-  assert.equal(safeNextPath('/schedule?view=week'), '/schedule?view=week')
+  for (const bad of ['https://attacker.test', '//attacker.test', '/\\attacker.test', '/dashboard', '/administrator', '/admin\r\nLocation: https://attacker.test']) assert.equal(safeNextPath(bad), '/admin')
+  assert.equal(safeNextPath('/admin/users?page=2'), '/admin/users?page=2')
 })
 function cronFixture({ ledgerReady = true, preferences = {} } = {}) {
   const claims = new Set(), sent = []

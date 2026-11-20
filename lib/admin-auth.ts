@@ -25,7 +25,7 @@ const ADMIN_ALLOWED_EMAILS = ['janvermanlapaz@gmail.com']
  * Dual-Layer Security Check:
  * Layer 1: Authenticated user's email MUST be present in ADMIN_ALLOWED_EMAILS constant.
  * Layer 2: User profile in database MUST have admin status verified.
- * If EITHER layer fails, the request is IMMEDIATELY blocked and redirected to /dashboard (or /sign-in).
+ * If EITHER layer fails, the request is IMMEDIATELY blocked and redirected to / (or /sign-in).
  */
 export async function requireAdminSession(): Promise<AdminUser> {
   const cookieStore = await cookies()
@@ -67,7 +67,7 @@ export async function requireAdminSession(): Promise<AdminUser> {
 
   if (!isEmailInAllowlist) {
     console.warn('[Admin access]', { category: 'allowlist_denied' })
-    redirect('/dashboard')
+    redirect('/')
   }
 
   // ── LAYER 2: Database Profile Admin Status Check ──
@@ -83,7 +83,7 @@ export async function requireAdminSession(): Promise<AdminUser> {
 
   if (!isProfileAdmin) {
     console.warn('[Admin access]', { category: 'role_denied' })
-    redirect('/dashboard')
+    redirect('/')
   }
 
   return {

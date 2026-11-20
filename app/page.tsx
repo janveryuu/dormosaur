@@ -1,433 +1,140 @@
-'use client'
-
-import * as React from 'react'
+import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { motion, useReducedMotion } from 'framer-motion'
-import {
-  ArrowDown,
-  ArrowRight,
-  ArrowUpRight,
-  BellRing,
-  CalendarCheck2,
-  CalendarDays,
-  Check,
-  MapPin,
-  UtensilsCrossed,
-} from 'lucide-react'
-import { MobileSplashScreen } from '@/components/mobile/splash-screen'
-import { createClient } from '@/lib/supabase/client'
-import { BUTTON_SPRING, IOS_EASE, IOS_SPRING } from '@/lib/springs'
+import { AlarmClock, CalendarDays, CookingPot, Download, ListChecks, ShieldCheck, Smartphone } from 'lucide-react'
 
-const scheduleItems = [
-  { subject: 'Calculus I', detail: 'Mon / Wed / Sci Hall 204', time: '8:30 AM', active: true },
-  { subject: 'General Chemistry Lab', detail: 'Mon / Wed / Lab B-11', time: '10:15 AM', active: false },
-  { subject: 'Modern Literature', detail: 'Tue / Thu / Humanities 310', time: '9:10 AM', active: false },
-  { subject: 'Intro to Programming', detail: 'Tue / Thu / Tech Center 118', time: '1:00 PM', active: false },
-  { subject: 'Psychology 101', detail: 'Mon-Fri / West Wing 22', time: '3:00 PM', active: false },
+/**
+ * Public APK download page.
+ * Structure is final; visuals are a clean placeholder ready for the upcoming landing redesign.
+ * Point NEXT_PUBLIC_APK_URL at the EAS / release artifact; it defaults to /dormosaur.apk in public/.
+ */
+
+const APK_URL = process.env.NEXT_PUBLIC_APK_URL || '/dormosaur.apk'
+const APK_VERSION = process.env.NEXT_PUBLIC_APK_VERSION || '1.0.0'
+
+export const metadata: Metadata = {
+  title: 'Dormosaur for Android',
+  description: 'Classes, alarms, tasks and dorm meals in one app. Download the Dormosaur APK.',
+}
+
+const features = [
+  { Icon: CalendarDays, label: 'Schedule', body: 'Snap your registration form. Your week appears.' },
+  { Icon: AlarmClock, label: 'Alarms', body: 'Rings before every class, even offline.' },
+  { Icon: ListChecks, label: 'Tasks', body: 'Exams and deadlines, sorted by when.' },
+  { Icon: CookingPot, label: 'Kitchen', body: 'Cheap meals for a rice cooker or microwave.' },
 ]
 
-const featureItems = [
-  {
-    Icon: CalendarCheck2,
-    label: 'Schedule',
-    title: 'See the week before it gets loud.',
-    body: 'Paste the registrar mess once. Dormosaur turns it into a timetable you can actually read.',
-  },
-  {
-    Icon: BellRing,
-    label: 'Alarms',
-    title: 'Leave at the right time.',
-    body: 'Class-aware alarms follow your timetable, so reminders arrive with enough context to help.',
-  },
-  {
-    Icon: UtensilsCrossed,
-    label: 'Kitchen',
-    title: 'Eat well in a small room.',
-    body: 'Get realistic meals for a microwave, a kettle, and a student budget.',
-  },
+const steps = [
+  { n: 1, title: 'Download', body: 'Tap the button on your Android phone.' },
+  { n: 2, title: 'Allow install', body: 'Open the file and allow installs from your browser.' },
+  { n: 3, title: 'Open Dormosaur', body: 'Sign in with your existing account.' },
 ]
 
-function Reveal({
-  children,
-  className,
-  delay = 0,
-  y = 20,
-}: {
-  children: React.ReactNode
-  className?: string
-  delay?: number
-  y?: number
-}) {
-  const reduceMotion = useReducedMotion()
-
+function DownloadButton({ className = '' }: { className?: string }) {
   return (
-    <motion.div
-      className={className}
-      initial={reduceMotion ? false : { opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.55, delay, ease: IOS_EASE }}
+    <a
+      href={APK_URL}
+      download
+      className={`inline-flex h-14 items-center gap-3 rounded-full bg-[#1E5C40] px-7 text-base font-bold text-white shadow-[0_10px_30px_-10px_rgba(30,92,64,0.6)] transition-transform hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E5C40] ${className}`}
     >
-      {children}
-    </motion.div>
+      <Download className="size-5" strokeWidth={2.4} aria-hidden />
+      Download APK
+    </a>
   )
 }
 
-function ScheduleRow({
-  subject,
-  detail,
-  time,
-  active,
-}: {
-  subject: string
-  detail: string
-  time: string
-  active: boolean
-}) {
-  const reduceMotion = useReducedMotion()
-
+function Phone({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
   return (
-    <motion.div
-      className={`landing-schedule-row${active ? ' is-active' : ''}`}
-      whileHover={reduceMotion ? undefined : { y: -2 }}
-      whileTap={reduceMotion ? undefined : { scale: 0.99 }}
-      transition={IOS_SPRING}
-    >
-      <span className="landing-schedule-marker" aria-hidden="true" />
-      <div className="landing-schedule-copy">
-        <p>{subject}</p>
-        <span>{detail}</span>
-      </div>
-      <time>{time}</time>
-    </motion.div>
+    <div className={`overflow-hidden rounded-[2.4rem] border-[6px] border-[#16211B] bg-[#16211B] shadow-[0_30px_60px_-20px_rgba(22,33,27,0.45)] ${className}`}>
+      <Image src={src} alt={alt} width={402} height={874} className="block h-auto w-full rounded-[1.9rem]" priority />
+    </div>
   )
 }
 
-function NavBar() {
-  const reduceMotion = useReducedMotion()
-
+export default function DownloadPage() {
   return (
-    <motion.header
-      initial={reduceMotion ? false : { opacity: 0, y: -12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: IOS_EASE }}
-      className="landing-header"
-    >
-      <nav className="landing-nav" aria-label="Main navigation">
-        <Link href="/" className="landing-brand">
-          <Image
-            src="/android-chrome-192x192.png"
-            alt="Dormosaur"
-            width={36}
-            height={36}
-            priority
-            className="landing-brand-mark"
-          />
-          <span>Dormosaur</span>
+    <main className="min-h-dvh bg-[#F3F3EF] text-[#16211B]">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
+        <Link href="/" className="flex items-center gap-2.5 font-extrabold tracking-tight">
+          <Image src="/dormosaur-logo.png" alt="" width={36} height={36} className="rounded-xl" />
+          Dormosaur
         </Link>
+        <a href={APK_URL} download className="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#1E5C40] shadow-sm">
+          Get the app
+        </a>
+      </header>
 
-        <div className="landing-nav-links">
-          <Link href="#how-it-works">How it works</Link>
-          <Link href="/sign-in">Open app</Link>
-          <Link href="/sign-up" className="landing-nav-cta">
-            Get started <ArrowRight size={15} aria-hidden="true" />
-          </Link>
-        </div>
-      </nav>
-    </motion.header>
-  )
-}
-
-function CTAButton({
-  href,
-  children,
-  large = false,
-}: {
-  href: string
-  children: React.ReactNode
-  large?: boolean
-}) {
-  const reduceMotion = useReducedMotion()
-
-  return (
-    <motion.div
-      whileHover={reduceMotion ? undefined : { y: -2 }}
-      whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-      transition={BUTTON_SPRING}
-      className="inline-flex"
-    >
-      <Link href={href} className={`landing-primary-cta${large ? ' is-large' : ''}`}>
-        {children}
-        <ArrowRight size={large ? 17 : 15} strokeWidth={2.2} aria-hidden="true" />
-      </Link>
-    </motion.div>
-  )
-}
-
-function HeroDemo() {
-  const reduceMotion = useReducedMotion()
-
-  return (
-    <motion.div
-      initial={reduceMotion ? false : { opacity: 0, y: 26, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.8, delay: 0.18, ease: IOS_EASE }}
-      className="landing-demo"
-      aria-label="Example of Dormosaur turning a pasted schedule into a clear weekly route"
-    >
-      <div className="landing-photo-frame">
-        <Image
-          src="/campus-daylight.png"
-          alt="A bright campus path beneath mature trees"
-          fill
-          priority
-          sizes="(max-width: 1100px) 92vw, 52vw"
-          className="landing-photo"
-        />
-        <div className="landing-photo-scrim" aria-hidden="true" />
-        <div className="landing-photo-sign" aria-hidden="true">
-          <MapPin size={15} strokeWidth={2} />
-          <span>same campus, clearer route</span>
-        </div>
-
-        <div className="landing-demo-board">
-          <div className="landing-board-header">
-            <span className="landing-route-label">Campus departures</span>
-            <span className="landing-board-status">
-              <Check size={13} strokeWidth={2.4} aria-hidden="true" />
-              ready for Monday
-            </span>
-          </div>
-
-          <div className="landing-board-feature">
-            <div>
-              <span className="landing-board-kicker">Next class</span>
-              <h2>Calculus I</h2>
-              <p>Sci Hall 204 / 8:30 AM</p>
-            </div>
-            <div className="landing-board-time" aria-label="8:30 AM">
-              08:30
-            </div>
-          </div>
-
-          <div className="landing-board-rule" aria-hidden="true" />
-
-          <div className="landing-board-meta">
-            <span>your week</span>
-            <span>5 classes</span>
-          </div>
-
-          <div className="landing-schedule-list">
-            {scheduleItems.slice(1, 5).map((item) => (
-              <ScheduleRow key={item.subject} {...item} />
-            ))}
+      {/* Hero */}
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-8 md:grid-cols-[1.05fr_1fr] md:pt-16">
+        <div>
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#E3EFE6] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#1E5C40]">
+            <Smartphone className="size-3.5" aria-hidden /> Android
+          </p>
+          <h1 className="text-5xl font-extrabold leading-[0.95] tracking-[-0.04em] sm:text-7xl">
+            Dorm life,
+            <br />
+            <span className="text-[#1E5C40]">in your pocket.</span>
+          </h1>
+          <p className="mt-6 max-w-md text-lg text-[#56625A]">Classes, alarms, tasks and dorm meals. One app.</p>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <DownloadButton />
+            <span className="text-sm text-[#8E978F]">v{APK_VERSION} · Android 8+</span>
           </div>
         </div>
-      </div>
 
-      <div className="landing-demo-caption" aria-hidden="true">
-        <span>messy schedule in</span>
-        <ArrowRight size={16} strokeWidth={1.8} />
-        <span className="is-strong">a week you can read</span>
-      </div>
-    </motion.div>
-  )
-}
-
-function FeatureRouteCard() {
-  return (
-    <article className="landing-feature-route">
-      <div className="landing-feature-topline">
-        <span className="landing-feature-index">Schedule</span>
-        <CalendarDays size={20} strokeWidth={1.8} aria-hidden="true" />
-      </div>
-      <div className="landing-feature-route-copy">
-        <h3>From registrar noise to a route you can follow.</h3>
-        <p>One clear view for the classes, rooms, and times that shape your day.</p>
-      </div>
-      <div className="landing-route-mini" aria-label="A sample class route">
-        <div className="landing-route-mini-line" aria-hidden="true" />
-        <div className="landing-route-stop is-current">
-          <span>08:30</span>
-          <strong>Calculus I</strong>
-          <small>Sci Hall 204</small>
+        <div className="relative mx-auto flex w-full max-w-md justify-center">
+          <Phone src="/landing/app-schedule.webp" alt="Dormosaur schedule screen" className="absolute left-0 top-10 hidden w-[44%] -rotate-6 opacity-90 sm:block" />
+          <Phone src="/landing/app-today.webp" alt="Dormosaur today screen" className="relative z-10 w-[62%] sm:w-[56%]" />
+          <Phone src="/landing/app-tasks.webp" alt="Dormosaur tasks screen" className="absolute right-0 top-10 hidden w-[44%] rotate-6 opacity-90 sm:block" />
         </div>
-        <div className="landing-route-stop">
-          <span>10:15</span>
-          <strong>Chemistry Lab</strong>
-          <small>Lab B-11</small>
-        </div>
-        <div className="landing-route-stop">
-          <span>13:00</span>
-          <strong>Programming</strong>
-          <small>Tech Center 118</small>
-        </div>
-      </div>
-    </article>
-  )
-}
+      </section>
 
-function FeatureSideCard({
-  item,
-  tone,
-}: {
-  item: (typeof featureItems)[number]
-  tone: 'light' | 'accent'
-}) {
-  const Icon = item.Icon
-
-  return (
-    <article className={`landing-feature-side is-${tone}`}>
-      <div className="landing-feature-topline">
-        <span className="landing-feature-index">{item.label}</span>
-        <Icon size={20} strokeWidth={1.8} aria-hidden="true" />
-      </div>
-      <h3>{item.title}</h3>
-      <p>{item.body}</p>
-      <span className="landing-feature-arrow" aria-hidden="true">
-        <ArrowUpRight size={18} strokeWidth={1.8} />
-      </span>
-    </article>
-  )
-}
-
-export default function LandingPage() {
-  const router = useRouter()
-
-  React.useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return
-
-      supabase
-        .from('profiles')
-        .select('onboarding_completed')
-        .eq('id', user.id)
-        .single()
-        .then(
-          ({ data: profile }) => {
-            router.replace(profile?.onboarding_completed ? '/dashboard' : '/onboarding')
-          },
-          () => router.replace('/onboarding'),
-        )
-    })
-  }, [router])
-
-  return (
-    <>
-      <MobileSplashScreen />
-
-      <div className="landing-desktop hidden min-h-[100dvh] md:block">
-        <NavBar />
-
-        <main>
-          <section className="landing-hero">
-            <div className="landing-hero-inner">
-              <div className="landing-hero-copy">
-                <motion.div
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.05, ease: IOS_EASE }}
-                >
-                  <h1>
-                    Dorm life,
-                    <br />
-                    <span>decoded.</span>
-                  </h1>
-                </motion.div>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.13, ease: IOS_EASE }}
-                >
-                  Turn the schedule you already have into a calmer week of classes, alarms, deadlines, and dorm meals.
-                </motion.p>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.21, ease: IOS_EASE }}
-                  className="landing-hero-actions"
-                >
-                  <CTAButton href="/sign-up">Get started</CTAButton>
-                  <Link href="#how-it-works" className="landing-secondary-cta">
-                    See how it works <ArrowDown size={15} strokeWidth={2} aria-hidden="true" />
-                  </Link>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.38, ease: IOS_EASE }}
-                  className="landing-hero-note"
-                >
-                  <span className="landing-hero-note-rule" aria-hidden="true" />
-                  Built for the minutes between things.
-                </motion.div>
+      {/* Features */}
+      <section className="mx-auto max-w-6xl px-5 pb-20">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map(({ Icon, label, body }) => (
+            <div key={label} className="rounded-3xl bg-white p-6 shadow-[0_6px_18px_-8px_rgba(27,42,32,0.12)]">
+              <div className="mb-5 grid size-12 place-items-center rounded-2xl bg-[#E3EFE6] text-[#1E5C40]">
+                <Icon className="size-6" strokeWidth={2.2} aria-hidden />
               </div>
-
-              <HeroDemo />
+              <h2 className="text-lg font-extrabold tracking-tight">{label}</h2>
+              <p className="mt-1 text-[15px] text-[#56625A]">{body}</p>
             </div>
-          </section>
+          ))}
+        </div>
+      </section>
 
-          <section id="how-it-works" className="landing-system-section scroll-mt-24">
-            <div className="landing-section-inner">
-              <Reveal className="landing-section-heading">
-                <h2>One place for the pieces that usually scatter.</h2>
-                <p>Dormosaur connects the small decisions that make a student day feel easier to carry.</p>
-              </Reveal>
-
-              <div className="landing-feature-grid">
-                <Reveal y={28}>
-                  <FeatureRouteCard />
-                </Reveal>
-                <div className="landing-feature-stack">
-                  <Reveal delay={0.08} y={28}>
-                    <FeatureSideCard item={featureItems[1]} tone="light" />
-                  </Reveal>
-                  <Reveal delay={0.16} y={28}>
-                    <FeatureSideCard item={featureItems[2]} tone="accent" />
-                  </Reveal>
+      {/* Install steps */}
+      <section id="install" className="mx-auto max-w-6xl px-5 pb-24">
+        <div className="grid gap-10 rounded-[2rem] bg-[#1E5C40] p-8 text-white md:grid-cols-[1fr_1.4fr] md:p-12">
+          <div className="flex flex-col justify-between gap-8">
+            <h2 className="text-4xl font-extrabold leading-tight tracking-tight">Install in a minute.</h2>
+            <div className="flex items-end gap-4">
+              <Image src="/mascots/dormosaur-greeting.png" alt="" width={120} height={120} />
+              <DownloadButton className="bg-white !text-[#1E5C40]" />
+            </div>
+          </div>
+          <ol className="grid gap-3">
+            {steps.map(s => (
+              <li key={s.n} className="flex gap-4 rounded-2xl bg-white/10 p-5">
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#F4C54A] font-extrabold text-[#16211B]">{s.n}</span>
+                <div>
+                  <p className="font-bold">{s.title}</p>
+                  <p className="text-sm text-white/75">{s.body}</p>
                 </div>
-              </div>
-            </div>
-          </section>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <p className="mt-6 flex items-center justify-center gap-2 text-sm text-[#8E978F]">
+          <ShieldCheck className="size-4" aria-hidden /> Signed release. Your data stays in your account.
+        </p>
+      </section>
 
-          <section className="landing-closer-section">
-            <Reveal className="landing-closer">
-              <div className="landing-closer-copy">
-                <span className="landing-closer-rule" aria-hidden="true" />
-                <h2>Show up for a week that feels more yours.</h2>
-                <p>Start with the schedule in your notes app. Leave with a plan that knows where you need to be next.</p>
-                <CTAButton href="/sign-up" large>Get started</CTAButton>
-              </div>
-              <div className="landing-closer-mascot" aria-hidden="true">
-                <Image
-                  src="/dormo-jumping.png"
-                  alt=""
-                  fill
-                  sizes="260px"
-                  className="object-contain"
-                />
-              </div>
-            </Reveal>
-          </section>
-        </main>
-
-        <footer className="landing-footer">
-          <div className="landing-footer-inner">
-            <p>Dormosaur. Less scrambling, more sleeping.</p>
-            <div>
-              <Link href="/sign-in">Sign in</Link>
-              <Link href="/sign-up">Get started</Link>
-              <span>© 2026</span>
-            </div>
-          </div>
-        </footer>
-      </div>
-    </>
+      <footer className="border-t border-[#E6E6DF] py-8 text-center text-sm text-[#8E978F]">
+        <Link href="/sign-in" className="font-semibold text-[#56625A] hover:text-[#1E5C40]">Use on the web</Link>
+        <span className="mx-3">·</span>© {new Date().getFullYear()} Dormosaur
+      </footer>
+    </main>
   )
 }

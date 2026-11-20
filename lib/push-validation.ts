@@ -1,4 +1,8 @@
 import { InputError } from '@/lib/api-security'
+export const EXPO_KEY_PLACEHOLDER = 'expo'
+export function validExpoPushToken(value: unknown): value is string {
+  return typeof value === 'string' && value.length < 200 && /^Expo(nent)?PushToken\[[A-Za-z0-9_-]+\]$/.test(value)
+}
 export function validPushEndpoint(value: unknown): value is string {
   if (typeof value !== 'string' || value.length > 2048) return false
   try {
