@@ -1,88 +1,168 @@
-import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
-import { AlarmClock, ChevronRight, GraduationCap, NotebookText, Palette, ScanLine } from 'lucide-react-native'
+import { Search, Smartphone } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
-import { ScrollView, View } from 'react-native'
+import { Platform, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native'
 import Animated from 'react-native-reanimated'
-import { rise } from '@/design/motion'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ClassRow } from '@/components/class-row'
-import { TAB_CLEARANCE } from '@/components/tab-bar'
-import { Empty, IconButton, Press, ScreenHeader, Stat, T } from '@/components/ui'
-import { WeekStrip } from '@/components/week-strip'
-import { color, font, radius, shadow } from '@/design/tokens'
-import { classesOn, dayOf, minutesOf, nextClass } from '@/lib/time'
+import { fade, rise } from '@/design/motion'
+import { radius, type, useTheme } from '@/design/theme'
+import { DAYS } from '@/lib/repo'
+import { classesOn, dayOf, formatTime, minutesOf } from '@/lib/time'
 import { useApp } from '@/state/app'
+import { Empty, IconButton, LargeTitle, Press, Segmented, T, haptic } from '@/ui'
+import { ClassRow, useNow } from '@/ui/blocks'
+import { TAB_CLEARANCE } from '@/ui/tab-bar'
 
-const THEMES = [['#F6E7B8', '#7FB08A', '#2E6B47'], ['#F8C9C0', '#C98BB0', '#6E4A8C'], ['#1B2A4A', '#2E4470', '#F7D560']]
+const HOUR = 78
 
 export default function Schedule() {
+  const { c } = useTheme()
   const insets = useSafeAreaInsets()
-  const { classes, deadlines, alarms } = useApp()
-  const [day, setDay] = useState<string>(dayOf())
-  const list = useMemo(() => classesOn(classes, day), [classes, day])
-  const live = nextClass(classes)
-  const hours = list.reduce((sum, c) => sum + (minutesOf(c.end) - minutesOf(c.start)), 0) / 60
+  const { classes } = useApp()
+  const now = useNow(60000)
+  const [view, setView] = useState<'week' | 'day'>('week')
+  const [day, setDay] = useState<string>(dayOf(now))
+  const [q, setQ] = useState('')
+
+  const filtered = useMemo(() => {
+    const s = q.trim().toLowerCase()
+    return s ? classes.filter(e => [e.subject, e.code, e.room, e.instructor].some(v => v?.toLowerCase().includes(s))) : classes
+  }, [classes, q])
+
+  const meetings = classes.reduce((n, e) => n + e.days.length, 0)
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: color.canvas }} contentContainerStyle={{ paddingTop: insets.top + 20, paddingHorizontal: 16, paddingBottom: TAB_CLEARANCE, gap: 18 }} showsVerticalScrollIndicator={false}>
-      <Animated.View entering={rise(0)} style={{ paddingHorizontal: 4 }}>
-        <ScreenHeader eyebrow="Schedule" title="Your week at a glance." subtitle="Classes, deadlines, and alarms in one place."
-          right={<IconButton icon={ScanLine} label="Scan schedule" tone="soft" onPress={() => router.push('/import')} />} />
-      </Animated.View>
-
-      <Animated.View entering={rise(1)} style={{ flexDirection: 'row', gap: 8 }}>
-        <Stat icon={GraduationCap} value={classes.length} label="classes" />
-        <Stat icon={NotebookText} value={deadlines.filter(d => !d.completed).length} label="deadlines" onPress={() => router.push('/tasks')} bg={color.fill} tint={color.ink} />
-        <Stat icon={AlarmClock} value={alarms.filter(a => a.enabled).length} label="alarms" onPress={() => router.push('/alarms')} />
-      </Animated.View>
-
-      <Animated.View entering={rise(2)}>
-        <Press onPress={() => router.push('/wallpaper')} accessibilityRole="button" accessibilityLabel="Schedule themes"
-          style={[{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: radius.lg, borderWidth: 1, borderColor: '#C5DCCB', overflow: 'hidden' }, shadow]}>
-          <LinearGradient colors={['#E4F0E6', '#F2F5EA']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ position: 'absolute', inset: 0 }} />
-          <View style={{ width: 46, height: 46, borderRadius: 14, backgroundColor: color.green, alignItems: 'center', justifyContent: 'center' }}>
-            <Palette size={22} color={color.white} strokeWidth={2} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <T v="heading" style={{ fontSize: 15 }}>Schedule themes</T>
-            <T v="meta" style={{ fontSize: 12 }}>Make your timetable a wallpaper.</T>
-          </View>
-          <View style={{ flexDirection: 'row', gap: 4 }}>
-            {THEMES.map((t, i) => (
-              <LinearGradient key={i} colors={t as [string, string, string]} style={{ width: 24, height: 40, borderRadius: 6, borderWidth: 1.5, borderColor: color.white }} />
-            ))}
-          </View>
-          <ChevronRight size={16} color={color.inkSoft} />
-        </Press>
-      </Animated.View>
-
-      <View style={[{ backgroundColor: color.card, borderRadius: radius.lg, borderWidth: 1, borderColor: color.line, padding: 8 }, shadow]}>
-        <WeekStrip classes={classes} value={day} onChange={setDay} />
-      </View>
-
-      <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', paddingHorizontal: 4 }}>
-        <T style={{ fontFamily: font.serif, fontSize: 22, letterSpacing: -0.6, color: color.ink }}>{day === dayOf() ? 'Today' : fullDay(day)}</T>
-        {list.length > 0 && <T v="meta">{list.length} {list.length === 1 ? 'class' : 'classes'} · {hours.toFixed(hours % 1 ? 1 : 0)} h</T>}
-      </View>
-
-      {list.length ? (
-        <View style={{ gap: 10 }}>
-          {list.map((c, i) => (
-            <Animated.View key={c.id} entering={rise(i)}>
-              <ClassRow entry={c}
-                live={live?.live && live.entry.id === c.id && day === dayOf()}
-                onPress={() => router.push({ pathname: '/class', params: { id: c.id } })} />
-            </Animated.View>
-          ))}
+    <View style={{ flex: 1, paddingTop: insets.top }}>
+      <LargeTitle title="Schedule" eyebrow={`${classes.length} courses · ${meetings} meetings`} right={<IconButton icon={Smartphone} label="Home screen widgets" onPress={() => router.push('/widgets')} />} />
+      <View style={{ paddingHorizontal: 20, gap: 12, paddingBottom: 12 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, height: 42, borderRadius: radius.pill, backgroundColor: c.fill, paddingHorizontal: 14 }}>
+          <Search size={18} color={c.ink3} />
+          <TextInput value={q} onChangeText={setQ} placeholder="Search classes, rooms, instructors" placeholderTextColor={c.ink3} selectionColor={c.green}
+            style={[type.callout, { flex: 1, color: c.ink, height: '100%' }, Platform.OS === 'web' && ({ outlineStyle: 'none' } as object)]} />
         </View>
-      ) : classes.length ? (
-        <Empty image={require('@/assets/mascots/dormosaur-comfy-time.png')} title="Free day" body="No classes on the route. Rest, catch up, or cook something good." />
+        <Segmented value={view} onChange={setView} options={[{ value: 'week', label: 'Week' }, { value: 'day', label: 'Day' }]} />
+      </View>
+
+      {!classes.length ? (
+        <Empty image={require('@/assets/images/student-dormosaur.png')} title="No classes yet" body="Scan a photo of your schedule and Dormo will organize it for you." action="Scan schedule" onAction={() => router.push('/scan')} />
+      ) : view === 'week' ? (
+        <WeekGrid key="week" classes={filtered} today={dayOf(now)} nowMin={now.getHours() * 60 + now.getMinutes()} bottom={TAB_CLEARANCE + insets.bottom} />
       ) : (
-        <Empty image={require('@/assets/images/student-dormosaur.png')} title="Add your classes" body="Snap your printed schedule and Dormo reads it for you." action={{ title: 'Scan schedule', onPress: () => router.push('/import') }} />
+        <Animated.View key="day" entering={fade(0, 220)} style={{ flex: 1 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 20, paddingBottom: 12 }} style={{ flexGrow: 0 }}>
+            {DAYS.map(d => {
+              const on = d === day
+              const n = classesOn(filtered, d).length
+              return (
+                <Press key={d} onPress={() => { haptic.select(); setDay(d) }} scale={0.92} accessibilityState={{ selected: on }}
+                  style={{ width: 52, paddingVertical: 10, borderRadius: radius.md, alignItems: 'center', gap: 6, backgroundColor: on ? c.green : c.card }}>
+                  <T v="footnote" color={on ? c.onGreen : c.ink2} style={{ fontWeight: '700' }}>{d}</T>
+                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: n ? (on ? c.onGreen : c.green) : 'transparent' }} />
+                </Press>
+              )
+            })}
+          </ScrollView>
+          <ScrollView contentContainerStyle={{ paddingHorizontal: 20, gap: 10, paddingBottom: TAB_CLEARANCE + insets.bottom }}>
+            {classesOn(filtered, day).map((e, i) => <Animated.View key={e.id} entering={rise(i)}><ClassRow entry={e} /></Animated.View>)}
+            {!classesOn(filtered, day).length && <Empty image={require('@/assets/images/sleeping-dino.png')} title="Nothing here" body={`No classes on ${day}.`} />}
+          </ScrollView>
+        </Animated.View>
       )}
-    </ScrollView>
+    </View>
   )
 }
 
-const fullDay = (d: string) => ({ Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday' } as Record<string, string>)[d] ?? d
+function WeekGrid({ classes, today, nowMin, bottom }: { classes: ReturnType<typeof useApp>['classes']; today: string; nowMin: number; bottom: number }) {
+  const { c, subject, dark } = useTheme()
+  const { width } = useWindowDimensions()
+  const used = DAYS.filter(d => classes.some(e => e.days.includes(d)))
+  const days = DAYS.filter((d, i) => i < 5 || used.includes(d))
+  const starts = classes.map(e => minutesOf(e.start))
+  const ends = classes.map(e => minutesOf(e.end))
+  const first = Math.min(7, Math.floor((starts.length ? Math.min(...starts) : 420) / 60))
+  const last = Math.max(17, Math.ceil((ends.length ? Math.max(...ends) : 1020) / 60))
+  const hours = Array.from({ length: last - first + 1 }, (_, i) => first + i)
+  const top = (m: number) => ((m - first * 60) / 60) * HOUR
+  const TIME_W = 38
+  const colW = (Math.min(width, 700) - TIME_W - 20) / days.length
+  // date numbers for this week (Mon-based)
+  const base = new Date()
+  const monday = new Date(base); monday.setDate(base.getDate() - ((base.getDay() + 6) % 7))
+  const dateOf = (d: string) => { const x = new Date(monday); x.setDate(monday.getDate() + DAYS.indexOf(d as never)); return x.getDate() }
+  const nowVisible = nowMin >= first * 60 && nowMin <= last * 60
+
+  return (
+    <Animated.View entering={fade(0, 220)} style={{ flex: 1 }}>
+      {/* day header */}
+      <View style={{ flexDirection: 'row', paddingLeft: TIME_W + 10, paddingRight: 10, paddingBottom: 10 }}>
+        {days.map(d => {
+          const on = d === today
+          return (
+            <View key={d} style={{ width: colW, alignItems: 'center', gap: 4 }}>
+              <T v="caption" color={on ? c.green : c.ink3} style={{ fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6, fontSize: 10.5 }}>{d}</T>
+              <View style={{ width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? c.green : 'transparent' }}>
+                <T v="subhead" color={on ? c.onGreen : c.ink} style={{ fontWeight: '700', fontVariant: ['tabular-nums'] }}>{dateOf(d)}</T>
+              </View>
+            </View>
+          )
+        })}
+      </View>
+
+      <ScrollView contentContainerStyle={{ paddingBottom: bottom, paddingRight: 10, paddingTop: 8 }} showsVerticalScrollIndicator={false}>
+        <View style={{ flexDirection: 'row', height: hours.length * HOUR }}>
+          {/* hour labels */}
+          <View style={{ width: TIME_W + 10 }}>
+            {hours.map(h => (
+              <T key={h} v="caption" color={c.ink3} style={{ position: 'absolute', top: top(h * 60) - 7, right: 8, fontSize: 10, fontVariant: ['tabular-nums'] }}>
+                {h % 12 || 12}{h < 12 ? 'a' : 'p'}
+              </T>
+            ))}
+          </View>
+
+          <View style={{ flexDirection: 'row' }}>
+            {/* hour lines */}
+            {hours.map(h => <View key={h} style={{ position: 'absolute', left: 0, right: 0, top: top(h * 60), height: StyleSheet.hairlineWidth, backgroundColor: c.line }} />)}
+
+            {days.map(d => {
+              const on = d === today
+              return (
+                <View key={d} style={{ width: colW, backgroundColor: on ? (dark ? 'rgba(61,214,140,0.06)' : 'rgba(14,122,74,0.045)') : 'transparent', borderRadius: 12 }}>
+                  {classes.filter(e => e.days.includes(d)).map(e => {
+                    const tone = subject(e.color)
+                    const y = top(minutesOf(e.start))
+                    const h = Math.max(34, top(minutesOf(e.end)) - y - 3)
+                    const live = on && minutesOf(e.start) <= nowMin && nowMin < minutesOf(e.end)
+                    const roomLines = h > 96 ? 3 : h > 64 ? 2 : 1
+                    return (
+                      <Press key={e.id} onPress={() => router.push({ pathname: '/class', params: { id: e.id } })} scale={0.94} accessibilityLabel={`${e.subject}, ${formatTime(e.start)}${e.room ? `, ${e.room}` : ''}`}
+                        style={{ position: 'absolute', top: y + 1.5, left: 2, right: 2, height: h, borderRadius: 10, backgroundColor: tone.bg, overflow: 'hidden',
+                          borderWidth: live ? 1.5 : 0, borderColor: tone.bar, shadowColor: tone.bar, shadowOpacity: dark ? 0 : 0.16, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 1 }}>
+                        <View style={{ height: 3, backgroundColor: tone.bar }} />
+                        <View style={{ paddingHorizontal: 5, paddingTop: 4, gap: 2, flex: 1 }}>
+                          <T color={tone.ink} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={{ fontSize: 11.5, lineHeight: 14, fontWeight: '800', letterSpacing: -0.2 }}>
+                            {e.code || e.subject}
+                          </T>
+                          {h > 46 && e.room ? (
+                            <T color={tone.ink} numberOfLines={roomLines} style={{ fontSize: 9.5, lineHeight: 12, opacity: 0.85 }}>{e.room}</T>
+                          ) : null}
+                          {h > 80 ? <T color={tone.ink} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={{ fontSize: 9, lineHeight: 11, opacity: 0.6, marginTop: 'auto', marginBottom: 4, fontWeight: '600' }}>{formatTime(e.start).replace(' ', '')}</T> : null}
+                        </View>
+                      </Press>
+                    )
+                  })}
+                </View>
+              )
+            })}
+
+            {/* now line across the whole week, dot on today */}
+            {nowVisible && (
+              <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: top(nowMin) - 1, height: 2, backgroundColor: c.danger, opacity: 0.85 }}>
+                <View style={{ position: 'absolute', left: days.indexOf(today as never) * colW - 4, top: -3, width: 8, height: 8, borderRadius: 4, backgroundColor: c.danger, display: days.includes(today as never) ? 'flex' : 'none' }} />
+              </View>
+            )}
+          </View>
+        </View>
+      </ScrollView>
+    </Animated.View>
+  )
+}

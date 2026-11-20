@@ -1,88 +1,89 @@
-import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
-import { Check, FileText, Plus } from 'lucide-react-native'
-import { useMemo, useState } from 'react'
+import { Plus, ScanText } from 'lucide-react-native'
+import { useState } from 'react'
 import { ScrollView, View } from 'react-native'
+import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { TAB_CLEARANCE } from '@/components/tab-bar'
-import { Card, Empty, IconButton, Press, ScreenHeader, Segmented, T } from '@/components/ui'
-import { color, font, radius, shadow, subject } from '@/design/tokens'
+import { layout, rise } from '@/design/motion'
+import { radius, useTheme } from '@/design/theme'
 import type { Deadline } from '@/lib/repo'
-import { clockOf, relativeDue } from '@/lib/time'
 import { useApp } from '@/state/app'
+import { Empty, IconButton, LargeTitle, Segmented, T } from '@/ui'
+import { TaskRow } from '@/ui/blocks'
+import { TAB_CLEARANCE } from '@/ui/tab-bar'
 
-type Filter = 'open' | 'done'
+type Filter = 'upcoming' | 'done' | 'all'
+
+function bucket(d: Deadline, now: Date) {
+  const due = new Date(d.due)
+  if (due < now) return 'Overdue'
+  const days = Math.floor((new Date(due.getFullYear(), due.getMonth(), due.getDate()).getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 86400000)
+  if (days === 0) return 'Today'
+  if (days === 1) return 'Tomorrow'
+  if (days < 7) return 'This week'
+  return 'Later'
+}
 
 export default function Tasks() {
+  const { c } = useTheme()
   const insets = useSafeAreaInsets()
   const { deadlines, saveDeadline } = useApp()
-  const [filter, setFilter] = useState<Filter>('open')
-
+  const [filter, setFilter] = useState<Filter>('upcoming')
+  const now = new Date()
   const open = deadlines.filter(d => !d.completed)
-  const [weekEnd] = useState(() => Date.now() + 7 * 86400_000)
-  const thisWeek = open.filter(d => new Date(d.due).getTime() <= weekEnd).length
-
-  const groups = useMemo(() => {
-    const list = deadlines.filter(d => (filter === 'open' ? !d.completed : d.completed))
-    const map = new Map<string, Deadline[]>()
-    for (const d of filter === 'done' ? [...list].reverse() : list) {
-      const key = relativeDue(d.due)
-      map.set(key, [...(map.get(key) ?? []), d])
-    }
-    return [...map.entries()]
-  }, [deadlines, filter])
+  const list = filter === 'upcoming' ? open : filter === 'done' ? deadlines.filter(d => d.completed) : deadlines
+  const groups = filter === 'upcoming'
+    ? ['Overdue', 'Today', 'Tomorrow', 'This week', 'Later'].map(k => ({ k, items: list.filter(d => bucket(d, now) === k) })).filter(g => g.items.length)
+    : [{ k: '', items: list }]
+  const week = open.filter(d => ['Today', 'Tomorrow', 'This week'].includes(bucket(d, now))).length
+  const overdue = open.filter(d => bucket(d, now) === 'Overdue').length
+  const doneCount = deadlines.length - open.length
+  const pct = deadlines.length ? doneCount / deadlines.length : 0
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: color.canvas }} contentContainerStyle={{ paddingTop: insets.top + 20, paddingHorizontal: 16, paddingBottom: TAB_CLEARANCE, gap: 16 }} showsVerticalScrollIndicator={false}>
-      <View style={{ paddingHorizontal: 4 }}>
-        <ScreenHeader eyebrow="Deadlines" title="What's due next." subtitle="Tick things off as you go."
-          right={<>
-            <IconButton icon={FileText} label="Import tasks" tone="soft" onPress={() => router.push('/import-tasks')} />
-            <IconButton icon={Plus} label="New task" tone="green" onPress={() => router.push('/task')} />
-          </>} />
-      </View>
-
-      <View style={[{ borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: '#1C4F35' }, shadow]}>
-        <LinearGradient colors={[color.night, '#0B3A23']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: 20, flexDirection: 'row', alignItems: 'flex-end' }}>
-          <View style={{ flex: 1 }}>
-            <T v="label" style={{ color: color.highlight }}>Due this week</T>
-            <T style={{ fontFamily: font.black, fontSize: 56, lineHeight: 62, letterSpacing: -2.5, color: color.white, fontVariant: ['tabular-nums'] }}>{thisWeek}</T>
-            <T style={{ fontFamily: font.medium, fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>{open.length} open in total</T>
-          </View>
-          <View style={{ alignItems: 'flex-end', paddingLeft: 16, borderLeftWidth: 1, borderColor: 'rgba(255,255,255,0.18)' }}>
-            <T style={{ fontFamily: font.black, fontSize: 28, letterSpacing: -1, color: color.highlight }}>{deadlines.length - open.length}</T>
-            <T style={{ fontFamily: font.bold, fontSize: 10, letterSpacing: 1.6, color: 'rgba(255,255,255,0.62)' }}>DONE</T>
-          </View>
-        </LinearGradient>
-      </View>
-
-      <Segmented<Filter> value={filter} onChange={setFilter} options={[{ value: 'open', label: 'Open' }, { value: 'done', label: 'Done' }]} />
-
-      {groups.length ? groups.map(([label, items]) => (
-        <View key={label} style={{ gap: 8 }}>
-          <T v="label" style={{ paddingHorizontal: 4, color: label === 'Overdue' ? color.coral : color.inkSoft }}>{label}</T>
-          <Card pad={6}>
-            {items.map((d, i) => (
-              <Press key={d.id} onPress={() => router.push({ pathname: '/task', params: { id: d.id } })}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12, borderTopWidth: i ? 1 : 0, borderColor: color.line }}>
-                <Press haptic accessibilityLabel={d.completed ? 'Mark open' : 'Mark done'} hitSlop={8}
-                  onPress={() => saveDeadline({ ...d, completed: !d.completed })}
-                  style={{ width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: subject[d.color].dot, backgroundColor: d.completed ? subject[d.color].dot : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-                  {d.completed && <Check size={15} color={color.white} strokeWidth={3} />}
-                </Press>
-                <View style={{ flex: 1 }}>
-                  <T v="strong" numberOfLines={1} style={d.completed ? { textDecorationLine: 'line-through', color: color.inkMute } : undefined}>{d.title}</T>
-                  <T v="meta" numberOfLines={1}>{[d.code, d.type[0].toUpperCase() + d.type.slice(1)].filter(Boolean).join(' · ')}</T>
-                </View>
-                <T style={{ fontFamily: font.bold, fontSize: 13, color: color.inkSoft }}>{clockOf(d.due)}</T>
-              </Press>
-            ))}
-          </Card>
+    <View style={{ flex: 1, paddingTop: insets.top }}>
+      <LargeTitle title="Tasks" eyebrow="Deadline tracker" right={
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <IconButton icon={ScanText} label="Import from syllabus" onPress={() => router.push('/import-tasks')} />
+          <IconButton icon={Plus} label="New task" tone="green" onPress={() => router.push('/task')} />
         </View>
-      )) : (
-        <Empty image={require('@/assets/mascots/dormosaur-you-got-this.png')} title={filter === 'open' ? 'Nothing due' : 'Nothing done yet'}
-          action={filter === 'open' ? { title: 'Add task', onPress: () => router.push('/task') } : undefined} />
-      )}
-    </ScrollView>
+      } />
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, gap: 20, paddingBottom: TAB_CLEARANCE + insets.bottom }} showsVerticalScrollIndicator={false}>
+        <Animated.View entering={rise(0)} style={{ flexDirection: 'row', gap: 10 }}>
+          <Stat n={week} label="This week" tint={c.green} />
+          <Stat n={overdue} label="Overdue" tint={overdue ? c.danger : c.ink3} />
+          <View style={{ flex: 1, padding: 14, borderRadius: radius.lg, backgroundColor: c.card, gap: 8 }}>
+            <T v="title2" style={{ fontVariant: ['tabular-nums'] }}>{Math.round(pct * 100)}%</T>
+            <View style={{ height: 5, borderRadius: 3, backgroundColor: c.fill, overflow: 'hidden' }}>
+              <View style={{ width: `${pct * 100}%`, height: '100%', backgroundColor: c.green }} />
+            </View>
+            <T v="caption" color={c.ink2}>Done</T>
+          </View>
+        </Animated.View>
+
+        <Segmented value={filter} onChange={setFilter} options={[{ value: 'upcoming', label: 'Upcoming' }, { value: 'done', label: 'Done' }, { value: 'all', label: 'All' }]} />
+
+        {!list.length ? (
+          <Empty image={require('@/assets/mascots/dormosaur-you-got-this.png')} title={filter === 'done' ? 'Nothing done yet' : 'All clear'}
+            body={filter === 'done' ? 'Tick off a task and it lands here.' : 'Add a task or scan a syllabus to track deadlines.'}
+            action={filter === 'done' ? undefined : 'Add task'} onAction={() => router.push('/task')} />
+        ) : groups.map(g => (
+          <Animated.View key={g.k || 'all'} layout={layout} style={{ gap: 10 }}>
+            {g.k ? <T v="footnote" color={g.k === 'Overdue' ? c.danger : c.ink3} style={{ fontWeight: '700', textTransform: 'uppercase', marginLeft: 4 }}>{g.k}</T> : null}
+            {g.items.map(d => <TaskRow key={d.id} task={d} onToggle={() => saveDeadline({ ...d, completed: !d.completed })} />)}
+          </Animated.View>
+        ))}
+      </ScrollView>
+    </View>
+  )
+}
+
+function Stat({ n, label, tint }: { n: number; label: string; tint: string }) {
+  const { c } = useTheme()
+  return (
+    <View style={{ flex: 1, padding: 14, borderRadius: radius.lg, backgroundColor: c.card, gap: 4 }}>
+      <T v="title1" color={tint} style={{ fontVariant: ['tabular-nums'] }}>{n}</T>
+      <T v="caption" color={c.ink2}>{label}</T>
+    </View>
   )
 }

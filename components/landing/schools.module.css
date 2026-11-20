@@ -1,0 +1,64 @@
+.rail,
+.animatedRail {
+  display: flex;
+  max-width: 1100px;
+  margin-inline: auto;
+  overflow-x: auto;
+}
+
+.rail:focus-visible,
+.animatedRail:focus-visible {
+  outline: 2px solid #0e7a4a;
+  outline-offset: 4px;
+}
+
+.track,
+.duplicate {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 0.25rem 2.5rem 0.25rem 1rem;
+}
+
+.duplicate {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animatedRail {
+    max-width: 1600px;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, #000 6% 94%, transparent);
+  }
+
+  .animatedRail .track,
+  .animatedRail .duplicate {
+    display: flex;
+    animation: scroll-schools 48s linear infinite;
+  }
+
+  .animatedRail:hover .track,
+  .animatedRail:hover .duplicate {
+    animation-play-state: paused;
+  }
+
+  .animatedRail:focus-visible {
+    overflow-x: auto;
+    mask-image: none;
+  }
+
+  .animatedRail:focus-visible .track {
+    animation: none;
+  }
+
+  .animatedRail:focus-visible .duplicate {
+    display: none;
+  }
+}
+
+@keyframes scroll-schools {
+  to {
+    transform: translateX(-100%);
+  }
+}

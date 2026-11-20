@@ -1,174 +1,163 @@
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
-import { Check, Clock, Plus, Trash2 } from 'lucide-react-native'
-import { useMemo, useState } from 'react'
-import { FlatList, ScrollView, TextInput, View, useWindowDimensions } from 'react-native'
+import { Check, Plus, Trash2 } from 'lucide-react-native'
+import { useState } from 'react'
+import { Platform, ScrollView, TextInput, View, useWindowDimensions } from 'react-native'
+import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { TAB_CLEARANCE } from '@/components/tab-bar'
-import { Card, Chip, Press, ScreenHeader, Segmented, T } from '@/components/ui'
-import { color, font, radius, shadow } from '@/design/tokens'
-import { recipes, type Recipe } from '@/lib/recipes'
+import { fade, layout, rise } from '@/design/motion'
+import { elevation, radius, type, useTheme } from '@/design/theme'
+import { recipes } from '@/lib/recipes'
 import { DAYS, MEALS, uid } from '@/lib/repo'
 import { dayOf } from '@/lib/time'
 import { useApp } from '@/state/app'
+import { Chip, Empty, LargeTitle, Press, Segmented, T, haptic } from '@/ui'
+import { TAB_CLEARANCE } from '@/ui/tab-bar'
 
-const FILTERS = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Snack', 'Microwave', 'Rice cooker', 'No cook'] as const
-type Filter = (typeof FILTERS)[number]
 type Tab = 'recipes' | 'plan' | 'grocery'
+const FILTERS = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Snack'] as const
 
 export default function Kitchen() {
   const insets = useSafeAreaInsets()
-  const { width } = useWindowDimensions()
-  const { grocery } = useApp()
   const [tab, setTab] = useState<Tab>('recipes')
-  const [filter, setFilter] = useState<Filter>('All')
-  const cardW = (width - 16 * 2 - 12) / 2
-  const list = useMemo(() => recipes.filter(r => filter === 'All' || r.meal === filter || r.appliance === filter), [filter])
-  const toBuy = grocery.filter(g => !g.checked).length
-
-  const header = (
-    <View style={{ paddingTop: insets.top + 20, gap: 16, marginBottom: 4 }}>
-      <View style={{ paddingHorizontal: 20 }}>
-        <ScreenHeader eyebrow="Dorm kitchen" title="Eat well on a dorm budget." subtitle="Recipes for the gear you actually have."
-          right={<Image source={require('@/assets/images/chef-dormosaur.png')} style={{ width: 76, height: 76, marginTop: -6 }} contentFit="contain" />} />
-      </View>
-      <View style={{ paddingHorizontal: 16 }}>
-        <Segmented<Tab> value={tab} onChange={setTab} options={[
-          { value: 'recipes', label: 'Recipes' },
-          { value: 'plan', label: 'Plan' },
-          { value: 'grocery', label: toBuy ? `Grocery ${toBuy}` : 'Grocery' },
-        ]} />
-      </View>
-      {tab === 'recipes' && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 16 }}>
-          {FILTERS.map(f => <Chip key={f} label={f} on={f === filter} onPress={() => setFilter(f)} />)}
-        </ScrollView>
-      )}
-    </View>
-  )
-
-  if (tab !== 'recipes') {
-    return (
-      <ScrollView contentContainerStyle={{ paddingBottom: TAB_CLEARANCE, gap: 16 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        {header}
-        <View style={{ paddingHorizontal: 16 }}>{tab === 'plan' ? <Plan /> : <Grocery />}</View>
-      </ScrollView>
-    )
-  }
-
   return (
-    <FlatList
-      data={list}
-      keyExtractor={r => r.slug}
-      numColumns={2}
-      columnWrapperStyle={{ gap: 12, paddingHorizontal: 16 }}
-      contentContainerStyle={{ paddingBottom: TAB_CLEARANCE, gap: 12 }}
-      showsVerticalScrollIndicator={false}
-      ListHeaderComponent={header}
-      renderItem={({ item }) => <RecipeCard recipe={item} width={cardW} />}
-    />
+    <View style={{ flex: 1, paddingTop: insets.top }}>
+      <LargeTitle title="Kitchen" eyebrow="Dorm-budget meals" />
+      <View style={{ paddingHorizontal: 20, paddingBottom: 14 }}>
+        <Segmented value={tab} onChange={setTab} options={[{ value: 'recipes', label: 'Recipes' }, { value: 'plan', label: 'Meal plan' }, { value: 'grocery', label: 'Grocery' }]} />
+      </View>
+      <Animated.View key={tab} entering={fade(0, 220)} style={{ flex: 1 }}>
+        {tab === 'recipes' ? <Recipes /> : tab === 'plan' ? <Plan /> : <Grocery />}
+      </Animated.View>
+    </View>
   )
 }
 
-function RecipeCard({ recipe, width }: { recipe: Recipe; width: number }) {
+function Recipes() {
+  const { c } = useTheme()
+  const insets = useSafeAreaInsets()
+  const { width } = useWindowDimensions()
+  const [f, setF] = useState<(typeof FILTERS)[number]>('All')
+  const list = recipes.filter(r => f === 'All' || r.meal === f || r.mealTypes?.includes(f.toLowerCase() as never))
+  const w = (Math.min(width, 600) - 40 - 12) / 2
   return (
-    <Press onPress={() => router.push({ pathname: '/recipe/[slug]', params: { slug: recipe.slug } })} accessibilityLabel={recipe.title}
-      style={[{ width, backgroundColor: color.card, borderRadius: radius.lg, borderWidth: 1, borderColor: color.line, overflow: 'hidden' }, shadow]}>
-      <Image source={recipe.image} style={{ width: '100%', height: width * 0.82 }} contentFit="cover" transition={150} />
-      <View style={{ position: 'absolute', top: 10, left: 10, backgroundColor: 'rgba(254,254,251,0.94)', borderRadius: radius.pill, paddingHorizontal: 9, paddingVertical: 4 }}>
-        <T style={{ fontFamily: font.bold, fontSize: 11, color: color.green }}>{recipe.cost}</T>
+    <ScrollView contentContainerStyle={{ paddingBottom: TAB_CLEARANCE + insets.bottom }} showsVerticalScrollIndicator={false}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 20, paddingBottom: 16 }}>
+        {FILTERS.map(x => <Chip key={x} label={x} on={x === f} onPress={() => setF(x)} />)}
+      </ScrollView>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingHorizontal: 20 }}>
+        {list.map((r, i) => (
+          <Animated.View key={r.slug} entering={rise(Math.min(i, 8))} layout={layout}>
+            <Press onPress={() => router.push({ pathname: '/recipe/[slug]', params: { slug: r.slug } })} scale={0.96} accessibilityLabel={r.title}
+              style={[{ width: w, borderRadius: radius.lg, backgroundColor: c.card, overflow: 'hidden' }, elevation(c, 1)]}>
+              <Image source={r.image} style={{ width: w, height: w * 0.8 }} contentFit="cover" transition={200} />
+              <View style={{ position: 'absolute', top: 10, left: 10, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99, backgroundColor: 'rgba(0,0,0,0.55)' }}>
+                <T v="caption" color="#fff" style={{ fontWeight: '700' }}>{r.minutes} min</T>
+              </View>
+              <View style={{ padding: 12, gap: 3 }}>
+                <T v="subhead" numberOfLines={2} style={{ fontWeight: '700' }}>{r.title}</T>
+                <T v="caption" color={c.ink2}>{r.appliance} · {r.cost}</T>
+              </View>
+            </Press>
+          </Animated.View>
+        ))}
       </View>
-      <View style={{ padding: 12, gap: 6 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Clock size={11} color={color.green} strokeWidth={2.4} />
-          <T style={{ fontFamily: font.bold, fontSize: 11, color: color.green }} numberOfLines={1}>{recipe.minutes} min · {recipe.appliance}</T>
-        </View>
-        <T v="heading" numberOfLines={2} style={{ fontSize: 15, lineHeight: 19, minHeight: 38 }}>{recipe.title}</T>
-      </View>
-    </Press>
+    </ScrollView>
   )
 }
 
 function Plan() {
+  const { c } = useTheme()
+  const insets = useSafeAreaInsets()
   const { mealPlan } = useApp()
-  const [day, setDay] = useState<string>(dayOf())
+  const today = dayOf()
   return (
-    <View style={{ gap: 12 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        {DAYS.map(d => {
-          const on = d === day
-          const count = mealPlan.filter(m => m.day === d).length
-          return (
-            <Press key={d} haptic onPress={() => setDay(d)} accessibilityState={{ selected: on }}
-              style={{ width: 44, height: 56, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: on ? color.green : color.card, borderWidth: 1, borderColor: on ? color.green : color.line }}>
-              <T v="strong" style={{ fontSize: 13, color: on ? color.white : color.ink }}>{d.slice(0, 2)}</T>
-              <View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: count ? (on ? color.sun : color.green) : 'transparent' }} />
-            </Press>
-          )
-        })}
-      </View>
-      {MEALS.map(meal => {
-        const entry = mealPlan.find(m => m.day === day && m.meal === meal)
-        const recipe = recipes.find(r => r.slug === entry?.recipeSlug)
-        return (
-          <Press key={meal} onPress={() => router.push({ pathname: '/meal-pick', params: { day, meal } })} accessibilityLabel={`${meal}${recipe ? `, ${recipe.title}` : ''}`}
-            style={[{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: color.card, borderRadius: radius.lg, borderWidth: 1, borderColor: color.line, padding: 10 }, shadow]}>
-            {recipe
-              ? <Image source={recipe.image} style={{ width: 64, height: 64, borderRadius: 14 }} contentFit="cover" />
-              : <View style={{ width: 64, height: 64, borderRadius: 14, backgroundColor: color.sunken, alignItems: 'center', justifyContent: 'center' }}><Plus size={22} color={color.inkMute} /></View>}
-            <View style={{ flex: 1, gap: 2 }}>
-              <T v="label">{meal}</T>
-              <T v="strong" numberOfLines={1} style={!recipe ? { color: color.inkMute } : undefined}>{recipe?.title ?? 'Pick a recipe'}</T>
-              {recipe && <T v="meta" style={{ fontSize: 12 }}>{recipe.minutes} min · {recipe.cost}</T>}
-            </View>
-          </Press>
-        )
-      })}
-    </View>
+    <ScrollView contentContainerStyle={{ paddingHorizontal: 20, gap: 14, paddingBottom: TAB_CLEARANCE + insets.bottom }} showsVerticalScrollIndicator={false}>
+      {DAYS.map((d, i) => (
+        <Animated.View key={d} entering={rise(i)} style={[{ backgroundColor: c.card, borderRadius: radius.lg, padding: 14, gap: 10, borderWidth: d === today ? 1.5 : 0, borderColor: c.green }, elevation(c, 1)]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <T v="headline" style={{ flex: 1 }}>{d}</T>
+            {d === today && <T v="caption" color={c.green} style={{ fontWeight: '800' }}>TODAY</T>}
+          </View>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {MEALS.slice(0, 3).map(m => {
+              const entry = mealPlan.find(p => p.day === d && p.meal === m)
+              const r = entry && recipes.find(x => x.slug === entry.recipeSlug)
+              return (
+                <Press key={m} onPress={() => router.push({ pathname: '/meal-pick', params: { day: d, meal: m } })} scale={0.94} accessibilityLabel={`${d} ${m}`}
+                  style={{ flex: 1, height: 92, borderRadius: radius.md, overflow: 'hidden', backgroundColor: c.fill, alignItems: 'center', justifyContent: 'center' }}>
+                  {r ? (
+                    <>
+                      <Image source={r.image} style={{ position: 'absolute', inset: 0 }} contentFit="cover" />
+                      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 6, backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                        <T v="caption" color="#fff" numberOfLines={1} style={{ fontWeight: '700', fontSize: 10 }}>{m}</T>
+                        <T v="caption" color="#fff" numberOfLines={1} style={{ fontSize: 10 }}>{r.title}</T>
+                      </View>
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={18} color={c.ink3} />
+                      <T v="caption" color={c.ink3} style={{ marginTop: 4 }}>{m}</T>
+                    </>
+                  )}
+                </Press>
+              )
+            })}
+          </View>
+        </Animated.View>
+      ))}
+    </ScrollView>
   )
 }
 
 function Grocery() {
-  const { grocery, saveGrocery } = useApp()
-  const [name, setName] = useState('')
-  const sorted = [...grocery].sort((a, b) => Number(a.checked) - Number(b.checked))
+  const { c } = useTheme()
+  const insets = useSafeAreaInsets()
+  const { grocery, saveGrocery, mealPlan } = useApp()
+  const [text, setText] = useState('')
   const add = () => {
-    const n = name.trim()
-    if (!n) return
-    saveGrocery([...grocery, { id: uid(), name: n, checked: false, custom: true }])
-    setName('')
+    const name = text.trim()
+    if (!name) return
+    haptic.tap()
+    saveGrocery([{ id: uid(), name, checked: false, custom: true }, ...grocery])
+    setText('')
   }
+  const fromPlan = () => {
+    const have = new Set(grocery.map(g => g.name.toLowerCase()))
+    const items = mealPlan.flatMap(p => recipes.find(r => r.slug === p.recipeSlug)?.ingredients ?? [])
+      .filter(n => !have.has(n.toLowerCase()) && (have.add(n.toLowerCase()), true))
+      .map(name => ({ id: uid(), name, checked: false }))
+    if (items.length) { haptic.success(); saveGrocery([...grocery, ...items]) }
+  }
+  const sorted = [...grocery.filter(g => !g.checked), ...grocery.filter(g => g.checked)]
   return (
-    <View style={{ gap: 12 }}>
-      <View style={{ flexDirection: 'row', gap: 10 }}>
-        <TextInput value={name} onChangeText={setName} onSubmitEditing={add} returnKeyType="done" placeholder="Add item" placeholderTextColor={color.inkMute}
-          style={{ flex: 1, height: 52, borderRadius: radius.md, backgroundColor: color.field, borderWidth: 1, borderColor: color.line, paddingHorizontal: 16, fontFamily: font.regular, fontSize: 16, color: color.ink }} />
-        <Press haptic onPress={add} accessibilityLabel="Add item" style={{ width: 52, height: 52, borderRadius: radius.md, backgroundColor: color.green, alignItems: 'center', justifyContent: 'center' }}>
-          <Plus size={22} color={color.white} strokeWidth={2.6} />
+    <ScrollView contentContainerStyle={{ paddingHorizontal: 20, gap: 12, paddingBottom: TAB_CLEARANCE + insets.bottom }} keyboardShouldPersistTaps="handled">
+      <View style={{ flexDirection: 'row', gap: 8 }}>
+        <TextInput value={text} onChangeText={setText} onSubmitEditing={add} placeholder="Add an item" placeholderTextColor={c.ink3} returnKeyType="done" selectionColor={c.green}
+          style={[type.body, { flex: 1, height: 50, borderRadius: radius.md, backgroundColor: c.card, color: c.ink, paddingHorizontal: 16 }, Platform.OS === 'web' && ({ outlineStyle: 'none' } as object)]} />
+        <Press onPress={add} accessibilityLabel="Add item" style={{ width: 50, height: 50, borderRadius: radius.md, backgroundColor: c.green, alignItems: 'center', justifyContent: 'center' }}>
+          <Plus size={22} color={c.onGreen} strokeWidth={2.6} />
         </Press>
       </View>
-      {sorted.length > 0 && (
-        <Card pad={6}>
+      {mealPlan.length > 0 && <Chip label="Add ingredients from meal plan" icon={Plus} onPress={fromPlan} />}
+      {!grocery.length ? <Empty image={require('@/assets/images/chef-dormosaur.png')} title="List is empty" body="Add items or pull ingredients from your meal plan." /> : (
+        <View style={{ backgroundColor: c.card, borderRadius: radius.lg, overflow: 'hidden' }}>
           {sorted.map((g, i) => (
-            <View key={g.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12, borderTopWidth: i ? 1 : 0, borderColor: color.line }}>
-              <Press haptic accessibilityLabel={g.checked ? `Uncheck ${g.name}` : `Check ${g.name}`} hitSlop={8}
-                onPress={() => saveGrocery(grocery.map(x => (x.id === g.id ? { ...x, checked: !x.checked } : x)))}
-                style={{ width: 26, height: 26, borderRadius: 8, borderWidth: 2, borderColor: g.checked ? color.green : color.line, backgroundColor: g.checked ? color.green : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-                {g.checked && <Check size={15} color={color.white} strokeWidth={3} />}
+            <Animated.View key={g.id} layout={layout} style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 16, minHeight: 52, borderTopWidth: i ? 0.5 : 0, borderColor: c.line }}>
+              <Press onPress={() => saveGrocery(grocery.map(x => (x.id === g.id ? { ...x, checked: !x.checked } : x)))} scale={0.97} accessibilityRole="checkbox" accessibilityState={{ checked: g.checked }}
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 }}>
+                <View style={{ width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: g.checked ? c.green : c.ink3, backgroundColor: g.checked ? c.green : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+                  {g.checked && <Check size={14} color={c.onGreen} strokeWidth={3} />}
+                </View>
+                <T v="body" color={g.checked ? c.ink3 : c.ink} style={[{ flex: 1 }, g.checked && { textDecorationLine: 'line-through' }]}>{g.name}</T>
               </Press>
-              <T style={[{ flex: 1 }, g.checked && { color: color.inkMute, textDecorationLine: 'line-through' }]}>{g.name}</T>
-              <Press onPress={() => saveGrocery(grocery.filter(x => x.id !== g.id))} accessibilityLabel={`Remove ${g.name}`} hitSlop={10}>
-                <Trash2 size={18} color={color.inkMute} />
+              <Press onPress={() => saveGrocery(grocery.filter(x => x.id !== g.id))} accessibilityLabel={`Remove ${g.name}`} style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }}>
+                <Trash2 size={17} color={c.ink3} />
               </Press>
-            </View>
+            </Animated.View>
           ))}
-        </Card>
+        </View>
       )}
-      {grocery.some(g => g.checked) && (
-        <Press onPress={() => saveGrocery(grocery.filter(g => !g.checked))} style={{ alignSelf: 'center', padding: 12 }}>
-          <T v="strong" style={{ color: color.green }}>Clear checked</T>
-        </Press>
-      )}
-    </View>
+    </ScrollView>
   )
 }

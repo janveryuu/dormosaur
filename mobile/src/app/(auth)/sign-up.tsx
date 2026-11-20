@@ -1,5 +1,5 @@
-import { AuthForm } from '@/components/auth-form'
+import { AuthForm } from '@/ui/auth-form'
 
-export default function SignUp() {
+export default function Screen() {
   return <AuthForm mode="sign-up" />
 }
