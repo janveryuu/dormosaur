@@ -316,31 +316,7 @@ replies = [{ classes: [{ code: 'CpE 408' }, { ...entry, days: [] }, { ...entry, 
 assert.equal((await gemini.parseScheduleImageWithGemini(tinyPng)).length, 0, 'Gemini drafts must not substitute invented days/times')
 console.log('PASS: missing key, 401/403/429/404/5xx, malformed response, dense retry, text recovery, total failure, safe health and strict local OCR parsing')
 
-// Exercise the import action itself: it must not hide API errors or start a
-// second scan while the background scan has already exhausted its one retry.
-const importSource = readFileSync('app/(main)/schedule/import/page.tsx', 'utf8')
-const actionSource = importSource.slice(importSource.indexOf('  const handleStartImport ='),
-  importSource.indexOf('  React.useEffect', importSource.indexOf('  const handleStartImport =')))
-let actionError
-let rescanCount = 0
-const actionExports = {}
-const activeScanPromiseRef = { current: Promise.resolve({ success: false, error: 'AI scanner unavailable' }) }
-vm.runInNewContext(ts.transpileModule(`${actionSource}\nexports.run = handleStartImport`, {
-  compilerOptions: { target: ts.ScriptTarget.ES2022 },
-}).outputText, {
-  exports: actionExports, activeScanPromiseRef, mode: 'photo', parsedClasses: null,
-  raw: '', capturedImage: tinyPng, setLoading() {}, sessionStorage: { setItem() {} },
-  setOcrError: (error) => actionError = error,
-  processImageWithGemini: async () => { rescanCount++; actionError = 'AI scanner unavailable'; return null },
-})
-await actionExports.run()
-assert.equal(actionError, 'AI scanner unavailable')
-assert.equal(rescanCount, 0)
-activeScanPromiseRef.current = null
-await actionExports.run()
-assert.equal(actionError, 'AI scanner unavailable')
-assert.equal(rescanCount, 1)
-console.log('PASS: import button preserves provider errors and does not duplicate an active scan')
+// The web import page was retired with the student web app (the native app owns import UI).
 
 if (process.argv.includes('--live') || process.argv.includes('--ocr')) {
   const targetUrl = process.argv.find((arg) => arg.startsWith('--url='))?.slice(6)

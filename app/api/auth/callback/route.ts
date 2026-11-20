@@ -73,13 +73,14 @@ export async function GET(request: Request) {
             })
           }
 
-          return NextResponse.redirect(`${origin}/onboarding`)
+          return NextResponse.redirect(`${origin}/?confirmed=1`)
         }
 
-        return NextResponse.redirect(`${origin}${defaultNext}`)
+        // Students confirm here, then continue in the app; only explicit admin destinations stay on the web.
+        return NextResponse.redirect(nextParam?.startsWith('/admin') ? `${origin}${defaultNext}` : `${origin}/?confirmed=1`)
       } catch (dbErr) {
         console.warn('[Auth Callback]', { category: 'profile_unavailable' })
-        return NextResponse.redirect(`${origin}/onboarding`)
+        return NextResponse.redirect(`${origin}/?confirmed=1`)
       }
     } else {
       console.warn('[Auth Callback]', { category: 'confirmation_failed' })
@@ -88,9 +89,9 @@ export async function GET(request: Request) {
       if (sessionData?.user) {
         const existing = await getUserProfile(supabase, sessionData.user.id)
         if (existing && existing.onboarding_completed === true) {
-          return NextResponse.redirect(`${origin}/dashboard`)
+          return NextResponse.redirect(`${origin}/?confirmed=1`)
         }
-        return NextResponse.redirect(`${origin}/onboarding`)
+        return NextResponse.redirect(`${origin}/?confirmed=1`)
       }
     }
   } catch (err) {

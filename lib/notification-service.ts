@@ -9,7 +9,7 @@ import webpush from 'web-push'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getUserPushSubscriptions, deletePushSubscriptionByEndpoint } from '@/lib/db'
-import { validPushEndpoint } from '@/lib/push-validation'
+import { validExpoPushToken, validPushEndpoint } from '@/lib/push-validation'
 
 // Configure VAPID details if set in environment
 const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''
@@ -64,6 +64,17 @@ export async function sendClassReminder(payload: ClassReminderPayload, client?: 
     })
 
     const sendPromises = subscriptions.map(async (sub) => {
+      if (validExpoPushToken(sub.endpoint)) {
+        // The native app schedules class alarms locally; only deadline-style reminders go over Expo push.
+        if (url === '/schedule') return
+        const result = await sendExpoPush(sub.endpoint, { title, body, data: { ...data, url } })
+        if (result === 'sent') successCount++
+        else {
+          failureCount++
+          if (result === 'gone') await deletePushSubscriptionByEndpoint(supabase, userId, sub.endpoint).catch(() => {})
+        }
+        return
+      }
       if (!validPushEndpoint(sub.endpoint)) { failureCount++; return }
       const pushSub = {
         endpoint: sub.endpoint,
@@ -95,4 +106,24 @@ export async function sendClassReminder(payload: ClassReminderPayload, client?: 
   }
 
   return { successCount, failureCount }
+}
+
+/** Sends one notification through the Expo push service. */
+async function sendExpoPush(token: string, message: { title: string; body: string; data: Record<string, unknown> }): Promise<'sent' | 'gone' | 'failed'> {
+  try {
+    const res = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ to: token, sound: 'default', channelId: 'classes', ...message }),
+      signal: AbortSignal.timeout(8000),
+    })
+    const json = await res.json().catch(() => ({})) as { data?: { status?: string; details?: { error?: string } } }
+    if (json.data?.status === 'ok') return 'sent'
+    if (json.data?.details?.error === 'DeviceNotRegistered') return 'gone'
+    console.warn('[Expo Push]', { category: 'delivery_failed', status: res.status })
+    return 'failed'
+  } catch {
+    console.warn('[Expo Push]', { category: 'delivery_unavailable' })
+    return 'failed'
+  }
 }

@@ -1,64 +1,46 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
-// Routes that require authentication
-const PROTECTED_ROUTES = ['/dashboard', '/schedule', '/alarms', '/deadlines', '/kitchen', '/profile', '/onboarding']
+// The student experience lives in the native app (mobile/). The web keeps:
+//   /          public APK download page
+//   /sign-in   admin sign-in
+//   /admin     admin console (also guarded server-side by lib/admin-auth.ts)
+const PROTECTED_ROUTES = ['/admin']
+const AUTH_ROUTES = ['/sign-in']
+// Retired student pages; old bookmarks and notification links land on the download page.
+const RETIRED_ROUTES = ['/dashboard', '/schedule', '/alarms', '/deadlines', '/kitchen', '/profile', '/onboarding', '/sign-up', '/video']
 
-// Routes only for unauthenticated users
-const AUTH_ROUTES = ['/sign-in', '/sign-up']
+const matches = (pathname: string, routes: string[]) =>
+  routes.some(route => pathname === route || pathname.startsWith(`${route}/`))
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const { supabaseResponse, user, supabase } = await updateSession(request)
+
+  if (matches(pathname, RETIRED_ROUTES)) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    url.search = ''
+    return NextResponse.redirect(url)
+  }
+
+  const { supabaseResponse, user } = await updateSession(request)
   const redirectWithCookies = (url: URL) => {
     const response = NextResponse.redirect(url)
     for (const cookie of supabaseResponse.cookies.getAll()) response.cookies.set(cookie)
     return response
   }
 
-  const isProtected = PROTECTED_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  )
-  const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route))
-
-  let isOnboarded = Boolean(user?.user_metadata?.onboarding_completed)
-
-  // If user metadata does not confirm onboarding, query profiles table in Supabase
-  if (user && !isOnboarded) {
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('onboarding_completed')
-        .eq('id', user.id)
-        .single()
-
-      if (profile && profile.onboarding_completed === true) {
-        isOnboarded = true
-      }
-    } catch (e) {
-      console.warn('[Proxy Middleware Notice] Profile query check:', e)
-    }
-  }
-
-  // 1. Logged in user who has NOT completed onboarding -> force to /onboarding
-  if (user && !isOnboarded && pathname !== '/onboarding' && !pathname.startsWith('/api')) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/onboarding'
-    return redirectWithCookies(url)
-  }
-
-  // 2. Unauthenticated user trying to access a protected page -> /sign-in
-  if (isProtected && !user) {
+  if (matches(pathname, PROTECTED_ROUTES) && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/sign-in'
     url.searchParams.set('next', pathname)
     return redirectWithCookies(url)
   }
 
-  // 3. Fully onboarded user trying to access sign-in/sign-up or root route on mobile/desktop -> /dashboard
-  if ((isAuthRoute || pathname === '/') && user && isOnboarded) {
+  if (matches(pathname, AUTH_ROUTES) && user) {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    url.pathname = '/admin'
+    url.search = ''
     return redirectWithCookies(url)
   }
 
@@ -68,6 +50,6 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     // Skip Next.js internals, static files, and API routes
-    '/((?!_next/static|_next/image|\\.well-known|site\\.webmanifest|sw\\.js|favicon.ico|icon.*|apple-icon.*|public|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|\\.well-known|site\\.webmanifest|sw\\.js|favicon.ico|icon.*|apple-icon.*|public|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp|apk)$).*)',
   ],
 }

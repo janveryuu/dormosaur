@@ -50,21 +50,8 @@ function SignInContent() {
       }
 
       if (authRes.data.session && authRes.data.user) {
-        try {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('onboarding_completed')
-            .eq('id', authRes.data.user.id)
-            .single()
-
-          if (profile && profile.onboarding_completed) {
-            router.push(nextPath)
-          } else {
-            router.push('/onboarding')
-          }
-        } catch {
-          router.push('/onboarding')
-        }
+        // Web sign-in serves the admin console; the admin guard sends students to the download page.
+        router.push(nextPath)
         router.refresh()
       } else {
         setError('Sign-in failed. Please try again.')
@@ -85,7 +72,7 @@ function SignInContent() {
       const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=/dashboard`,
+        redirectTo: `${window.location.origin}/api/auth/callback?next=/admin`,
       },
     })
       if (error) {
@@ -258,12 +245,12 @@ function SignInContent() {
 
           {/* Create Account Link */}
           <p className="text-center text-[14.5px] text-muted-foreground">
-            Don&apos;t have an account?{' '}
+            Student?{' '}
             <Link
-              href="/sign-up"
+              href="/"
               className="inline-flex min-h-11 items-center font-bold text-primary underline-offset-2 hover:underline"
             >
-              Create one
+              Get the app
             </Link>
           </p>
 

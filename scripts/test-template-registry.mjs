@@ -29,8 +29,6 @@ for (const entry of registry.SCHEDULE_TEMPLATES) {
 assert.equal(registry.getTemplateById('simple-modern').id, 'sage-green')
 assert.equal(registry.getTemplateById('dormosaur-classic').id, 'dormosaur-adventure')
 for (const id of [undefined, 'unknown', null]) assert.equal(registry.getTemplateById(id).id, 'dormosaur-adventure')
-assert.ok(existsSync('components/schedule/templates/layouts/simple-modern.tsx'))
-assert.ok(existsSync('components/schedule/templates/layouts/dormosaur-classic.tsx'))
 assert.equal(registry.ARTBOARD_SIZES.phone.width / registry.ARTBOARD_SIZES.phone.height, 9 / 16)
 assert.equal(utils.wallpaperMinutes('05:00'), 300, 'Stored 24-hour times must not gain an invented PM suffix')
 assert.equal(utils.wallpaperTime('00:30'), '12:30 AM')

@@ -1,5 +1,7 @@
 import 'server-only'
 import { NextResponse } from 'next/server'
+import { headers } from 'next/headers'
+import { createClient as createSupabaseClient, type SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { InputError, readPayload } from '@/lib/copilot/input'
 
@@ -18,9 +20,23 @@ export function consumeRateLimit(key: string, limit = 20, windowMs = 60_000) {
     requests.set(key, { count: 1, expires: now + windowMs })
   }
 }
+// The native app (mobile/) has no cookies; it sends its Supabase access token
+// as `Authorization: Bearer <jwt>`. RLS still applies via the forwarded token.
+async function bearerClient(): Promise<{ supabase: SupabaseClient; token: string } | null> {
+  let auth = ''
+  try { auth = (await headers()).get('authorization') || '' } catch { return null } // outside a request scope
+  const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : ''
+  if (!token) return null
+  const supabase = createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+  return { supabase, token }
+}
 export async function requireAuthenticated(bucket = 'ai', limit = 20) {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
+  const bearer = await bearerClient()
+  const supabase = bearer?.supabase ?? await createClient()
+  const { data: { user }, error } = bearer ? await supabase.auth.getUser(bearer.token) : await supabase.auth.getUser()
   if (!user || user.is_anonymous) throw new InputError('Please sign in to continue.', 401)
   if (error) throw new InputError('We could not check your session. Please try again.', 503)
   consumeRateLimit(`${bucket}:${user.id}`, limit)
