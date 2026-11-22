@@ -1,0 +1,6 @@
+# Scanner fixtures are byte-exact test inputs: never convert line endings.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+tests/fixtures/** -text

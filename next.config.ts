@@ -1,33 +1,18 @@
 /** @type {import('next').NextConfig} */
+// The scanners read PDFs with pdfjs (text layer, no rendering) and straighten
+// photos with sharp. pdfjs loads its worker and fonts at runtime, which Next's
+// dependency tracing cannot see, so those files are included explicitly.
+const scannerFiles = [
+  './node_modules/pdfjs-dist/legacy/build/pdf*.mjs',
+  './node_modules/pdfjs-dist/package.json',
+  './node_modules/pdfjs-dist/standard_fonts/**',
+]
+
 const nextConfig = {
-  serverExternalPackages: ['tesseract.js', 'tesseract.js-core', 'pdfjs-dist', '@napi-rs/canvas'],
+  serverExternalPackages: ['pdfjs-dist', 'sharp'],
   outputFileTracingIncludes: {
-    '/api/schedule/parse': [
-      './node_modules/tesseract.js/**',
-      './node_modules/tesseract.js-core/**',
-      // These imports happen inside the worker thread and are invisible to
-      // Next's normal server dependency tracing.
-      './node_modules/bmp-js/**',
-      './node_modules/wasm-feature-detect/**',
-      './node_modules/@tesseract.js-data/eng/**',
-      './node_modules/pdfjs-dist/legacy/build/pdf*.mjs',
-      './node_modules/pdfjs-dist/package.json',
-      './node_modules/pdfjs-dist/wasm/**',
-      './node_modules/pdfjs-dist/standard_fonts/**',
-      './node_modules/@napi-rs/canvas*/**',
-    ],
-    '/api/deadlines/parse': [
-      './node_modules/tesseract.js/**',
-      './node_modules/tesseract.js-core/**',
-      './node_modules/bmp-js/**',
-      './node_modules/wasm-feature-detect/**',
-      './node_modules/@tesseract.js-data/eng/**',
-      './node_modules/pdfjs-dist/legacy/build/pdf*.mjs',
-      './node_modules/pdfjs-dist/package.json',
-      './node_modules/pdfjs-dist/wasm/**',
-      './node_modules/pdfjs-dist/standard_fonts/**',
-      './node_modules/@napi-rs/canvas*/**',
-    ],
+    '/api/schedule/parse': scannerFiles,
+    '/api/deadlines/parse': scannerFiles,
   },
   images: {
     unoptimized: false,

@@ -1,0 +1,20 @@
+{
+  "note": "Real BSU portal grid (30-minute rows, Subj/Room subcolumns, -do- ditto marks). Hand-verified cell by cell.",
+  "meetings": [
+    { "code": "CpE 413", "day": "Mon", "start": "09:00", "end": "11:00", "room": "RM202(CICS)" },
+    { "code": "CpE 411", "day": "Mon", "start": "12:00", "end": "14:00", "room": "RM202(CICS)" },
+    { "code": "CpE 410", "day": "Mon", "start": "14:00", "end": "16:00", "room": "CPE LAB" },
+    { "code": "Fili 102", "day": "Tue", "start": "08:00", "end": "09:00", "room": "RM202(CICS)" },
+    { "code": "CpE 415", "day": "Tue", "start": "10:00", "end": "12:00", "room": "COMPLAB3" },
+    { "code": "CpE 410", "day": "Tue", "start": "12:00", "end": "14:00", "room": "CPE LAB" },
+    { "code": "CpE 414", "day": "Wed", "start": "08:00", "end": "10:00", "room": "RM202(CICS)" },
+    { "code": "CpE 411", "day": "Wed", "start": "15:00", "end": "17:00", "room": "ONLINE" },
+    { "code": "CpE 413", "day": "Wed", "start": "18:00", "end": "19:00", "room": "ONLINE" },
+    { "code": "CpE 410", "day": "Thu", "start": "08:00", "end": "10:00", "room": "ONLINE" },
+    { "code": "CpE 411", "day": "Thu", "start": "12:00", "end": "14:00", "room": "COMPLAB3" },
+    { "code": "CpE 412", "day": "Thu", "start": "16:00", "end": "19:00", "room": "CPE LAB" },
+    { "code": "ENGG 416", "day": "Fri", "start": "07:00", "end": "10:00", "room": "ONLINE" },
+    { "code": "Fili 102", "day": "Fri", "start": "11:00", "end": "13:00", "room": "ONLINE" },
+    { "code": "CpE 412", "day": "Fri", "start": "13:00", "end": "15:00", "room": "ONLINE" }
+  ]
+}

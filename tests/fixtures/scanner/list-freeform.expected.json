@@ -1,0 +1,11 @@
+{ "meetings": [
+  { "code": "MATH 101", "day": "Mon", "start": "08:30", "end": "09:50", "room": "Sci Hall 204" },
+  { "code": "MATH 101", "day": "Wed", "start": "08:30", "end": "09:50", "room": "Sci Hall 204" },
+  { "code": "MATH 101", "day": "Fri", "start": "08:30", "end": "09:50", "room": "Sci Hall 204" },
+  { "code": "CHEM 120", "day": "Tue", "start": "13:00", "end": "14:30", "room": "Lab B11" },
+  { "code": "CHEM 120", "day": "Thu", "start": "13:00", "end": "14:30", "room": "Lab B11" },
+  { "code": "ENG 105", "day": "Tue", "start": "10:00", "end": "11:30", "room": "Rm 305" },
+  { "code": "PE 3", "day": "Sat", "start": "07:00", "end": "09:00", "room": "Gym" },
+  { "code": "CS 150", "day": "Mon", "start": "15:00", "end": "16:30", "room": "COMPLAB2" },
+  { "code": "CS 150", "day": "Wed", "start": "15:00", "end": "16:30", "room": "COMPLAB2" }
+] }

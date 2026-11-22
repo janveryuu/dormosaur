@@ -1,0 +1,8 @@
+Time Mon Tue Wed Thu Fri Sat Sun
+Subj Room Subj Room Subj Room Subj Room Subj Room Subj Room Subj Room
+07:00 AM-07:30 AM ENGG 416 ONLINE
+07:30 AM-08:00 AM -do- -do08:00 AM-08:30 AM Fili 102 RM202(CICS) CpE 414 RM202(CICS) CpE 410 ONLINE -do- -do08:30 AM-09:00 AM -do- -do- -do- -do- -do- -do- -do- -do09:00 AM-09:30 AM CpE 413 RM202(CICS) -do- -do- -do- -do- -do- -do09:30 AM-10:00 AM -do- -do- -do- -do- -do- -do- -do- -do10:00 AM-10:30 AM -do- -do- CpE 415 COMPLAB3
+10:30 AM-11:00 AM -do- -do- -do- -do11:00 AM-11:30 AM -do- -do- Fili 102 ONLINE
+11:30 AM-12:00 PM -do- -do- -do- -do12:00 PM-12:30 PM CpE 411 RM202(CICS) CpE 410 CPE LAB CpE 411 COMPLAB3 -do- -do12:30 PM-01:00 PM -do- -do- -do- -do- -do- -do- -do- -do01:00 PM-01:30 PM -do- -do- -do- -do- -do- -do- CpE 412 -do01:30 PM-02:00 PM -do- -do- -do- -do- -do- -do- -do- -do02:00 PM-02:30 PM CpE 410 CPE LAB -do- -do02:30 PM-03:00 PM -do- -do- -do- -do03:00 PM-03:30 PM -do- -do- CpE 411 ONLINE
+03:30 PM-04:00 PM -do- -do- -do- -do04:00 PM-04:30 PM -do- -do- CpE 412 CPE LAB
+04:30 PM-05:00 PM -do- -do- -do- -do05:00 PM-05:30 PM -do- -do05:30 PM-06:00 PM -do- -do06:00 PM-06:30 PM CpE 413 ONLINE -do- -do06:30 PM-07:00 PM -do- -do- -do- -do-

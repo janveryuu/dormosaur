@@ -23,9 +23,12 @@ function load(file, overrides = {}, env = {}, globals = {}) {
       if (name === 'server-only') return {}
       if (name.startsWith('@/')) {
         const base = name.slice(2)
-        return read(existsSync(`${base}.ts`) ? `${base}.ts` : `${base}.tsx`)
+        return read(existsSync(`${base}.ts`) ? `${base}.ts` : existsSync(`${base}.tsx`) ? `${base}.tsx` : `${base}/index.ts`)
       }
-      if (name.startsWith('.')) return read(resolve(dirname(path), `${name}.ts`))
+      if (name.startsWith('.')) {
+        const target = resolve(dirname(path), name)
+        return read(existsSync(`${target}.ts`) ? `${target}.ts` : `${target}/index.ts`)
+      }
       return require(name)
     }, process: { env, cwd: () => process.cwd() }, console: quietConsole, Request, Response, Headers, URL, Buffer,
     TextEncoder, TextDecoder, Uint8Array, AbortController, AbortSignal, setTimeout, clearTimeout,
@@ -140,13 +143,6 @@ for (const path of ['notifications/test-push', 'notifications/test-deadline']) {
     assert.equal((await route.POST(request({}))).status, 404)
   })
 }
-test('deadline evidence never borrows a different task date or course', () => {
-  const parser = load('lib/deadline-parser.ts')
-  const result = parser.normalizeDeadlineDrafts([{ title: 'Project outline', dueDate: '2026-10-12', dueTime: '16:00', code: 'PHY 101' }], 'text_import', 'Project outline\nPHY 101 Quiz due 2026-10-12 at 4pm')
-  assert.equal(result[0].dueDate, '')
-  assert.equal(result[0].dueTime, '')
-  assert.equal(result[0].code, '')
-})
 test('deadline timestamps round-trip in the student timezone', () => {
   const dates = load('lib/date-time.ts')
   const instant = dates.localDateTimeToIso('2026-10-05', '01:30', 'Asia/Manila')
@@ -401,15 +397,14 @@ test('schedule edit does not mistake a room name for a meeting weekday', async (
 })
 
 test('plain-text schedule imports leave missing days, times, course codes and instructors unset', () => {
-  const parser = load('lib/parser.ts')
-  const [partial] = parser.parseRawSchedule('PHY 101 Physics')
-  assert.equal(partial.start, '')
-  assert.equal(partial.end, '')
-  assert.equal(partial.days.length, 0)
-  assert.equal(partial.instructor, '')
-  const [meeting] = parser.parseRawSchedule('Monday\n08:00-09:00 (Physics/Online)')
-  assert.equal(meeting.code, '')
+  const text = load('lib/scanner/text.ts')
+  const partial = text.parseScheduleText('PHY 101 Physics')
+  assert.equal(partial.drafts.length, 0, 'a course with no meeting time is not turned into a class')
+  assert.equal(partial.confident, false)
+  const { drafts: [meeting] } = text.parseScheduleText('Monday\n08:00-09:00 (Physics/Online)')
+  assert.equal(meeting.subject, 'Physics')
+  assert.equal(meeting.room, 'Online')
   assert.equal(meeting.days[0], 'Mon')
   assert.equal(meeting.start, '08:00')
-  assert.equal(meeting.confidence, 'low')
+  assert.equal(meeting.instructor, '')
 })

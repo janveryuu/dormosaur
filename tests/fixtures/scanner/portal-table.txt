@@ -1,0 +1,5 @@
+Code	Description	Units	Days	Time	Room	Instructor
+IT 211	Object-Oriented Programming	3	MW	10:00AM-11:30AM	CL 3	Dela Cruz, J.
+IT 212	Discrete Mathematics	3	TTh	01:00PM-02:30PM	RM 404	Reyes, A.
+GEC 4	Readings in Philippine History	3	F	08:00AM-11:00AM	RM 201	Santos, M.
+NSTP 2	Civic Welfare Training Service	3	Sat	08:00AM-11:00AM	GYM	Garcia, P.

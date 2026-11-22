@@ -42,31 +42,3 @@ export function parseDeadlineText(text: string, now = new Date(), timezone = 'As
       confidence: lowFields.length ? 'low' : 'high', lowFields: [...new Set(lowFields)] }
   })
 }
-export function normalizeDeadlineDrafts(value: unknown, source: 'image_import' | 'text_import', evidence?: string, timezone = 'Asia/Manila'): DeadlineItem[] {
-  if (!Array.isArray(value)) return []
-  const parsedEvidence = evidence === undefined ? null : parseDeadlineText(evidence, new Date(), timezone)
-  return value.slice(0, 50).flatMap(item => {
-    if (!item || typeof item !== 'object' || typeof item.title !== 'string' || !item.title.trim()) return []
-    const lowFields = new Set<string>(Array.isArray(item.lowFields) ? item.lowFields.filter((f: unknown) => typeof f === 'string') : [])
-    let dueDate = validDate(item.dueDate) ? item.dueDate : ''
-    let dueTime = validTime(item.dueTime) ? item.dueTime : ''
-    let code = typeof item.code === 'string' ? item.code.trim().slice(0, 40) : ''
-    if (parsedEvidence) {
-      // A date elsewhere in the document is not evidence for this task.
-      const words = item.title.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter((w: string) => w.length > 2 && !['due', 'the', 'deadline'].includes(w))
-      const matches = parsedEvidence.filter(d => words.length > 0 && words.every((w: string) => d.title.toLowerCase().includes(w)))
-      const match = matches.length === 1 ? matches[0] : null
-      if (!match || match.dueDate !== dueDate) dueDate = ''
-      if (!match || match.dueTime !== dueTime) dueTime = ''
-      if (!match || !code || match.code.replace(/\s+/g, '').toLowerCase() !== code.replace(/\s+/g, '').toLowerCase()) code = ''
-      for (const field of match?.lowFields || []) lowFields.add(field)
-    }
-    if (!dueDate) lowFields.add('dueDate')
-    if (!dueTime) lowFields.add('dueTime')
-    if (!code) lowFields.add('code')
-    return [{ id: crypto.randomUUID(), title: item.title.trim().slice(0, 250), code,
-      type: ['assignment', 'exam', 'quiz', 'project', 'other'].includes(item.type) ? item.type : 'other',
-      dueDate, dueTime, completed: false, color: 1, source,
-      confidence: lowFields.size || item.confidence === 'low' || source === 'image_import' ? 'low' : 'high', lowFields: [...lowFields] } as DeadlineItem]
-  })
-}

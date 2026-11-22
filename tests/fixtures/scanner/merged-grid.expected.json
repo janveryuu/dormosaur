@@ -1,0 +1,75 @@
+{
+  "note": "Generated: merged blocks, hourly rows, code and room stacked in one cell.",
+  "meetings": [
+    {
+      "code": "IT 311",
+      "day": "Mon",
+      "start": "08:00",
+      "end": "11:00",
+      "room": "CL 2"
+    },
+    {
+      "code": "IT 312",
+      "day": "Mon",
+      "start": "13:00",
+      "end": "15:00",
+      "room": "RM 105"
+    },
+    {
+      "code": "MATH 31",
+      "day": "Tue",
+      "start": "07:00",
+      "end": "09:00",
+      "room": "RM 210"
+    },
+    {
+      "code": "IT 313",
+      "day": "Tue",
+      "start": "10:00",
+      "end": "13:00",
+      "room": "CL 1"
+    },
+    {
+      "code": "IT 311",
+      "day": "Wed",
+      "start": "08:00",
+      "end": "11:00",
+      "room": "CL 2"
+    },
+    {
+      "code": "GEC 7",
+      "day": "Wed",
+      "start": "14:00",
+      "end": "17:00",
+      "room": "AVR"
+    },
+    {
+      "code": "MATH 31",
+      "day": "Thu",
+      "start": "07:00",
+      "end": "09:00",
+      "room": "RM 210"
+    },
+    {
+      "code": "IT 314",
+      "day": "Thu",
+      "start": "15:00",
+      "end": "18:00",
+      "room": "ONLINE"
+    },
+    {
+      "code": "IT 312",
+      "day": "Fri",
+      "start": "13:00",
+      "end": "15:00",
+      "room": "RM 105"
+    },
+    {
+      "code": "PE 3",
+      "day": "Sat",
+      "start": "09:00",
+      "end": "11:00",
+      "room": "GYM"
+    }
+  ]
+}

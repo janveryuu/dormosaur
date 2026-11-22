@@ -20,17 +20,18 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 }
 
 type ParsedClass = Omit<ClassEntry, 'id' | 'color'> & { id?: string; color?: number }
+export type ScheduleScan = { classes: ParsedClass[]; provider: string; skipped: number; hint: 'grid_text' | null }
 
-/** Sends schedule text or an image data URL to the existing Next.js parser. */
-export async function parseSchedule(input: { text: string } | { image: string }) {
-  const res = await post<{ classes: ParsedClass[] }>('/api/schedule/parse', input)
-  return res.classes ?? []
+/** Schedule text, an image or a PDF (as a data URL) → organized classes with review flags. */
+export async function parseSchedule(input: { text: string } | { image: string }): Promise<ScheduleScan> {
+  const res = await post<Partial<ScheduleScan>>('/api/schedule/parse', input)
+  return { classes: res.classes ?? [], provider: res.provider ?? '', skipped: res.skipped ?? 0, hint: res.hint ?? null }
 }
 
-export type DeadlineDraft = { title: string; code?: string; dueDate?: string; dueTime?: string; type?: string; lowFields?: string[] }
+export type DeadlineDraft = { title: string; code?: string; dueDate?: string; dueTime?: string; type?: string; confidence?: 'high' | 'low'; lowFields?: string[] }
 
-/** Sends deadline text or an image data URL to /api/deadlines/parse. */
-export async function parseDeadlines(input: { mode: 'text' | 'photo'; content: string }) {
+/** Deadline text, a photo or a PDF (as a data URL) → deadline drafts. Unknown dates stay empty. */
+export async function parseDeadlines(input: { mode: 'text' | 'photo' | 'file'; content: string }) {
   const res = await post<{ deadlines: DeadlineDraft[] }>('/api/deadlines/parse', input)
   return res.deadlines ?? []
 }
