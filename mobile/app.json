@@ -51,7 +51,8 @@
           "cameraPermission": "Dormosaur scans your printed class schedule."
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

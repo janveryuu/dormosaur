@@ -1,94 +1,81 @@
-import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
 import { Clock3, MapPin, User } from 'lucide-react-native'
 import { View } from 'react-native'
-import Svg, { Circle } from 'react-native-svg'
-import { elevation, radius, useTheme } from '@/design/theme'
+import type { SFSymbol } from 'expo-symbols'
+import type { LucideIcon } from 'lucide-react-native'
+import { radius, useTheme, type SubjectTone } from '@/design/theme'
 import type { NextClass } from '@/lib/time'
-import { dayOf, formatTime, splitDuration } from '@/lib/time'
-import { Dormo } from './dormo'
+import { formatTime, splitDuration } from '@/lib/time'
 import { Press, T } from './index'
+import { Sym } from './symbol'
+
+/** "PALMA, MARK JUSTINE E." → "Palma, Mark Justine E." (leaves mixed-case input alone). */
+export function displayName(s: string) {
+  if (!s || s !== s.toUpperCase()) return s
+  return s.toLowerCase().replace(/(^|[\s,.(-])(\p{L})/gu, (_, p: string, ch: string) => p + ch.toUpperCase())
+}
+
+function countdown(ms: number) {
+  const { days, hours, minutes } = splitDuration(ms)
+  if (days) return `${days}d ${hours}h`
+  if (hours) return minutes ? `${hours}h ${minutes}m` : `${hours}h`
+  return `${Math.max(1, minutes)} min`
+}
 
 /**
- * "Up next" hero: a light, layered card tinted by the class's own colour,
- * a countdown ring, and Dormo perched on the corner.
+ * The next class as a Calendar-style event, washed in the subject's own
+ * colour (the one the student picked for it in Schedule).
  */
 export function NextCard({ next, now }: { next: NextClass; now: Date }) {
-  const { c, subject, dark } = useTheme()
+  const { subject } = useTheme()
   const tone = subject(next.entry.color)
-  const target = next.live ? next.endsAt : next.startsAt
-  const ms = target.getTime() - now.getTime()
-  const { days, hours, minutes } = splitDuration(ms)
-  const big = days ? `${days}d` : hours ? `${hours}h` : `${minutes}`
-  const small = days ? `${hours}h` : hours ? `${minutes}m` : 'min'
-  // Ring: during class, how much is done; before class, fills as it gets close (last 3 hours).
-  const pct = next.live
-    ? (now.getTime() - next.startsAt.getTime()) / (next.endsAt.getTime() - next.startsAt.getTime())
-    : Math.max(0.04, 1 - ms / (3 * 3600000))
-  const R = 34
-  const C = 2 * Math.PI * R
-  const sameDay = dayOf(next.startsAt) === dayOf(now) && next.startsAt.getDate() === now.getDate()
-  const when = next.live ? 'Happening now' : sameDay ? 'Up next today' : `Up next · ${next.startsAt.toLocaleDateString(undefined, { weekday: 'long' })}`
-  const lines = [
-    next.live ? 'Focus mode! You got this.' : `${next.entry.code || next.entry.subject} soon. Ready?`,
-    next.entry.room ? `It's in ${next.entry.room}.` : 'Don’t be late!',
-    'Rawr! I’ll ring before class.',
-  ]
+  const e = next.entry
+  const startDay = new Date(next.startsAt); startDay.setHours(0, 0, 0, 0)
+  const today = new Date(now); today.setHours(0, 0, 0, 0)
+  const dayGap = Math.round((startDay.getTime() - today.getTime()) / 86400000)
+
+  const status = next.live ? 'Happening now' : dayGap === 0 ? 'Up next' : dayGap === 1 ? 'Tomorrow' : next.startsAt.toLocaleDateString(undefined, { weekday: 'long' })
+  const trailing = next.live
+    ? `${countdown(next.endsAt.getTime() - now.getTime())} left`
+    : dayGap === 0 ? `in ${countdown(next.startsAt.getTime() - now.getTime())}` : formatTime(e.start)
+  const progress = next.live ? Math.min(1, Math.max(0, (now.getTime() - next.startsAt.getTime()) / (next.endsAt.getTime() - next.startsAt.getTime()))) : 0
 
   return (
-    <View>
-      <Press onPress={() => router.push({ pathname: '/class', params: { id: next.entry.id } })} scale={0.98} accessibilityLabel={`${when}: ${next.entry.subject}`}
-        style={[{ borderRadius: radius.xl, backgroundColor: c.card, overflow: 'hidden' }, elevation(c, 3)]}>
-        {/* soft wash of the class colour */}
-        <LinearGradient colors={[tone.bg, dark ? c.card : '#FFFFFF']} start={{ x: 0, y: 0 }} end={{ x: 0.9, y: 1 }} style={{ position: 'absolute', inset: 0 }} />
-        <View style={{ position: 'absolute', right: -50, top: -60, width: 190, height: 190, borderRadius: 95, backgroundColor: tone.bar, opacity: dark ? 0.12 : 0.08 }} />
-        <View style={{ position: 'absolute', left: 0, top: 22, bottom: 22, width: 4, borderTopRightRadius: 4, borderBottomRightRadius: 4, backgroundColor: tone.bar }} />
-
-        <View style={{ padding: 20, paddingRight: 18, gap: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 99, backgroundColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)' }}>
-            <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: next.live ? c.danger : tone.bar }} />
-            <T v="caption" color={tone.ink} style={{ fontWeight: '700' }}>{when}</T>
-          </View>
-
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-            <View style={{ flex: 1, gap: 2 }}>
-              <T v="title1" color={c.ink} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{next.entry.code || next.entry.subject}</T>
-              {next.entry.code ? <T v="subhead" color={c.ink2} numberOfLines={1}>{next.entry.subject}</T> : null}
-            </View>
-            {/* countdown ring */}
-            <View style={{ width: 84, height: 84, alignItems: 'center', justifyContent: 'center' }}>
-              <Svg width={84} height={84} style={{ position: 'absolute', transform: [{ rotate: '-90deg' }] }}>
-                <Circle cx={42} cy={42} r={R} stroke={tone.bar} strokeOpacity={0.15} strokeWidth={7} fill="none" />
-                <Circle cx={42} cy={42} r={R} stroke={tone.bar} strokeWidth={7} fill="none" strokeLinecap="round" strokeDasharray={`${C} ${C}`} strokeDashoffset={C * (1 - Math.min(1, pct))} />
-              </Svg>
-              <View style={{ alignItems: 'center' }}>
-                <T style={{ fontSize: 22, lineHeight: 24, fontWeight: '800', letterSpacing: -0.5, fontVariant: ['tabular-nums'] }} color={c.ink}>{big}</T>
-                <T v="caption" color={c.ink2} style={{ fontWeight: '600' }}>{small}{next.live ? ' left' : ''}</T>
-              </View>
-            </View>
-          </View>
-
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-            <Meta icon={Clock3} text={`${formatTime(next.entry.start)} – ${formatTime(next.entry.end)}`} />
-            {next.entry.room ? <Meta icon={MapPin} text={next.entry.room} /> : null}
-            {next.entry.instructor ? <Meta icon={User} text={next.entry.instructor} /> : null}
+    <Press onPress={() => router.push({ pathname: '/class', params: { id: e.id } })} scale={0.98}
+      accessibilityLabel={`${status}: ${e.code || e.subject}, ${trailing}`}
+      style={{ borderRadius: radius.lg, backgroundColor: tone.bg, borderWidth: 1, borderColor: tone.bar + '55', overflow: 'hidden' }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <T v="footnote" color={tone.ink} style={{ fontWeight: '700', flex: 1, opacity: 0.8 }}>{status}</T>
+          <View style={{ paddingHorizontal: 10, height: 26, borderRadius: 13, justifyContent: 'center', backgroundColor: tone.bar + '33' }}>
+            <T v="footnote" color={tone.ink} style={{ fontWeight: '700', fontVariant: ['tabular-nums'] }}>{trailing}</T>
           </View>
         </View>
-      </Press>
-      {/* Dormo perched on the top edge */}
-      <View pointerEvents="box-none" style={{ position: 'absolute', right: 100, top: -46 }}>
-        <Dormo mood={next.live ? 'cheer' : 'hi'} size={62} shadow={false} lines={lines} />
+
+        <T v="title1" color={tone.ink} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={{ marginTop: 10 }}>{e.code || e.subject}</T>
+        {e.code ? <T v="subhead" color={tone.ink} numberOfLines={1} style={{ marginTop: 1, opacity: 0.75 }}>{e.subject}</T> : null}
+
+        {next.live && (
+          <View style={{ height: 4, borderRadius: 2, backgroundColor: tone.bar + '40', marginTop: 14, overflow: 'hidden' }} accessibilityLabel={`${Math.round(progress * 100)} percent through class`}>
+            <View style={{ width: `${progress * 100}%`, height: 4, borderRadius: 2, backgroundColor: tone.bar }} />
+          </View>
+        )}
       </View>
-    </View>
+
+      <View style={{ borderTopWidth: 1, borderColor: tone.bar + '40', paddingHorizontal: 20, paddingVertical: 14, gap: 10 }}>
+        <Fact tone={tone} sf="clock" icon={Clock3} text={`${formatTime(e.start)} – ${formatTime(e.end)}`} />
+        {e.room ? <Fact tone={tone} sf="mappin.and.ellipse" icon={MapPin} text={e.room} /> : null}
+        {e.instructor ? <Fact tone={tone} sf="person" icon={User} text={displayName(e.instructor)} /> : null}
+      </View>
+    </Press>
   )
 }
 
-function Meta({ icon: Icon, text }: { icon: typeof Clock3; text: string }) {
-  const { c, dark } = useTheme()
+function Fact({ tone, sf, icon, text }: { tone: SubjectTone; sf: SFSymbol; icon: LucideIcon; text: string }) {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, height: 30, borderRadius: 99, backgroundColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.85)', maxWidth: '100%' }}>
-      <Icon size={14} color={c.ink2} strokeWidth={2.2} />
-      <T v="footnote" color={c.ink} numberOfLines={1} style={{ fontWeight: '600', flexShrink: 1 }}>{text}</T>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+      <View style={{ width: 20, alignItems: 'center', opacity: 0.7 }}><Sym name={sf} fallback={icon} size={16} color={tone.ink} /></View>
+      <T v="subhead" color={tone.ink} numberOfLines={1} style={{ flex: 1, fontVariant: ['tabular-nums'] }}>{text}</T>
     </View>
   )
 }

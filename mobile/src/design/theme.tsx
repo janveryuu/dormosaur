@@ -63,21 +63,28 @@ const dark: typeof light = {
 export type Palette = typeof light
 
 /** Subject tones (1–5): soft fill, accent bar, readable ink. */
+// Soft, low-chroma pastels: bg = card wash, bar = accent/border, ink = text on bg (AA on bg).
 const subjectsLight = {
-  1: { bg: '#E6F0FF', bar: '#3B82F6', ink: '#1E3A8A' },
-  2: { bg: '#E3F6EC', bar: '#16A36A', ink: '#0B5134' },
-  3: { bg: '#FDEAF3', bar: '#E0457B', ink: '#86163F' },
-  4: { bg: '#FFF1E2', bar: '#F08A24', ink: '#7A3A05' },
-  5: { bg: '#EFEAFE', bar: '#8B5CF6', ink: '#4C1D95' },
+  1: { name: 'Sky', bg: '#E9F0FB', bar: '#7FA4E0', ink: '#1E3A66' },
+  2: { name: 'Sage', bg: '#E6F1EA', bar: '#7DB496', ink: '#1C4A33' },
+  3: { name: 'Rose', bg: '#FAEBEF', bar: '#DE97AB', ink: '#702A40' },
+  4: { name: 'Apricot', bg: '#FBEFE4', bar: '#E5AE80', ink: '#6B3D12' },
+  5: { name: 'Lavender', bg: '#EFECFA', bar: '#A897DE', ink: '#3F2F78' },
 }
 const subjectsDark: typeof subjectsLight = {
-  1: { bg: 'rgba(59,130,246,0.18)', bar: '#60A5FA', ink: '#BFDBFE' },
-  2: { bg: 'rgba(22,163,106,0.18)', bar: '#3DD68C', ink: '#BBF7D0' },
-  3: { bg: 'rgba(224,69,123,0.18)', bar: '#F472B6', ink: '#FBCFE8' },
-  4: { bg: 'rgba(240,138,36,0.18)', bar: '#FDBA74', ink: '#FED7AA' },
-  5: { bg: 'rgba(139,92,246,0.2)', bar: '#A78BFA', ink: '#DDD6FE' },
+  1: { name: 'Sky', bg: 'rgba(127,164,224,0.16)', bar: '#8FB2EA', ink: '#D3E1F7' },
+  2: { name: 'Sage', bg: 'rgba(125,180,150,0.16)', bar: '#8DC4A5', ink: '#D2EBDD' },
+  3: { name: 'Rose', bg: 'rgba(222,151,171,0.16)', bar: '#E8A6B8', ink: '#F5D8E0' },
+  4: { name: 'Apricot', bg: 'rgba(229,174,128,0.16)', bar: '#EDBB91', ink: '#F6E0CC' },
+  5: { name: 'Lavender', bg: 'rgba(168,151,222,0.18)', bar: '#B6A7E6', ink: '#E2DBF7' },
 }
 export type SubjectTone = (typeof subjectsLight)[1]
+
+/** Subject tone for a surface whose lightness is fixed (e.g. a wallpaper), independent of app appearance. */
+export function subjectOn(surfaceDark: boolean, n: number): SubjectTone {
+  const set = surfaceDark ? subjectsDark : subjectsLight
+  return set[(([1, 2, 3, 4, 5].includes(n) ? n : 1)) as 1]
+}
 
 export const radius = { xs: 8, sm: 12, md: 16, lg: 22, xl: 28, pill: 999 }
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 24, page: 20 }

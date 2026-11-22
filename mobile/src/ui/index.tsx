@@ -263,10 +263,6 @@ export function Empty({ image, title, body, action, onAction }: { image?: number
   )
 }
 
-export function Dot({ color, size = 8 }: { color: string; size?: number }) {
-  return <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: color }} />
-}
-
 /** Screen background that follows the theme. */
 export function Screen({ children, grouped, style }: { children: ReactNode; grouped?: boolean; style?: StyleProp<ViewStyle> }) {
   const { c } = useTheme()

@@ -57,7 +57,7 @@ export default function Schedule() {
                 <Press key={d} onPress={() => { haptic.select(); setDay(d) }} scale={0.92} accessibilityState={{ selected: on }}
                   style={{ width: 52, paddingVertical: 10, borderRadius: radius.md, alignItems: 'center', gap: 6, backgroundColor: on ? c.green : c.card }}>
                   <T v="footnote" color={on ? c.onGreen : c.ink2} style={{ fontWeight: '700' }}>{d}</T>
-                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: n ? (on ? c.onGreen : c.green) : 'transparent' }} />
+                  <T v="caption" color={on ? c.onGreen : c.ink3} style={{ fontWeight: '600', fontVariant: ['tabular-nums'], opacity: n ? 1 : 0 }}>{n}</T>
                 </Press>
               )
             })}
@@ -154,11 +154,9 @@ function WeekGrid({ classes, today, nowMin, bottom }: { classes: ReturnType<type
               )
             })}
 
-            {/* now line across the whole week, dot on today */}
+            {/* now line across the whole week */}
             {nowVisible && (
-              <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: top(nowMin) - 1, height: 2, backgroundColor: c.danger, opacity: 0.85 }}>
-                <View style={{ position: 'absolute', left: days.indexOf(today as never) * colW - 4, top: -3, width: 8, height: 8, borderRadius: 4, backgroundColor: c.danger, display: days.includes(today as never) ? 'flex' : 'none' }} />
-              </View>
+              <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: top(nowMin) - 1, height: 2, backgroundColor: c.danger, opacity: 0.85 }} />
             )}
           </View>
         </View>

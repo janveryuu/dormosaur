@@ -1,4 +1,5 @@
 import { BlurView } from 'expo-blur'
+import type { SFSymbol } from 'expo-symbols'
 import { router } from 'expo-router'
 import { CalendarDays, ChefHat, House, ListChecks, Plus, type LucideIcon } from 'lucide-react-native'
 import { useState } from 'react'
@@ -7,12 +8,13 @@ import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { elevation, useTheme } from '@/design/theme'
 import { Press, haptic } from './index'
+import { Sym } from './symbol'
 
-const ICONS: Record<string, { icon: LucideIcon; label: string }> = {
-  today: { icon: House, label: 'Today' },
-  schedule: { icon: CalendarDays, label: 'Schedule' },
-  tasks: { icon: ListChecks, label: 'Tasks' },
-  kitchen: { icon: ChefHat, label: 'Kitchen' },
+const ICONS: Record<string, { icon: LucideIcon; sf: [SFSymbol, SFSymbol]; label: string }> = {
+  today: { icon: House, sf: ['house', 'house.fill'], label: 'Today' },
+  schedule: { icon: CalendarDays, sf: ['calendar', 'calendar'], label: 'Schedule' },
+  tasks: { icon: ListChecks, sf: ['checklist', 'checklist'], label: 'Tasks' },
+  kitchen: { icon: ChefHat, sf: ['fork.knife', 'fork.knife'], label: 'Kitchen' },
 }
 
 type Props = { state: { index: number; routes: { key: string; name: string }[] } }
@@ -44,12 +46,11 @@ export function TabBar({ state }: Props) {
             const meta = ICONS[r.name]
             if (!meta) return null
             const on = state.index === i
-            const Icon = meta.icon
             return (
               <Pressable key={r.key} accessibilityRole="tab" accessibilityLabel={meta.label} accessibilityState={{ selected: on }}
                 onPress={() => { if (!on) { haptic.select(); router.navigate(`/${r.name}` as never) } }}
                 style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3 }}>
-                <Icon size={22} color={on ? c.green : c.ink2} strokeWidth={on ? 2.5 : 2} />
+                <Sym name={meta.sf[on ? 1 : 0]} fallback={meta.icon} size={22} color={on ? c.green : c.ink2} weight={on ? 'semibold' : 'regular'} />
                 <Animated.Text style={{ fontSize: 10, fontWeight: on ? '700' : '500', color: on ? c.green : c.ink2 }}>{meta.label}</Animated.Text>
               </Pressable>
             )
@@ -59,7 +60,7 @@ export function TabBar({ state }: Props) {
       )}
       <Press onPress={() => router.push('/add')} accessibilityLabel="Add" scale={0.88}
         style={[{ width: 64, height: 64, borderRadius: 32, backgroundColor: c.green, alignItems: 'center', justifyContent: 'center' }, elevation(c, 3)]}>
-        <Plus size={28} color={c.onGreen} strokeWidth={2.6} />
+        <Sym name="plus" fallback={Plus} size={26} color={c.onGreen} weight="semibold" />
       </Press>
     </View>
   )

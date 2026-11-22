@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router'
+import { Check } from 'lucide-react-native'
 import { useState } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -31,7 +32,6 @@ export default function ClassEditor() {
       <ScrollView contentContainerStyle={{ padding: 20, gap: 18, paddingBottom: insets.bottom + 24 }} keyboardShouldPersistTaps="handled">
         {/* Live preview */}
         <View style={{ flexDirection: 'row', gap: 12, padding: 16, borderRadius: radius.lg, backgroundColor: tone.bg }}>
-          <View style={{ width: 4, borderRadius: 2, backgroundColor: tone.bar }} />
           <View style={{ flex: 1, gap: 2 }}>
             <T v="title3" color={tone.ink} numberOfLines={1}>{d.code || d.subject || 'Your class'}</T>
             <T v="footnote" color={tone.ink}>{d.days.join(' ') || 'Pick days'} · {d.room || 'Room'}</T>
@@ -68,11 +68,22 @@ export default function ClassEditor() {
 
         <View style={{ gap: 8 }}>
           <T v="footnote" color={c.ink2} style={{ fontWeight: '600', marginLeft: 4 }}>Color</T>
-          <View style={{ flexDirection: 'row', gap: 12 }}>
-            {([1, 2, 3, 4, 5] as SubjectColor[]).map(n => (
-              <Press key={n} scale={0.85} accessibilityLabel={`Color ${n}`} onPress={() => set('color', n)}
-                style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: subject(n).bar, borderWidth: 3, borderColor: d.color === n ? c.ink : 'transparent' }} />
-            ))}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            {([1, 2, 3, 4, 5] as SubjectColor[]).map(n => {
+              const t = subject(n)
+              const on = d.color === n
+              return (
+                <Press key={n} scale={0.9} accessibilityLabel={`${t.name} color`} accessibilityState={{ selected: on }} onPress={() => { haptic.select(); set('color', n) }}
+                  style={{ alignItems: 'center', gap: 6, width: 58 }}>
+                  <View style={{ width: 50, height: 50, borderRadius: 25, padding: 3, borderWidth: 2, borderColor: on ? t.bar : 'transparent' }}>
+                    <View style={{ flex: 1, borderRadius: 22, backgroundColor: t.bg, borderWidth: 1, borderColor: t.bar + '66', alignItems: 'center', justifyContent: 'center' }}>
+                      {on && <Check size={18} color={t.ink} strokeWidth={2.6} />}
+                    </View>
+                  </View>
+                  <T v="caption" color={on ? c.ink : c.ink2} style={{ fontWeight: on ? '700' : '500' }}>{t.name}</T>
+                </Press>
+              )
+            })}
           </View>
         </View>
 

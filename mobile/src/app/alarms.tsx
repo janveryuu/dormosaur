@@ -48,10 +48,9 @@ export default function Alarms() {
           const expanded = open === a.id
           const tone = subject(a.color)
           return (
-            <Animated.View key={a.id} entering={rise(i + 1)} layout={layout} style={{ backgroundColor: c.card, borderRadius: radius.lg, overflow: 'hidden' }}>
+            <Animated.View key={a.id} entering={rise(i + 1)} layout={layout} style={{ backgroundColor: a.enabled ? tone.bg : c.card, borderRadius: radius.lg, overflow: 'hidden' }}>
               <Press onPress={() => setOpen(expanded ? null : a.id)} scale={0.98} accessibilityLabel={`${a.subject} alarm settings`}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 18 }}>
-                <View style={{ width: 4, height: 46, borderRadius: 2, backgroundColor: tone.bar, opacity: a.enabled ? 1 : 0.3 }} />
                 <View style={{ flex: 1 }}>
                   <T v="title1" color={a.enabled ? c.ink : c.ink3} style={{ fontVariant: ['tabular-nums'], fontWeight: '300', letterSpacing: -1 }}>{ringAt(a, start)}</T>
                   <T v="footnote" color={c.ink2} numberOfLines={1}>{a.code || a.subject} · {(cls?.days ?? [a.day]).join(' ')} · {a.lead} min before</T>
