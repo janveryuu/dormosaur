@@ -6,7 +6,6 @@ import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { fade, rise } from '@/design/motion'
 import { elevation, radius, useTheme } from '@/design/theme'
-import { authRedirect } from '@/lib/auth-link'
 import { signInWithGoogle } from '@/lib/oauth'
 import { supabase } from '@/lib/supabase'
 import { GoogleIcon } from './icons/google'
@@ -24,6 +23,22 @@ function friendly(message: string) {
   return message
 }
 
+const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? 'https://dormosaur.vercel.app').replace(/\/$/, '')
+
+/** Returns a user-facing error message, or null on success. */
+async function createAccount(email: string, password: string, name: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/auth/signup`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, name }),
+    })
+    if (res.ok) return null
+    const body = await res.json().catch(() => ({}))
+    return typeof body.error === 'string' ? body.error : 'We could not create your account. Please try again.'
+  } catch {
+    return 'No connection. Check your internet and try again.'
+  }
+}
+
 export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   const { c } = useTheme()
   const insets = useSafeAreaInsets()
@@ -34,7 +49,7 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   const [shown, setShown] = useState(false)
   const [busy, setBusy] = useState<'email' | 'google' | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [sentTo, setSentTo] = useState<string | null>(null)
+  const [sentTo] = useState<string | null>(null)
   const emailRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const passRef = useRef<React.ComponentRef<typeof TextInput>>(null)
 
@@ -43,13 +58,16 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   async function submit() {
     if (!valid || busy) return
     setBusy('email'); setError(null)
-    const { data, error: e } = signUp
-      ? await supabase.auth.signUp({ email: email.trim(), password, options: { data: { name: name.trim() }, emailRedirectTo: authRedirect() } })
-      : await supabase.auth.signInWithPassword({ email: email.trim(), password })
+    const mail = email.trim().toLowerCase()
+    if (signUp) {
+      // Server creates an already-confirmed account, so the user is in without a verification email.
+      const failed = await createAccount(mail, password, name.trim())
+      if (failed) { setBusy(null); haptic.warn(); return setError(failed) }
+    }
+    const { error: e } = await supabase.auth.signInWithPassword({ email: mail, password })
     setBusy(null)
     if (e) { haptic.warn(); return setError(friendly(e.message)) }
     haptic.success()
-    if (signUp && !data.session) setSentTo(email.trim())
   }
 
   async function google() {
