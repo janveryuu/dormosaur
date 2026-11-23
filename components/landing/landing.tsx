@@ -7,7 +7,11 @@ import {
   Camera, Check, ChevronDown, Download, FileText, ListChecks, Pause, Play, ScanLine, type LucideIcon,
 } from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { DownloadButton } from './download-button'
+import { FinalCta } from './final-cta'
+import { Hero } from './hero'
+import { Intro } from './intro'
 import { InstallSteps } from './install-steps'
 import { NumberOne } from './number-one'
 import { Schools } from './schools'
@@ -22,13 +26,16 @@ export function Landing({ apkUrl, apkVersion }: { apkUrl: string; apkVersion: st
   const [animations, setAnimations] = useState(true)
   const reduceMotion = useReducedMotion()
   const animate = animations && !reduceMotion
+  const [introDone, setIntroDone] = useState(false)
+  const handleIntroDone = useCallback(() => setIntroDone(true), [])
   return (
     <MotionConfig reducedMotion={animations ? 'user' : 'always'}>
       <div className="relative min-h-dvh overflow-x-clip bg-white text-[#0A1710] selection:bg-[#34C77B]/30" style={{ fontFamily: 'var(--font-geist), -apple-system, system-ui, sans-serif' }}>
+        <Intro onDone={handleIntroDone} />
         <ScrollProgress />
         <Nav apkUrl={apkUrl} />
         <main>
-          <Hero apkUrl={apkUrl} apkVersion={apkVersion} animate={animate} />
+          <Hero apkUrl={apkUrl} apkVersion={apkVersion} animate={animate} go={introDone} />
           <Schools animate={animations} />
           <NumberOne />
           <Bento />
@@ -51,50 +58,6 @@ function ScrollProgress() {
   const { scrollYProgress } = useScroll()
   const x = useSpring(scrollYProgress, { stiffness: 200, damping: 30 })
   return <motion.div aria-hidden style={{ scaleX: x }} className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-gradient-to-r from-[#0E7A4A] via-[#34C77B] to-[#7DF0B5]" />
-}
-
-// ─── Buttons ─────────────────────────────────────────────────────────────
-
-function DownloadButton({ apkUrl, size = 'lg', dark = false }: { apkUrl: string; size?: 'lg' | 'sm'; dark?: boolean }) {
-  const lg = size === 'lg'
-  return (
-    <motion.a
-      href={apkUrl}
-      download
-      whileHover={{ y: -2, scale: 1.02 }}
-      whileTap={{ scale: 0.96 }}
-      transition={spring}
-      className={`group relative inline-flex items-center gap-3 overflow-hidden rounded-full font-semibold outline-none focus-visible:ring-4 focus-visible:ring-[#34C77B]/50 ${
-        lg ? 'h-[60px] pl-3 pr-7 text-[17px]' : 'h-10 px-4 text-sm'
-      } ${dark ? 'bg-white text-[#0A1710]' : 'bg-[#0A1710] text-white shadow-[0_18px_40px_-18px_rgba(14,122,74,0.9)]'}`}
-    >
-      <span aria-hidden className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-      {lg ? (
-        <>
-          <span className={`grid size-10 place-items-center rounded-full ${dark ? 'bg-[#0E7A4A] text-white' : 'bg-[#34C77B] text-[#0A1710]'}`}>
-            <AndroidGlyph className="size-5" />
-          </span>
-          <span className="flex flex-col items-start leading-none">
-            <span className={`text-[11px] font-medium ${dark ? 'text-black/55' : 'text-white/60'}`}>Free for Android</span>
-            <span className="mt-1">Download the APK</span>
-          </span>
-          <Download className="ml-1 size-[18px] transition-transform group-hover:translate-y-0.5" strokeWidth={2.4} />
-        </>
-      ) : (
-        <>
-          <Download className="size-4" strokeWidth={2.5} /> Download
-        </>
-      )}
-    </motion.a>
-  )
-}
-
-function AndroidGlyph({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden>
-      <path d="M17.6 9.48l1.84-3.18a.38.38 0 00-.66-.38l-1.86 3.22A11.4 11.4 0 0012 8.1c-1.78 0-3.45.38-4.92 1.04L5.22 5.92a.38.38 0 10-.66.38L6.4 9.48A10.8 10.8 0 001 18h22a10.8 10.8 0 00-5.4-8.52zM7 15.25a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5zm10 0a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5z" />
-    </svg>
-  )
 }
 
 // ─── Nav: full-width, collapses into a floating glass pill on scroll ─────
@@ -129,80 +92,6 @@ function Nav({ apkUrl }: { apkUrl: string }) {
   )
 }
 
-// ─── Hero ────────────────────────────────────────────────────────────────
-
-
-const deskObjects = [
-  { name: 'backpack', position: 'left-[11%] top-[43%] w-[21%] max-w-[168px] sm:left-[15%] sm:top-[34%]', tilt: -8, delay: 0 },
-  { name: 'planner', position: 'left-[24%] top-[11%] w-[15%] max-w-[121px] sm:left-[30%] sm:top-[6%]', tilt: 9, delay: 0.6 },
-  { name: 'alarm-clock', position: 'left-[82%] top-[11%] w-[17%] max-w-[123px] sm:left-[71%] sm:top-[8%]', tilt: 8, delay: 0.3 },
-  { name: 'rice-cooker', position: 'left-[88%] top-[48%] w-[22%] max-w-[144px] sm:left-[86%] sm:top-[40%]', tilt: 5, delay: 1.1 },
-  { name: 'calculator', position: 'left-[29%] top-[68%] hidden w-[13%] max-w-[100px] md:block', tilt: -10, delay: 0.9 },
-  { name: 'garlic-rice', position: 'left-[71%] top-[69%] hidden w-[15%] max-w-[128px] md:block', tilt: 9, delay: 0.5 },
-] as const
-
-function Hero({ apkUrl, apkVersion, animate }: { apkUrl: string; apkVersion: string; animate: boolean }) {
-  return (
-    <section id="top" className="relative isolate min-h-svh overflow-hidden px-4 pb-16 pt-[94px] sm:pb-20 sm:pt-28">
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 mx-auto h-[490px] max-w-[1000px] bg-[radial-gradient(ellipse_at_50%_34%,#E1F2E6_0%,#F8FBF5_40%,transparent_72%)]" />
-
-      <div className="relative mx-auto h-[260px] max-w-[1140px] sm:h-[340px] lg:h-[368px]">
-        <div className="absolute inset-0 overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_72%,transparent_100%)]">
-          <motion.div
-            initial={false}
-            animate={animate ? { y: [18, 0] } : { y: 0 }}
-            transition={{ duration: 0.85, ease }}
-            className="absolute left-1/2 top-3 w-[174px] -translate-x-1/2 rounded-[30px] bg-[#171E1A] p-[5px] ring-1 ring-[#0A1710]/25 shadow-[0_24px_64px_-20px_rgba(10,42,25,0.38)] sm:w-[230px] sm:rounded-[38px] sm:p-[7px] lg:w-[252px]"
-          >
-            <Image
-              src="/landing/app-today.webp"
-              alt="Dormosaur’s Today screen showing the next class and its countdown"
-              width={402}
-              height={874}
-              sizes="(min-width: 1024px) 238px, (min-width: 640px) 216px, 164px"
-              loading="eager"
-              className="h-auto w-full rounded-[25px] sm:rounded-[31px]"
-            />
-          </motion.div>
-        </div>
-        <div aria-hidden className="pointer-events-none absolute inset-0">
-          {deskObjects.map(({ name, position, tilt, delay }) => (
-            <div key={name} className={['absolute -translate-x-1/2', position].join(' ')}>
-              <motion.div
-                initial={false}
-                animate={animate ? { y: [0, -8, 0] } : { y: 0 }}
-                transition={animate ? { duration: 5 + delay, delay, repeat: Infinity, ease: 'easeInOut' } : { duration: 0 }}
-              >
-                <Image
-                  src={'/landing/desk/' + name + '.webp'}
-                  alt=""
-                  width={384}
-                  height={384}
-                  sizes="(min-width: 1024px) 168px, (min-width: 640px) 144px, 82px"
-                  className="h-auto w-full drop-shadow-[0_10px_9px_rgba(31,47,33,0.15)]"
-                  style={{ rotate: tilt + 'deg' }}
-                />
-              </motion.div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="relative mx-auto max-w-[900px] px-1 text-center">
-        <h1 className="text-balance text-[clamp(2.5rem,6.4vw,5.25rem)] font-bold leading-[1.01] tracking-[-0.04em]">
-          Your class schedule, <span className="block text-[#0E7A4A]">from one photo.</span>
-        </h1>
-        <p className="mx-auto mt-5 max-w-[38rem] text-pretty text-[16px] leading-relaxed text-[#48564D] sm:mt-6 sm:text-lg">
-          Import a photo, screenshot, or PDF. Dormosaur builds your week and brings class alarms, deadlines, and dorm meals together.
-        </p>
-        <div className="mt-7 flex flex-col items-center gap-3 sm:mt-8">
-          <DownloadButton apkUrl={apkUrl} />
-          <p className="text-[13px] text-[#506057]">Version {apkVersion} · Android 8+ · Free, no ads</p>
-        </div>
-      </div>
-    </section>
-  )
-}
 // ─── Bento ──────────────────────────────────────────────────────────────
 
 function BentoCard({ bg, ink, title, body, children, className = '', delay = 0 }: { bg: string; ink: string; title: ReactNode; body?: string; children?: ReactNode; className?: string; delay?: number }) {
@@ -473,27 +362,6 @@ function Faq() {
 }
 
 // ─── Final CTA + footer ─────────────────────────────────────────────────────
-
-function FinalCta({ apkUrl, apkVersion }: { apkUrl: string; apkVersion: string }) {
-  return (
-    <section className="px-4 pb-16 pt-6">
-      <Reveal>
-        <div className="relative mx-auto max-w-[1100px] overflow-hidden rounded-[40px] bg-gradient-to-br from-[#0E7A4A] via-[#0B6A40] to-[#06180F] px-6 pb-0 pt-16 text-center text-white sm:px-12">
-          <div aria-hidden className="absolute inset-0 opacity-30 [background-image:radial-gradient(rgba(255,255,255,0.25)_1px,transparent_1px)] [background-size:20px_20px] [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
-          <h2 className="relative text-balance text-[40px] font-bold leading-[1.05] tracking-[-0.035em] sm:text-[60px]">Never miss a class again.</h2>
-          <p className="relative mx-auto mt-4 max-w-md text-lg text-white/70">Download Dormosaur, snap your schedule, and let Dormo handle the rest.</p>
-          <div className="relative mt-8 flex flex-col items-center gap-3">
-            <DownloadButton apkUrl={apkUrl} dark />
-            <p className="text-[13px] text-white/50">Version {apkVersion} · Android 8+ · Free</p>
-          </div>
-          <motion.div initial={{ y: 80 }} whileInView={{ y: 0 }} viewport={{ once: true }} transition={{ ...spring, delay: 0.2 }} className="relative mx-auto mt-10 w-fit">
-            <Image src="/dormo-jumping.png" alt="Dormo the dinosaur" width={776} height={934} sizes="240px" className="h-auto w-[240px] drop-shadow-2xl" />
-          </motion.div>
-        </div>
-      </Reveal>
-    </section>
-  )
-}
 
 
 const footerGroups = [
