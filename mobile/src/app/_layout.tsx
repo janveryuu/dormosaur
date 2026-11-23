@@ -1,11 +1,12 @@
 import { SplashScreen, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as SystemUI from 'expo-system-ui'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ThemeProvider, useTheme } from '@/design/theme'
 import { AppProvider, useApp } from '@/state/app'
+import { AnimatedSplash } from '@/ui/splash'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -15,15 +16,19 @@ function Routes() {
   const signedIn = demo || !!session
   const onboarded = demo || !!profile?.onboarding_completed
 
-  useEffect(() => { if (ready) SplashScreen.hideAsync() }, [ready])
+  // Native splash is hidden by AnimatedSplash on its first frame; it then covers the app while data loads.
+  const [splash, setSplash] = useState(true)
   useEffect(() => { SystemUI.setBackgroundColorAsync(c.bg).catch(() => {}) }, [c.bg])
-  if (!ready) return null
+  const overlay = splash && <AnimatedSplash ready={ready} onDone={() => setSplash(false)} />
+  // Same tree shape before and after `ready`, so the splash never remounts mid-animation.
+  if (!ready) return <>{null}{overlay}</>
 
   const sheet = { presentation: 'formSheet' as const, sheetGrabberVisible: true, sheetCornerRadius: 28, contentStyle: { backgroundColor: c.grouped } }
   const modal = { presentation: 'modal' as const, contentStyle: { backgroundColor: c.grouped } }
 
   return (
     <>
+      <>
       <StatusBar style={dark ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg }, animation: 'default', gestureEnabled: true }}>
         <Stack.Screen name="index" />
@@ -54,6 +59,8 @@ function Routes() {
           <Stack.Screen name="recipe/[slug]" />
         </Stack.Protected>
       </Stack>
+      </>
+      {overlay}
     </>
   )
 }
