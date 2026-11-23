@@ -77,6 +77,25 @@ function fail(message: string, error: unknown): never {
   throw new Error(message)
 }
 
+/**
+ * Writes rows owned by the user without relying on a unique constraint on `id`
+ * (the live tables don't have one, so `upsert(onConflict: 'id')` is rejected).
+ * Existing rows are updated by (user_id, id); the rest are inserted.
+ */
+async function saveOwnedRows(table: string, userId: string, rows: ({ id: string } & Record<string, unknown>)[], message: string) {
+  if (!rows.length) return
+  const { data: existing, error: readError } = await supabase.from(table).select('id').eq('user_id', userId).in('id', rows.map(r => r.id))
+  if (readError) fail(message, readError)
+  const have = new Set((existing ?? []).map(r => r.id as string))
+  const fresh = rows.filter(r => !have.has(r.id))
+  const results = await Promise.all([
+    ...rows.filter(r => have.has(r.id)).map(r => supabase.from(table).update(r).eq('user_id', userId).eq('id', r.id)),
+    ...(fresh.length ? [supabase.from(table).insert(fresh)] : []),
+  ])
+  const failed = results.find(r => r.error)
+  if (failed) fail(message, failed.error)
+}
+
 // ─── Profile ─────────────────────────────────────────────────────────────────
 
 export async function getProfile(userId: string): Promise<Profile | null> {
@@ -122,8 +141,7 @@ export async function upsertClasses(userId: string, classes: ClassEntry[]) {
     days: c.days, start_time: c.start, end_time: c.end, color: c.color,
     confidence: c.confidence ?? 'high', low_fields: c.lowFields ?? [],
   }))
-  const { error } = await supabase.from('classes').upsert(rows, { onConflict: 'id' })
-  if (error) fail('Could not save classes', error)
+  await saveOwnedRows('classes', userId, rows, 'Could not save classes')
 }
 
 export async function deleteClass(userId: string, id: string) {
@@ -155,8 +173,7 @@ export async function upsertAlarms(userId: string, alarms: Alarm[]) {
     id: a.id, user_id: userId, class_id: a.classId, subject: a.subject, code: a.code,
     time: a.time, day: a.day, lead: a.lead, enabled: a.enabled, color: a.color,
   }))
-  const { error } = await supabase.from('alarms').upsert(rows, { onConflict: 'id' })
-  if (error) fail('Could not save alarms', error)
+  await saveOwnedRows('alarms', userId, rows, 'Could not save alarms')
 }
 
 export async function deleteAlarmsForClass(userId: string, classId: string) {
@@ -181,11 +198,10 @@ export async function getDeadlines(userId: string): Promise<Deadline[]> {
 }
 
 export async function upsertDeadline(userId: string, d: Deadline) {
-  const { error } = await supabase.from('deadlines').upsert({
+  await saveOwnedRows('deadlines', userId, [{
     id: d.id, user_id: userId, title: d.title, code: d.code, type: d.type,
     due_date: new Date(d.due).toISOString(), color: d.color, completed: d.completed,
-  }, { onConflict: 'id' })
-  if (error) fail('Could not save task', error)
+  }], 'Could not save task')
 }
 
 export async function deleteDeadline(userId: string, id: string) {
@@ -204,10 +220,7 @@ export type GroceryItem = { id: string; name: string; checked: boolean; custom?:
 async function replaceOwned(table: string, userId: string, rows: { id: string }[]) {
   const { data: existing, error: readError } = await supabase.from(table).select('id').eq('user_id', userId)
   if (readError) fail('Could not read saved items', readError)
-  if (rows.length) {
-    const { error } = await supabase.from(table).upsert(rows, { onConflict: 'id' })
-    if (error) fail('Could not save changes', error)
-  }
+  await saveOwnedRows(table, userId, rows, 'Could not save changes')
   const keep = new Set(rows.map(r => r.id))
   const removed = (existing ?? []).map(r => r.id as string).filter(id => !keep.has(id))
   if (removed.length) {

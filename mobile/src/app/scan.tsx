@@ -31,7 +31,7 @@ const incomplete = (d: ClassEntry) => !d.days.length || !d.start || !d.end || d.
 export default function Scan() {
   const { c } = useTheme()
   const insets = useSafeAreaInsets()
-  const { src } = useLocalSearchParams<{ src?: Src }>()
+  const { src, from } = useLocalSearchParams<{ src?: Src; from?: 'onboarding' }>()
   const { classes: existing, saveClasses } = useApp()
   const [phase, setPhase] = useState<Phase>({ k: 'pick' })
   const [text, setText] = useState('')
@@ -133,7 +133,9 @@ export default function Scan() {
             onPress={async () => {
               await saveClasses(chosen.map(({ include: _i, ...d }) => ({ ...d, confidence: 'high', lowFields: [] })))
               haptic.success()
-              router.replace('/schedule')
+              // Onboarding waits on its review step; everywhere else lands on the schedule.
+              if (from === 'onboarding') router.back()
+              else router.replace('/schedule')
             }} />
         </View>
       </View>

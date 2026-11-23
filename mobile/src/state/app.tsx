@@ -20,6 +20,8 @@ type AppState = {
   refresh: () => Promise<void>
   saveProfile: (patch: Partial<Profile>) => Promise<void>
   saveClasses: (entries: ClassEntry[]) => Promise<void>
+  /** Saves several alarms in one write (one local update, one request). */
+  saveAlarms: (list: Alarm[]) => Promise<void>
   removeClass: (id: string) => Promise<void>
   saveAlarm: (alarm: Alarm) => Promise<void>
   saveDeadline: (deadline: Deadline) => Promise<void>
@@ -146,6 +148,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       async saveAlarm(alarm) {
         patch({ alarms: alarms.map(a => (a.id === alarm.id ? alarm : a)) })
         await persist(id => repo.upsertAlarms(id, [alarm]))
+      },
+
+      async saveAlarms(list) {
+        const byId = new Map(list.map(a => [a.id, a]))
+        patch({ alarms: alarms.map(a => byId.get(a.id) ?? a) })
+        await persist(id => repo.upsertAlarms(id, list))
       },
 
       async saveDeadline(deadline) {

@@ -33,15 +33,20 @@ function Routes() {
         <Stack.Protected guard={signedIn && !onboarded}>
           <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
         </Stack.Protected>
+        {/* Scanner and class editor are also reachable from onboarding's schedule step. */}
+        <Stack.Protected guard={signedIn}>
+          <Stack.Screen name="scan" />
+          <Stack.Screen name="class" options={modal} />
+        </Stack.Protected>
         <Stack.Protected guard={signedIn && onboarded}>
           <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
           <Stack.Screen name="add" options={{ ...sheet, sheetAllowedDetents: [0.78, 1] }} />
-          <Stack.Screen name="scan" />
-          <Stack.Screen name="class" options={modal} />
           <Stack.Screen name="task" options={modal} />
           <Stack.Screen name="import-tasks" />
           <Stack.Screen name="alarms" />
           <Stack.Screen name="settings" />
+          <Stack.Screen name="profile" />
+          <Stack.Screen name="pro" options={{ presentation: 'modal', contentStyle: { backgroundColor: c.bg } }} />
           <Stack.Screen name="wallpaper" />
           <Stack.Screen name="widgets" />
           <Stack.Screen name="copilot" />
