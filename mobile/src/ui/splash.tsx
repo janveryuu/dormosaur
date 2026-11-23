@@ -12,8 +12,8 @@ import { T, haptic } from '@/ui'
 /** Must match app.json → expo-splash-screen so the native-to-JS handoff is seamless. */
 const NATIVE_BG = '#F3F3EF'
 const NATIVE_LOGO = 180
-const INTRO_MS = 1200
-const MAX_WAIT_MS = 4000
+const INTRO_MS = 2400
+const MAX_WAIT_MS = 5000
 const TITLE = 'Dormosaur'
 
 /**
@@ -40,9 +40,9 @@ export function AnimatedSplash({ ready, onDone }: { ready: boolean; onDone: () =
   useEffect(() => {
     const cap = setTimeout(() => setTimedOut(true), MAX_WAIT_MS)
     if (reduce) { logo.set(0); dino.set(1); return () => clearTimeout(cap) }
-    logo.set(withSequence(withTiming(0.9, { duration: 300, easing: Easing.out(Easing.cubic) }), withTiming(0, { duration: 220 })))
-    dino.set(withDelay(300, withSpring(1, { damping: 11, stiffness: 160, mass: 0.8 })))
-    ring.set(withDelay(320, withTiming(1, { duration: 900, easing: Easing.out(Easing.cubic) })))
+    logo.set(withSequence(withTiming(0.9, { duration: 500, easing: Easing.out(Easing.cubic) }), withTiming(0, { duration: 320 })))
+    dino.set(withDelay(550, withSpring(1, { damping: 12, stiffness: 120, mass: 0.8 })))
+    ring.set(withDelay(600, withTiming(1, { duration: 1500, easing: Easing.out(Easing.cubic) })))
     const t = setTimeout(() => {
       setIntroDone(true)
       bob.set(withRepeat(withTiming(1, { duration: 900, easing: Easing.inOut(Easing.sin) }), -1, true))
@@ -55,7 +55,7 @@ export function AnimatedSplash({ ready, onDone }: { ready: boolean; onDone: () =
     leaving.current = true
     cancelAnimation(bob)
     haptic.tap()
-    exit.set(withTiming(1, { duration: reduce ? 300 : 420, easing: Easing.in(Easing.cubic), reduceMotion: ReduceMotion.Never }, done => { if (done) runOnJS(onDone)() }))
+    exit.set(withTiming(1, { duration: reduce ? 300 : 600, easing: Easing.in(Easing.cubic), reduceMotion: ReduceMotion.Never }, done => { if (done) runOnJS(onDone)() }))
   }
 
   useEffect(() => { if ((introDone && ready) || timedOut) leave() })
@@ -86,13 +86,13 @@ export function AnimatedSplash({ ready, onDone }: { ready: boolean; onDone: () =
             {introDone || !reduce ? (
               <View style={{ flexDirection: 'row' }} accessibilityElementsHidden>
                 {[...TITLE].map((ch, i) => (
-                  <Animated.View key={i} entering={reduce ? undefined : FadeInDown.delay(800 + i * 35).springify().damping(16)}>
+                  <Animated.View key={i} entering={reduce ? undefined : FadeInDown.delay(1300 + i * 60).springify().damping(16)}>
                     <T v="largeTitle" color={c.ink} style={{ fontSize: 36, letterSpacing: -1 }}>{ch}</T>
                   </Animated.View>
                 ))}
               </View>
             ) : null}
-            <Animated.View entering={reduce ? undefined : FadeInDown.delay(1100).duration(260)}>
+            <Animated.View entering={reduce ? undefined : FadeInDown.delay(1950).duration(380)}>
               <T v="callout" color={c.green} style={{ fontWeight: '600', marginTop: 4 }}>Dorm life, decoded.</T>
             </Animated.View>
           </View>
