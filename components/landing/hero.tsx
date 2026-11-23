@@ -81,7 +81,7 @@ export function Hero({ apkUrl, apkVersion, animate, go }: { apkUrl: string; apkV
             className="absolute left-1/2 top-3 -ml-[87px] w-[174px] rounded-[30px] bg-[#171E1A] p-[5px] ring-1 ring-[#0A1710]/25 shadow-[0_24px_64px_-20px_rgba(10,42,25,0.38)] sm:-ml-[115px] sm:w-[230px] sm:rounded-[38px] sm:p-[7px] lg:-ml-[126px] lg:w-[252px]"
           >
             <Image
-              src="/landing/app-today.webp"
+              src="/landing/app-today-v2.webp"
               alt="Dormosaur’s Today screen showing the next class and its countdown"
               width={402}
               height={874}

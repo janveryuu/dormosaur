@@ -6,6 +6,7 @@ import {
   type Icon as PhosphorIcon,
 } from '@phosphor-icons/react'
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { spring } from './shared'
 
@@ -68,52 +69,12 @@ export function TermRails() {
 
 // ─── Realistic phone showing Home Screen widgets ───────────────────────────
 
-function useClock() {
-  const [now, setNow] = useState<Date | null>(null)
-  useEffect(() => {
-    const tick = () => setNow(new Date())
-    const first = setTimeout(tick, 0)
-    const t = setInterval(tick, 30000)
-    return () => { clearTimeout(first); clearInterval(t) }
-  }, [])
-  return now
-}
-
-function StatusBar({ time }: { time: string }) {
-  return (
-    <div className="flex items-center justify-between px-7 pt-[14px] text-[13px] font-semibold text-white">
-      <span className="tabular-nums">{time}</span>
-      <span className="flex items-center gap-1.5">
-        <svg viewBox="0 0 18 12" className="h-[10px] w-[16px]" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1" /><rect x="5" y="5.5" width="3" height="6.5" rx="1" /><rect x="10" y="3" width="3" height="9" rx="1" /><rect x="15" y="0" width="3" height="12" rx="1" /></svg>
-        <svg viewBox="0 0 16 12" className="h-[10px] w-[14px]" fill="currentColor"><path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.2-1.3A10.2 10.2 0 0 0 8 .4 10.2 10.2 0 0 0 .8 3.3L2 4.6a8.4 8.4 0 0 1 6-2.4zm0 3.6c1.3 0 2.5.5 3.4 1.3l1.3-1.3A6.6 6.6 0 0 0 8 4 6.6 6.6 0 0 0 3.3 5.8l1.3 1.3C5.5 6.3 6.7 5.8 8 5.8zm0 3.5c.5 0 1 .2 1.3.5L8 11.2 6.7 9.8c.3-.3.8-.5 1.3-.5z" /></svg>
-        <span className="relative flex h-[11px] w-[23px] items-center rounded-[3.5px] border border-white/45 p-[1.5px]">
-          <span className="h-full w-[78%] rounded-[1.5px] bg-white" />
-          <span className="absolute -right-[3px] h-[4px] w-[1.5px] rounded-r bg-white/45" />
-        </span>
-      </span>
-    </div>
-  )
-}
-
-/** iOS-style widget: frosted glass, 22px radius. */
-function Widget({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={`rounded-[22px] bg-white/[0.88] p-3 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)] backdrop-blur-xl ${className}`}>{children}</div>
-}
-
 export function HomeScreenPhone() {
-  const now = useClock()
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
   const rx = useSpring(useTransform(my, [-0.5, 0.5], [7, -7]), { stiffness: 120, damping: 18 })
   const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-9, 9]), { stiffness: 120, damping: 18 })
   const glare = useTransform(mx, [-0.5, 0.5], ['-30%', '70%'])
-  const time = now ? now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, '') : '9:41'
-  const week = [3, 2, 3, 2, 3, 1, 0]
-  const today = now ? (now.getDay() + 6) % 7 : 2
-  const apps: [PhosphorIcon, string, string, string][] = [
-    [CalendarDotsIcon, 'Calendar', '#60A5FA', '#2563EB'], [ScanIcon, 'Dormosaur', '#4ADE80', '#0E7A4A'],
-    [BellRingingIcon, 'Alarms', '#FB923C', '#EA580C'], [CookingPotIcon, 'Kitchen', '#FBBF24', '#D97706'],
-  ]
 
   return (
     <div
@@ -136,83 +97,18 @@ export function HomeScreenPhone() {
         <div className="relative w-[300px] rounded-[58px] bg-[linear-gradient(145deg,#8d9093_0%,#4b4e51_22%,#2a2c2e_50%,#55585b_78%,#9a9da0_100%)] p-[3px] shadow-[0_60px_90px_-40px_rgba(18,58,122,0.55),0_30px_60px_-30px_rgba(0,0,0,0.6)]">
           <div className="rounded-[55px] bg-black p-[10px]">
             {/* screen */}
-            <div className="relative h-[610px] overflow-hidden rounded-[46px] bg-[#0b1a12]">
-              {/* wallpaper */}
-              <div aria-hidden className="absolute inset-0 bg-[radial-gradient(120%_70%_at_20%_0%,#2f7a55_0%,transparent_55%),radial-gradient(90%_60%_at_100%_40%,#1d4ed8_0%,transparent_55%),radial-gradient(120%_80%_at_50%_110%,#0e7a4a_0%,#06140d_70%)]" />
-              <div aria-hidden className="absolute -left-20 top-40 size-72 rounded-full bg-[#7DF0B5]/20 blur-3xl" />
-
+            <div className="relative h-[565px] overflow-hidden rounded-[46px] bg-[#F6D9DF]">
+              <Image
+                src="/landing/home-widgets.webp"
+                alt="Dormosaur widgets on a phone home screen: next class, classes left today, tomorrow, and this week"
+                fill
+                sizes="274px"
+                className="object-cover object-top"
+              />
               {/* dynamic island */}
-              <div className="absolute left-1/2 top-[11px] z-20 flex h-[30px] w-[100px] -translate-x-1/2 items-center justify-end rounded-full bg-black pr-3">
+              <div aria-hidden className="absolute left-1/2 top-[11px] z-20 flex h-[30px] w-[100px] -translate-x-1/2 items-center justify-end rounded-full bg-black pr-3">
                 <span className="size-[9px] rounded-full bg-[#1b1f2a] ring-1 ring-[#2c3346]" />
               </div>
-
-              <div className="relative z-10">
-                <StatusBar time={time} />
-                <div className="mt-6 space-y-3 px-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <Widget>
-                      <p className="text-[11px] font-semibold text-black/55">Up next</p>
-                      <p className="mt-1 text-[19px] font-extrabold leading-tight tracking-tight text-[#2563EB]">MATH 101</p>
-                      <p className="text-[10px] text-black/55">Calculus I · Sci 204</p>
-                      <div className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-black/70">
-                        <TimerIcon weight="fill" className="size-3.5 text-[#2563EB]" /> in 24 min
-                      </div>
-                    </Widget>
-                    <Widget className="bg-[#E8F8EF]/90">
-                      <p className="text-[11px] font-semibold text-black/55">Due today</p>
-                      <p className="mt-1 text-[30px] font-extrabold leading-none tracking-tight text-[#0E7A4A]">2</p>
-                      <p className="text-[10px] leading-tight text-black/55">tasks left</p>
-                      <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[#0E7A4A]/15">
-                        <motion.div className="h-full rounded-full bg-[#0E7A4A]" initial={{ width: 0 }} whileInView={{ width: '60%' }} viewport={{ once: true }} transition={{ duration: 1.2, delay: 0.5 }} />
-                      </div>
-                    </Widget>
-                  </div>
-
-                  <Widget>
-                    <div className="flex items-baseline justify-between"><p className="text-[12px] font-bold">This week</p><p className="text-[10px] text-black/50">14 classes</p></div>
-                    <div className="mt-2 flex h-14 items-end gap-2">
-                      {week.map((n, i) => (
-                        <div key={i} className="flex flex-1 flex-col items-center gap-1">
-                          <motion.div className={`w-full rounded-[6px] ${i === today ? 'bg-[#0E7A4A]' : 'bg-[#0E7A4A]/20'}`}
-                            initial={{ height: 3 }} whileInView={{ height: 4 + n * 11 }} viewport={{ once: true }} transition={{ ...spring, delay: 0.35 + i * 0.06 }} />
-                          <span className={`text-[9px] font-semibold ${i === today ? 'text-[#0E7A4A]' : 'text-black/40'}`}>{'MTWTFSS'[i]}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </Widget>
-
-                  <Widget>
-                    <div className="flex items-baseline justify-between"><p className="text-[12px] font-bold">Tomorrow</p><p className="text-[10px] text-black/50">2 classes</p></div>
-                    {[['9:00', 'ENG 205', 'Hum 310', '#E0457B', '#FDEAF3'], ['1:00', 'CS 150', 'Tech 118', '#EA580C', '#FFF1E2']].map(([t, c, room, fg, bg]) => (
-                      <div key={c} style={{ background: bg }} className="mt-1.5 flex items-center gap-2.5 rounded-xl px-2.5 py-1.5">
-                        <span style={{ background: fg }} className="h-6 w-[3px] rounded-full" />
-                        <span className="w-9 text-[10px] font-semibold tabular-nums text-black/60">{t}</span>
-                        <span style={{ color: fg }} className="flex-1 text-[11px] font-extrabold">{c}</span>
-                        <span className="text-[9px] text-black/45">{room}</span>
-                      </div>
-                    ))}
-                  </Widget>
-
-                  {/* app row */}
-                  <div className="grid grid-cols-4 gap-3 px-1 pt-1">
-                    {apps.map(([I, l, f, t]) => (
-                      <div key={l} className="flex flex-col items-center gap-1">
-                        <AppIcon icon={I} from={f} to={t} size={50} />
-                        <span className="text-[9.5px] font-medium text-white/90">{l}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* dock */}
-                <div className="absolute inset-x-3 top-[528px] flex justify-around rounded-[30px] bg-white/15 px-3 py-2.5 backdrop-blur-xl">
-                  {([[ListChecksIcon, '#A78BFA', '#7C3AED'], [ChatCircleDotsIcon, '#F472B6', '#DB2777'], [DeviceMobileIcon, '#94A3B8', '#475569'], [SparkleIcon, '#7DF0B5', '#16A36A']] as [PhosphorIcon, string, string][]).map(([I, f, t], i) => (
-                    <AppIcon key={i} icon={I} from={f} to={t} size={48} />
-                  ))}
-                </div>
-              </div>
-
-              <div className="absolute bottom-[7px] left-1/2 h-[5px] w-[120px] -translate-x-1/2 rounded-full bg-white/80" />
               {/* glass glare that follows tilt */}
               <motion.div aria-hidden style={{ left: glare }} className="pointer-events-none absolute -top-1/4 z-30 h-[150%] w-[40%] rotate-[20deg] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
             </div>
