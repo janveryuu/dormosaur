@@ -1,0 +1,11 @@
+.docs-drawer { animation: docs-drawer-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.docs-pop { animation: docs-pop-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes docs-drawer-in { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes docs-pop-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+html:has(#docs-main) { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  .docs-drawer, .docs-pop { animation: none; }
+  html:has(#docs-main) { scroll-behavior: auto; }
+}
+/* The search field is the dialog's only control and already sits in a framed bar. */
+.docs-search-input:focus-visible { outline: none !important; }

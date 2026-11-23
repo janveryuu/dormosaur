@@ -4,10 +4,11 @@ import {
   AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform,
 } from 'framer-motion'
 import {
-  Camera, Check, ChevronDown, Download, FileText, ListChecks, Pause, Play, ScanLine, type LucideIcon,
+  Camera, Check, ChevronDown, FileText, ListChecks, Pause, Play, ScanLine, type LucideIcon,
 } from 'lucide-react'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { SiteFooter } from '@/components/site-footer'
 import { DownloadButton } from './download-button'
 import { FinalCta } from './final-cta'
 import { Hero } from './hero'
@@ -46,7 +47,7 @@ export function Landing({ apkUrl, apkVersion }: { apkUrl: string; apkVersion: st
           <Faq />
           <FinalCta apkUrl={apkUrl} apkVersion={apkVersion} />
         </main>
-        <Footer apkUrl={apkUrl} />
+        <SiteFooter />
         <AnimationToggle on={animations} onChange={setAnimations} />
       </div>
     </MotionConfig>
@@ -364,50 +365,6 @@ function Faq() {
 // ─── Final CTA + footer ─────────────────────────────────────────────────────
 
 
-const footerGroups = [
-  { title: 'Explore', links: [['Features', '#features'], ['Schedule scanner', '#scanner'], ['Schools', '#marquee'], ['Reviews', '#reviews']] },
-  { title: 'Get started', links: [['Installation guide', '#install'], ['Frequently asked questions', '#faq']] },
-] as const
-
-function Footer({ apkUrl }: { apkUrl: string }) {
-  const linkStyle = 'inline-flex min-h-11 items-center rounded-sm text-[#D5E1D6] underline-offset-4 transition-colors hover:text-white hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A3DCB8]'
-  return (
-    <footer className="relative isolate overflow-clip bg-[#0D2018] px-4 text-[#F0F6EE] sm:px-6">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-[140px] right-[-72px] -z-10 size-[370px] bg-[#8CB79A]/10 [mask:url('/dormo-jumping.png')_center/contain_no-repeat] sm:-bottom-[172px] sm:right-[4%] sm:size-[520px]"
-      />
-      <div className="mx-auto max-w-[1100px]">
-        <div className="grid gap-9 pb-10 pt-12 sm:pb-14 sm:pt-16 md:grid-cols-[1.65fr_1fr_1fr]">
-          <div>
-            <a href="#top" className="inline-flex min-h-11 items-center gap-3 rounded-md text-xl font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A3DCB8]">
-              <Image src="/dormosaur-logo.png" alt="" width={40} height={40} className="rounded-xl" />
-              Dormosaur
-            </a>
-            <p className="mt-4 max-w-[27ch] text-[17px] leading-relaxed text-[#B8CCBD]">Your schedule, deadlines, and dorm meals in one place.</p>
-          </div>
-          <nav aria-label="Footer" className="grid grid-cols-2 gap-4 md:col-span-2 md:gap-8">
-            {footerGroups.map(({ title, links }) => (
-              <div key={title}>
-                <h2 className="mb-2 text-sm font-semibold text-[#A3DCB8]">{title}</h2>
-                <ul className="text-sm">
-                  {links.map(([label, href]) => (
-                    <li key={href}><a href={href} className={linkStyle}>{label}</a></li>
-                  ))}
-                  {title === 'Get started' && <li><a href={apkUrl} download className={linkStyle}>Download for Android <Download aria-hidden className="ml-2 size-3.5 shrink-0" /></a></li>}
-                </ul>
-              </div>
-            ))}
-          </nav>
-        </div>
-        <div className="flex min-h-28 flex-wrap content-start items-center gap-x-5 gap-y-2 border-t border-white/15 py-5 pr-24 text-sm text-[#B8CCBD] sm:min-h-24 sm:items-start">
-          <p>© {new Date().getFullYear()} Dormosaur</p>
-          <p>Free for Android</p>
-        </div>
-      </div>
-    </footer>
-  )
-}
 function AnimationToggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
   return (
     <button type="button" onClick={() => onChange(!on)} aria-pressed={on}
