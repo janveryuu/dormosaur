@@ -8,9 +8,8 @@ import { layout, rise } from '@/design/motion'
 import { radius, useTheme } from '@/design/theme'
 import type { Deadline } from '@/lib/repo'
 import { useApp } from '@/state/app'
-import { Empty, IconButton, LargeTitle, Segmented, T } from '@/ui'
+import { Empty, IconButton, LargeTitle, NavHeader, Segmented, T } from '@/ui'
 import { TaskRow } from '@/ui/blocks'
-import { TAB_CLEARANCE } from '@/ui/tab-bar'
 
 type Filter = 'upcoming' | 'done' | 'all'
 
@@ -41,14 +40,15 @@ export default function Tasks() {
   const pct = deadlines.length ? doneCount / deadlines.length : 0
 
   return (
-    <View style={{ flex: 1, paddingTop: insets.top }}>
+    <View style={{ flex: 1, backgroundColor: c.grouped }}>
+      <NavHeader />
       <LargeTitle title="Tasks" eyebrow="Deadline tracker" right={
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <IconButton icon={ScanText} label="Import from syllabus" onPress={() => router.push('/import-tasks')} />
           <IconButton icon={Plus} label="New task" tone="green" onPress={() => router.push('/task')} />
         </View>
       } />
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, gap: 20, paddingBottom: TAB_CLEARANCE + insets.bottom }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, gap: 20, paddingBottom: insets.bottom + 40 }} showsVerticalScrollIndicator={false}>
         <Animated.View entering={rise(0)} style={{ flexDirection: 'row', gap: 10 }}>
           <Stat n={week} label="This week" tint={c.green} />
           <Stat n={overdue} label="Overdue" tint={overdue ? c.danger : c.ink3} />

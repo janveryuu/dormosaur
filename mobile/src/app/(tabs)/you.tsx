@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
 import * as Linking from 'expo-linking'
 import {
-  AlarmClock, CalendarDays, ChevronRight, Heart, Image as ImageIcon, LayoutGrid, LogOut, MessageCircle,
+  AlarmClock, CalendarDays, ChevronRight, Heart, Image as ImageIcon, LayoutGrid, ListChecks, LogOut, MessageCircle,
   MessageSquareText, RefreshCw, ScanLine, Sparkles, type LucideIcon,
 } from 'lucide-react-native'
 import { Alert, ScrollView, View } from 'react-native'
@@ -11,35 +11,37 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { rise } from '@/design/motion'
 import { elevation, radius, useTheme, type ThemePref } from '@/design/theme'
 import { useApp } from '@/state/app'
-import { NavHeader, Press, Segmented, T } from '@/ui'
+import { avatar } from '@/lib/avatar'
+import { LargeTitle, Press, Segmented, T } from '@/ui'
+import { Avatar } from '@/ui/avatar'
 import { ProBadge } from '@/ui/pro-badge'
+import { TAB_CLEARANCE } from '@/ui/tab-bar'
 
 const FEEDBACK_EMAIL = 'mailto:hello@dormosaur.app?subject=Dormosaur%20feedback'
 const SITE = 'https://dormosaur.vercel.app'
 
-export default function Settings() {
+/** The You tab: profile, Pro, schedule tools, appearance and account. */
+export default function You() {
   const { c, pref, setPref } = useTheme()
   const insets = useSafeAreaInsets()
   const { profile, session, signOut, demo } = useApp()
   const name = profile?.name || 'Student'
-  const initials = (profile?.initials || name.split(/\s+/).map(w => w[0]).join('').slice(0, 2) || 'D').toUpperCase()
+  const details = [profile?.year, profile?.school].filter(Boolean).join(' · ')
 
   const open = (url: string) => Linking.openURL(url).catch(() => Alert.alert('Could not open link', 'Please try again in a moment.'))
 
   return (
-    <View style={{ flex: 1, backgroundColor: c.grouped }}>
-      <NavHeader title="You" />
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 8, gap: 28, paddingBottom: insets.bottom + 40 }}>
+    <View style={{ flex: 1, backgroundColor: c.grouped, paddingTop: insets.top }}>
+      <LargeTitle title="You" />
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 4, gap: 28, paddingBottom: TAB_CLEARANCE + insets.bottom }} showsVerticalScrollIndicator={false}>
         <Animated.View entering={rise(0)}>
           <Press onPress={() => router.push('/profile')} scale={0.98} accessibilityLabel="Edit profile"
             style={[{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, borderRadius: radius.lg, backgroundColor: c.card }, elevation(c, 1)]}>
-            <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: c.greenSoft, alignItems: 'center', justifyContent: 'center' }}>
-              <T v="title3" color={c.greenInk}>{initials}</T>
-            </View>
+            <Avatar size={60} />
             <View style={{ flex: 1, gap: 2 }}>
               <T v="headline" numberOfLines={1} style={{ fontSize: 19, fontWeight: '700' }}>{name}</T>
               <T v="subhead" color={c.ink2} numberOfLines={1}>{demo ? 'Preview mode' : session?.user.email}</T>
-              {!!profile?.school && <T v="footnote" color={c.ink3} numberOfLines={1}>{profile.school}</T>}
+              {!!details && <T v="footnote" color={c.ink3} numberOfLines={1}>{details}</T>}
             </View>
             <ChevronRight size={20} color={c.ink3} />
           </Press>
@@ -51,7 +53,8 @@ export default function Settings() {
 
         <Animated.View entering={rise(2)}>
           <Section title="My schedule">
-            <Item icon={CalendarDays} title="Manage classes" onPress={() => router.push('/(tabs)/schedule')} />
+            <Item icon={CalendarDays} title="Manage classes" onPress={() => router.navigate('/schedule')} />
+            <Item icon={ListChecks} title="Tasks & deadlines" onPress={() => router.push('/tasks')} />
             <Item icon={ScanLine} title="Scan a schedule" onPress={() => router.push('/scan')} />
             <Item icon={AlarmClock} title="Class alarms" onPress={() => router.push('/alarms')} last />
           </Section>
@@ -88,12 +91,10 @@ export default function Settings() {
             <Item icon={LogOut} title="Sign out" destructive last onPress={() =>
               Alert.alert('Sign out?', 'Your classes and tasks stay saved to your account.', [
                 { text: 'Cancel', style: 'cancel' },
-                { text: 'Sign out', style: 'destructive', onPress: signOut },
+                { text: 'Sign out', style: 'destructive', onPress: () => { avatar.clear(); signOut() } },
               ])} />
           </Section>
         )}
-
-        <T v="caption" color={c.ink3} center>Dormosaur · Zero ads · Private by design</T>
       </ScrollView>
     </View>
   )

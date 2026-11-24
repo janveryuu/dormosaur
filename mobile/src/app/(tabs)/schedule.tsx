@@ -14,6 +14,7 @@ import { ClassRow, useNow } from '@/ui/blocks'
 import { TAB_CLEARANCE } from '@/ui/tab-bar'
 
 const HOUR = 78
+const DAY_NAMES: Record<string, string> = { Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday' }
 
 export default function Schedule() {
   const { c } = useTheme()
@@ -46,7 +47,7 @@ export default function Schedule() {
       {!classes.length ? (
         <Empty image={require('@/assets/images/student-dormosaur.png')} title="No classes yet" body="Scan a photo of your schedule and Dormo will organize it for you." action="Scan schedule" onAction={() => router.push('/scan')} />
       ) : view === 'week' ? (
-        <WeekGrid key="week" classes={filtered} today={dayOf(now)} nowMin={now.getHours() * 60 + now.getMinutes()} bottom={TAB_CLEARANCE + insets.bottom} />
+        <WeekGrid key="week" classes={filtered} today={dayOf(now)} selected={day} onPickDay={d => { haptic.select(); setDay(d); setView('day') }} nowMin={now.getHours() * 60 + now.getMinutes()} bottom={TAB_CLEARANCE + insets.bottom} />
       ) : (
         <Animated.View key="day" entering={fade(0, 220)} style={{ flex: 1 }}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 20, paddingBottom: 12 }} style={{ flexGrow: 0 }}>
@@ -72,7 +73,7 @@ export default function Schedule() {
   )
 }
 
-function WeekGrid({ classes, today, nowMin, bottom }: { classes: ReturnType<typeof useApp>['classes']; today: string; nowMin: number; bottom: number }) {
+function WeekGrid({ classes, today, selected, onPickDay, nowMin, bottom }: { classes: ReturnType<typeof useApp>['classes']; today: string; selected: string; onPickDay: (d: string) => void; nowMin: number; bottom: number }) {
   const { c, subject, dark } = useTheme()
   const { width } = useWindowDimensions()
   const used = DAYS.filter(d => classes.some(e => e.days.includes(d)))
@@ -97,13 +98,18 @@ function WeekGrid({ classes, today, nowMin, bottom }: { classes: ReturnType<type
       <View style={{ flexDirection: 'row', paddingLeft: TIME_W + 10, paddingRight: 10, paddingBottom: 10 }}>
         {days.map(d => {
           const on = d === today
+          const picked = d === selected && !on
+          const n = classes.filter(e => e.days.includes(d)).length
           return (
-            <View key={d} style={{ width: colW, alignItems: 'center', gap: 4 }}>
+            <Press key={d} onPress={() => onPickDay(d)} scale={0.9} haptics={false} hitSlop={4}
+              accessibilityRole="button" accessibilityLabel={`${DAY_NAMES[d] ?? d} ${dateOf(d)}, ${n ? `${n} ${n === 1 ? 'class' : 'classes'}` : 'no classes'}. Open day view`}
+              style={{ width: colW, alignItems: 'center', gap: 4, paddingVertical: 4, borderRadius: 14 }}>
               <T v="caption" color={on ? c.green : c.ink3} style={{ fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6, fontSize: 10.5 }}>{d}</T>
-              <View style={{ width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? c.green : 'transparent' }}>
+              <View style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? c.green : picked ? c.greenSoft : 'transparent', borderWidth: picked ? 1.5 : 0, borderColor: c.green }}>
                 <T v="subhead" color={on ? c.onGreen : c.ink} style={{ fontWeight: '700', fontVariant: ['tabular-nums'] }}>{dateOf(d)}</T>
               </View>
-            </View>
+              <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: n ? (on ? c.green : c.ink3) : 'transparent' }} />
+            </Press>
           )
         })}
       </View>

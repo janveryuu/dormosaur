@@ -11,8 +11,8 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="today" />
       <Tabs.Screen name="schedule" />
-      <Tabs.Screen name="tasks" />
       <Tabs.Screen name="kitchen" />
+      <Tabs.Screen name="you" />
     </Tabs>
   )
 }

@@ -3,21 +3,23 @@ import type { ClassEntry } from './repo'
 
 const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? 'https://dormosaur.vercel.app').replace(/\/$/, '')
 
-async function post<T>(path: string, body: unknown): Promise<T> {
+async function request<T>(method: 'GET' | 'POST' | 'DELETE', path: string, body?: unknown): Promise<T> {
   const { data } = await supabase.auth.getSession()
   const token = data.session?.access_token
   const res = await fetch(`${API_URL}${path}`, {
-    method: 'POST',
+    method,
     headers: {
-      'Content-Type': 'application/json',
+      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify(body),
+    body: body !== undefined ? JSON.stringify(body) : undefined,
   })
   const json = await res.json().catch(() => ({}))
   if (!res.ok || json.success === false) throw new Error(json.error || 'Something went wrong. Try again.')
   return json as T
 }
+
+const post = <T,>(path: string, body: unknown) => request<T>('POST', path, body)
 
 type ParsedClass = Omit<ClassEntry, 'id' | 'color'> & { id?: string; color?: number }
 export type ScheduleScan = { classes: ParsedClass[]; provider: string; skipped: number; hint: 'grid_text' | null }
@@ -50,4 +52,13 @@ export async function askCopilot(messages: ChatMessage[]) {
 /** Registers this device's Expo push token for server-sent deadline reminders. */
 export async function registerExpoPushToken(token: string, deviceLabel: string) {
   await post('/api/push/expo', { token, deviceLabel })
+}
+
+export type SignedAvatar = { url: string; expiresAt: number } | null
+
+/** Profile picture in private storage. The server returns a short-lived signed URL. */
+export const avatarApi = {
+  get: () => request<{ avatar: SignedAvatar }>('GET', '/api/profile/avatar').then(r => r.avatar ?? null),
+  upload: (jpegDataUrl: string) => request<{ avatar: SignedAvatar }>('POST', '/api/profile/avatar', { image: jpegDataUrl }).then(r => r.avatar ?? null),
+  remove: () => request<{ avatar: SignedAvatar }>('DELETE', '/api/profile/avatar').then(() => null),
 }

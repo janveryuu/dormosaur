@@ -1,25 +1,25 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
 import {
-  BellRing, Camera, Check, ChevronDown, ClipboardType, FileUp, PencilLine, Plus, School as SchoolIcon, Search, X, type LucideIcon,
+  BellRing, Camera, Check, ChevronDown, ClipboardType, FileUp, PencilLine, Plus, type LucideIcon,
 } from 'lucide-react-native'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Alert, Pressable, TextInput, View } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { Alert, Pressable, View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { fade, layout } from '@/design/motion'
 import { radius, useTheme } from '@/design/theme'
 import { ensurePermission } from '@/lib/notifications'
 import { DAYS, type Alarm } from '@/lib/repo'
-import { searchSchools, type School } from '@/lib/schools'
+import { YEARS } from '@/lib/schools'
 import { classesOn, dayOf, formatTime, nextClass } from '@/lib/time'
 import { useApp } from '@/state/app'
 import { Button, Field, Press, T, haptic } from '@/ui'
 import { ClassRow } from '@/ui/blocks'
 import { Dormo } from '@/ui/dormo'
 import { OnboardingFrame } from '@/ui/onboarding-frame'
+import { SchoolSearch } from '@/ui/school-search'
 
 const TOTAL = 6
-const YEARS = ['1st year', '2nd year', '3rd year', '4th year', '5th+']
 const LEADS: Alarm['lead'][] = [15, 30, 60]
 const DRAFT_KEY = 'dormosaur.onboarding.draft'
 const DAY_NAMES: Record<string, string> = { Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday' }
@@ -113,8 +113,6 @@ function SchoolStep({ d, set, onBack, onNext, busy }: { d: Draft; set: (p: Parti
   const { c } = useTheme()
   const [query, setQuery] = useState(d.school)
   const [picking, setPicking] = useState(!d.school)
-  const results = useMemo(() => searchSchools(query), [query])
-  const exact = results.some(s => s.name.toLowerCase() === query.trim().toLowerCase())
   const pick = (name: string) => { haptic.select(); set({ school: name }); setQuery(name); setPicking(false) }
 
   return (
@@ -122,30 +120,7 @@ function SchoolStep({ d, set, onBack, onNext, busy }: { d: Draft; set: (p: Parti
       footer={<Button title="Continue" disabled={!d.school.trim()} loading={busy} onPress={onNext} />}>
       <View style={{ gap: 22 }}>
         {picking ? (
-          <View style={{ gap: 10 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, height: 52, paddingHorizontal: 16, borderRadius: radius.pill, backgroundColor: c.fill }}>
-              <Search size={19} color={c.ink3} />
-              <TextInput value={query} onChangeText={setQuery} placeholder="Search your school" placeholderTextColor={c.ink3} autoFocus
-                autoCorrect={false} returnKeyType="search" accessibilityLabel="Search your school"
-                style={{ flex: 1, fontSize: 17, color: c.ink }} />
-              {query ? (
-                <Pressable onPress={() => setQuery('')} hitSlop={10} accessibilityRole="button" accessibilityLabel="Clear search">
-                  <X size={18} color={c.ink3} />
-                </Pressable>
-              ) : null}
-            </View>
-            {results.map((s, i) => <SchoolRow key={s.name} s={s} i={i} onPress={() => pick(s.name)} />)}
-            {query.trim().length > 1 && !exact && (
-              <Press onPress={() => pick(query.trim())} scale={0.98} accessibilityLabel={`Use ${query.trim()} as my school`}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: radius.md }}>
-                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: c.greenSoft, alignItems: 'center', justifyContent: 'center' }}>
-                  <Plus size={20} color={c.green} />
-                </View>
-                <T v="callout" color={c.green} style={{ flex: 1, fontWeight: '600' }} numberOfLines={2}>Use “{query.trim()}”</T>
-              </Press>
-            )}
-            {!query && <T v="footnote" color={c.ink3} center>Type a name or city. Not listed? You can use any name.</T>}
-          </View>
+          <SchoolSearch query={query} setQuery={setQuery} onPick={pick} />
         ) : (
           <Press onPress={() => setPicking(true)} scale={0.98} accessibilityLabel={`School: ${d.school}. Tap to change`}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: radius.lg, backgroundColor: c.greenSoft, borderWidth: 1.5, borderColor: c.green }}>
@@ -191,24 +166,6 @@ function SchoolStep({ d, set, onBack, onNext, busy }: { d: Draft; set: (p: Parti
         </View>
       </View>
     </OnboardingFrame>
-  )
-}
-
-function SchoolRow({ s, i, onPress }: { s: School; i: number; onPress: () => void }) {
-  const { c } = useTheme()
-  return (
-    <Animated.View entering={fade(i * 30, 200)}>
-      <Press onPress={onPress} scale={0.98} accessibilityLabel={`${s.name}, ${s.city}`}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: radius.md }}>
-        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: c.fill, alignItems: 'center', justifyContent: 'center' }}>
-          <SchoolIcon size={20} color={c.ink2} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <T v="callout" style={{ fontWeight: '600' }} numberOfLines={2}>{s.name}</T>
-          <T v="footnote" color={c.ink3}>{s.city}</T>
-        </View>
-      </Press>
-    </Animated.View>
   )
 }
 

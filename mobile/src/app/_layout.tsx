@@ -49,7 +49,7 @@ function Routes() {
           <Stack.Screen name="task" options={modal} />
           <Stack.Screen name="import-tasks" />
           <Stack.Screen name="alarms" />
-          <Stack.Screen name="settings" />
+          <Stack.Screen name="tasks" />
           <Stack.Screen name="profile" />
           <Stack.Screen name="pro" options={{ presentation: 'modal', contentStyle: { backgroundColor: c.bg } }} />
           <Stack.Screen name="wallpaper" />

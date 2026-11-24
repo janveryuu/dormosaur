@@ -2,6 +2,8 @@
  * Bundled school list for onboarding search. No school directory API exists yet,
  * so this is a curated starting set; students can always type a custom school.
  */
+export const YEARS = ['1st year', '2nd year', '3rd year', '4th year', '5th+'] as const
+
 export type School = { name: string; city: string }
 
 export const SCHOOLS: School[] = [

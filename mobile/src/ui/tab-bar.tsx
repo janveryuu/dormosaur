@@ -1,20 +1,21 @@
 import { BlurView } from 'expo-blur'
 import type { SFSymbol } from 'expo-symbols'
 import { router } from 'expo-router'
-import { CalendarDays, ChefHat, House, ListChecks, Plus, type LucideIcon } from 'lucide-react-native'
+import { CalendarDays, ChefHat, CircleUserRound, House, Plus, type LucideIcon } from 'lucide-react-native'
 import { useState } from 'react'
 import { Platform, Pressable, View } from 'react-native'
 import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { elevation, useTheme } from '@/design/theme'
+import { Avatar } from './avatar'
 import { Press, haptic } from './index'
 import { Sym } from './symbol'
 
 const ICONS: Record<string, { icon: LucideIcon; sf: [SFSymbol, SFSymbol]; label: string }> = {
   today: { icon: House, sf: ['house', 'house.fill'], label: 'Today' },
   schedule: { icon: CalendarDays, sf: ['calendar', 'calendar'], label: 'Schedule' },
-  tasks: { icon: ListChecks, sf: ['checklist', 'checklist'], label: 'Tasks' },
   kitchen: { icon: ChefHat, sf: ['fork.knife', 'fork.knife'], label: 'Kitchen' },
+  you: { icon: CircleUserRound, sf: ['person.crop.circle', 'person.crop.circle.fill'], label: 'You' },
 }
 
 type Props = { state: { index: number; routes: { key: string; name: string }[] } }
@@ -50,7 +51,9 @@ export function TabBar({ state }: Props) {
               <Pressable key={r.key} accessibilityRole="tab" accessibilityLabel={meta.label} accessibilityState={{ selected: on }}
                 onPress={() => { if (!on) { haptic.select(); router.navigate(`/${r.name}` as never) } }}
                 style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3 }}>
-                <Sym name={meta.sf[on ? 1 : 0]} fallback={meta.icon} size={22} color={on ? c.green : c.ink2} weight={on ? 'semibold' : 'regular'} />
+                {r.name === 'you'
+                  ? <View style={{ borderRadius: 14, borderWidth: 1.5, borderColor: on ? c.green : 'transparent', padding: 1 }}><Avatar size={22} /></View>
+                  : <Sym name={meta.sf[on ? 1 : 0]} fallback={meta.icon} size={22} color={on ? c.green : c.ink2} weight={on ? 'semibold' : 'regular'} />}
                 <Animated.Text style={{ fontSize: 10, fontWeight: on ? '700' : '500', color: on ? c.green : c.ink2 }}>{meta.label}</Animated.Text>
               </Pressable>
             )

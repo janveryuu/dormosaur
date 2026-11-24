@@ -82,3 +82,37 @@ export function wakeUp(context: StudentContext, occurrence: ClassOccurrence | nu
   }
   return `${label} starts at ${displayTime(start)} on ${occurrence.date}. I don't have a matching enabled alarm lead or preparation/travel settings. Choose a lead that covers getting ready and reaching class; for example, a 60-minute lead would mean ${displayTime(start - 60)}${start < 60 ? ' the previous day' : ''}. That's a suggestion, and I haven't set an alarm.`
 }
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+/** "Wed, Nov 25" from an ISO date. */
+export function friendlyDate(date: string): string {
+  const d = new Date(`${date}T12:00:00Z`)
+  return `${DAYS[d.getUTCDay()]}, ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`
+}
+
+/**
+ * Free windows (≥ 30 min) between 7 AM and 10 PM for today through Sunday, in
+ * 12-hour text. Precomputed so the model never does clock math or lists sleep hours.
+ */
+export function freeTimeThisWeek(classes: ClassItem[], clock: Clock): { day: string; classes: number; free: string[] }[] {
+  const DAY_START = 7 * 60, DAY_END = 22 * 60, MIN_GAP = 30
+  const todayIndex = DAYS.indexOf(clock.day)
+  const left = todayIndex === 0 ? 0 : 7 - todayIndex // days remaining until Sunday
+  const out: { day: string; classes: number; free: string[] }[] = []
+  for (let offset = 0; offset <= left; offset++) {
+    const day = DAYS[(todayIndex + offset) % 7]
+    const busy = classesOn(classes, day)
+      .map(c => [timeMinutes(c.start), timeMinutes(c.end)] as const)
+      .filter((r): r is readonly [number, number] => r[0] !== null && r[1] !== null && r[1] > r[0])
+    let cursor = Math.max(DAY_START, offset === 0 ? Math.ceil(clock.minutes / 15) * 15 : DAY_START)
+    const free: string[] = []
+    for (const [s, e] of busy) {
+      if (s - cursor >= MIN_GAP) free.push(`${displayTime(cursor)} – ${displayTime(Math.min(s, DAY_END))}`)
+      cursor = Math.max(cursor, e)
+    }
+    if (DAY_END - cursor >= MIN_GAP) free.push(`${displayTime(cursor)} – ${displayTime(DAY_END)}`)
+    out.push({ day: friendlyDate(addDays(clock.date, offset)), classes: busy.length, free })
+  }
+  return out
+}
