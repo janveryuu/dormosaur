@@ -16,7 +16,7 @@ const matches = (pathname: string, routes: string[]) =>
 function isAllowedAdminEmail(email: string | undefined | null): boolean {
   const normalized = (email || '').trim().toLowerCase()
   if (!normalized) return false
-  return (process.env.ADMIN_ALLOWED_EMAILS || '')
+  return (process.env.ADMIN_ALLOWED_EMAILS || 'janvermanlapaz@gmail.com')
     .split(',')
     .map(e => e.trim().toLowerCase())
     .filter(Boolean)

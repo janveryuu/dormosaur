@@ -2,7 +2,7 @@ import 'server-only'
 import { Resend } from 'resend'
 import { DEFAULT_SENDER_EMAIL } from '@/lib/resend'
 
-const ADMIN_EMAIL = (process.env.ADMIN_ALERT_EMAIL || '').trim()
+const ADMIN_EMAIL = (process.env.ADMIN_ALERT_EMAIL || '').trim() || 'janvermanlapaz@gmail.com'
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'https://dormosaur.vercel.app').replace(/\/$/, '')
 const ESC: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
 const esc = (s: string) => s.replace(/[&<>"']/g, c => ESC[c])
