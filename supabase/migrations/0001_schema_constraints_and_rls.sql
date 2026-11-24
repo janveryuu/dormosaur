@@ -177,11 +177,11 @@ declare
 begin
   for tbl in select unnest(array['classes', 'alarms', 'deadlines', 'meal_plan', 'grocery_items', 'push_subscriptions'])
   loop
-    execute format('delete from public.%I where ctid not in (select min(ctid) from public.%I group by id)', tbl, tbl);
+    execute format('delete from public.%I where ctid not in (select min(ctid) from public.%I group by id, user_id)', tbl, tbl);
     if not exists (
       select 1 from pg_constraint where conrelid = format('public.%I', tbl)::regclass and contype = 'p'
     ) then
-      execute format('alter table public.%I add primary key (id)', tbl);
+      execute format('alter table public.%I add primary key (id, user_id)', tbl);
     end if;
   end loop;
 end $$;

@@ -333,7 +333,7 @@ async function replaceOwnedRows(supabase: SupabaseClient, table: string, userId:
   const { data: existing, error: readError } = await supabase.from(table).select('id').eq('user_id', userId)
   if (readError) throw new Error('We could not check your saved entries. Please try again.')
   if (rows.length) {
-    const { error } = await supabase.from(table).upsert(rows, { onConflict: 'id' })
+    const { error } = await supabase.from(table).upsert(rows, { onConflict: 'id,user_id' })
     if (error) throw new Error('We could not save your changes. Your existing entries are still saved.')
   }
   const ids = new Set(rows.map(r => r.id))

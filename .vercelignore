@@ -1,4 +1,5 @@
-mobile
+/mobile/*
+!/mobile/data
 scratch
 showreel
 remotion

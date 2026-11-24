@@ -533,7 +533,7 @@ test('SQL migrations lock down RLS on all tables, block is_admin escalation, and
     assert.ok(m1.toLowerCase().includes(`alter table public.${table} enable row level security`), `RLS missing for ${table}`)
   }
   assert.match(m1, /protect_profile_admin_column/i)
-  assert.match(m1, /add primary key\s*\(id\)/i)
+  assert.match(m1, /add primary key\s*\(id, user_id\)/i)
   assert.match(m2, /create or replace function public\.pro_grant_plan/i)
   assert.match(m2, /create or replace function public\.pro_review_payment/i)
   assert.match(m2, /pg_advisory_xact_lock/i)
