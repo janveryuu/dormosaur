@@ -1,0 +1,3743 @@
+{
+  "ok": false,
+  "strict": false,
+  "browserSkipped": false,
+  "lint": {
+    "ok": false,
+    "errorCount": 1,
+    "warningCount": 3,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "gsap_css_transform_conflict",
+        "severity": "error",
+        "message": "\"#ch-iris\" has CSS `transform: scale(0)` and a GSAP tween animates scale. GSAP will overwrite the full CSS transform, discarding any translateX(-50%) centering or CSS scale value.",
+        "selector": "#ch-iris",
+        "dataAttributes": {},
+        "sourceFile": "C:\\Users\\LEGION\\Documents\\DORMOSAUR\\showreel\\compositions\\chaos.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Remove `transform: scale(0)` from CSS and replace with GSAP properties: scale: 0. Example: tl.fromTo('#ch-iris', { scale: 0 }, { scale: 0, ...yourAnimation }). tl.fromTo is exempt from this rule."
+      },
+      {
+        "code": "gsap_timeline_set_initial_hide",
+        "severity": "warning",
+        "message": "Initial hidden state for \"#ck-pill\" is set via tl.set(...) at position 0 inside the paused timeline. A zero-duration set at 0 does not render while the playhead sits exactly at 0, so frame 0 shows the un-hidden state.",
+        "selector": "#ck-pill",
+        "dataAttributes": {},
+        "sourceFile": "C:\\Users\\LEGION\\Documents\\DORMOSAUR\\showreel\\compositions\\click.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Use gsap.set(...) (immediate, outside the timeline) for initial states, or author the hidden state directly in CSS/attributes."
+      },
+      {
+        "code": "duplicate_media_discovery_risk",
+        "severity": "warning",
+        "message": "Detected 4 matching img entries with the same source/start/duration.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "C:\\Users\\LEGION\\Documents\\DORMOSAUR\\showreel\\compositions\\sorted.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Avoid duplicated media nodes that can be discovered twice during compilation."
+      },
+      {
+        "code": "duplicate_media_discovery_risk",
+        "severity": "warning",
+        "message": "Detected 5 matching img entries with the same source/start/duration.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "C:\\Users\\LEGION\\Documents\\DORMOSAUR\\showreel\\compositions\\sorted.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Avoid duplicated media nodes that can be discovered twice during compilation."
+      }
+    ],
+    "filesScanned": 12
+  },
+  "runtime": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "layout": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 46,
+    "findings": [
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 4.525,
+        "selector": "#ch-alarms",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 709.02,
+          "top": 448.68,
+          "right": 1210.97,
+          "bottom": 631.32,
+          "width": 501.95,
+          "height": 182.64
+        },
+        "containerSelector": "#ch-and-w",
+        "text": "Alarms.",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 709.02,
+          "y": 448.68,
+          "width": 501.95,
+          "height": 182.64
+        },
+        "firstSeen": 4.525,
+        "lastSeen": 4.525,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          4.525
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "div.ch-k",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 152.27,
+          "top": 161.08,
+          "right": 230.27,
+          "bottom": 191.9,
+          "width": 78,
+          "height": 30.82
+        },
+        "containerSelector": "#f1",
+        "text": "UP NEXT",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.44,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 152.27,
+          "y": 161.08,
+          "width": 78,
+          "height": 30.82
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "#ch-class > div:nth-of-type(2)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 155.3,
+          "top": 182.43,
+          "right": 308.06,
+          "bottom": 253.56,
+          "width": 152.76,
+          "height": 71.13
+        },
+        "containerSelector": "#f1",
+        "text": "FILI 102",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.67,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 155.3,
+          "y": 182.43,
+          "width": 152.76,
+          "height": 71.13
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "#ch-class > div:nth-of-type(3)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 162.2,
+          "top": 230.73,
+          "right": 476.62,
+          "bottom": 288.37,
+          "width": 314.43,
+          "height": 57.64
+        },
+        "containerSelector": "#f1",
+        "text": "8:00 – 10:00 AM · RM 202 (CICS)",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.56,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 162.2,
+          "y": 230.73,
+          "width": 314.43,
+          "height": 57.64
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "#ch-dead > div:nth-of-type(2) > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1404.9,
+          "top": 163.07,
+          "right": 1610.44,
+          "bottom": 220.59,
+          "width": 205.54,
+          "height": 57.53
+        },
+        "containerSelector": "#f3",
+        "text": "Problem set 4",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.33,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 1404.9,
+          "y": 163.07,
+          "width": 205.54,
+          "height": 57.53
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "#ch-dead > div:nth-of-type(2) > div:nth-of-type(2)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1401.85,
+          "top": 212.88,
+          "right": 1620.79,
+          "bottom": 256.75,
+          "width": 218.94,
+          "height": 43.87
+        },
+        "containerSelector": "#f3",
+        "text": "MATH 101 · Assignment",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.33,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 1401.85,
+          "y": 212.88,
+          "width": 218.94,
+          "height": 43.87
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "#ch-alarm > div:nth-of-type(1) > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 853.97,
+          "top": 799.4,
+          "right": 1040.11,
+          "bottom": 866.92,
+          "width": 186.14,
+          "height": 67.52
+        },
+        "containerSelector": "#f6",
+        "text": "7:00 AM",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 853.97,
+          "y": 799.4,
+          "width": 186.14,
+          "height": 67.52
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "#ch-alarm > div:nth-of-type(1) > div:nth-of-type(2)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 857.01,
+          "top": 855.92,
+          "right": 1068.21,
+          "bottom": 891.89,
+          "width": 211.21,
+          "height": 35.97
+        },
+        "containerSelector": "#f6",
+        "text": "Alarm · before FILI 102",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 857.01,
+          "y": 855.92,
+          "width": 211.21,
+          "height": 35.97
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "#ch-m1",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 224.91,
+          "top": 526.91,
+          "right": 430.72,
+          "bottom": 569.09,
+          "width": 205.81,
+          "height": 42.19
+        },
+        "containerSelector": "#f8",
+        "text": "CPE 415 · 10:00 AM",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.33,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 224.91,
+          "y": 526.91,
+          "width": 205.81,
+          "height": 42.19
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "#ch-m2",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1438.81,
+          "top": 474.52,
+          "right": 1659.26,
+          "bottom": 521.48,
+          "width": 220.45,
+          "height": 46.97
+        },
+        "containerSelector": "#f4",
+        "text": "Lab report · 5:00 PM",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.56,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 1438.81,
+          "y": 474.52,
+          "width": 220.45,
+          "height": 46.97
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "#ch-m3",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 649.17,
+          "top": 887.4,
+          "right": 903.26,
+          "bottom": 928.6,
+          "width": 254.09,
+          "height": 41.2
+        },
+        "containerSelector": "#f6",
+        "text": "Midterm · Wed 9:00 AM",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.33,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 649.17,
+          "y": 887.4,
+          "width": 254.09,
+          "height": 41.2
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 5,
+        "selector": "#ch-m4",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1206.97,
+          "top": 867.52,
+          "right": 1395.11,
+          "bottom": 908.48,
+          "width": 188.14,
+          "height": 40.95
+        },
+        "containerSelector": "#f5",
+        "text": "PSY 110 · 3:00 PM",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.33,
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 1206.97,
+          "y": 867.52,
+          "width": 188.14,
+          "height": 40.95
+        },
+        "firstSeen": 5,
+        "lastSeen": 5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          5
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sc2 > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1459.63,
+          "top": 462.16,
+          "right": 1562.59,
+          "bottom": 480.36,
+          "width": 102.96,
+          "height": 18.2
+        },
+        "containerSelector": "#sn-phone",
+        "text": "CS 150 · 1:00 PM",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.22,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1459.63,
+          "y": 462.16,
+          "width": 102.96,
+          "height": 18.2
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sc3 > div:nth-of-type(2)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1334.5,
+          "top": 699.13,
+          "right": 1478.48,
+          "bottom": 724.48,
+          "width": 143.97,
+          "height": 25.35
+        },
+        "containerSelector": "#sn-app",
+        "text": "Psychology 101",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1334.5,
+          "y": 699.13,
+          "width": 143.97,
+          "height": 25.35
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "div.h",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1105.66,
+          "top": 292.69,
+          "right": 1323.09,
+          "bottom": 318.25,
+          "width": 217.43,
+          "height": 25.56
+        },
+        "containerSelector": "#sn-app",
+        "text": "CERTIFICATE OF REGISTRATION",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1105.66,
+          "y": 292.69,
+          "width": 217.43,
+          "height": 25.56
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "div.s",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1106.42,
+          "top": 317.92,
+          "right": 1230.64,
+          "bottom": 333.24,
+          "width": 124.21,
+          "height": 15.32
+        },
+        "containerSelector": "#sn-app",
+        "text": "1st Semester · AY 2026–2027",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1106.42,
+          "y": 317.92,
+          "width": 124.21,
+          "height": 15.32
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(3) > b:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1107.47,
+          "top": 350.85,
+          "right": 1147.48,
+          "bottom": 365.22,
+          "width": 40.01,
+          "height": 14.37
+        },
+        "containerSelector": "#sn-app",
+        "text": "FILI 102",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1107.47,
+          "y": 350.85,
+          "width": 40.01,
+          "height": 14.37
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(3) > i:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1177.43,
+          "top": 344.22,
+          "right": 1337.14,
+          "bottom": 362.78,
+          "width": 159.72,
+          "height": 18.55
+        },
+        "containerSelector": "#sn-app",
+        "text": "Filipino sa Iba't-ibang Disiplina",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1177.43,
+          "y": 344.22,
+          "width": 159.72,
+          "height": 18.55
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(4) > b:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1108.45,
+          "top": 378.72,
+          "right": 1151.55,
+          "bottom": 393.2,
+          "width": 43.1,
+          "height": 14.48
+        },
+        "containerSelector": "#sn-app",
+        "text": "CPE 415",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1108.45,
+          "y": 378.72,
+          "width": 43.1,
+          "height": 14.48
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(4) > i:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1178.41,
+          "top": 373.11,
+          "right": 1312.31,
+          "bottom": 390.76,
+          "width": 133.9,
+          "height": 17.65
+        },
+        "containerSelector": "#sn-app",
+        "text": "Intro to HDL · COMPLAB 3",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1178.41,
+          "y": 373.11,
+          "width": 133.9,
+          "height": 17.65
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(5) > b:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1109.43,
+          "top": 406.69,
+          "right": 1153.06,
+          "bottom": 421.19,
+          "width": 43.63,
+          "height": 14.5
+        },
+        "containerSelector": "#sn-app",
+        "text": "CPE 414",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1109.43,
+          "y": 406.69,
+          "width": 43.63,
+          "height": 14.5
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(5) > i:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1179.38,
+          "top": 401.12,
+          "right": 1312.49,
+          "bottom": 418.74,
+          "width": 133.11,
+          "height": 17.62
+        },
+        "containerSelector": "#sn-app",
+        "text": "Logic Circuits and Design",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1179.38,
+          "y": 401.12,
+          "width": 133.11,
+          "height": 17.62
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(6) > b:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1110.4,
+          "top": 434.42,
+          "right": 1161.26,
+          "bottom": 449.17,
+          "width": 50.86,
+          "height": 14.75
+        },
+        "containerSelector": "#sn-app",
+        "text": "MATH 101",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1110.4,
+          "y": 434.42,
+          "width": 50.86,
+          "height": 14.75
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(6) > i:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1180.36,
+          "top": 429.6,
+          "right": 1299.21,
+          "bottom": 446.73,
+          "width": 118.85,
+          "height": 17.13
+        },
+        "containerSelector": "#sn-app",
+        "text": "Calculus I · Sci Hall 204",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1180.36,
+          "y": 429.6,
+          "width": 118.85,
+          "height": 17.13
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(7) > b:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1111.38,
+          "top": 462.88,
+          "right": 1148.4,
+          "bottom": 477.15,
+          "width": 37.03,
+          "height": 14.27
+        },
+        "containerSelector": "#sn-app",
+        "text": "CS 150",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1111.38,
+          "y": 462.88,
+          "width": 37.03,
+          "height": 14.27
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(7) > i:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1181.34,
+          "top": 457.82,
+          "right": 1293.49,
+          "bottom": 474.71,
+          "width": 112.15,
+          "height": 16.89
+        },
+        "containerSelector": "#sn-app",
+        "text": "Intro to Programming",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1181.34,
+          "y": 457.82,
+          "width": 112.15,
+          "height": 16.89
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(8) > b:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1112.36,
+          "top": 490.74,
+          "right": 1152.99,
+          "bottom": 505.14,
+          "width": 40.63,
+          "height": 14.4
+        },
+        "containerSelector": "#sn-app",
+        "text": "PSY 110",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1112.36,
+          "y": 490.74,
+          "width": 40.63,
+          "height": 14.4
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(8) > i:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1182.31,
+          "top": 484.69,
+          "right": 1326.32,
+          "bottom": 502.69,
+          "width": 144.01,
+          "height": 18.01
+        },
+        "containerSelector": "#sn-app",
+        "text": "Psychology 101 · West Wing",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1182.31,
+          "y": 484.69,
+          "width": 144.01,
+          "height": 18.01
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(9) > b:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1113.33,
+          "top": 518.71,
+          "right": 1154.23,
+          "bottom": 533.12,
+          "width": 40.9,
+          "height": 14.4
+        },
+        "containerSelector": "#sn-app",
+        "text": "CPE 411",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1113.33,
+          "y": 518.71,
+          "width": 40.9,
+          "height": 14.4
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(9) > i:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1183.29,
+          "top": 512.49,
+          "right": 1332.31,
+          "bottom": 530.68,
+          "width": 149.02,
+          "height": 18.18
+        },
+        "containerSelector": "#sn-app",
+        "text": "Embedded Systems · Online",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1183.29,
+          "y": 512.49,
+          "width": 149.02,
+          "height": 18.18
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(10) > b:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1114.31,
+          "top": 546.82,
+          "right": 1151.77,
+          "bottom": 561.1,
+          "width": 37.46,
+          "height": 14.28
+        },
+        "containerSelector": "#sn-app",
+        "text": "NSTP 2",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1114.31,
+          "y": 546.82,
+          "width": 37.46,
+          "height": 14.28
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 11.667,
+        "selector": "#sn-paper > div:nth-of-type(10) > i:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1184.27,
+          "top": 541.77,
+          "right": 1296.19,
+          "bottom": 558.66,
+          "width": 111.92,
+          "height": 16.88
+        },
+        "containerSelector": "#sn-app",
+        "text": "Civic Welfare Training",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1184.27,
+          "y": 541.77,
+          "width": 111.92,
+          "height": 16.88
+        },
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 15,
+        "selector": "#al-stage",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 0,
+          "top": 634.6,
+          "right": 1920,
+          "bottom": 1714.6,
+          "width": 1920,
+          "height": 1080
+        },
+        "containerSelector": "#alarms > div:nth-of-type(1)",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 0,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "width": 1920,
+          "height": 1080
+        },
+        "overflow": {
+          "bottom": 634.6
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/alarms.html",
+        "bbox": {
+          "x": 0,
+          "y": 634.6,
+          "width": 1920,
+          "height": 1080
+        },
+        "firstSeen": 15,
+        "lastSeen": 15,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          15
+        ]
+      },
+      {
+        "code": "panel_out_of_canvas",
+        "severity": "info",
+        "time": 15,
+        "selector": "#al-phone",
+        "message": "Painted panel extends outside the composition canvas.",
+        "rect": {
+          "left": 1230,
+          "top": 723.6,
+          "right": 1660,
+          "bottom": 1625.6,
+          "width": 430,
+          "height": 902
+        },
+        "containerSelector": "#root",
+        "text": "",
+        "fixHint": "Move the panel inward, or mark intentional off-canvas animation with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 0,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "width": 1920,
+          "height": 1080
+        },
+        "overflow": {
+          "bottom": 545.6
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/alarms.html",
+        "bbox": {
+          "x": 1230,
+          "y": 723.6,
+          "width": 430,
+          "height": 902
+        },
+        "firstSeen": 15,
+        "lastSeen": 15,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          15
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 18.333,
+        "selector": "#mc1 > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 477.11,
+          "top": 804.31,
+          "right": 623.19,
+          "bottom": 910.06,
+          "width": 146.07,
+          "height": 105.75
+        },
+        "containerSelector": "#mc1 > img:nth-of-type(1)",
+        "text": "Overnight oats",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.22,
+        "dataAttributes": {},
+        "sourceFile": "compositions/meals.html",
+        "bbox": {
+          "x": 477.11,
+          "y": 804.31,
+          "width": 146.07,
+          "height": 105.75
+        },
+        "firstSeen": 18.333,
+        "lastSeen": 18.333,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.333
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 18.333,
+        "selector": "#mc1 > div:nth-of-type(2)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 506.35,
+          "top": 524.23,
+          "right": 554.95,
+          "bottom": 565.97,
+          "width": 48.6,
+          "height": 41.74
+        },
+        "containerSelector": "#mc1 > img:nth-of-type(1)",
+        "text": "5 min",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.19,
+        "dataAttributes": {},
+        "sourceFile": "compositions/meals.html",
+        "bbox": {
+          "x": 506.35,
+          "y": 524.23,
+          "width": 48.6,
+          "height": 41.74
+        },
+        "firstSeen": 18.333,
+        "lastSeen": 18.333,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.333
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 18.333,
+        "selector": "#mc2 > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 640.17,
+          "top": 728.32,
+          "right": 805.44,
+          "bottom": 800.42,
+          "width": 165.27,
+          "height": 72.09
+        },
+        "containerSelector": "#mc2 > img:nth-of-type(1)",
+        "text": "Kimchi rice mug",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.44,
+        "dataAttributes": {},
+        "sourceFile": "compositions/meals.html",
+        "bbox": {
+          "x": 640.17,
+          "y": 728.32,
+          "width": 165.27,
+          "height": 72.09
+        },
+        "firstSeen": 18.333,
+        "lastSeen": 18.333,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.333
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 18.333,
+        "selector": "#mc3 > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 828,
+          "top": 710,
+          "right": 1003.55,
+          "bottom": 738,
+          "width": 175.55,
+          "height": 28
+        },
+        "containerSelector": "#ml-chef",
+        "text": "Upgraded ramen",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.96,
+        "dataAttributes": {},
+        "sourceFile": "compositions/meals.html",
+        "bbox": {
+          "x": 828,
+          "y": 710,
+          "width": 175.55,
+          "height": 28
+        },
+        "firstSeen": 18.333,
+        "lastSeen": 18.333,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.333
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 18.333,
+        "selector": "#mc4 > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1018.34,
+          "top": 700.73,
+          "right": 1232.15,
+          "bottom": 786.74,
+          "width": 213.8,
+          "height": 86.01
+        },
+        "containerSelector": "#ml-chef",
+        "text": "Chicken adobo bowl",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.56,
+        "dataAttributes": {},
+        "sourceFile": "compositions/meals.html",
+        "bbox": {
+          "x": 1018.34,
+          "y": 700.73,
+          "width": 213.8,
+          "height": 86.01
+        },
+        "firstSeen": 18.333,
+        "lastSeen": 18.333,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.333
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 18.333,
+        "selector": "#mc5 > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1204.16,
+          "top": 746.42,
+          "right": 1346.8,
+          "bottom": 850.02,
+          "width": 142.64,
+          "height": 103.61
+        },
+        "containerSelector": "#mc5 > img:nth-of-type(1)",
+        "text": "Mug pancakes",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.22,
+        "dataAttributes": {},
+        "sourceFile": "compositions/meals.html",
+        "bbox": {
+          "x": 1204.16,
+          "y": 746.42,
+          "width": 142.64,
+          "height": 103.61
+        },
+        "firstSeen": 18.333,
+        "lastSeen": 18.333,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.333
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 18.333,
+        "selector": "#mc5 > div:nth-of-type(2)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 1524.3,
+          "top": 623.74,
+          "right": 1573.46,
+          "bottom": 665.82,
+          "width": 49.16,
+          "height": 42.09
+        },
+        "containerSelector": "#mc5 > img:nth-of-type(1)",
+        "text": "4 min",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.15,
+        "dataAttributes": {},
+        "sourceFile": "compositions/meals.html",
+        "bbox": {
+          "x": 1524.3,
+          "y": 623.74,
+          "width": 49.16,
+          "height": 42.09
+        },
+        "firstSeen": 18.333,
+        "lastSeen": 18.333,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.333
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 18.333,
+        "selector": "#ml-glow",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 360,
+          "top": 260,
+          "right": 1560,
+          "bottom": 1460,
+          "width": 1200,
+          "height": 1200
+        },
+        "containerSelector": "#meals > div:nth-of-type(1)",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 0,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "width": 1920,
+          "height": 1080
+        },
+        "overflow": {
+          "bottom": 380
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/meals.html",
+        "bbox": {
+          "x": 360,
+          "y": 260,
+          "width": 1200,
+          "height": 1200
+        },
+        "firstSeen": 18.333,
+        "lastSeen": 18.333,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.333
+        ]
+      },
+      {
+        "code": "panel_out_of_canvas",
+        "severity": "info",
+        "time": 18.333,
+        "selector": "#ml-glow",
+        "message": "Painted panel extends outside the composition canvas.",
+        "rect": {
+          "left": 360,
+          "top": 260,
+          "right": 1560,
+          "bottom": 1460,
+          "width": 1200,
+          "height": 1200
+        },
+        "containerSelector": "#root",
+        "text": "",
+        "fixHint": "Move the panel inward, or mark intentional off-canvas animation with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 0,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "width": 1920,
+          "height": 1080
+        },
+        "overflow": {
+          "bottom": 380
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/meals.html",
+        "bbox": {
+          "x": 360,
+          "y": 260,
+          "width": 1200,
+          "height": 1200
+        },
+        "firstSeen": 18.333,
+        "lastSeen": 18.333,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          18.333
+        ]
+      },
+      {
+        "code": "canvas_covered",
+        "severity": "info",
+        "time": 25,
+        "selector": "#endcard > div:nth-of-type(1)",
+        "message": "An opaque element covers the canvas above every other visible clip, so the frame shows only it.",
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "width": 1920,
+          "height": 1080
+        },
+        "fixHint": "Move the full-frame element below the content (earlier in the DOM or a lower z-index / track), or mark a deliberate full-frame card with data-layout-allow-occlusion.",
+        "dataAttributes": {
+          "data-hf-inner-root": "true",
+          "data-hf-authored-id": "root",
+          "data-width": "1920",
+          "data-height": "1080"
+        },
+        "sourceFile": "compositions/endcard.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "firstSeen": 25,
+        "lastSeen": 25,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          25
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 25,
+        "selector": "#ec-jump",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 1441.17,
+          "top": 1129.13,
+          "right": 1858.83,
+          "bottom": 1600.09,
+          "width": 417.65,
+          "height": 470.97
+        },
+        "containerSelector": "#endcard > div:nth-of-type(1)",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 0,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "width": 1920,
+          "height": 1080
+        },
+        "overflow": {
+          "bottom": 520.09
+        },
+        "dataAttributes": {
+          "data-hf-render-id": "ec-jump",
+          "data-hf-authored-opacity": ""
+        },
+        "sourceFile": "compositions/endcard.html",
+        "bbox": {
+          "x": 1441.17,
+          "y": 1129.13,
+          "width": 417.65,
+          "height": 470.97
+        },
+        "firstSeen": 25,
+        "lastSeen": 25,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          25
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 28.333,
+        "selector": "#ec-glow",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 260,
+          "top": -160,
+          "right": 1660,
+          "bottom": 1240,
+          "width": 1400,
+          "height": 1400
+        },
+        "containerSelector": "#endcard > div:nth-of-type(1)",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 0,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "width": 1920,
+          "height": 1080
+        },
+        "overflow": {
+          "top": 160,
+          "bottom": 160
+        },
+        "dataAttributes": {},
+        "sourceFile": "compositions/endcard.html",
+        "bbox": {
+          "x": 260,
+          "y": -160,
+          "width": 1400,
+          "height": 1400
+        },
+        "firstSeen": 28.333,
+        "lastSeen": 28.333,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          28.333
+        ]
+      }
+    ],
+    "duration": 30,
+    "samples": [
+      1.667,
+      5,
+      8.333,
+      11.667,
+      15,
+      18.333,
+      21.667,
+      25,
+      28.333
+    ],
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "tolerance": 2,
+    "totalIssueCount": 46,
+    "truncated": false,
+    "faceCheck": {
+      "ran": true,
+      "candidates": 0,
+      "faces": 0
+    }
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
+  },
+  "contrast": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.8:1; WCAG AA requires 3:1.",
+        "text": "a little too much, honestly",
+        "fg": "rgb(138,150,143)",
+        "bg": "rgb(242,245,243)",
+        "ratio": 2.8,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(133,144,137)",
+        "large": true,
+        "selector": "#week-sub",
+        "dataAttributes": {},
+        "sourceFile": "compositions/week.html",
+        "bbox": {
+          "x": 0,
+          "y": 640,
+          "width": 1920,
+          "height": 51
+        },
+        "time": 1.667,
+        "times": [
+          1.667
+        ]
+      }
+    ],
+    "enabled": true,
+    "samples": [
+      1.667,
+      8.333,
+      15,
+      21.667,
+      28.333
+    ],
+    "checked": 25,
+    "passed": 24
+  },
+  "craft": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 23,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "first_frame_empty",
+        "severity": "warning",
+        "message": "Frame 0 shows only the background, and the first frame is the thumbnail on social players: have the title or key image already on screen at 0 s instead of entering from nothing; see references/review.md.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"a little too much, honestly\" (5 words) is on screen 0.53 s (±0.01 s), under its 1.50 s floor: hold it about 0.5 s + 0.3 s a word (2.00 s here) before it leaves or changes; see references/motion.md.",
+        "text": "a little too much, honestly",
+        "selector": "#week-sub",
+        "dataAttributes": {},
+        "sourceFile": "compositions/week.html",
+        "bbox": {
+          "x": 721.92,
+          "y": 640,
+          "width": 476.15999999999997,
+          "height": 51
+        },
+        "time": 1.438,
+        "words": 5,
+        "seconds": 0.531,
+        "floorSeconds": 1.5,
+        "measured": [
+          {
+            "time": 1.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 1.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 1.375,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 1.5,
+            "opacity": 0.93,
+            "heightPx": 51
+          },
+          {
+            "time": 1.625,
+            "opacity": 1,
+            "heightPx": 51
+          },
+          {
+            "time": 1.75,
+            "opacity": 1,
+            "heightPx": 51
+          },
+          {
+            "time": 1.875,
+            "opacity": 0.96,
+            "heightPx": 51
+          },
+          {
+            "time": 2,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 2.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 2.25,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "text_below_floor",
+        "severity": "warning",
+        "message": "Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and 10 text elements stay under it for 0.5 s or more, the smallest \"CPE 415 · 10:00 AM\" at 18 px: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.",
+        "text": "CPE 415 · 10:00 AM",
+        "selector": "#ch-m1",
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 262.47,
+          "y": 546.77,
+          "width": 163.42,
+          "height": 29.73
+        },
+        "time": 2.625,
+        "times": [
+          2.5,
+          2.5,
+          2.5,
+          2.625,
+          3.25,
+          3.25,
+          3.375,
+          3.5,
+          4,
+          4.125
+        ],
+        "fontPx": 17.5,
+        "floorPx": 28,
+        "seconds": 2.125,
+        "elements": [
+          {
+            "selector": "#ch-m1",
+            "text": "CPE 415 · 10:00 AM",
+            "fontPx": 17.5,
+            "time": 2.625,
+            "seconds": 2.125
+          },
+          {
+            "selector": "#ch-m3",
+            "text": "Midterm · Wed 9:00 AM",
+            "fontPx": 17.5,
+            "time": 3.5,
+            "seconds": 1.25
+          },
+          {
+            "selector": "#ch-m4",
+            "text": "PSY 110 · 3:00 PM",
+            "fontPx": 17.5,
+            "time": 4.125,
+            "seconds": 0.625
+          },
+          {
+            "selector": "#ch-m2",
+            "text": "Lab report · 5:00 PM",
+            "fontPx": 17.91,
+            "time": 3.375,
+            "seconds": 1.375
+          },
+          {
+            "selector": "div.ch-k",
+            "text": "UP NEXT",
+            "fontPx": 17.92,
+            "time": 2.5,
+            "seconds": 2.25
+          },
+          {
+            "selector": "div.ch-pill",
+            "text": "in 7h 20m",
+            "fontPx": 17.92,
+            "time": 2.5,
+            "seconds": 2.25
+          },
+          {
+            "selector": "#ch-dead > div:nth-of-type(2) > div:nth-of-type(2)",
+            "text": "MATH 101 · Assignment",
+            "fontPx": 18.46,
+            "time": 3.25,
+            "seconds": 1.5
+          },
+          {
+            "selector": "#ch-class > div:nth-of-type(3)",
+            "text": "8:00 – 10:00 AM · RM 202 (CICS)",
+            "fontPx": 19.91,
+            "time": 2.5,
+            "seconds": 2.25
+          },
+          {
+            "selector": "#ch-alarm > div:nth-of-type(1) > div:nth-of-type(2)",
+            "text": "Alarm · before FILI 102",
+            "fontPx": 19.91,
+            "time": 4,
+            "seconds": 0.75
+          },
+          {
+            "selector": "div.time",
+            "text": "11:00 PM",
+            "fontPx": 22.15,
+            "time": 3.25,
+            "seconds": 1.5
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Lab report · 5:00 PM\" (5 words) is on screen 1.30 s (±0.01 s), under its 1.50 s floor: hold it about 0.5 s + 0.3 s a word (2.00 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Lab report · 5:00 PM",
+        "selector": "#ch-m2",
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 1440.84,
+          "y": 493.64,
+          "width": 179.26,
+          "height": 33.49000000000001
+        },
+        "time": 3.367,
+        "words": 5,
+        "seconds": 1.305,
+        "floorSeconds": 1.5,
+        "measured": [
+          {
+            "time": 3,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 3.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 3.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 3.375,
+            "opacity": 0.69,
+            "heightPx": 33
+          },
+          {
+            "time": 3.5,
+            "opacity": 1,
+            "heightPx": 50
+          },
+          {
+            "time": 3.625,
+            "opacity": 1,
+            "heightPx": 52
+          },
+          {
+            "time": 3.75,
+            "opacity": 1,
+            "heightPx": 48
+          },
+          {
+            "time": 4.25,
+            "opacity": 1,
+            "heightPx": 47
+          },
+          {
+            "time": 4.375,
+            "opacity": 1,
+            "heightPx": 47
+          },
+          {
+            "time": 4.5,
+            "opacity": 1,
+            "heightPx": 47
+          },
+          {
+            "time": 4.625,
+            "opacity": 0.74,
+            "heightPx": 47
+          },
+          {
+            "time": 4.75,
+            "opacity": 0.31,
+            "heightPx": 47
+          },
+          {
+            "time": 4.875,
+            "opacity": 0.25,
+            "heightPx": 47
+          },
+          {
+            "time": 5,
+            "opacity": 0.25,
+            "heightPx": 47
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Midterm · Wed 9:00 AM\" (5 words) is on screen 1.13 s (±0.01 s), under its 1.50 s floor: hold it about 0.5 s + 0.3 s a word (2.00 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Midterm · Wed 9:00 AM",
+        "selector": "#ch-m3",
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 659.28,
+          "y": 887.83,
+          "width": 252.96000000000004,
+          "height": 40.92999999999995
+        },
+        "time": 3.539,
+        "words": 5,
+        "seconds": 1.133,
+        "floorSeconds": 1.5,
+        "measured": [
+          {
+            "time": 3.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 3.375,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 3.5,
+            "opacity": 0.66,
+            "heightPx": 29
+          },
+          {
+            "time": 3.625,
+            "opacity": 0.99,
+            "heightPx": 41
+          },
+          {
+            "time": 3.75,
+            "opacity": 1,
+            "heightPx": 45
+          },
+          {
+            "time": 3.875,
+            "opacity": 1,
+            "heightPx": 42
+          },
+          {
+            "time": 4,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 4.25,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 4.375,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 4.5,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 4.625,
+            "opacity": 0.74,
+            "heightPx": 41
+          },
+          {
+            "time": 4.75,
+            "opacity": 0.31,
+            "heightPx": 41
+          },
+          {
+            "time": 4.875,
+            "opacity": 0.25,
+            "heightPx": 41
+          },
+          {
+            "time": 5,
+            "opacity": 0.25,
+            "heightPx": 41
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"7:00 AM\" (3 words) is on screen 0.77 s (±0.01 s), under its 1.05 s floor: hold it about 0.5 s + 0.3 s a word (1.40 s here) before it leaves or changes; see references/motion.md.",
+        "text": "7:00 AM",
+        "selector": "#ch-alarm > div:nth-of-type(1) > div:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 854.45,
+          "y": 799.93,
+          "width": 185.30999999999995,
+          "height": 67.14999999999998
+        },
+        "time": 3.906,
+        "words": 3,
+        "seconds": 0.766,
+        "floorSeconds": 1.05,
+        "measured": [
+          {
+            "time": 3.625,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 3.75,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 3.875,
+            "opacity": 0.48,
+            "heightPx": 43
+          },
+          {
+            "time": 4,
+            "opacity": 0.99,
+            "heightPx": 67
+          },
+          {
+            "time": 4.125,
+            "opacity": 1,
+            "heightPx": 72
+          },
+          {
+            "time": 4.25,
+            "opacity": 1,
+            "heightPx": 70
+          },
+          {
+            "time": 4.375,
+            "opacity": 1,
+            "heightPx": 68
+          },
+          {
+            "time": 4.5,
+            "opacity": 1,
+            "heightPx": 68
+          },
+          {
+            "time": 4.625,
+            "opacity": 0.74,
+            "heightPx": 68
+          },
+          {
+            "time": 4.75,
+            "opacity": 0.31,
+            "heightPx": 68
+          },
+          {
+            "time": 4.875,
+            "opacity": 0.25,
+            "heightPx": 68
+          },
+          {
+            "time": 5,
+            "opacity": 0.25,
+            "heightPx": 68
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Alarm · before FILI 102\" (4 words) is on screen 0.70 s (±0.01 s), under its 1.27 s floor: hold it about 0.5 s + 0.3 s a word (1.70 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Alarm · before FILI 102",
+        "selector": "#ch-alarm > div:nth-of-type(1) > div:nth-of-type(2)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 857.45,
+          "y": 856.21,
+          "width": 210.26999999999998,
+          "height": 35.73000000000002
+        },
+        "time": 3.969,
+        "words": 4,
+        "seconds": 0.703,
+        "floorSeconds": 1.275,
+        "measured": [
+          {
+            "time": 3.625,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 3.75,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 3.875,
+            "opacity": 0.48,
+            "heightPx": 21
+          },
+          {
+            "time": 4,
+            "opacity": 0.99,
+            "heightPx": 36
+          },
+          {
+            "time": 4.125,
+            "opacity": 1,
+            "heightPx": 39
+          },
+          {
+            "time": 4.25,
+            "opacity": 1,
+            "heightPx": 38
+          },
+          {
+            "time": 4.375,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 4.5,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 4.625,
+            "opacity": 0.74,
+            "heightPx": 36
+          },
+          {
+            "time": 4.75,
+            "opacity": 0.31,
+            "heightPx": 36
+          },
+          {
+            "time": 4.875,
+            "opacity": 0.25,
+            "heightPx": 36
+          },
+          {
+            "time": 5,
+            "opacity": 0.25,
+            "heightPx": 36
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"PSY 110 · 3:00 PM\" (5 words) is on screen 0.53 s (±0.01 s), under its 1.50 s floor: hold it about 0.5 s + 0.3 s a word (2.00 s here) before it leaves or changes; see references/motion.md.",
+        "text": "PSY 110 · 3:00 PM",
+        "selector": "#ch-m4",
+        "dataAttributes": {},
+        "sourceFile": "compositions/chaos.html",
+        "bbox": {
+          "x": 1197.26,
+          "y": 864.68,
+          "width": 193.62999999999988,
+          "height": 42.77999999999997
+        },
+        "time": 4.141,
+        "words": 5,
+        "seconds": 0.531,
+        "floorSeconds": 1.5,
+        "measured": [
+          {
+            "time": 3.875,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 4,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 4.125,
+            "opacity": 0.66,
+            "heightPx": 29
+          },
+          {
+            "time": 4.25,
+            "opacity": 1,
+            "heightPx": 43
+          },
+          {
+            "time": 4.375,
+            "opacity": 1,
+            "heightPx": 44
+          },
+          {
+            "time": 4.5,
+            "opacity": 1,
+            "heightPx": 41
+          },
+          {
+            "time": 4.625,
+            "opacity": 0.74,
+            "heightPx": 41
+          },
+          {
+            "time": 4.75,
+            "opacity": 0.31,
+            "heightPx": 41
+          },
+          {
+            "time": 4.875,
+            "opacity": 0.25,
+            "heightPx": 41
+          },
+          {
+            "time": 5,
+            "opacity": 0.25,
+            "heightPx": 41
+          }
+        ]
+      },
+      {
+        "code": "text_below_floor",
+        "severity": "warning",
+        "message": "Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and 21 text elements stay under it for 0.5 s or more, the smallest \"1st Semester · AY 2026–2027\" at 8 px: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.",
+        "text": "1st Semester · AY 2026–2027",
+        "selector": "div.s",
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1389.27,
+          "y": 329.89,
+          "width": 117.11,
+          "height": 17.72
+        },
+        "time": 10.5,
+        "times": [
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          10.5,
+          11.75,
+          11.75,
+          11.875
+        ],
+        "fontPx": 8.48,
+        "floorPx": 28,
+        "seconds": 2.375,
+        "elements": [
+          {
+            "selector": "div.s",
+            "text": "1st Semester · AY 2026–2027",
+            "fontPx": 8.48,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(3) > b:nth-of-type(1)",
+            "text": "FILI 102",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(3) > i:nth-of-type(1)",
+            "text": "Filipino sa Iba't-ibang Disiplina",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(4) > b:nth-of-type(1)",
+            "text": "CPE 415",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(4) > i:nth-of-type(1)",
+            "text": "Intro to HDL · COMPLAB 3",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(5) > b:nth-of-type(1)",
+            "text": "CPE 414",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(5) > i:nth-of-type(1)",
+            "text": "Logic Circuits and Design",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(6) > b:nth-of-type(1)",
+            "text": "MATH 101",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(6) > i:nth-of-type(1)",
+            "text": "Calculus I · Sci Hall 204",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(7) > b:nth-of-type(1)",
+            "text": "CS 150",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(7) > i:nth-of-type(1)",
+            "text": "Intro to Programming",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(8) > b:nth-of-type(1)",
+            "text": "PSY 110",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(8) > i:nth-of-type(1)",
+            "text": "Psychology 101 · West Wing",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(9) > b:nth-of-type(1)",
+            "text": "CPE 411",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(9) > i:nth-of-type(1)",
+            "text": "Embedded Systems · Online",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(10) > b:nth-of-type(1)",
+            "text": "NSTP 2",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sn-paper > div:nth-of-type(10) > i:nth-of-type(1)",
+            "text": "Civic Welfare Training",
+            "fontPx": 10.36,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "div.h",
+            "text": "CERTIFICATE OF REGISTRATION",
+            "fontPx": 13.18,
+            "time": 10.5,
+            "seconds": 2.375
+          },
+          {
+            "selector": "#sc2 > div:nth-of-type(1)",
+            "text": "CS 150 · 1:00 PM",
+            "fontPx": 14.21,
+            "time": 11.75,
+            "seconds": 1
+          },
+          {
+            "selector": "#sc3 > div:nth-of-type(1)",
+            "text": "PSY 110 · 3:00 PM",
+            "fontPx": 14.96,
+            "time": 11.875,
+            "seconds": 0.875
+          },
+          {
+            "selector": "#sc1 > div:nth-of-type(1)",
+            "text": "MATH 101 · 8:30 AM",
+            "fontPx": 15,
+            "time": 11.75,
+            "seconds": 1
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"CERTIFICATE OF REGISTRATION\" (3 words) is on screen 0.23 s (±0.01 s), under its 1.05 s floor: hold it about 0.5 s + 0.3 s a word (1.40 s here) before it leaves or changes; see references/motion.md.",
+        "text": "CERTIFICATE OF REGISTRATION",
+        "selector": "div.h",
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 1166.78,
+          "y": 299.45,
+          "width": 208.74,
+          "height": 32.129999999999995
+        },
+        "time": 10.539,
+        "words": 3,
+        "seconds": 0.234,
+        "floorSeconds": 1.05,
+        "measured": [
+          {
+            "time": 10.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.375,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 10.5,
+            "opacity": 1,
+            "heightPx": 30
+          },
+          {
+            "time": 10.625,
+            "opacity": 1,
+            "heightPx": 32
+          },
+          {
+            "time": 10.75,
+            "opacity": 1,
+            "heightPx": 30
+          },
+          {
+            "time": 10.875,
+            "opacity": 1,
+            "heightPx": 28
+          },
+          {
+            "time": 11,
+            "opacity": 1,
+            "heightPx": 27
+          },
+          {
+            "time": 11.125,
+            "opacity": 1,
+            "heightPx": 26
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"19 classes imported\" (3 words) is on screen 0.80 s (±0.01 s), under its 1.05 s floor: hold it about 0.5 s + 0.3 s a word (1.40 s here) before it leaves or changes; see references/motion.md.",
+        "text": "19 classes imported",
+        "selector": "#sn-badge",
+        "dataAttributes": {},
+        "sourceFile": "compositions/snap.html",
+        "bbox": {
+          "x": 237.41,
+          "y": 655.72,
+          "width": 278.01,
+          "height": 36.440000000000055
+        },
+        "time": 11.906,
+        "words": 3,
+        "seconds": 0.797,
+        "floorSeconds": 1.05,
+        "measured": [
+          {
+            "time": 11.625,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.75,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 11.875,
+            "opacity": 0.6,
+            "heightPx": 29
+          },
+          {
+            "time": 12,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 12.125,
+            "opacity": 1,
+            "heightPx": 37
+          },
+          {
+            "time": 12.25,
+            "opacity": 1,
+            "heightPx": 35
+          },
+          {
+            "time": 12.375,
+            "opacity": 1,
+            "heightPx": 35
+          },
+          {
+            "time": 12.5,
+            "opacity": 1,
+            "heightPx": 35
+          },
+          {
+            "time": 12.625,
+            "opacity": 0.91,
+            "heightPx": 35
+          },
+          {
+            "time": 12.75,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 12.875,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Problem set 4\" (3 words) is on screen 0.97 s (±0.01 s), under its 1.05 s floor: hold it about 0.5 s + 0.3 s a word (1.40 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Problem set 4",
+        "selector": "#tc1 > div:nth-of-type(2) > div:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/tasks.html",
+        "bbox": {
+          "x": 0,
+          "y": 101.75,
+          "width": 130.37,
+          "height": 53.28
+        },
+        "time": 13.203,
+        "words": 3,
+        "seconds": 0.969,
+        "floorSeconds": 1.05,
+        "measured": [
+          {
+            "time": 12.875,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.25,
+            "opacity": 0.72,
+            "heightPx": 53
+          },
+          {
+            "time": 13.375,
+            "opacity": 0.98,
+            "heightPx": 53
+          },
+          {
+            "time": 13.5,
+            "opacity": 1,
+            "heightPx": 53
+          },
+          {
+            "time": 13.625,
+            "opacity": 1,
+            "heightPx": 53
+          },
+          {
+            "time": 13.75,
+            "opacity": 1,
+            "heightPx": 53
+          },
+          {
+            "time": 13.875,
+            "opacity": 1,
+            "heightPx": 53
+          },
+          {
+            "time": 14,
+            "opacity": 0.96,
+            "heightPx": 51
+          },
+          {
+            "time": 14.125,
+            "opacity": 0.77,
+            "heightPx": 40
+          },
+          {
+            "time": 14.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 14.375,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 14.5,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"11:00 PM\" (3 words) is on screen 0.90 s (±0.01 s), under its 1.05 s floor: hold it about 0.5 s + 0.3 s a word (1.40 s here) before it leaves or changes; see references/motion.md.",
+        "text": "11:00 PM",
+        "selector": "#tc1 > div:nth-of-type(3)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/tasks.html",
+        "bbox": {
+          "x": 210.53,
+          "y": 85.44,
+          "width": 80.56000000000003,
+          "height": 36.150000000000006
+        },
+        "time": 13.203,
+        "words": 3,
+        "seconds": 0.898,
+        "floorSeconds": 1.05,
+        "measured": [
+          {
+            "time": 12.875,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.25,
+            "opacity": 0.72,
+            "heightPx": 36
+          },
+          {
+            "time": 13.375,
+            "opacity": 0.98,
+            "heightPx": 36
+          },
+          {
+            "time": 13.5,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 13.625,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 13.75,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 13.875,
+            "opacity": 1,
+            "heightPx": 36
+          },
+          {
+            "time": 14,
+            "opacity": 0.96,
+            "heightPx": 35
+          },
+          {
+            "time": 14.125,
+            "opacity": 0.77,
+            "heightPx": 28
+          },
+          {
+            "time": 14.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 14.375,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Sun 5:00 PM\" (4 words) is on screen 0.87 s (±0.01 s), under its 1.27 s floor: hold it about 0.5 s + 0.3 s a word (1.70 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Sun 5:00 PM",
+        "selector": "#tc2 > div:nth-of-type(3)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/tasks.html",
+        "bbox": {
+          "x": 1807.58,
+          "y": 170.06,
+          "width": 112.42000000000007,
+          "height": 38.16
+        },
+        "time": 13.305,
+        "words": 4,
+        "seconds": 0.867,
+        "floorSeconds": 1.275,
+        "measured": [
+          {
+            "time": 13,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.375,
+            "opacity": 0.93,
+            "heightPx": 38
+          },
+          {
+            "time": 13.5,
+            "opacity": 1,
+            "heightPx": 38
+          },
+          {
+            "time": 13.625,
+            "opacity": 1,
+            "heightPx": 38
+          },
+          {
+            "time": 13.75,
+            "opacity": 1,
+            "heightPx": 38
+          },
+          {
+            "time": 13.875,
+            "opacity": 1,
+            "heightPx": 38
+          },
+          {
+            "time": 14,
+            "opacity": 0.99,
+            "heightPx": 38
+          },
+          {
+            "time": 14.125,
+            "opacity": 0.89,
+            "heightPx": 34
+          },
+          {
+            "time": 14.25,
+            "opacity": 0.38,
+            "heightPx": 16
+          },
+          {
+            "time": 14.375,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 14.5,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Wed 9:00 AM\" (4 words) is on screen 0.87 s (±0.01 s), under its 1.27 s floor: hold it about 0.5 s + 0.3 s a word (1.70 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Wed 9:00 AM",
+        "selector": "#tc3 > div:nth-of-type(3)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/tasks.html",
+        "bbox": {
+          "x": 232.17,
+          "y": 941.33,
+          "width": 121.23999999999998,
+          "height": 37.370000000000005
+        },
+        "time": 13.336,
+        "words": 4,
+        "seconds": 0.867,
+        "floorSeconds": 1.275,
+        "measured": [
+          {
+            "time": 13,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.375,
+            "opacity": 0.78,
+            "heightPx": 37
+          },
+          {
+            "time": 13.5,
+            "opacity": 0.99,
+            "heightPx": 37
+          },
+          {
+            "time": 13.625,
+            "opacity": 1,
+            "heightPx": 37
+          },
+          {
+            "time": 13.75,
+            "opacity": 1,
+            "heightPx": 37
+          },
+          {
+            "time": 13.875,
+            "opacity": 1,
+            "heightPx": 37
+          },
+          {
+            "time": 14,
+            "opacity": 1,
+            "heightPx": 37
+          },
+          {
+            "time": 14.125,
+            "opacity": 0.96,
+            "heightPx": 36
+          },
+          {
+            "time": 14.25,
+            "opacity": 0.65,
+            "heightPx": 24
+          },
+          {
+            "time": 14.375,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 14.5,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "text_below_floor",
+        "severity": "warning",
+        "message": "Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and 14 text elements stay under it for 0.5 s or more, the smallest \"PSY 110\" at 11 px: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.",
+        "text": "PSY 110",
+        "selector": "#tc3 > div:nth-of-type(2) > div:nth-of-type(2)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/tasks.html",
+        "bbox": {
+          "x": 41.46,
+          "y": 933.98,
+          "width": 55.79,
+          "height": 25.42
+        },
+        "time": 13.375,
+        "times": [
+          13.25,
+          13.25,
+          13.25,
+          13.375,
+          13.375,
+          13.375,
+          13.375,
+          13.375,
+          13.375,
+          13.5,
+          13.5,
+          13.5,
+          13.5,
+          13.5
+        ],
+        "fontPx": 11.31,
+        "floorPx": 28,
+        "seconds": 1,
+        "elements": [
+          {
+            "selector": "#tc3 > div:nth-of-type(2) > div:nth-of-type(2)",
+            "text": "PSY 110",
+            "fontPx": 11.31,
+            "time": 13.375,
+            "seconds": 1
+          },
+          {
+            "selector": "#tc1 > div:nth-of-type(2) > div:nth-of-type(2)",
+            "text": "MATH 101",
+            "fontPx": 12.61,
+            "time": 13.25,
+            "seconds": 1
+          },
+          {
+            "selector": "#tc4 > div:nth-of-type(2) > div:nth-of-type(2)",
+            "text": "FILI 102",
+            "fontPx": 13.12,
+            "time": 13.5,
+            "seconds": 0.875
+          },
+          {
+            "selector": "#tc3 > div:nth-of-type(3)",
+            "text": "Wed 9:00 AM",
+            "fontPx": 13.57,
+            "time": 13.375,
+            "seconds": 1
+          },
+          {
+            "selector": "#tc2 > div:nth-of-type(2) > div:nth-of-type(2)",
+            "text": "CHEM 120",
+            "fontPx": 13.88,
+            "time": 13.375,
+            "seconds": 0.875
+          },
+          {
+            "selector": "#tc1 > div:nth-of-type(3)",
+            "text": "11:00 PM",
+            "fontPx": 15.14,
+            "time": 13.25,
+            "seconds": 1
+          },
+          {
+            "selector": "div.k",
+            "text": "DUE THIS WEEK",
+            "fontPx": 15.5,
+            "time": 13.5,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#tc4 > div:nth-of-type(3)",
+            "text": "Fri 8:00 AM",
+            "fontPx": 15.74,
+            "time": 13.5,
+            "seconds": 0.875
+          },
+          {
+            "selector": "#tc3 > div:nth-of-type(2) > div:nth-of-type(1)",
+            "text": "Midterm",
+            "fontPx": 16.59,
+            "time": 13.375,
+            "seconds": 1
+          },
+          {
+            "selector": "#tc2 > div:nth-of-type(3)",
+            "text": "Sun 5:00 PM",
+            "fontPx": 16.66,
+            "time": 13.375,
+            "seconds": 0.875
+          },
+          {
+            "selector": "#tc1 > div:nth-of-type(2) > div:nth-of-type(1)",
+            "text": "Problem set 4",
+            "fontPx": 18.5,
+            "time": 13.25,
+            "seconds": 1
+          },
+          {
+            "selector": "#tc4 > div:nth-of-type(2) > div:nth-of-type(1)",
+            "text": "Essay draft",
+            "fontPx": 19.24,
+            "time": 13.5,
+            "seconds": 0.875
+          },
+          {
+            "selector": "#tc2 > div:nth-of-type(2) > div:nth-of-type(1)",
+            "text": "Lab report",
+            "fontPx": 20.36,
+            "time": 13.375,
+            "seconds": 0.875
+          },
+          {
+            "selector": "div.d",
+            "text": "1 done",
+            "fontPx": 21.46,
+            "time": 13.5,
+            "seconds": 1.375
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Fri 8:00 AM\" (4 words) is on screen 0.87 s (±0.01 s), under its 1.27 s floor: hold it about 0.5 s + 0.3 s a word (1.70 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Fri 8:00 AM",
+        "selector": "#tc4 > div:nth-of-type(3)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/tasks.html",
+        "bbox": {
+          "x": 1812.07,
+          "y": 887.2,
+          "width": 102.6099999999999,
+          "height": 38.39999999999998
+        },
+        "time": 13.406,
+        "words": 4,
+        "seconds": 0.867,
+        "floorSeconds": 1.275,
+        "measured": [
+          {
+            "time": 13.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.375,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 13.5,
+            "opacity": 0.94,
+            "heightPx": 38
+          },
+          {
+            "time": 13.625,
+            "opacity": 0.99,
+            "heightPx": 38
+          },
+          {
+            "time": 13.75,
+            "opacity": 1,
+            "heightPx": 38
+          },
+          {
+            "time": 13.875,
+            "opacity": 1,
+            "heightPx": 38
+          },
+          {
+            "time": 14,
+            "opacity": 1,
+            "heightPx": 38
+          },
+          {
+            "time": 14.125,
+            "opacity": 0.99,
+            "heightPx": 38
+          },
+          {
+            "time": 14.25,
+            "opacity": 0.82,
+            "heightPx": 31
+          },
+          {
+            "time": 14.375,
+            "opacity": 0.12,
+            "heightPx": 10
+          },
+          {
+            "time": 14.5,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 14.625,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "text_below_floor",
+        "severity": "warning",
+        "message": "Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and 2 text elements stay under it for 0.5 s or more, the smallest \"Wake\" at 19 px: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.",
+        "text": "Wake",
+        "selector": "div.tag",
+        "dataAttributes": {},
+        "sourceFile": "compositions/alarms.html",
+        "bbox": {
+          "x": 1581.49,
+          "y": 160.44,
+          "width": 51.6,
+          "height": 23.35
+        },
+        "time": 16,
+        "times": [
+          16,
+          16
+        ],
+        "fontPx": 18.68,
+        "floorPx": 28,
+        "seconds": 1.125,
+        "elements": [
+          {
+            "selector": "div.tag",
+            "text": "Wake",
+            "fontPx": 18.68,
+            "time": 16,
+            "seconds": 1.125
+          },
+          {
+            "selector": "#al-note > div:nth-of-type(1) > div:nth-of-type(2)",
+            "text": "FILI 102 at 8:00 · RM 202 (CICS)",
+            "fontPx": 19.61,
+            "time": 16,
+            "seconds": 1.125
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"rings an hour before FILI 102, every Tuesday\" (8 words) is on screen 0.80 s (±0.01 s), under its 2.17 s floor: hold it about 0.5 s + 0.3 s a word (2.90 s here) before it leaves or changes; see references/motion.md.",
+        "text": "rings an hour before FILI 102, every Tuesday",
+        "selector": "#al-sub",
+        "dataAttributes": {},
+        "sourceFile": "compositions/alarms.html",
+        "bbox": {
+          "x": 172,
+          "y": 640,
+          "width": 753.14,
+          "height": 45
+        },
+        "time": 16.273,
+        "words": 8,
+        "seconds": 0.797,
+        "floorSeconds": 2.175,
+        "measured": [
+          {
+            "time": 16,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 16.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 16.25,
+            "opacity": 0.32,
+            "heightPx": 45
+          },
+          {
+            "time": 16.375,
+            "opacity": 0.98,
+            "heightPx": 45
+          },
+          {
+            "time": 16.5,
+            "opacity": 1,
+            "heightPx": 45
+          },
+          {
+            "time": 16.625,
+            "opacity": 1,
+            "heightPx": 45
+          },
+          {
+            "time": 16.75,
+            "opacity": 1,
+            "heightPx": 45
+          },
+          {
+            "time": 16.875,
+            "opacity": 1,
+            "heightPx": 45
+          },
+          {
+            "time": 17,
+            "opacity": 1,
+            "heightPx": 45
+          },
+          {
+            "time": 17.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 17.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 17.375,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "text_below_floor",
+        "severity": "warning",
+        "message": "Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and 10 text elements stay under it for 0.5 s or more, the smallest \"8 min\" at 17 px: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.",
+        "text": "8 min",
+        "selector": "#mc2 > div:nth-of-type(2)",
+        "dataAttributes": {},
+        "sourceFile": "compositions/meals.html",
+        "bbox": {
+          "x": 884.35,
+          "y": 874.23,
+          "width": 46.66,
+          "height": 28.38
+        },
+        "time": 17.5,
+        "times": [
+          17.5,
+          17.5,
+          17.5,
+          17.5,
+          17.625,
+          17.625,
+          17.625,
+          17.625,
+          17.625,
+          17.625
+        ],
+        "fontPx": 17,
+        "floorPx": 28,
+        "seconds": 1.5,
+        "elements": [
+          {
+            "selector": "#mc2 > div:nth-of-type(2)",
+            "text": "8 min",
+            "fontPx": 17,
+            "time": 17.5,
+            "seconds": 1.5
+          },
+          {
+            "selector": "#mc3 > div:nth-of-type(2)",
+            "text": "10 min",
+            "fontPx": 17,
+            "time": 17.5,
+            "seconds": 1.5
+          },
+          {
+            "selector": "#mc4 > div:nth-of-type(2)",
+            "text": "15 min",
+            "fontPx": 17,
+            "time": 17.5,
+            "seconds": 1.5
+          },
+          {
+            "selector": "#mc1 > div:nth-of-type(2)",
+            "text": "5 min",
+            "fontPx": 17,
+            "time": 17.625,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#mc5 > div:nth-of-type(2)",
+            "text": "4 min",
+            "fontPx": 17,
+            "time": 17.625,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#mc3 > div:nth-of-type(1)",
+            "text": "Upgraded ramen",
+            "fontPx": 22,
+            "time": 17.5,
+            "seconds": 1.5
+          },
+          {
+            "selector": "#mc1 > div:nth-of-type(1)",
+            "text": "Overnight oats",
+            "fontPx": 22,
+            "time": 17.625,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#mc2 > div:nth-of-type(1)",
+            "text": "Kimchi rice mug",
+            "fontPx": 22,
+            "time": 17.625,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#mc4 > div:nth-of-type(1)",
+            "text": "Chicken adobo bowl",
+            "fontPx": 22,
+            "time": 17.625,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#mc5 > div:nth-of-type(1)",
+            "text": "Mug pancakes",
+            "fontPx": 22,
+            "time": 17.625,
+            "seconds": 1.375
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"Problem set 4 at 11 PM. Want a reminder at 9?\" (11 words) is on screen 0.93 s (±0.01 s), under its 2.85 s floor: hold it about 0.5 s + 0.3 s a word (3.80 s here) before it leaves or changes; see references/motion.md.",
+        "text": "Problem set 4 at 11 PM. Want a reminder at 9?",
+        "selector": "#cp-a",
+        "dataAttributes": {},
+        "sourceFile": "compositions/copilot.html",
+        "bbox": {
+          "x": 894.75,
+          "y": 584.26,
+          "width": 557.06,
+          "height": 98.52999999999997
+        },
+        "time": 20.273,
+        "words": 11,
+        "seconds": 0.93,
+        "floorSeconds": 2.85,
+        "measured": [
+          {
+            "time": 20,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 20.125,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 20.25,
+            "opacity": 0.48,
+            "heightPx": 76
+          },
+          {
+            "time": 20.375,
+            "opacity": 1,
+            "heightPx": 99
+          },
+          {
+            "time": 20.5,
+            "opacity": 1,
+            "heightPx": 100
+          },
+          {
+            "time": 20.625,
+            "opacity": 1,
+            "heightPx": 97
+          },
+          {
+            "time": 20.75,
+            "opacity": 1,
+            "heightPx": 96
+          },
+          {
+            "time": 20.875,
+            "opacity": 1,
+            "heightPx": 96
+          },
+          {
+            "time": 21,
+            "opacity": 1,
+            "heightPx": 96
+          },
+          {
+            "time": 21.125,
+            "opacity": 0.94,
+            "heightPx": 97
+          },
+          {
+            "time": 21.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 21.375,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 21.5,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "\"+ Remind me at 9:00 PM\" (6 words) is on screen 0.66 s (±0.01 s), under its 1.72 s floor: hold it about 0.5 s + 0.3 s a word (2.30 s here) before it leaves or changes; see references/motion.md.",
+        "text": "+ Remind me at 9:00 PM",
+        "selector": "#cp-chip",
+        "dataAttributes": {},
+        "sourceFile": "compositions/copilot.html",
+        "bbox": {
+          "x": 884,
+          "y": 807.12,
+          "width": 303.95000000000005,
+          "height": 33
+        },
+        "time": 20.539,
+        "words": 6,
+        "seconds": 0.664,
+        "floorSeconds": 1.725,
+        "measured": [
+          {
+            "time": 20.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 20.375,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 20.5,
+            "opacity": 0.3,
+            "heightPx": 33
+          },
+          {
+            "time": 20.625,
+            "opacity": 0.84,
+            "heightPx": 33
+          },
+          {
+            "time": 20.75,
+            "opacity": 1,
+            "heightPx": 33
+          },
+          {
+            "time": 20.875,
+            "opacity": 1,
+            "heightPx": 33
+          },
+          {
+            "time": 21,
+            "opacity": 1,
+            "heightPx": 33
+          },
+          {
+            "time": 21.125,
+            "opacity": 0.94,
+            "heightPx": 33
+          },
+          {
+            "time": 21.25,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 21.375,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 21.5,
+            "opacity": null,
+            "heightPx": null
+          }
+        ]
+      },
+      {
+        "code": "text_below_floor",
+        "severity": "warning",
+        "message": "Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and \"+ Remind me at 9:00 PM\" renders at 26 px for 0.63 s: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.",
+        "text": "+ Remind me at 9:00 PM",
+        "selector": "#cp-chip",
+        "dataAttributes": {},
+        "sourceFile": "compositions/copilot.html",
+        "bbox": {
+          "x": 884,
+          "y": 807.12,
+          "width": 303.95,
+          "height": 33
+        },
+        "time": 20.625,
+        "times": [
+          20.625
+        ],
+        "fontPx": 26,
+        "floorPx": 28,
+        "seconds": 0.625,
+        "elements": [
+          {
+            "selector": "#cp-chip",
+            "text": "+ Remind me at 9:00 PM",
+            "fontPx": 26,
+            "time": 20.625,
+            "seconds": 0.625
+          }
+        ]
+      }
+    ],
+    "enabled": true,
+    "step": 0.125,
+    "samples": 240
+  },
+  "audio": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  }
+}

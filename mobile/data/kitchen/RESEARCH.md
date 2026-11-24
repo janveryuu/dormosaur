@@ -1,0 +1,21 @@
+# Philippine dorm Kitchen research
+
+Reviewed November 24, 2026. The catalog uses single-student portions or small batches, with Filipino staples and regional dishes alongside a smaller set of internationally inspired recipes. The recipes use original instructions adapted to a microwave, hot plate, rice cooker, kettle or cold prep. Some chilled dishes also need a refrigerator or freezer.
+
+## Peso estimates
+
+`costPHP` is the estimated ingredient cost per serving in whole Philippine pesos. It covers the portion used, including a share of condiments. Market, brand, season, package size and location affect the checkout total. Electricity and equipment are outside the estimate. The data is bundled, so prices stay fixed until the catalog is updated.
+
+- The November 22 Metro Manila snapshot listed local rice at ₱46–49/kg, eggs at ₱10.20 each, whole chicken at ₱210.09/kg, tilapia at ₱155.75/kg, squash at ₱61.83/kg, pechay at ₱85.04/kg and calamansi at ₱115.51/kg. Fillets and small packs can cost more than the whole-product rates. [Department of Agriculture price monitoring](https://www.da.gov.ph/price-monitoring/), [eAgri prices](https://eagri.e.gov.ph/prices)
+- The DTI bulletin covers pantry goods such as sardines, soy sauce and noodles. Retail listings provide rough checks for dairy and coconut milk. These sources give package prices, which are apportioned to the recipe quantities. [DTI commodity bulletin](https://www.dti.gov.ph/wp-content/uploads/2025/08/BNPCSRPBULLETIN01FEBRUARY2025.002.pdf), [Landers condensed milk](https://www.landers.ph/dairy-chilled/uht-milk-milk-powder/condensed-milk.html), [Landers coconut milk](https://www.landers.ph/food-cupboard/cooking-ingredients/coconut-milk-flakes.html)
+
+## Dish references
+
+- The FNRI menu guides document everyday Filipino meals and merienda such as suam na mais, ginataang totong, tinapa with vegetables, salabat and sago at gulaman. The PhilRice catalog provides regional context for rice snacks. [DOST-FNRI 2021 guide](https://www.fnri.dost.gov.ph/images/images/standardtools/MenuGuideCalendar/MGC2021.pdf), [DOST-FNRI 2013 guide](https://www.fnri.dost.gov.ph/images/images/standardtools/MenuGuideCalendar/MGC-2013.pdf), [PhilRice kaKanin+](https://kakanin.philrice.gov.ph/product_home)
+- Regional adaptations preserve the main ingredients and flavor profiles. Chicken pastil uses a rice bowl in place of a banana-leaf parcel. Pinindot uses a small batch of glutinous rice balls, coconut milk and jackfruit. Dinengdeng uses a fish-bagoong broth with vegetables and seared tilapia. Laswa uses an unthickened vegetable broth. [BARMM on pastil](https://bangsamoro.gov.ph/news/latest-news/bangsamoro-delicacies-to-celebrate-eidl-fitr/), [Ibaan heritage on pinindot](https://www.ibaan.gov.ph/heritage/detail/pinindot/), [PIA on dinengdeng](https://pia.gov.ph/news/la-union-honors-culture-with-dinengdeng-festival/), [DOST-PCAARRD on laswa](https://iveg.pcaarrd.dost.gov.ph/img/Indigenous%20Vegetables%20Pamphlets/Pamphlet%20No.%208%20Pako.pdf)
+
+## Timing and safe cooking
+
+- Prep, heat-up, cooking and resting durations are estimates for the stated quantity. A step timer measures elapsed time. Pan size, ingredient thickness, appliance output and package directions can change how long food needs.
+- For doneness, the reference temperatures are 74°C for poultry and reheated leftovers, 71°C for ground non-poultry meat and egg dishes, and 63°C for fish. For whole eggs, cook until whites and yolks are firm unless a recipe specifically calls for pasteurized eggs labeled for uncooked use. Fresh chilled foods should go back in the refrigerator promptly. [FoodSafety.gov temperature chart](https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures), [FoodSafety.gov handling guidance](https://www.foodsafety.gov/keep-food-safe/4-steps-to-food-safety)
+- Recipes listing cooked rice assume it is ready when the recipe starts. If using leftovers, cool them quickly after the original cooking, refrigerate promptly and reheat once. Cook flour-based batters through before serving. [Food Standards Agency rice guidance](https://www.gov.uk/government/publications/home-food-fact-checker/home-food-fact-checker#can-you-reheat-rice), [FDA flour guidance](https://www.fda.gov/food/buy-store-serve-safe-food/handling-flour-safely-what-you-need-know)

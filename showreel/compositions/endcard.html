@@ -1,0 +1,45 @@
+<template>
+  <style>
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_500Medium.ttf'); font-weight: 500; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_600SemiBold.ttf'); font-weight: 600; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_700Bold.ttf'); font-weight: 700; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_800ExtraBold.ttf'); font-weight: 800; }
+    @font-face { font-family: 'Gelasio'; src: url('assets/fonts/Gelasio_500Medium_Italic.ttf'); font-style: italic; font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #F4F6F4; font-family: 'Jakarta', sans-serif; }
+    #ec-glow { position: absolute; left: 260px; top: -160px; width: 1400px; height: 1400px; border-radius: 50%; background: radial-gradient(closest-side, rgba(52,199,123,0.30), rgba(52,199,123,0)); }
+    #ec-icon { position: absolute; left: 50%; top: 330px; width: 250px; height: 250px; margin: -125px 0 0 -125px; border-radius: 58px; box-shadow: 0 40px 90px rgba(11,42,26,0.35); }
+    #ec-wave { position: absolute; left: 50%; top: 330px; width: 270px; height: 270px; margin: -135px 0 0 -135px; border-radius: 50%; border: 6px solid #34C77B; opacity: 0; }
+    #ec-name { position: absolute; left: 0; right: 0; top: 490px; text-align: center; font-weight: 800; font-size: 160px; letter-spacing: -0.055em; color: #0A1710; white-space: nowrap; }
+    #ec-name span { display: inline-block; }
+    #ec-tag { position: absolute; left: 0; right: 0; top: 700px; text-align: center; font-family: 'Gelasio', serif; font-style: italic; font-size: 50px; color: #0E7A4A; }
+    #ec-cta { position: absolute; left: 50%; top: 820px; width: 640px; margin-left: -320px; height: 88px; border-radius: 999px; background: #0A1710; color: #FFF;
+      display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 30px; font-weight: 700; }
+    #ec-cta .dot { width: 12px; height: 12px; border-radius: 50%; background: #34C77B; }
+    #ec-cta .u { color: #7DF0B5; }
+    #ec-jump { position: absolute; left: 1480px; top: 560px; width: 340px; filter: drop-shadow(0 24px 30px rgba(11,42,26,0.25)); }
+    #ec-flash { position: absolute; inset: 0; background: #FFFFFF; }
+  </style>
+  <div id="root" data-composition-id="endcard" data-width="1920" data-height="1080">
+    <div id="ec-glow"></div>
+    <div id="ec-wave"></div>
+    <img id="ec-icon" src="assets/img/icon.png" />
+    <div id="ec-name"><span>D</span><span>o</span><span>r</span><span>m</span><span>o</span><span>s</span><span>a</span><span>u</span><span>r</span></div>
+    <div id="ec-tag" data-var-text="tagline">Student life, sorted.</div>
+    <div id="ec-cta"><span class="dot"></span><span>Free on Android</span><span class="u" data-var-text="url">dormosaur.vercel.app</span></div>
+    <img id="ec-jump" src="assets/img/dormo-jumping.png" />
+    <div id="ec-flash"></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#ec-flash", { opacity: 1 }, { opacity: 0, duration: 0.5, ease: "power2.out" }, 0);
+    tl.fromTo("#ec-icon", { scale: 2.6, opacity: 0, filter: "blur(20px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 0);
+    tl.fromTo("#ec-wave", { scale: 0.9, opacity: 0.9 }, { scale: 3.4, opacity: 0, duration: 0.9, ease: "expo.out" }, 0.12);
+    tl.fromTo("#ec-glow", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 1.2, ease: "power2.out" }, 0);
+    tl.fromTo("#ec-name span", { opacity: 0.0, y: 50, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.04 }, 0.2);
+    tl.fromTo("#ec-tag", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.35, ease: "power3.out" }, 0.85);
+    tl.fromTo("#ec-cta", { opacity: 0, y: 30, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 1.15);
+    tl.fromTo("#ec-jump", { y: 600, rotation: 12 }, { y: 0, rotation: 0, duration: 0.6, ease: "back.out(1.6)" }, 1.4);
+    tl.to("#ec-jump", { y: -40, duration: 0.22, ease: "power2.out", yoyo: true, repeat: 1 }, 2.05);
+    window.__timelines["endcard"] = tl;
+  </script>
+</template>

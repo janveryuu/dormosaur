@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { rise } from '@/design/motion'
 import { elevation, radius, useTheme } from '@/design/theme'
 import type { ClassEntry } from '@/lib/repo'
-import { recipes } from '@/lib/recipes'
+import { formatRecipeTime, recipeBySlug, recipes } from '@/lib/recipes'
 import { classesOn, dayOf, formatTime, greeting, minutesOf, nextClass } from '@/lib/time'
 import { useApp } from '@/state/app'
 import { Press, Section, T } from '@/ui'
@@ -28,7 +28,8 @@ export default function Today() {
   const next = nextClass(classes, now)
   const due = deadlines.filter(d => !d.completed).slice(0, 3)
   const meal = mealPlan.find(m => m.day === today)
-  const recipe = meal ? recipes.find(r => r.slug === meal.recipeSlug) : recipes[now.getDate() % recipes.length]
+  const suggestedRecipes = recipes.filter(item => item.meal === 'Breakfast' || item.meal === 'Lunch' || item.meal === 'Dinner')
+  const recipe = (meal && recipeBySlug.get(meal.recipeSlug)) || suggestedRecipes[now.getDate() % suggestedRecipes.length]
   const nowMin = now.getHours() * 60 + now.getMinutes()
   const left = todays.filter(t => minutesOf(t.end) > nowMin).length
   const first = profile?.name?.split(' ')[0]
@@ -106,10 +107,10 @@ export default function Today() {
           <Section title={meal ? `${meal.meal} today` : 'Try today'} action="Kitchen" onAction={() => router.navigate('/kitchen')}>
             <Press onPress={() => router.push({ pathname: '/recipe/[slug]', params: { slug: recipe.slug } })} scale={0.98}
               style={[{ borderRadius: radius.lg, overflow: 'hidden', backgroundColor: c.card }, elevation(c, 1)]}>
-              <Image source={recipe.image} style={{ height: 150 }} contentFit="cover" transition={250} />
+              <Image source={recipe.image} placeholder={recipe.placeholder} style={{ height: 150 }} contentFit="cover" transition={250} />
               <View style={{ padding: 16, gap: 4 }}>
                 <T v="headline">{recipe.title}</T>
-                <T v="footnote" color={c.ink2}>{recipe.minutes} min · {recipe.appliance} · {recipe.cost}</T>
+                <T v="footnote" color={c.ink2}>{formatRecipeTime(recipe.minutes)} · {recipe.appliance} · {recipe.cost}</T>
               </View>
             </Press>
           </Section>

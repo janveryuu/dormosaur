@@ -35,7 +35,10 @@ export async function ensurePermission() {
  * Local scheduling keeps alarms working offline and without a server round-trip.
  */
 export async function syncAlarmNotifications(alarms: Alarm[], classes: ClassEntry[]) {
-  await Notifications.cancelAllScheduledNotificationsAsync()
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync()
+  await Promise.all(scheduled
+    .filter(notification => notification.content.data?.alarmId)
+    .map(notification => Notifications.cancelScheduledNotificationAsync(notification.identifier)))
   const enabled = alarms.filter(a => a.enabled)
   if (!enabled.length || !(await ensurePermission())) return
 
@@ -67,6 +70,31 @@ export async function syncAlarmNotifications(alarms: Alarm[], classes: ClassEntr
       })
     }
   }
+}
+
+const kitchenNotificationQueues = new Map<string, Promise<void>>()
+
+export function updateKitchenNotification(identifier: string, title: string, step: number, endsAt: number) {
+  if (Platform.OS === 'web') return
+  const previous = kitchenNotificationQueues.get(identifier) ?? Promise.resolve()
+  const ready = previous.then(async () => {
+    await Notifications.cancelScheduledNotificationAsync(identifier).catch(() => {})
+    if (endsAt - Date.now() < 1000 || !(await Notifications.getPermissionsAsync()).granted) return
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('kitchen-timers', {
+        name: 'Kitchen timers',
+        importance: Notifications.AndroidImportance.HIGH,
+        vibrationPattern: [0, 250, 150, 250],
+      })
+    }
+    await Notifications.scheduleNotificationAsync({
+      identifier,
+      content: { title, body: `Step ${step + 1} timer finished`, sound: 'default', data: { kitchenTimer: true } },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(endsAt), channelId: 'kitchen-timers' },
+    })
+  }).catch(() => {})
+  kitchenNotificationQueues.set(identifier, ready)
+  void ready.then(() => { if (kitchenNotificationQueues.get(identifier) === ready) kitchenNotificationQueues.delete(identifier) })
 }
 
 /**

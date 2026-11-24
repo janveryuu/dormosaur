@@ -1,0 +1,49 @@
+<template>
+  <style>
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_500Medium.ttf'); font-weight: 500; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_600SemiBold.ttf'); font-weight: 600; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_700Bold.ttf'); font-weight: 700; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_800ExtraBold.ttf'); font-weight: 800; }
+    @font-face { font-family: 'Gelasio'; src: url('assets/fonts/Gelasio_500Medium_Italic.ttf'); font-style: italic; font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #FBEFE4; font-family: 'Jakarta', sans-serif; }
+    #ml-glow { position: absolute; left: 360px; top: 260px; width: 1200px; height: 1200px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,255,255,0.9), rgba(255,255,255,0)); }
+    #ml-stage { position: absolute; inset: 0; }
+    #ml-line { position: absolute; left: 0; right: 0; top: 70px; text-align: center; font-weight: 800; font-size: 104px; letter-spacing: -0.05em; color: #3B200A; white-space: nowrap; }
+    #ml-line span { display: inline-block; margin: 0 0.11em; }
+    #ml-min { color: #0E7A4A; }
+    .ml-card { position: absolute; left: 960px; top: 1180px; width: 300px; height: 380px; margin-left: -150px; border-radius: 30px; background: #FFF; padding: 12px;
+      box-shadow: 0 30px 60px rgba(107,61,18,0.25); transform-origin: 50% 1000px; opacity: 0; }
+    .ml-card img { width: 276px; height: 276px; border-radius: 20px; object-fit: cover; display: block; }
+    .ml-card .n { font-size: 22px; font-weight: 800; color: #0A1710; margin: 12px 6px 0; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; }
+    .ml-card .p { position: absolute; right: 22px; top: 22px; background: rgba(10,23,16,0.78); color: #FFF; font-size: 17px; font-weight: 700; border-radius: 999px; padding: 6px 12px; }
+    #ml-chef { position: absolute; left: 960px; top: 560px; width: 430px; margin-left: -215px; filter: drop-shadow(0 30px 40px rgba(107,61,18,0.3)); }
+  </style>
+  <div id="root" data-composition-id="meals" data-width="1920" data-height="1080">
+    <div id="ml-glow"></div>
+    <div id="ml-stage">
+      <div id="ml-line"><span id="m1">Dorm</span><span id="m2">meals</span><span id="m3">in</span><span id="ml-min">minutes.</span></div>
+      <div class="ml-card" id="mc1"><img src="assets/img/overnight-oats.jpg" /><div class="n">Overnight oats</div><div class="p">5 min</div></div>
+      <div class="ml-card" id="mc2"><img src="assets/img/kimchi-fried-rice-mug.jpg" /><div class="n">Kimchi rice mug</div><div class="p">8 min</div></div>
+      <div class="ml-card" id="mc3"><img src="assets/img/upgraded-ramen.jpg" /><div class="n">Upgraded ramen</div><div class="p">10 min</div></div>
+      <div class="ml-card" id="mc4"><img src="assets/img/quick-chicken-adobo-bowl.jpg" /><div class="n">Chicken adobo bowl</div><div class="p">15 min</div></div>
+      <div class="ml-card" id="mc5"><img src="assets/img/mug-pancakes.jpg" /><div class="n">Mug pancakes</div><div class="p">4 min</div></div>
+      <img id="ml-chef" src="assets/img/chef-dormosaur.png" />
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#ml-stage", { x: 1500, filter: "blur(16px)" }, { x: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 0);
+    const ws = ["#m1", "#m2", "#m3", "#ml-min"]; const at = [0.15, 0.44, 0.8, 0.94];
+    ws.forEach((w, i) => tl.fromTo(w, { opacity: 0, y: -30, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.28, ease: "power4.out" }, at[i]));
+    // cards fan up from below like a hand of cards (pivot far below)
+    const ang = [-32, -16, 0, 16, 32];
+    ["#mc1", "#mc2", "#mc3", "#mc4", "#mc5"].forEach((c, i) => {
+      tl.fromTo(c, { opacity: 0, y: 200, rotation: 0 }, { opacity: 1, y: -770, rotation: ang[i], duration: 0.7, ease: "expo.out" }, 0.3 + Math.abs(i - 2) * 0.06);
+    });
+    tl.fromTo("#ml-chef", { y: 600, scale: 0.8 }, { y: 0, scale: 1, duration: 0.6, ease: "back.out(1.5)" }, 0.45);
+    tl.to("#ml-chef", { y: -24, duration: 0.18, ease: "power2.out", yoyo: true, repeat: 1 }, 1.1);
+    // exit: zoom through the chef into the next world
+    tl.to("#ml-stage", { scale: 1.6, opacity: 0, filter: "blur(20px)", transformOrigin: "50% 70%", duration: 0.3, ease: "power3.in" }, 1.68);
+    window.__timelines["meals"] = tl;
+  </script>
+</template>

@@ -1,0 +1,56 @@
+<template>
+  <style>
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_500Medium.ttf'); font-weight: 500; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_600SemiBold.ttf'); font-weight: 600; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_700Bold.ttf'); font-weight: 700; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_800ExtraBold.ttf'); font-weight: 800; }
+    @font-face { font-family: 'Gelasio'; src: url('assets/fonts/Gelasio_500Medium_Italic.ttf'); font-style: italic; font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #000000; font-family: 'Jakarta', sans-serif; }
+    #al-glow { position: absolute; left: 980px; top: 0; width: 1100px; height: 1100px; border-radius: 50%; background: radial-gradient(closest-side, rgba(61,214,140,0.28), rgba(61,214,140,0)); }
+    #al-stage { position: absolute; inset: 0; }
+    .al-l { position: absolute; left: 170px; font-weight: 800; font-size: 96px; letter-spacing: -0.045em; color: #F4F7F5; white-space: nowrap; }
+    .al-l span { display: inline-block; margin-right: 0.22em; }
+    #al-l1 { top: 370px; } #al-l2 { top: 490px; }
+    #al-classes { color: #7DF0B5; }
+    #al-phone { position: absolute; left: 1230px; top: 89px; width: 430px; height: 902px; border-radius: 70px; background: #1A1D1B; padding: 14px;
+      box-shadow: 0 60px 140px rgba(61,214,140,0.18), inset 0 0 0 2px #3A423D; }
+    #al-screen { position: relative; width: 402px; height: 874px; border-radius: 56px; overflow: hidden; background: #FFF; }
+    #al-app { width: 402px; height: 874px; }
+    #al-dim { position: absolute; inset: 0; background: rgba(0,0,0,0.35); opacity: 0; }
+    #al-note { position: absolute; left: 1060px; top: 150px; width: 640px; height: 150px; border-radius: 40px; background: rgba(30,34,32,0.86);
+      border: 1.5px solid rgba(255,255,255,0.12); box-shadow: 0 40px 90px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 26px; padding: 0 30px; opacity: 0; }
+    #al-note .big { font-size: 50px; font-weight: 800; color: #F4F7F5; letter-spacing: -0.03em; }
+    #al-note .small { font-size: 21px; font-weight: 600; color: #A6B1AA; margin-top: 2px; }
+    #al-note .tag { margin-left: auto; align-self: center; background: #3DD68C; color: #00140A; font-size: 20px; font-weight: 800; border-radius: 999px; padding: 10px 18px; }
+    #al-sub { position: absolute; left: 172px; top: 640px; font-family: 'Gelasio', serif; font-style: italic; font-size: 36px; color: #6A746E; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="alarms" data-width="1920" data-height="1080">
+    <div id="al-glow"></div>
+    <div id="al-stage">
+      <div class="al-l" id="al-l1"><span id="a1">Alarms</span><span id="a2">that</span><span id="a3">know</span></div>
+      <div class="al-l" id="al-l2"><span id="a4">your</span><span id="al-classes">classes.</span></div>
+      <div id="al-sub">rings an hour before FILI 102, every Tuesday</div>
+      <div id="al-phone"><div id="al-screen"><img id="al-app" src="assets/img/app-today-v2.png" /><div id="al-dim"></div></div></div>
+      <div id="al-note">
+        <svg width="92" height="92" viewBox="0 0 96 96"><circle cx="48" cy="48" r="40" fill="none" stroke="#2E3531" stroke-width="9"/><circle id="al-ring" cx="48" cy="48" r="40" fill="none" stroke="#3DD68C" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="251.3" transform="rotate(-90 48 48)"/></svg>
+        <div><div class="big">7:00 AM</div><div class="small">FILI 102 at 8:00 · RM 202 (CICS)</div></div>
+        <div class="tag">Wake</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#al-stage", { y: 1100, filter: "blur(16px)" }, { y: 0, filter: "blur(0px)", duration: 0.5, ease: "expo.out" }, 0);
+    tl.fromTo("#al-glow", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out" }, 0.1);
+    const ws = ["#a1", "#a2", "#a3", "#a4", "#al-classes"]; const at = [0.1, 0.53, 0.67, 0.8, 0.93];
+    ws.forEach((w, i) => tl.fromTo(w, { opacity: 0, filter: "blur(12px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power3.out" }, at[i]));
+    tl.fromTo("#al-app", { y: 0 }, { y: -40, duration: 1.6, ease: "power1.inOut" }, 0.2);
+    tl.to("#al-dim", { opacity: 1, duration: 0.25, ease: "power2.out" }, 0.9);
+    tl.fromTo("#al-note", { opacity: 0, y: -120, scale: 0.85 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 0.95);
+    tl.fromTo("#al-ring", { attr: { "stroke-dashoffset": 251.3 } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.8, ease: "power2.out" }, 1.05);
+    tl.fromTo("#al-sub", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.25, ease: "power3.out" }, 1.25);
+    // exit: whip right-to-left
+    tl.to("#al-stage", { x: -1500, filter: "blur(18px)", duration: 0.3, ease: "power3.in" }, 1.82);
+    window.__timelines["alarms"] = tl;
+  </script>
+</template>

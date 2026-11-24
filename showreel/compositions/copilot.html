@@ -1,0 +1,49 @@
+<template>
+  <style>
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_500Medium.ttf'); font-weight: 500; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_600SemiBold.ttf'); font-weight: 600; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_700Bold.ttf'); font-weight: 700; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_800ExtraBold.ttf'); font-weight: 800; }
+    @font-face { font-family: 'Gelasio'; src: url('assets/fonts/Gelasio_500Medium_Italic.ttf'); font-style: italic; font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(160deg, #E5F4EC 0%, #FFFFFF 60%, #EEF1EE 100%); font-family: 'Jakarta', sans-serif; }
+    #cp-stage { position: absolute; inset: 0; }
+    #cp-line { position: absolute; left: 0; right: 0; top: 90px; text-align: center; font-weight: 800; font-size: 92px; letter-spacing: -0.05em; color: #0A1710; white-space: nowrap; }
+    #cp-line span { display: inline-block; margin: 0 0.1em; }
+    #cp-dormo, #cp-copilot { color: #0E7A4A; }
+    #cp-mascot { position: absolute; left: 190px; top: 330px; width: 600px; height: 600px; filter: drop-shadow(0 30px 40px rgba(11,42,26,0.2)); }
+    .cp-b { position: absolute; max-width: 760px; font-size: 38px; font-weight: 600; line-height: 1.3; padding: 26px 34px; border-radius: 40px; opacity: 0; box-shadow: 0 24px 60px rgba(11,42,26,0.12); }
+    #cp-q { right: 200px; top: 380px; background: #0E7A4A; color: #FFF; border-bottom-right-radius: 12px; }
+    #cp-a { left: 860px; top: 560px; background: #FFF; color: #0A1710; border-bottom-left-radius: 12px; }
+    #cp-a b { color: #0E7A4A; }
+    #cp-typing { position: absolute; left: 860px; top: 560px; width: 150px; height: 84px; border-radius: 42px; background: #FFF; display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0; box-shadow: 0 24px 60px rgba(11,42,26,0.12); }
+    #cp-typing i { width: 14px; height: 14px; border-radius: 50%; background: #8A968F; display: block; }
+    #cp-chip { position: absolute; left: 860px; top: 790px; background: #E5F4EC; color: #0A5A37; font-size: 26px; font-weight: 700; padding: 14px 24px; border-radius: 999px; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="copilot" data-width="1920" data-height="1080">
+    <div id="cp-stage">
+      <div id="cp-line"><span id="p1">And</span><span id="cp-dormo">Dormo,</span><span id="p2">your</span><span id="p3">campus</span><span id="cp-copilot">copilot.</span></div>
+      <img id="cp-mascot" src="assets/img/dormosaur-greeting.png" />
+      <div class="cp-b" id="cp-q">What's due tomorrow?</div>
+      <div id="cp-typing"><i id="d1"></i><i id="d2"></i><i id="d3"></i></div>
+      <div class="cp-b" id="cp-a"><b>Problem set 4</b> at 11 PM. Want a reminder at 9?</div>
+      <div id="cp-chip">+ Remind me at 9:00 PM</div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#cp-stage", { scale: 0.82, filter: "blur(18px)", opacity: 0 }, { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.45, ease: "expo.out" }, 0);
+    const ws = ["#p1", "#cp-dormo", "#p2", "#p3", "#cp-copilot"]; const at = [0.13, 0.33, 0.99, 1.17, 1.54];
+    ws.forEach((w, i) => tl.fromTo(w, { opacity: 0, filter: "blur(12px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power3.out" }, at[i]));
+    tl.fromTo("#cp-mascot", { y: 420, rotation: -10 }, { y: 0, rotation: 0, duration: 0.65, ease: "back.out(1.6)" }, 0.28);
+    tl.to("#cp-mascot", { rotation: 4, duration: 0.2, ease: "power1.inOut", yoyo: true, repeat: 3, transformOrigin: "50% 90%" }, 0.95);
+    tl.fromTo("#cp-q", { opacity: 0, scale: 0.6, x: 40 }, { opacity: 1, scale: 1, x: 0, duration: 0.45, ease: "back.out(2)", transformOrigin: "100% 100%" }, 0.42);
+    tl.fromTo("#cp-typing", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)", transformOrigin: "0% 100%" }, 0.72);
+    ["#d1", "#d2", "#d3"].forEach((d, i) => tl.fromTo(d, { y: 0 }, { y: -10, duration: 0.12, ease: "power1.out", yoyo: true, repeat: 1 }, 0.8 + i * 0.08));
+    tl.to("#cp-typing", { opacity: 0, scale: 0.8, duration: 0.1, ease: "power2.in" }, 1.1);
+    tl.fromTo("#cp-a", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.8)", transformOrigin: "0% 100%" }, 1.16);
+    tl.fromTo("#cp-chip", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 1.45);
+    // exit: blur swap
+    tl.to("#cp-stage", { opacity: 0, filter: "blur(14px)", scale: 1.04, duration: 0.2, ease: "power2.in" }, 2.0);
+    window.__timelines["copilot"] = tl;
+  </script>
+</template>

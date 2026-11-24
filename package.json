@@ -19,10 +19,12 @@
     "video:render": "remotion render remotion/index.ts DormosaurAppleLaunch out/dormosaur-launch.mp4",
     "video:render-vertical": "remotion render remotion/index.ts DormosaurAppleShort out/dormosaur-short.mp4",
     "video:render-demo": "remotion render remotion/index.ts DormosaurDemo out/dormosaur-demo.mp4",
-    "eval:scanner": "tsx --env-file=.env.local scripts/eval-scanner.ts"
+    "eval:scanner": "tsx --env-file=.env.local scripts/eval-scanner.ts",
+    "audio": "node --env-file=.env.local scripts/elevenlabs.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
+    "@elevenlabs/elevenlabs-js": "^2.79.0",
     "@google/generative-ai": "^0.24.1",
     "@napi-rs/canvas": "^1.0.10",
     "@phosphor-icons/react": "^2.1.10",

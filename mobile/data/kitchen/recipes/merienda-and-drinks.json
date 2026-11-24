@@ -1,0 +1,3981 @@
+[
+  {
+    "slug": "calamansi-ade",
+    "title": "Calamansi Ade",
+    "meal": "Drink",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 14,
+    "blurb": "Fresh, sweet-tart calamansi juice poured over ice.",
+    "ingredients": [
+      {
+        "name": "calamansi",
+        "amount": 8,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "white sugar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 200,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Roll the calamansi on the counter, halve them, and squeeze through a strainer into a glass.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Stir in the sugar and chilled drinking water until the grains disappear. Add ice and taste.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "kalamansi juice",
+      "Philippine lime",
+      "palamig"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: clear cold calamansi limeade with ice and floating halved small green calamansi."
+  },
+  {
+    "slug": "salabat-calamansi",
+    "title": "Salabat with Calamansi",
+    "meal": "Drink",
+    "appliance": "Kettle",
+    "servings": 1,
+    "costPHP": 12,
+    "blurb": "A ginger infusion with a squeeze of bright citrus.",
+    "ingredients": [
+      {
+        "name": "ginger",
+        "amount": 15,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "calamansi",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 250,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash and thinly slice the ginger, then crush the slices lightly. Put them in a heatproof mug.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Boil the water in the kettle and pour it over the ginger.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Cover and steep. Strain the ginger, stir in brown sugar, and squeeze in the calamansi.",
+        "minutes": 8,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "ginger tea",
+      "hot ginger brew",
+      "tsaa"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: steaming clear amber Filipino ginger tea with a few slices of ginger and one tiny calamansi."
+  },
+  {
+    "slug": "filipino-hot-tablea",
+    "title": "Hot Tsokolate de Tablea",
+    "meal": "Drink",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 32,
+    "blurb": "A foamy cup of dark tablea with evaporated milk.",
+    "ingredients": [
+      {
+        "name": "unsweetened tablea",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 140,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "evaporated milk",
+        "amount": 60,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Break up the tablea and measure the water, milk, and sugar.",
+        "minutes": 2,
+        "phase": "prep"
+      },
+      {
+        "text": "Warm water and cacao in a small saucepan over medium-low heat. Whisk until the cacao melts, add the milk and sugar, and heat gently until steaming.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Whisk briskly for a few seconds to make a little foam, then pour into a mug.",
+        "minutes": 1,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "tsokolate batirol",
+      "tableya",
+      "Filipino hot chocolate"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: deep brown hot Filipino chocolate whisked from tablea in an ivory cup with a subtly frothy top."
+  },
+  {
+    "slug": "sago-gulaman",
+    "title": "Sago’t Gulaman",
+    "meal": "Drink",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 23,
+    "blurb": "Brown-sugar palamig with chewy sago and caramel-colored jelly.",
+    "ingredients": [
+      {
+        "name": "small tapioca pearl",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "agar powder",
+        "amount": 2,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 36,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 850,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 80,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Measure 200 ml water for the jelly, 350 ml for boiling the pearls, and 300 ml for the drink. Divide the sugar into two equal portions.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Stir agar and half the sugar into the jelly water. Bring to a boil and stir until fully dissolved. Pour into a shallow heatproof dish.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Let the jelly cool until firm, then cut it into small cubes.",
+        "minutes": 30,
+        "phase": "rest",
+        "timer": true
+      },
+      {
+        "text": "Boil the small pearls in the 350 ml water, stirring now and then. Follow the package if it needs longer, until the pearls look mostly translucent. Drain and rinse.",
+        "minutes": 16,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Stir the remaining sugar into the drink water until dissolved. Divide ice, jelly, and pearls between glasses, then pour over the sweetened water.",
+        "minutes": 4,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "sago at gulaman",
+      "samalamig",
+      "arnibal",
+      "tapioca jelly drink"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: clear glass of chilled Filipino sago at gulaman, dark amber brown sugar drink with tapioca pearls and translucent jelly cubes.",
+    "tip": "Choose quick-cooking small sago. Pearl sizes and agar strengths vary, so follow the package for timing and powder-to-water ratios."
+  },
+  {
+    "slug": "melon-sa-malamig",
+    "title": "Melon sa Malamig",
+    "meal": "Drink",
+    "appliance": "No cook",
+    "servings": 2,
+    "costPHP": 24,
+    "blurb": "Shredded cantaloupe in an icy, lightly sweetened cooler.",
+    "ingredients": [
+      {
+        "name": "cantaloupe",
+        "amount": 180,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "water",
+        "amount": 300,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "white sugar",
+        "amount": 4,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash the outside of the melon before cutting. Remove its seeds and scrape the orange flesh into fine strands with a fork.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Stir sugar into cold drinking water. Add the melon and pour over ice in two glasses.",
+        "minutes": 3,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "melon juice",
+      "cantaloupe cooler",
+      "melon palamig"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: glass of Filipino cantaloupe cooler with visible finely shaved ribbons of melon and ice."
+  },
+  {
+    "slug": "buko-pandan-water",
+    "title": "Buko Pandan Cooler",
+    "meal": "Drink",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 33,
+    "blurb": "Coconut water, tender buko strips, and a hint of pandan.",
+    "ingredients": [
+      {
+        "name": "coconut water",
+        "amount": 220,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "young coconut meat",
+        "amount": 50,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "pandan extract",
+        "amount": 0.125,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "white sugar",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice chilled young coconut meat into thin strips. Stir the pandan extract and sugar into the cold coconut water.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Add the coconut strips to a glass of ice and pour the pandan coconut water over them.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "buko juice",
+      "coco water",
+      "pandan coconut"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: glass of clear coconut pandan water with small strips of soft young coconut over ice."
+  },
+  {
+    "slug": "pineapple-ginger-spritz",
+    "title": "Pineapple Ginger Spritz",
+    "meal": "Drink",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 34,
+    "blurb": "Pineapple and a little fresh ginger topped with bubbles.",
+    "ingredients": [
+      {
+        "name": "pineapple",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "ginger",
+        "amount": 4,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "sparkling water",
+        "amount": 150,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Finely grate the ginger. Mash pineapple and ginger with a fork in a bowl. Press through a strainer, reserving a spoonful of pulp if you like.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Fill a glass with ice, add the pineapple-ginger juice, and top with cold sparkling water.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "pinya",
+      "sparkling pineapple juice",
+      "ginger soda"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: bubbly pale gold pineapple ginger spritz with ice cubes and pineapple wedge."
+  },
+  {
+    "slug": "watermelon-lime-cooler",
+    "title": "Watermelon Lime Cooler",
+    "meal": "Drink",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 25,
+    "blurb": "Ripe watermelon strained into a bright, refreshing cooler.",
+    "ingredients": [
+      {
+        "name": "watermelon",
+        "amount": 250,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "lime",
+        "amount": 0.5,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "water",
+        "amount": 50,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the chilled watermelon into cubes and remove visible seeds. Crush it with a fork, then press the pulp through a sieve.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Squeeze the lime into the juice, add cold water and ice, and serve right away.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "pakwan",
+      "watermelon juice",
+      "watermelon agua fresca"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: tall clear glass of pink watermelon lime juice with ice."
+  },
+  {
+    "slug": "dalanghita-iced-tea",
+    "title": "Dalanghita Iced Tea",
+    "meal": "Drink",
+    "appliance": "Kettle",
+    "servings": 1,
+    "costPHP": 22,
+    "blurb": "Black tea brightened with juicy local mandarin.",
+    "ingredients": [
+      {
+        "name": "black tea bag",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "dalanghita",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "white sugar",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 140,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash and halve the dalanghita. Squeeze the juice through a sieve.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Boil the water in a kettle. Pour it over the tea bag in a heatproof mug.",
+        "minutes": 3,
+        "phase": "cook"
+      },
+      {
+        "text": "Steep the tea and remove the bag. Stir in the sugar while warm.",
+        "minutes": 4,
+        "phase": "rest",
+        "timer": true
+      },
+      {
+        "text": "Pour the tea and citrus juice into a larger glass of ice and stir.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "mandarin iced tea",
+      "orange tea",
+      "dalandan substitute"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: a glass of amber iced black tea with bright Filipino mandarin segments."
+  },
+  {
+    "slug": "cucumber-calamansi-water",
+    "title": "Cucumber Calamansi Water",
+    "meal": "Drink",
+    "appliance": "No cook",
+    "servings": 2,
+    "costPHP": 12,
+    "blurb": "A lightly flavored pitcher of cucumber and calamansi water.",
+    "ingredients": [
+      {
+        "name": "cucumber",
+        "amount": 70,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "calamansi",
+        "amount": 3,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "water",
+        "amount": 450,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash the produce. Thinly slice the cucumber and squeeze the calamansi into a covered jug of cold drinking water.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Infuse the drink in the refrigerator, then pour over ice.",
+        "minutes": 15,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "pipino water",
+      "infused water",
+      "calamansi spa water"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: clear cold infused water over ice, thin cucumber rounds and little halved green calamansi."
+  },
+  {
+    "slug": "banana-soy-shake",
+    "title": "Banana Soy Shake",
+    "meal": "Drink",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 31,
+    "blurb": "Mashed ripe banana turns chilled soy milk thick and sweet.",
+    "ingredients": [
+      {
+        "name": "banana",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy milk",
+        "amount": 200,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ground cinnamon",
+        "amount": 0.25,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel a ripe banana and mash it as smoothly as possible in a bowl.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Whisk in the cold soy milk a little at a time. Pour into a glass and dust with cinnamon.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Soy"
+    ],
+    "searchTerms": [
+      "banana shake",
+      "soy smoothie",
+      "saging",
+      "toyo milk"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small clear glass filled with thick creamy pale banana soy shake and sliced banana nearby."
+  },
+  {
+    "slug": "iced-ube-milk",
+    "title": "Iced Ube Milk",
+    "meal": "Drink",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 28,
+    "blurb": "A violet swirl of sweet ube jam in cold milk.",
+    "ingredients": [
+      {
+        "name": "ube halaya",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "milk",
+        "amount": 180,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "ice",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash the ube jam with a spoonful of milk to loosen it. Smear a little on the inside of a glass.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Add ice. Stir the remaining jam into the cold milk and pour into the glass.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "purple yam milk",
+      "ube latte without coffee",
+      "halaya drink"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: tall glass of pastel violet natural ube milk with ice and subtle white purple swirls."
+  },
+  {
+    "slug": "condensed-milk-iced-coffee",
+    "title": "Condensed Milk Iced Coffee",
+    "meal": "Drink",
+    "appliance": "Kettle",
+    "servings": 1,
+    "costPHP": 17,
+    "blurb": "Strong instant coffee mellowed by a little condensed milk.",
+    "ingredients": [
+      {
+        "name": "instant coffee",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "sweetened condensed milk",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "water",
+        "amount": 100,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil drinking water in the kettle. Dissolve instant coffee in 100 ml hot water in a heatproof mug.",
+        "minutes": 3,
+        "phase": "cook"
+      },
+      {
+        "text": "Stir in the condensed milk. Fill a tall glass with ice and pour the coffee over it.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "iced kape",
+      "cafe sua da inspired",
+      "condensed coffee"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino cold coffee, amber layered with creamy condensed milk and several clear ice cubes."
+  },
+  {
+    "slug": "pandan-barley-tea",
+    "title": "Pandan Barley Tea",
+    "meal": "Drink",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 15,
+    "blurb": "Toasty barley and fresh pandan make an unsweetened tea.",
+    "ingredients": [
+      {
+        "name": "pearl barley",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "pandan leaf",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "water",
+        "amount": 500,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse and pat the barley dry. Rinse the pandan leaf and tie it into a loose knot.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Toast the barley in a dry saucepan over medium heat, stirring, until golden and fragrant.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Add the water carefully, bring to a boil, and simmer with the pandan for about 10 minutes. Strain and serve warm.",
+        "minutes": 14,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Barley (gluten)"
+    ],
+    "searchTerms": [
+      "barley tea",
+      "roasted barley",
+      "pandan infusion"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: clear amber unsweetened barley tea with an elegant single folded pandan leaf beside the glass."
+  },
+  {
+    "slug": "tamarind-cooler",
+    "title": "Tamarind Cooler",
+    "meal": "Drink",
+    "appliance": "Kettle",
+    "servings": 1,
+    "costPHP": 20,
+    "blurb": "Tangy sampalok sweetened with brown sugar over ice.",
+    "ingredients": [
+      {
+        "name": "tamarind pulp",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 220,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Boil the water in the kettle. Carefully pour it over the tamarind pulp in a heatproof bowl.",
+        "minutes": 3,
+        "phase": "cook"
+      },
+      {
+        "text": "Soak the pulp, then mash it with a spoon and strain out fibers and seeds.",
+        "minutes": 10,
+        "phase": "rest",
+        "timer": true
+      },
+      {
+        "text": "Stir brown sugar into the liquid until dissolved, then pour over a full glass of ice.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "sampalok juice",
+      "agua de tamarindo",
+      "tamarind palamig"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: rustic iced amber tamarind juice in a plain glass with a tamarind pod to the side."
+  },
+  {
+    "slug": "microwave-ube-pudding",
+    "title": "Microwave Ube Pudding",
+    "meal": "Dessert",
+    "appliance": "Microwave",
+    "servings": 1,
+    "costPHP": 28,
+    "blurb": "A spoonable purple yam pudding made in one microwave-safe bowl.",
+    "ingredients": [
+      {
+        "name": "ube halaya",
+        "amount": 40,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "milk",
+        "amount": 170,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cornstarch",
+        "amount": 12,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "white sugar",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Whisk cornstarch into cold milk in a deep microwave-safe bowl until completely smooth. Stir in the halaya and sugar.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Microwave at full power, whisking after each 30–45 second burst, until the pudding bubbles and coats the spoon. Use oven mitts.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Let the bowl stand until comfortable to eat and slightly thicker.",
+        "minutes": 5,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "ube custard",
+      "purple yam dessert",
+      "ube pudding"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: thick creamy violet Filipino purple yam pudding in a fresh white ramekin."
+  },
+  {
+    "slug": "maja-blanca",
+    "title": "Maja Blanca with Corn",
+    "meal": "Dessert",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 31,
+    "blurb": "Chilled coconut pudding squares with sweet corn throughout.",
+    "ingredients": [
+      {
+        "name": "coconut milk",
+        "amount": 240,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "sweet corn kernel",
+        "amount": 70,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cornstarch",
+        "amount": 32,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 70,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "white sugar",
+        "amount": 28,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Drain the corn. Mix cornstarch into cold water to make a smooth slurry. Set out a heatproof shallow dish.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat coconut milk, sugar, and corn over medium heat, stirring. When you see small bubbles, turn the heat to low.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Whisk the slurry again, then pour it in slowly. Stir until very thick and glossy, then scrape into the dish.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Cool for 15 minutes and refrigerate for 45 minutes or until set enough to slice.",
+        "minutes": 60,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "coconut pudding squares",
+      "coconut corn pudding",
+      "maja de maiz"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small pristine white Filipino coconut corn pudding squares with yellow corn and browned coconut crumbs."
+  },
+  {
+    "slug": "stovetop-leche-flan",
+    "title": "Stovetop Leche Flan",
+    "meal": "Dessert",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 33,
+    "blurb": "Silky steamed egg custard under a thin layer of amber caramel.",
+    "ingredients": [
+      {
+        "name": "egg",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "evaporated milk",
+        "amount": 150,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "sweetened condensed milk",
+        "amount": 65,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "white sugar",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "vanilla extract",
+        "amount": 0.25,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Lightly whisk eggs, evaporated milk, condensed milk, and vanilla. Strain into a jug. Set out a small heatproof metal mold and prepare a covered steamer.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Cook sugar and the measured water in a small light saucepan, without stirring, until medium amber. Use dry mitts and carefully pour hot caramel into the mold. Leave it untouched until hard.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Pour the egg mixture over the hardened caramel and cover the mold with foil. Steam over gently simmering water for about 25 minutes. The edges should be set and the center reach 71°C. Keep water below the mold and add hot water if needed.",
+        "minutes": 29,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Cool for 20 minutes and refrigerate for at least 1 hour. Loosen the rim and invert onto a rimmed plate.",
+        "minutes": 80,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Milk"
+    ],
+    "searchTerms": [
+      "steamed flan",
+      "filipino custard",
+      "caramel custard"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino leche flan custard, glossy amber caramel draping a small oval of firm golden egg custard.",
+    "tip": "Hot caramel can burn badly. Keep fingers and any extra water clear of the hot pan. Use the steamer on a stable, permitted cooking surface."
+  },
+  {
+    "slug": "pinindot-with-jackfruit",
+    "title": "Pinindot with Jackfruit",
+    "meal": "Dessert",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 36,
+    "blurb": "A small pot of Batangas-style coconut bilo-bilo with sweet langka.",
+    "ingredients": [
+      {
+        "name": "glutinous rice flour",
+        "amount": 65,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "water",
+        "amount": 145,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "coconut milk",
+        "amount": 250,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ripe jackfruit",
+        "amount": 85,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 24,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix the rice flour with 45 ml of water, adding it gradually until pliable. Roll into small marble-sized balls. Slice the jackfruit into strips.",
+        "minutes": 8,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring coconut milk, the remaining water, sugar, and salt to a gentle simmer.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Add the rice balls and stir gently so they stay separate. Once they float, simmer for another 3 minutes until the centers are chewy throughout. Add jackfruit and warm through in the final 2 minutes.",
+        "minutes": 8,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Let the coconut broth cool slightly before serving.",
+        "minutes": 3,
+        "phase": "rest"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "ginataang bilo-bilo",
+      "pinaltok",
+      "pinindot",
+      "langka sticky rice balls"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: warm Pinindot coconut dessert soup with small round glutinous rice balls and golden jackfruit."
+  },
+  {
+    "slug": "mini-halo-halo",
+    "title": "Mini Halo-Halo",
+    "meal": "Dessert",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 48,
+    "blurb": "A mini glass of ice, sweet beans, nata de coco, evaporated milk, and ube.",
+    "ingredients": [
+      {
+        "name": "sweetened red bean",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "nata de coco",
+        "amount": 35,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ube halaya",
+        "amount": 35,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "evaporated milk",
+        "amount": 65,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Spoon the cooked sweet beans and drained nata into a sturdy glass. Crush the ice with a rolling pin inside a clean, sturdy bag.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Pile the crushed ice into the glass, pour in evaporated milk, and top with ube halaya. Mix from the bottom to eat.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "halo halo",
+      "Filipino shaved ice",
+      "ube ice dessert"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small tall glass of Filipino halo-halo, colorful jelly, boiled sweet beans and shaved ice with ube on top."
+  },
+  {
+    "slug": "filipino-fruit-salad",
+    "title": "Filipino Fruit Salad",
+    "meal": "Dessert",
+    "appliance": "No cook",
+    "servings": 2,
+    "costPHP": 42,
+    "blurb": "Creamy fruit cocktail with nata de coco and a hint of condensed milk.",
+    "ingredients": [
+      {
+        "name": "canned fruit cocktail",
+        "amount": 250,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "nata de coco",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "all-purpose cream",
+        "amount": 85,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "sweetened condensed milk",
+        "amount": 35,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Drain fruit cocktail and nata well to keep the dressing thick. Stir chilled cream and condensed milk together in a bowl.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Fold the fruit and nata through the cream.",
+        "minutes": 2,
+        "phase": "prep"
+      },
+      {
+        "text": "Cover and chill to let the fruit and cream settle before scooping into cups.",
+        "minutes": 25,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "creamy fruit cocktail",
+      "pinoy fruit salad",
+      "holiday fruit salad"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small Filipino creamy fruit salad with fruit cocktail and red and green jelly pieces in white shallow bowl."
+  },
+  {
+    "slug": "coffee-jelly-cups",
+    "title": "Coffee Jelly Cups",
+    "meal": "Dessert",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 28,
+    "blurb": "Coffee agar cubes finished with cold sweet milk.",
+    "ingredients": [
+      {
+        "name": "instant coffee",
+        "amount": 3,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "agar powder",
+        "amount": 2,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "white sugar",
+        "amount": 18,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 250,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "evaporated milk",
+        "amount": 80,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "sweetened condensed milk",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mix agar powder and sugar into cold water in a small saucepan. Get a shallow heatproof dish ready.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring to a gentle boil, stirring until the agar is dissolved. Stir in the instant coffee off the heat and pour into the dish.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Cool for 15 minutes, then chill for 30 minutes or until firm.",
+        "minutes": 45,
+        "phase": "rest",
+        "timer": true
+      },
+      {
+        "text": "Cube the chilled jelly. Whisk the two milks together and spoon over the jelly in small cups.",
+        "minutes": 4,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "coffee gulaman",
+      "kape jelly",
+      "coffee gelatin"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small clear glass dessert cup with dark coffee gelatin cubes and lightly sweetened cream.",
+    "tip": "Check the agar package for its setting strength and adjust the amount for 250 ml if needed."
+  },
+  {
+    "slug": "chocolate-banana-ice-candy",
+    "title": "Chocolate Banana Ice Candy",
+    "meal": "Dessert",
+    "appliance": "No cook",
+    "servings": 3,
+    "costPHP": 22,
+    "blurb": "A freezer treat made with ripe bananas, cocoa, and milk.",
+    "ingredients": [
+      {
+        "name": "banana",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "milk",
+        "amount": 180,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cocoa powder",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "sweetened condensed milk",
+        "amount": 2,
+        "unit": "tbsp",
+        "aisle": "Dairy & eggs"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash ripe bananas until smooth. Whisk cocoa with condensed milk, then gradually whisk in milk and the banana.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Use a funnel to fill clean food-safe ice candy sleeves or use small freezer-pop molds. Seal with a little room for expansion.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Freeze for 6 hours or until solid. Run cool water briefly over the mold if it sticks.",
+        "minutes": 360,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "ice candy",
+      "chocolate banana popsicle",
+      "frozen saging"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino ice candy made from frozen banana and cocoa in narrow transparent plastic tubes. Picture two modest portions on a chilled ivory saucer, one still partly inside its clear sleeve, the other peeled open and snapped in half to reveal its smooth icy pale cocoa interior. Tiny frost crystals, small pieces of fresh sliced banana next to the frozen treats. No sticks, no dark crust or frosting."
+  },
+  {
+    "slug": "frozen-mango-yogurt-bites",
+    "title": "Frozen Mango Yogurt Bites",
+    "meal": "Dessert",
+    "appliance": "No cook",
+    "servings": 2,
+    "costPHP": 29,
+    "blurb": "Little spoonfuls of yogurt and ripe mango frozen into bite-size pieces.",
+    "ingredients": [
+      {
+        "name": "ripe mango",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "plain yogurt",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "honey",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Dice the mango and stir it into the yogurt with the honey. Line a plate with parchment.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Scoop teaspoon-size mounds onto the plate, leaving gaps between them.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Freeze until firm. Let the bites sit for a minute before eating to take the edge off the chill.",
+        "minutes": 120,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "mango froyo",
+      "frozen fruit bites",
+      "mangga yogurt"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: cluster of four small frozen creamy yogurt and mango bites on a cold ivory saucer."
+  },
+  {
+    "slug": "mais-con-yelo",
+    "title": "Mais con Yelo",
+    "meal": "Dessert",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 26,
+    "blurb": "Sweet corn, crunchy ice, and a drizzle of evaporated milk.",
+    "ingredients": [
+      {
+        "name": "canned sweet corn",
+        "amount": 85,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ice",
+        "amount": 140,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "evaporated milk",
+        "amount": 60,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "white sugar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Drain the ready-to-eat corn. Crush the ice in a clean sturdy bag with a rolling pin.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Layer corn and crushed ice in a glass. Add sugar and evaporated milk, then stir with a long spoon.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "mais con hielo",
+      "corn shaved ice",
+      "sweet corn dessert"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: clear glass layered with golden sweetcorn kernels, finely shaved ice and milk."
+  },
+  {
+    "slug": "ginataang-bayabas",
+    "title": "Ginataang Bayabas",
+    "meal": "Dessert",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 28,
+    "blurb": "Soft guava wedges in lightly sweetened coconut milk.",
+    "ingredients": [
+      {
+        "name": "guava",
+        "amount": 280,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "coconut milk",
+        "amount": 200,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 100,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 24,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash the ripe but firm guavas and cut into wedges. Scoop out the hard seedy cores with a spoon.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Simmer the guava wedges in water until you can pierce them with a fork.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Add coconut milk, sugar, and salt. Simmer gently until the guava is completely tender and the coconut broth lightly coats a spoon.",
+        "minutes": 7,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Let it cool slightly before ladling into bowls.",
+        "minutes": 3,
+        "phase": "rest"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "guava in coconut milk",
+      "sweet guava stew",
+      "gata dessert"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino guava slices in small ceramic bowl with sweet ivory coconut milk."
+  },
+  {
+    "slug": "skillet-espasol",
+    "title": "Skillet Espasol",
+    "meal": "Dessert",
+    "appliance": "Hot plate",
+    "servings": 3,
+    "costPHP": 24,
+    "blurb": "Chewy coconut rice rolls with a lightly toasted coating.",
+    "ingredients": [
+      {
+        "name": "glutinous rice flour",
+        "amount": 95,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "coconut milk",
+        "amount": 200,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "white sugar",
+        "amount": 42,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "desiccated coconut",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Measure the flour, milk, sugar, and salt. Line a plate with parchment.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Toast all the rice flour in a dry pan over medium-low heat, constantly stirring until evenly light beige. Transfer to a bowl. Lightly toast the desiccated coconut in the same pan and set it aside for the coating.",
+        "minutes": 11,
+        "phase": "cook"
+      },
+      {
+        "text": "In a saucepan, warm the coconut milk with sugar and salt. Stir in the toasted flour gradually and keep stirring over low heat until a thick, fully hydrated dough pulls away from the pan.",
+        "minutes": 12,
+        "phase": "cook"
+      },
+      {
+        "text": "Let the dough cool until safe to handle.",
+        "minutes": 12,
+        "phase": "rest",
+        "timer": true
+      },
+      {
+        "text": "Divide into six stubby rolls, then roll them in the toasted coconut.",
+        "minutes": 5,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "Laguna rice cake",
+      "toasted rice cake",
+      "coconut mochi rolls"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: three warm ivory Filipino espasol toasted glutinous rice logs dusted with toasted rice flour.",
+    "tip": "This dorm version uses dry coconut on the outside so all the rice flour cooks into the dough."
+  },
+  {
+    "slug": "coconut-cinnamon-rice-pudding",
+    "title": "Coconut Cinnamon Rice Pudding",
+    "meal": "Dessert",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 23,
+    "blurb": "Cooked rice simmered until creamy with gata, cinnamon, and raisins.",
+    "ingredients": [
+      {
+        "name": "cooked rice",
+        "amount": 180,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "coconut milk",
+        "amount": 150,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "milk",
+        "amount": 100,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "white sugar",
+        "amount": 24,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "raisin",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ground cinnamon",
+        "amount": 0.25,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Measure the ingredients. Use freshly cooked rice or rice chilled promptly after cooking.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Simmer rice, coconut milk, milk, sugar, and raisins in a small pot. Stir often until very creamy and at least 74°C throughout if using chilled rice.",
+        "minutes": 12,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Rest to thicken, then spoon into small bowls and dust with cinnamon.",
+        "minutes": 4,
+        "phase": "rest"
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "arroz con leche",
+      "coconut rice dessert",
+      "cinnamon rice pudding"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: silky coconut rice pudding in ivory bowl dusted with a little cinnamon."
+  },
+  {
+    "slug": "mango-sago-pudding",
+    "title": "Mango Sago Pudding",
+    "meal": "Dessert",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 43,
+    "blurb": "Ripe mango, tiny sago pearls, and creamy coconut milk served cold.",
+    "ingredients": [
+      {
+        "name": "small tapioca pearl",
+        "amount": 35,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ripe mango",
+        "amount": 220,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "coconut milk",
+        "amount": 150,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "white sugar",
+        "amount": 16,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 450,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and dice the mango. Mash half with the coconut milk and sugar.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring the water to a boil and add the small pearls. Stir occasionally and follow the package timing, cooking until the pearls are mostly translucent. Drain and rinse.",
+        "minutes": 17,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Fold the cooked pearls and diced mango into the mango coconut mixture.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Cover and chill before serving.",
+        "minutes": 25,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "mango sago dessert",
+      "mangga sago",
+      "tapioca pudding"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small glass cup of pale orange mango and translucent sago with diced fresh ripe mango."
+  },
+  {
+    "slug": "skillet-banana-brownie",
+    "title": "Skillet Banana Brownie",
+    "meal": "Dessert",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 25,
+    "blurb": "A small, soft cocoa brownie made with ripe banana on a hot plate.",
+    "ingredients": [
+      {
+        "name": "banana",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "all-purpose flour",
+        "amount": 38,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cocoa powder",
+        "amount": 14,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "white sugar",
+        "amount": 22,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "baking powder",
+        "amount": 0.25,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash the banana. Beat in egg, sugar, and most of the oil, then fold in flour, cocoa, and baking powder until no dry patches remain.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Oil a small nonstick skillet, add batter, and cover. Cook on the lowest heat until the top is set and a toothpick comes out with moist crumbs. The center must reach at least 71°C. If there is wet batter, keep cooking in short increments.",
+        "minutes": 17,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Turn off the hot plate and let the brownie settle before slicing.",
+        "minutes": 6,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "stovetop chocolate brownie",
+      "cocoa banana cake",
+      "no oven brownie"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: chewy deep brown chocolate banana brownie squares in a modest stack, one cut open."
+  },
+  {
+    "slug": "pineapple-gulaman",
+    "title": "Pineapple Gulaman Squares",
+    "meal": "Dessert",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 20,
+    "blurb": "Clear yellow agar squares with juicy pieces of canned pineapple.",
+    "ingredients": [
+      {
+        "name": "canned pineapple chunk",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "agar powder",
+        "amount": 3,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 230,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "white sugar",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Drain and dice canned pineapple. Whisk the agar powder and sugar into cold water in a small saucepan.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring to a boil, stirring until the agar dissolves. Scatter the diced pineapple in a shallow heatproof dish and pour in the dissolved agar.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Cool for 15 minutes and chill for 30 minutes or until set.",
+        "minutes": 45,
+        "phase": "rest",
+        "timer": true
+      },
+      {
+        "text": "Slice the chilled jelly into squares and lift them with a thin spatula.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "pineapple jelly",
+      "tropical agar",
+      "pinya gulaman"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: pale yellow transparent pineapple jelly with little pineapple bits, served as a small individual molded portion.",
+    "tip": "Agar packets vary in strength. Follow the package if it specifies a different amount for 230 ml of liquid."
+  },
+  {
+    "slug": "crispy-cheese-sticks",
+    "title": "Crispy Cheese Sticks",
+    "meal": "Snack",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 32,
+    "blurb": "A school-canteen favorite made with thin wrappers and melted cheese.",
+    "ingredients": [
+      {
+        "name": "lumpia wrapper",
+        "amount": 6,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cheddar",
+        "amount": 70,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the cheddar into six slim sticks. Roll each in a wrapper, fold in the ends, and dampen the last edge with a little water to seal.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat a thin layer of oil over medium heat. Cook the sticks in one layer, turning with tongs until browned on several sides. Lower the heat if the wrappers darken quickly.",
+        "minutes": 8,
+        "phase": "cook"
+      },
+      {
+        "text": "Drain on a lined plate. Give the melted cheese a few minutes to cool before eating.",
+        "minutes": 3,
+        "phase": "rest"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "lumpiang cheese",
+      "canteen cheese stick",
+      "cheese lumpia"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: slim golden Filipino cheese sticks in crisp spring roll wrappers, broken to show white melted cheese."
+  },
+  {
+    "slug": "adobong-mani",
+    "title": "Garlic Adobong Mani",
+    "meal": "Snack",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 20,
+    "blurb": "Crunchy toasted peanuts tossed with crisp garlic and a little salt.",
+    "ingredients": [
+      {
+        "name": "raw peanut",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "garlic",
+        "amount": 3,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 0.25,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Thinly slice three peeled garlic cloves. Measure the peanuts and set aside a heatproof plate.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Toast peanuts in a dry skillet over medium-low heat, shaking the pan frequently until evenly golden and fragrant. Transfer them to the plate.",
+        "minutes": 12,
+        "phase": "cook"
+      },
+      {
+        "text": "Heat oil in the same pan on medium-low and fry garlic until golden. Toss the warm peanuts and salt with the garlic.",
+        "minutes": 3,
+        "phase": "cook"
+      },
+      {
+        "text": "Spread in one layer so the peanuts stay crisp as they cool.",
+        "minutes": 5,
+        "phase": "rest"
+      }
+    ],
+    "allergens": [
+      "Peanut"
+    ],
+    "searchTerms": [
+      "garlic peanuts",
+      "street snack",
+      "roasted mani"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: snack bowl of toasted skin-on peanuts with crisp slivers of fried garlic."
+  },
+  {
+    "slug": "spicy-suka-corn-cup",
+    "title": "Spicy Suka Corn Cup",
+    "meal": "Snack",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 22,
+    "blurb": "Warm corn tossed with cane vinegar, chopped chili, and scallion.",
+    "ingredients": [
+      {
+        "name": "canned sweet corn",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cane vinegar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "scallion",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "bird’s eye chili",
+        "amount": 0.5,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Drain the corn. Slice the scallion and finely chop the chili, removing the seeds for a milder snack.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat the oil in a skillet and sauté the corn until steaming and slightly blistered. Stir in the scallion for the final minute.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Take off the heat, then add vinegar, chili, and a pinch of salt. Spoon into a small cup.",
+        "minutes": 1,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "sukang mais",
+      "spicy sweetcorn",
+      "chili vinegar corn"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino snack cup with yellow corn kernels tossed in vinegar, red chili and seasonings."
+  },
+  {
+    "slug": "singkamas-cucumber-cups",
+    "title": "Singkamas and Cucumber Cups",
+    "meal": "Snack",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 21,
+    "blurb": "Cool jicama and cucumber sticks with a salty calamansi dip.",
+    "ingredients": [
+      {
+        "name": "jicama",
+        "amount": 110,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cucumber",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "calamansi",
+        "amount": 3,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "chili flake",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel the jicama and wash the cucumber. Cut both into sticks.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Squeeze the calamansi into a small cup and stir in salt and chili flakes. Serve the cold sticks beside the dip.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "singkamas with salt",
+      "pipino sticks",
+      "jicama fruit cup"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: crunchy small sticks of white jicama and green cucumber in a light citrus dressing."
+  },
+  {
+    "slug": "chickpea-cracker-dip",
+    "title": "Calamansi Chickpea Cracker Dip",
+    "meal": "Snack",
+    "appliance": "No cook",
+    "servings": 2,
+    "costPHP": 35,
+    "blurb": "Fork-mashed chickpeas with citrus, garlic, and crisp soda crackers.",
+    "ingredients": [
+      {
+        "name": "canned chickpea",
+        "amount": 130,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "calamansi",
+        "amount": 3,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "olive oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "soda cracker",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "water",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse and drain cooked chickpeas. Grate one small garlic clove and squeeze the calamansi.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Mash chickpeas with the garlic, juice, oil, and salt. Add water a little at a time until scoopable. Serve with crackers.",
+        "minutes": 4,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Wheat"
+    ],
+    "searchTerms": [
+      "chickpea spread",
+      "no blender hummus",
+      "cracker snack"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small bowl of rustic mashed chickpea dip with plain crisp crackers for dipping."
+  },
+  {
+    "slug": "pan-de-coco-toast",
+    "title": "Toasted Pan de Coco",
+    "meal": "Snack",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 23,
+    "blurb": "Crisp bakery coconut rolls with a pinch of cinnamon.",
+    "ingredients": [
+      {
+        "name": "pan de coco",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "butter",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "ground cinnamon",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Split the bakery rolls horizontally without scraping out the coconut filling. Spread a thin layer of butter on the cut surfaces.",
+        "minutes": 2,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat a skillet on low. Toast the cut faces until lightly golden and fragrant, lifting the buns now and then to check.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Dust the toasted faces with cinnamon and serve warm.",
+        "minutes": 1,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "coconut bread",
+      "pan de coco bun",
+      "bakery merienda"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: split toasted Filipino pan de coco buns filled with caramelized brown grated coconut.",
+    "tip": "Bakery buns may also contain egg or soy. Ask the bakery or check the package for allergens."
+  },
+  {
+    "slug": "quick-pickled-labanos-cup",
+    "title": "Quick-Pickled Labanos and Carrot",
+    "meal": "Snack",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 18,
+    "blurb": "Crunchy radish and carrot with a sweet-tart vinegar dressing.",
+    "ingredients": [
+      {
+        "name": "white radish",
+        "amount": 110,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "carrot",
+        "amount": 55,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cane vinegar",
+        "amount": 30,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "white sugar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 0.25,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash and peel the radish and carrot. Slice both into thin matchsticks.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Stir cane vinegar, sugar, and salt in a container until the sugar dissolves. Toss with the vegetables and cover.",
+        "minutes": 2,
+        "phase": "prep"
+      },
+      {
+        "text": "Chill for 20 minutes, then scoop into a cup to serve.",
+        "minutes": 20,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "labanos",
+      "atsara-style snack",
+      "radish pickle",
+      "refrigerator pickle"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: translucent thin lightly pickled white radish in small snack bowl.",
+    "tip": "This is a fresh refrigerator pickle. Keep chilled and serve the same day."
+  },
+  {
+    "slug": "nori-popcorn",
+    "title": "Nori Popcorn",
+    "meal": "Snack",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 19,
+    "blurb": "Fresh popcorn tossed with crumbled seaweed and a pinch of salt.",
+    "ingredients": [
+      {
+        "name": "popcorn kernel",
+        "amount": 45,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "nori sheet",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Crumble a plain toasted nori sheet between your palms. Measure the kernels and oil.",
+        "minutes": 2,
+        "phase": "prep"
+      },
+      {
+        "text": "Warm the oil in a heavy lidded pot over medium heat. Add the kernels in an even layer, cover, and shake the pot by its handle every few seconds. Remove from the heat once there are about 2 seconds between pops.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Open the lid away from your face. Toss the hot popcorn with the nori and salt.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "seaweed popcorn",
+      "dorm movie snack",
+      "nori snack"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: airy fresh popped popcorn flecked with green nori flakes in ivory bowl."
+  },
+  {
+    "slug": "chocolate-cracker-sandwich",
+    "title": "Chocolate Cracker Sandwiches",
+    "meal": "Snack",
+    "appliance": "Microwave",
+    "servings": 2,
+    "costPHP": 20,
+    "blurb": "Salted crackers filled with a thin layer of melted dark chocolate.",
+    "ingredients": [
+      {
+        "name": "soda cracker",
+        "amount": 8,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "dark chocolate",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Set out four pairs of crackers and break the chocolate into small pieces.",
+        "minutes": 2,
+        "phase": "prep"
+      },
+      {
+        "text": "In a microwave-safe bowl, warm the chocolate in 15-second bursts, stirring after each one until smooth.",
+        "minutes": 2,
+        "phase": "cook"
+      },
+      {
+        "text": "Spread a little chocolate on four crackers and sandwich with the rest.",
+        "minutes": 2,
+        "phase": "prep"
+      },
+      {
+        "text": "Let the chocolate cool on the counter before serving.",
+        "minutes": 8,
+        "phase": "rest"
+      }
+    ],
+    "allergens": [
+      "Wheat"
+    ],
+    "searchTerms": [
+      "chocolate soda cracker",
+      "sweet salty cracker sandwich",
+      "study snack"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: three rectangular Filipino crackers sandwiched with a thin chocolate filling.",
+    "tip": "Check the chocolate and cracker labels for additional milk or soy allergens."
+  },
+  {
+    "slug": "kesong-puti-lettuce-wraps",
+    "title": "Kesong Puti Lettuce Wraps",
+    "meal": "Snack",
+    "appliance": "No cook",
+    "servings": 2,
+    "costPHP": 34,
+    "blurb": "Fresh white cheese, tomato, and cucumber tucked into crisp lettuce.",
+    "ingredients": [
+      {
+        "name": "lettuce leaf",
+        "amount": 4,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "kesong puti",
+        "amount": 70,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cucumber",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cane vinegar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash and dry the lettuce and other vegetables. Dice tomato and cucumber, then drain any excess juice.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Crumble pasteurized kesong puti into each leaf. Add the chopped vegetables, vinegar, and pepper. Fold and eat right away.",
+        "minutes": 3,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "white cheese wrap",
+      "salad cups",
+      "Filipino fresh cheese",
+      "no cook rolls"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: fresh lettuce leaves folded around crumbled white Filipino cheese."
+  },
+  {
+    "slug": "laswa-squash-okra",
+    "title": "Laswa with Squash and Okra",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 38,
+    "blurb": "Ilonggo-style vegetable soup with a clear, light broth.",
+    "ingredients": [
+      {
+        "name": "squash",
+        "amount": 160,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "okra",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "malunggay leaf",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 0.5,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "water",
+        "amount": 600,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 0.25,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and cube the squash. Trim the okra, rinse the malunggay leaves, and chop tomato and onion.",
+        "minutes": 8,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring water, tomato, onion, and salt to a boil. Add the squash and simmer for about 6 minutes until nearly tender.",
+        "minutes": 9,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Add the okra and simmer until fork-tender. Stir in the malunggay for the final minute. Serve while the leaves are bright green.",
+        "minutes": 5,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "laswa ilonggo",
+      "Ilonggo vegetable soup",
+      "kalabasa okra",
+      "utan"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Ilonggo vegetable soup with bright orange kalabasa cubes and whole vivid okra.",
+    "tip": "Add freshly cooked rice or a side of tofu for a larger meal. The base is light enough for a hot day."
+  },
+  {
+    "slug": "suam-na-mais",
+    "title": "Suam na Mais",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 35,
+    "blurb": "Fresh corn and malunggay in a brothy Pampanga-style soup.",
+    "ingredients": [
+      {
+        "name": "white corn kernel",
+        "amount": 220,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "chicken broth",
+        "amount": 600,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "garlic",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "ginger",
+        "amount": 8,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "malunggay leaf",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "fish sauce",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice kernels off the corn and roughly chop half. Mince garlic and ginger, and rinse the malunggay.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté the garlic and ginger in oil until fragrant, then stir in the corn and fish sauce.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Add stock, bring to a boil, and simmer for approximately 12 minutes until the corn is soft and the broth lightly thickened. Stir in malunggay in the final minute.",
+        "minutes": 16,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Fish"
+    ],
+    "searchTerms": [
+      "suwam na mais",
+      "bulanglang na mais",
+      "white corn soup",
+      "Pampanga"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino savory corn soup with uneven yellow corn kernels and leafy malunggay in thick golden broth."
+  },
+  {
+    "slug": "pinangat-na-bangus",
+    "title": "Pinangat na Bangus",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 71,
+    "blurb": "Boneless bangus gently simmered in a bright tomato and calamansi broth.",
+    "ingredients": [
+      {
+        "name": "boneless bangus fillet",
+        "amount": 200,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "tomato",
+        "amount": 3,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "ginger",
+        "amount": 12,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "calamansi",
+        "amount": 4,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "water",
+        "amount": 120,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 0.25,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 280,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the tomatoes into wedges and thinly slice the ginger. Squeeze the calamansi. Cut the fish into two portions on a separate board and check for stray bones.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Layer tomato and ginger in a skillet with the measured water and salt. Bring to a simmer until the tomatoes soften.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Lay the fish on top, add most of the calamansi juice, cover, and simmer gently. Check the thickest part reaches 63°C and flakes easily. Use a little more water if the pan starts drying out.",
+        "minutes": 11,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Finish with the remaining juice and serve with freshly cooked rice. If using chilled leftover rice, reheat it separately to 74°C.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Fish"
+    ],
+    "searchTerms": [
+      "pangat na isda",
+      "sour milkfish",
+      "kinamatisang bangus",
+      "simmered bangus"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: silver-skinned bangus in a shallow tangy light broth with tomato wedges.",
+    "tip": "Even deboned bangus can have stray pin bones. Check along the fillet before and after cooking."
+  },
+  {
+    "slug": "chicken-pastil",
+    "title": "Chicken Pastil Bowl",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 55,
+    "blurb": "A Maguindanao-inspired rice bowl topped with browned chicken kagikit.",
+    "ingredients": [
+      {
+        "name": "cooked chicken",
+        "amount": 160,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 300,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "garlic",
+        "amount": 3,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 0.5,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "ginger",
+        "amount": 8,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Finely shred the cooked chicken. Chop onion, garlic, and ginger, and set out freshly cooked rice.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Warm the oil on medium heat. Cook the onion, garlic, and ginger until softened.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Add chicken, soy sauce, and pepper. Cook while tossing until the edges brown and the chicken reaches 74°C throughout.",
+        "minutes": 7,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Spoon the chicken over rice. If using chilled leftover rice, reheat it separately to 74°C.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "pastil",
+      "kagikit",
+      "Maguindanao chicken rice",
+      "patil"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: shredded browned Filipino chicken pastil on a neat mound of rice lined with banana leaf.",
+    "tip": "Traditionally pastil is wrapped in a banana leaf. A bowl works for the dorm, or set the rice on a washed banana leaf as a liner."
+  },
+  {
+    "slug": "tofu-lumpiang-sariwa",
+    "title": "Tofu Lumpiang Sariwa",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 59,
+    "blurb": "Soft fresh lumpia with garlicky tofu, vegetables, and a quick peanut sauce.",
+    "ingredients": [
+      {
+        "name": "ready-to-eat fresh lumpia wrapper",
+        "amount": 4,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "firm tofu",
+        "amount": 130,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "cabbage",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "carrot",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "lettuce leaf",
+        "amount": 4,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "peanut butter",
+        "amount": 2,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 45,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pat tofu dry and cut into strips. Shred cabbage and carrot, rinse lettuce, and mince garlic. Set out ready-to-eat fresh lumpia wrappers.",
+        "minutes": 8,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté garlic and tofu in oil until the tofu gets a little color. Add cabbage and carrot and cook until tender-crisp.",
+        "minutes": 8,
+        "phase": "cook"
+      },
+      {
+        "text": "Whisk peanut butter, soy sauce, and water into a pourable sauce. Place lettuce and filling on each wrapper, fold the bottom up, and roll. Drizzle or dip in the sauce.",
+        "minutes": 4,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Peanut",
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "fresh lumpia",
+      "tofu spring roll",
+      "gulay lumpia",
+      "lumpiang sariwang tokwa"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino fresh spring roll with browned tofu and lettuce peeking out, brown sauce over the wrapper.",
+    "tip": "Use wrappers labeled ready to eat, since regular raw lumpia wrappers need to be cooked. Check wrappers for egg if avoiding it."
+  },
+  {
+    "slug": "kinamatisang-itlog",
+    "title": "Kinamatisang Itlog",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 33,
+    "blurb": "Hard-boiled eggs simmered briefly in a chunky tomato sauce.",
+    "ingredients": [
+      {
+        "name": "egg",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "tomato",
+        "amount": 3,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 0.5,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "fish sauce",
+        "amount": 0.5,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 40,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Chop tomato, onion, and garlic. Set out freshly cooked rice or heat promptly chilled leftover rice to 74°C.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Cover eggs with cold water in a small saucepan, bring to a boil, then lower to a gentle boil for about 10 minutes, until the yolks and whites are firm.",
+        "minutes": 14,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Cool the eggs briefly under cold running water. Peel and halve them.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté onion and garlic in oil, then add tomato, fish sauce, and the 40 ml water. Simmer until the tomato breaks down into a chunky sauce. Add eggs cut-side up and warm through. Spoon onto the rice.",
+        "minutes": 8,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Fish"
+    ],
+    "searchTerms": [
+      "itlog sa kamatis",
+      "tomato eggs",
+      "hard boiled egg sauce"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: fully cooked eggs in a rich reddish fresh tomato and onion sauce on saucer."
+  },
+  {
+    "slug": "lemon-lentil-wrap",
+    "title": "Lemon Lentil Wrap",
+    "meal": "Lunch",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 54,
+    "blurb": "A pantry lentil and cucumber wrap with a bright lemon yogurt dressing.",
+    "ingredients": [
+      {
+        "name": "canned lentil",
+        "amount": 130,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "cucumber",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "carrot",
+        "amount": 50,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "plain yogurt",
+        "amount": 40,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "lemon",
+        "amount": 0.5,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "flour tortilla",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse and drain the cooked lentils. Dice cucumber, grate carrot, and squeeze the lemon.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Mash some of the lentils with yogurt, lemon juice, and pepper, then fold in the remaining lentils and vegetables.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Divide the filling between two soft tortillas. Fold in the sides and roll tightly.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "lentil tortilla",
+      "cold vegetarian wrap",
+      "lentil sandwich"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: soft flatbread wrap cut at angle, brown cooked lentils and crisp greens visible."
+  },
+  {
+    "slug": "ginataang-puso-ng-saging",
+    "title": "Ginataang Puso ng Saging",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 44,
+    "blurb": "Tender banana blossom simmered with ginger and coconut milk.",
+    "ingredients": [
+      {
+        "name": "banana blossom",
+        "amount": 250,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "coconut milk",
+        "amount": 220,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "garlic",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 0.5,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "ginger",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cane vinegar",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 0.5,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "bird’s eye chili",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "water",
+        "amount": 100,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Remove tough dark outer bracts and discard the stem. Slice the tender inner blossom finely, toss with the salt, and squeeze. Rinse and drain. Chop onion, garlic, ginger, and chili.",
+        "minutes": 12,
+        "phase": "prep"
+      },
+      {
+        "text": "Cook the onion, garlic, and ginger in oil on medium heat until fragrant.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Add the banana blossom, coconut milk, water, and chili. Simmer gently until the strips are fully tender and the sauce has reduced. Stir in cane vinegar and simmer another minute.",
+        "minutes": 17,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "banana heart coconut stew",
+      "ginataang banana blossom",
+      "puso ng saging"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino banana blossom strips in coconut milk with slender red chili slivers.",
+    "tip": "Choose an edible banana heart from the market. Trim away tough parts before weighing and serve with rice if you have it."
+  },
+  {
+    "slug": "savory-corn-grits-cheese",
+    "title": "Savory Corn Grits with Cheese",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 25,
+    "blurb": "Warm yellow corn grits with melted cheddar and fresh scallion.",
+    "ingredients": [
+      {
+        "name": "fine corn grits",
+        "amount": 50,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "water",
+        "amount": 280,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cheddar",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "scallion",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grate the cheese and slice the scallion. Bring lightly salted water to a boil in a small saucepan.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Whisk in the fine corn grits and reduce to a gentle simmer. Stir regularly until the grits are smooth and tender. Follow the package if the grind needs longer.",
+        "minutes": 13,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Turn off the heat, stir in cheddar until melted, and finish with sliced scallion.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "mais grits",
+      "cheesy polenta",
+      "cornmeal breakfast",
+      "yellow corn porridge"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: golden creamy corn grits in cream bowl with melted cheese shreds."
+  },
+  {
+    "slug": "kamote-peanut-breakfast-bowl",
+    "title": "Kamote Peanut Breakfast Bowl",
+    "meal": "Breakfast",
+    "appliance": "Microwave",
+    "servings": 1,
+    "costPHP": 32,
+    "blurb": "Soft sweet potato mashed with banana, milk, and peanut butter.",
+    "ingredients": [
+      {
+        "name": "sweet potato",
+        "amount": 175,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "banana",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "peanut butter",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "milk",
+        "amount": 30,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "ground cinnamon",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash and scrub the sweet potato. Pierce it several times with a fork and put it on a microwave-safe plate.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Microwave on high, turning halfway through. Begin checking after 5 minutes. Continue in 1-minute bursts until a fork slides easily to the center.",
+        "minutes": 7,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Rest until cool enough to handle and carefully split open.",
+        "minutes": 2,
+        "phase": "rest"
+      },
+      {
+        "text": "Scoop the flesh into a bowl, mash with milk, and top with sliced banana, peanut butter, and cinnamon.",
+        "minutes": 3,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Peanut"
+    ],
+    "searchTerms": [
+      "kamote breakfast",
+      "sweet potato bowl",
+      "mashed kamote with banana"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: simple breakfast bowl with orange sweet potato chunks and drizzled peanut topping."
+  },
+  {
+    "slug": "smoked-bangus-pandesal",
+    "title": "Smoked Bangus Pandesal",
+    "meal": "Breakfast",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 66,
+    "blurb": "Peppery smoked milkfish and cool cucumber in soft pandesal.",
+    "ingredients": [
+      {
+        "name": "ready-to-eat smoked bangus",
+        "amount": 75,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "pandesal",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cucumber",
+        "amount": 55,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "plain yogurt",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "calamansi",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Flake chilled, ready-to-eat smoked bangus and remove any stray bones. Mix with yogurt, calamansi, and black pepper.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Slice the cucumber thinly. Split the rolls and fill with fish spread and cucumber.",
+        "minutes": 3,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Fish",
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "tinapang bangus sandwich",
+      "milkfish pandesal",
+      "smoked fish roll"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: two small Filipino pandesal rolls filled with smoked flaked milkfish.",
+    "tip": "Pick commercially packaged fish labeled ready to eat. If the label calls for heating, follow its directions first. Check the rolls for additional allergens."
+  },
+  {
+    "slug": "ginataang-tutong",
+    "title": "Ginataang Tutong",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 26,
+    "blurb": "Toasted mung beans and sticky rice softened into a coconut porridge.",
+    "ingredients": [
+      {
+        "name": "dry mung bean",
+        "amount": 45,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "glutinous rice",
+        "amount": 65,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "coconut milk",
+        "amount": 200,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 420,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse and drain the sticky rice. Sort the mung beans and check for stones.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Toast dry mung beans in a skillet over medium-low heat until fragrant and a shade darker. Crack them lightly with the base of a pot or a mortar.",
+        "minutes": 7,
+        "phase": "cook"
+      },
+      {
+        "text": "Simmer the cracked beans in water, stirring occasionally, until they start to split and soften.",
+        "minutes": 18,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Add sticky rice and coconut milk. Simmer gently, stirring often, until the rice is creamy and both grains and beans are fully soft. Add a splash of water if it gets too thick. Stir in sugar and salt.",
+        "minutes": 23,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "ginataang totong",
+      "sweet ginataang munggo",
+      "lelut balatung",
+      "coconut mung bean porridge"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino sweet sticky rice porridge, toasted split mung beans in lightly beige coconut milk."
+  },
+  {
+    "slug": "dinengdeng-tilapia",
+    "title": "Dinengdeng with Tilapia",
+    "meal": "Dinner",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 66,
+    "blurb": "An Ilocano bagoong broth with fresh greens and pan-seared tilapia.",
+    "ingredients": [
+      {
+        "name": "tilapia fillet",
+        "amount": 190,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "okra",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "eggplant",
+        "amount": 130,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "long bean",
+        "amount": 95,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "fish bagoong",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 550,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Trim the okra and string beans. Slice the eggplant and tomato. Pat the tilapia dry on a separate board.",
+        "minutes": 8,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat the oil in a nonstick pan and cook the fish for around 4 minutes per side. Check it reaches 63°C and flakes easily. Transfer to a clean plate.",
+        "minutes": 9,
+        "phase": "cook"
+      },
+      {
+        "text": "Bring water, tomato and bagoong to a boil in a pot. Add eggplant and beans, simmer 5 minutes, then add okra and cook until all vegetables are fork-tender. Slide in the tilapia for the final minute.",
+        "minutes": 14,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Fish"
+    ],
+    "searchTerms": [
+      "inabraw",
+      "Ilocano vegetable stew with fish",
+      "dinengdeng nga tilapia"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Ilocano dish with leafy greens and assorted tender vegetables with pieces of tilapia in light broth.",
+    "tip": "Use fish bagoong rather than shrimp paste for the flavor of this version. Start with less if the brand is particularly salty."
+  },
+  {
+    "slug": "pechay-miso-tofu-soup",
+    "title": "Pechay Miso Tofu Soup",
+    "meal": "Dinner",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 41,
+    "blurb": "A light soup with tender pechay, tofu, and mellow miso.",
+    "ingredients": [
+      {
+        "name": "pechay",
+        "amount": 140,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "firm tofu",
+        "amount": 160,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "white miso",
+        "amount": 1.5,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "dried shiitake",
+        "amount": 8,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 550,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "scallion",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash and chop the pechay, keeping stems and leaves separate. Cube the tofu and slice the scallion.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring water and the dried shiitake to a boil and simmer until the mushrooms soften. Lift them out with tongs, slice, and return to the pot.",
+        "minutes": 12,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Add tofu and pechay stems. Simmer until the stems are crisp-tender, then add the leaves for the final minute.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Whisk the miso into a small bowl of hot broth and stir it back into the pot off the heat. Top with scallion.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Soy"
+    ],
+    "searchTerms": [
+      "bok choy miso soup",
+      "tofu pechay",
+      "Japanese-style vegetable broth"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: warm miso broth with golden tofu cubes and green bok choy leaves.",
+    "tip": "Use plain miso if you want a meatless soup. Some soup blends contain fish stock or wheat."
+  },
+  {
+    "slug": "mackerel-potato-patties",
+    "title": "Mackerel Potato Patties",
+    "meal": "Dinner",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 56,
+    "blurb": "Crisp skillet patties made with canned mackerel and mashed potato.",
+    "ingredients": [
+      {
+        "name": "canned mackerel",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "potato",
+        "amount": 200,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "scallion",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "all-purpose flour",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and dice the potato. Drain the mackerel, flake it, and remove any firm bones. Slice scallion.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Cover the potato with water in a small saucepan, bring to a boil, and simmer until a fork slides in easily. Drain and mash without milk.",
+        "minutes": 13,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Stir fish, potato, egg, scallion, pepper, and flour into a thick mixture and shape four small patties.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Warm a thin layer of oil over medium heat. Cook the patties on both sides until crisp and the center reaches 71°C. Keep them in one layer so they cook evenly.",
+        "minutes": 9,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Fish",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "canned fish cakes",
+      "fish potato torta",
+      "mackerel croquette"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: two golden pan-seared small mackerel and potato patties with crisp edges."
+  },
+  {
+    "slug": "garlic-chicken-mushroom-rice-cooker",
+    "title": "Rice Cooker Garlic Chicken and Mushroom Rice",
+    "meal": "Dinner",
+    "appliance": "Rice cooker",
+    "servings": 2,
+    "costPHP": 73,
+    "blurb": "One-pot rice with garlic, mushrooms, and juicy chicken thigh.",
+    "ingredients": [
+      {
+        "name": "white rice",
+        "amount": 145,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "boneless chicken thigh",
+        "amount": 200,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "button mushroom",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic",
+        "amount": 3,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "ginger",
+        "amount": 8,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 220,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "scallion",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse the rice and drain. Slice the mushrooms, garlic, and ginger. Cut the chicken into 2 cm pieces on a separate board, then wash hands and utensils.",
+        "minutes": 9,
+        "phase": "prep"
+      },
+      {
+        "text": "Put rice, water and soy sauce into the rice cooker and scatter mushroom, aromatics, and chicken in a single layer. Close and run the regular white-rice cycle, following your cooker’s manual and fill marks. Check the largest chicken pieces reach 74°C. Continue heating until safe if needed.",
+        "minutes": 32,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Rest with the lid closed for 5 minutes. Fluff with a clean rice paddle and top with sliced scallion.",
+        "minutes": 5,
+        "phase": "rest"
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "one pot chicken rice",
+      "rice cooker chicken",
+      "garlic mushroom rice"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramics or plain clear drinking glass as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: one-pot Filipino dorm rice with golden chicken pieces and mushrooms scattered throughout.",
+    "tip": "Use a rice cooker whose manual permits meat dishes and a food thermometer. Cooking cycles and water needs vary between models."
+  }
+]

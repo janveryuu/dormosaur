@@ -1,0 +1,69 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[{"id":"appName","type":"string","label":"App name","default":"Dormosaur"},{"id":"tagline","type":"string","label":"Tagline","default":"Student life, sorted."},{"id":"url","type":"string","label":"URL","default":"dormosaur.vercel.app"}]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Dormosaur Showreel</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0A1710; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; }
+      .scene { position: absolute; inset: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1920" data-height="1080">
+      <!-- scenes -->
+      <div id="week" class="clip scene" data-composition-id="week" data-composition-src="compositions/week.html" data-start="0" data-duration="2.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="chaos" class="clip scene" data-composition-id="chaos" data-composition-src="compositions/chaos.html" data-start="2.2" data-duration="4.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="click" class="clip scene" data-composition-id="click" data-composition-src="compositions/click.html" data-start="6.4" data-duration="2.56" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="meet" class="clip scene" data-composition-id="meet" data-composition-src="compositions/meet.html" data-start="8.96" data-duration="1.44" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="snap" class="clip scene" data-composition-id="snap" data-composition-src="compositions/snap.html" data-start="10.4" data-duration="2.46" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="tasks" class="clip scene" data-composition-id="tasks" data-composition-src="compositions/tasks.html" data-start="12.86" data-duration="2.1" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="alarms" class="clip scene" data-composition-id="alarms" data-composition-src="compositions/alarms.html" data-start="14.96" data-duration="2.1" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="meals" class="clip scene" data-composition-id="meals" data-composition-src="compositions/meals.html" data-start="17.06" data-duration="1.96" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="copilot" class="clip scene" data-composition-id="copilot" data-composition-src="compositions/copilot.html" data-start="19.02" data-duration="2.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="sorted" class="clip scene" data-composition-id="sorted" data-composition-src="compositions/sorted.html" data-start="21.22" data-duration="3.74" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="endcard" class="clip scene" data-composition-id="endcard" data-composition-src="compositions/endcard.html" data-start="24.96" data-duration="5.04" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+
+      <!-- voice + music -->
+      <audio id="vo" class="clip" src="assets/audio/vo-timed.wav" data-start="0" data-duration="30" data-track-index="10" data-volume="1.15"></audio>
+      <audio id="music" class="clip" src="assets/audio/music.wav" data-start="0" data-duration="30" data-track-index="11" data-volume="0.3" data-fade-out="1"></audio>
+
+      <!-- sound design, synced to cuts -->
+      <audio id="sfx-pop-week" class="clip" src="assets/audio/pop.mp3" data-start="1.15" data-duration="0.5" data-track-index="12" data-volume="0.5"></audio>
+      <audio id="sfx-whoosh-1" class="clip" src="assets/audio/whoosh.mp3" data-start="1.75" data-duration="1" data-track-index="13" data-volume="0.6"></audio>
+      <audio id="sfx-pop-class" class="clip" src="assets/audio/pop.mp3" data-start="2.28" data-duration="0.5" data-track-index="12" data-volume="0.55"></audio>
+      <audio id="sfx-pop-dead" class="clip" src="assets/audio/pop.mp3" data-start="3.06" data-duration="0.5" data-track-index="12" data-volume="0.55"></audio>
+      <audio id="sfx-pop-alarm" class="clip" src="assets/audio/pop.mp3" data-start="3.8" data-duration="0.5" data-track-index="12" data-volume="0.55"></audio>
+      <audio id="sfx-swipe-food" class="clip" src="assets/audio/swipe.mp3" data-start="4.55" data-duration="0.6" data-track-index="13" data-volume="0.55"></audio>
+      <audio id="sfx-glitch" class="clip" src="assets/audio/glitch.mp3" data-start="5.95" data-duration="0.5" data-track-index="14" data-volume="0.45"></audio>
+      <audio id="sfx-click" class="clip" src="assets/audio/click.mp3" data-start="7.25" data-duration="0.5" data-track-index="12" data-volume="0.8"></audio>
+      <audio id="sfx-riser" class="clip" src="assets/audio/riser.mp3" data-start="6.96" data-duration="2" data-track-index="14" data-volume="0.45"></audio>
+      <audio id="sfx-impact-1" class="clip" src="assets/audio/impact.mp3" data-start="8.96" data-duration="2.5" data-track-index="15" data-volume="0.7"></audio>
+      <audio id="sfx-whoosh-2" class="clip" src="assets/audio/whoosh.mp3" data-start="10.2" data-duration="1" data-track-index="13" data-volume="0.55"></audio>
+      <audio id="sfx-chime-done" class="clip" src="assets/audio/chime.mp3" data-start="11.8" data-duration="1" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-swipe-2" class="clip" src="assets/audio/swipe.mp3" data-start="12.72" data-duration="0.6" data-track-index="13" data-volume="0.5"></audio>
+      <audio id="sfx-pop-tasks" class="clip" src="assets/audio/pop.mp3" data-start="13.4" data-duration="0.5" data-track-index="12" data-volume="0.4"></audio>
+      <audio id="sfx-swipe-3" class="clip" src="assets/audio/swipe.mp3" data-start="14.82" data-duration="0.6" data-track-index="13" data-volume="0.5"></audio>
+      <audio id="sfx-chime-alarm" class="clip" src="assets/audio/chime.mp3" data-start="15.95" data-duration="1" data-track-index="12" data-volume="0.4"></audio>
+      <audio id="sfx-whoosh-3" class="clip" src="assets/audio/whoosh.mp3" data-start="16.9" data-duration="1" data-track-index="13" data-volume="0.5"></audio>
+      <audio id="sfx-pop-meals" class="clip" src="assets/audio/pop.mp3" data-start="17.55" data-duration="0.5" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-swipe-4" class="clip" src="assets/audio/swipe.mp3" data-start="18.9" data-duration="0.6" data-track-index="13" data-volume="0.5"></audio>
+      <audio id="sfx-pop-chat1" class="clip" src="assets/audio/pop.mp3" data-start="19.45" data-duration="0.5" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-pop-chat2" class="clip" src="assets/audio/pop.mp3" data-start="20.2" data-duration="0.5" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-whoosh-4" class="clip" src="assets/audio/whoosh.mp3" data-start="21.1" data-duration="1" data-track-index="13" data-volume="0.5"></audio>
+      <audio id="sfx-riser-2" class="clip" src="assets/audio/riser.mp3" data-start="22.96" data-duration="2" data-track-index="14" data-volume="0.4"></audio>
+      <audio id="sfx-impact-2" class="clip" src="assets/audio/impact.mp3" data-start="24.96" data-duration="2.5" data-track-index="15" data-volume="0.8"></audio>
+      <audio id="sfx-chime-end" class="clip" src="assets/audio/chime.mp3" data-start="26.4" data-duration="1" data-track-index="12" data-volume="0.35"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

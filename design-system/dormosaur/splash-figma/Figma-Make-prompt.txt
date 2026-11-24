@@ -1,0 +1,32 @@
+Build a mobile-first animated splash prototype in Figma Make for Dormosaur, a student planner for classes, tasks, and dorm life. Call the concept “Campus Check-In.” A mint waypoint traces a short campus route, the official pixel-art Dormo appears over a folded pocket map, and the app name settles before the Today screen appears.
+
+ATTACHMENTS
+
+- 01-dormo.png is the exact hero artwork. Embed it as a transparent image and preserve its pixel edges, proportions, colors, face, cream paw-print cap, and clothing.
+- 02-campus-map.png is an optional supporting layer. Embed the transparent map behind Dormo at 42% opacity in dark mode and 54% in light mode. Keep its silhouette secondary to the mascot.
+- 03-today-demo.png is the destination screen. Keep it as the underlying full-size mobile image using its native aspect ratio. The screenshot uses demo data.
+- 04-keyframe-guide.png is the visual guide for alignment and pacing. Build the animation from separate layers and keep the guide outside the playing screen.
+
+DESIGN
+
+Use a 390 × 844 portrait reference frame with a responsive, edge-to-edge splash at other phone sizes. Set the dark concept on solid pine #0C1E17 with mint #7DF0B5 for the route, warm white #F4F7F5 for the wordmark, and a single small gold #E5C75D destination dot. Use #F3F3EF, #0E7A4A and #0A1710 for the warm-paper version. Keep the illustrations and line in a compact central group. Leave the rest of the screen quiet.
+
+At 390 × 844, center the map around (195, 394) at about 212 × 142. Place the official Dormo at center x=195 with a 144 px visible height and its top around y=306. Set “Dormosaur” as editable text, centered at y=498, in Geist Sans Bold around 36 px with −1.2 px tracking. Use that single line of text inside the splash.
+
+Draw the route as its own editable vector stroke, approximately 3 px wide with round joins. In reference-frame coordinates use M61 414 H97 Q105 414 105 422 V446 Q105 454 113 454 H266 Q274 454 274 446 V408 Q274 400 282 400 H307. Place the start dot at (61, 414) and destination dot at (307, 400). The route sits in front of the low-opacity map and behind Dormo. Keep both dots and the wordmark as separate layers.
+
+MOTION
+
+- 0–160 ms — Show the solid background and stationary start dot. The rest of the composition occupies its final layout with zero opacity.
+- 160–500 ms — Draw the mint route from the start dot, around the two rounded bends, to the destination. Use a single animated stroke trim. Let the map lift 6 px and fade in during the second half of the draw.
+- 500–830 ms — The destination dot switches to gold with one small settle. Bring Dormo in from 8 px below at 94% scale and zero opacity, ending at its exact final placement and 100% scale. Use a clean ease-out and keep the pixel artwork upright.
+- 720–1,000 ms — Fade the entire wordmark in with a 6 px rise. Hold the complete brand frame through 1,160 ms.
+- 1,160–1,380 ms — Crossfade the full splash overlay to the matching-size Today screen underneath. The destination remains still and readable throughout. Playback ends on Today.
+
+PROTOTYPE BEHAVIOR
+
+Play once on load and keep playback silent. Put Replay, Light/Dark and Reduce motion controls outside the phone preview. Reduced motion shows the settled brand frame, then uses a short opacity fade with the route already drawn. Use the destination screenshot as a fixed image during the preview, keeping its positioning stable across replays. On other viewport sizes, scale the splash group uniformly around the center and keep the destination’s image proportions intact.
+
+For the eventual Expo handoff, treat app readiness as the condition for revealing the destination. If initialization takes longer, hold the settled brand frame. On a fast return to the app, shorten the introduction. Preserve the app's normal signed-in or signed-out entry screen. The first animated frame and the static native launch surface should match in background, artwork, and placement when this is implemented.
+
+The supplied video inspired the timing pattern of trace, reveal, brand hold, and app handoff. Make the visual identity entirely Dormosaur’s. Keep the prototype focused on the launch sequence, use the supplied images for the artwork, and make the replayable phone preview the main deliverable. Provide a brief handoff with layer names, colors, timing, and easing.

@@ -1,0 +1,43 @@
+<template>
+  <style>
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_500Medium.ttf'); font-weight: 500; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_600SemiBold.ttf'); font-weight: 600; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_700Bold.ttf'); font-weight: 700; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_800ExtraBold.ttf'); font-weight: 800; }
+    @font-face { font-family: 'Gelasio'; src: url('assets/fonts/Gelasio_500Medium_Italic.ttf'); font-style: italic; font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #F4F6F4; font-family: 'Jakarta', sans-serif; }
+    #week-glow { position: absolute; left: 50%; top: 50%; width: 1600px; height: 1000px; margin: -500px 0 0 -800px;
+      background: radial-gradient(closest-side, rgba(52,199,123,0.20), rgba(52,199,123,0) 70%); }
+    #week-line { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 120px; letter-spacing: -0.045em; color: #0A1710; white-space: nowrap; }
+    #week-line span { display: inline-block; margin: 0 0.12em; }
+    #week-lot { color: #0E7A4A; }
+    #week-sub { position: absolute; left: 0; right: 0; top: 640px; text-align: center; font-family: 'Gelasio', serif; font-style: italic;
+      font-size: 40px; color: #8A968F; }
+    #week-flood { position: absolute; inset: 0; background: #0A1710; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="week" data-width="1920" data-height="1080">
+    <div id="week-glow"></div>
+    <div id="week-line">
+      <span id="w1">Your</span><span id="w2">week</span><span id="w3">is</span><span id="w4">a</span><span id="week-lot">lot.</span>
+    </div>
+    
+    <div id="week-flood"></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const words = ["#w1", "#w2", "#w3", "#w4", "#week-lot"];
+    const at = [0.56, 0.74, 0.96, 1.08, 1.17];
+    tl.fromTo("#week-glow", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 1.4, ease: "power2.out" }, 0);
+    words.forEach((w, i) => {
+      tl.fromTo(w, { color: "#D5DCD7", filter: "blur(3px)" }, { color: i === 4 ? "#0E7A4A" : "#0A1710", filter: "blur(0px)", duration: 0.2, ease: "power3.out" }, at[i]);
+    });
+    tl.fromTo("#week-lot", { scale: 0.7 }, { scale: 1, duration: 0.5, ease: "back.out(2.2)" }, 1.17);
+        // zoom through the "o" of lot -> dark world
+    tl.to(["#w1", "#w2", "#w3", "#w4"], { opacity: 0, filter: "blur(10px)", duration: 0.2, ease: "power2.in", stagger: 0.02 }, 1.72);
+    tl.to("#week-line", { scale: 38, transformOrigin: "67% 50%", duration: 0.48, ease: "power4.in" }, 1.72);
+    tl.to("#week-lot", { color: "#0A1710", immediateRender: false, duration: 0.3, ease: "power2.in" }, 1.8);
+    tl.to("#week-flood", { opacity: 1, duration: 0.12, ease: "none" }, 2.06);
+    window.__timelines["week"] = tl;
+  </script>
+</template>

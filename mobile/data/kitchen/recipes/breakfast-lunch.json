@@ -1,0 +1,4740 @@
+[
+  {
+    "slug": "banana-peanut-pandesal",
+    "title": "Banana and Peanut Butter Pandesal",
+    "meal": "Breakfast",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 24,
+    "blurb": "A soft bakery roll with peanut butter and banana for a quick first breakfast.",
+    "ingredients": [
+      {
+        "name": "pandesal",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "banana",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "peanut butter",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Split the pandesal rolls and thinly slice the peeled banana.",
+        "minutes": 2,
+        "phase": "prep"
+      },
+      {
+        "text": "Spread peanut butter inside each roll, stack in the banana slices and close. Serve right away.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Peanut",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "saging",
+      "tinapay",
+      "peanut butter roll"
+    ],
+    "tip": "Use a ripe lakatan banana for a naturally sweeter filling.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: two golden pandesal rolls stuffed with creamy peanut butter and sliced banana."
+  },
+  {
+    "slug": "tortang-patatas",
+    "title": "Tortang Patatas",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 42,
+    "blurb": "Golden potato and onion folded into a filling skillet omelet.",
+    "ingredients": [
+      {
+        "name": "potato",
+        "amount": 140,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "egg",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "red onion",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 2,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and dice the potato into 1 cm cubes. Chop the onion and beat the eggs with the salt.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat oil over medium. Add potato, onion and water, cover and cook until a fork pierces the potato easily. Stir halfway.",
+        "minutes": 8,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Uncover and let excess water evaporate. Spread the potato across the pan and pour in the eggs. Cover and cook on low until the middle is fully set.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg"
+    ],
+    "searchTerms": [
+      "potato omelet",
+      "itlog",
+      "patatas",
+      "torta"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: rustic golden pan-fried Filipino potato omelet with tender thin potato slices visible."
+  },
+  {
+    "slug": "calamansi-sardine-pandesal",
+    "title": "Calamansi Sardine Pandesal",
+    "meal": "Breakfast",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 44,
+    "blurb": "Canned sardines, sharp calamansi and crisp onion in a soft bakery roll.",
+    "ingredients": [
+      {
+        "name": "pandesal",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "tomato sardine",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "calamansi",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 15,
+        "unit": "g",
+        "aisle": "Produce"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Finely chop the onion, split the rolls, and squeeze and strain the calamansi.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Mash the sardines with a spoonful of their sauce, the onion and the calamansi juice. Divide the filling between the rolls.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Fish",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "sardinas",
+      "tinapay",
+      "fish sandwich"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: two pandesal buns split with lightly flaked sardines and a green calamansi wedge."
+  },
+  {
+    "slug": "tomato-queso-pandesal",
+    "title": "Tomato and Queso Pandesal",
+    "meal": "Breakfast",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 30,
+    "blurb": "Juicy tomato and sliced cheese in soft pandesal.",
+    "ingredients": [
+      {
+        "name": "pandesal",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cheese",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash and thinly slice the tomato. Pat the cut surfaces dry and slice the cheese.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Split the rolls and layer in cheese and tomato. Add pepper and serve immediately.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "kamatis",
+      "keso",
+      "cheese sandwich",
+      "tinapay"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: golden pandesal rolls filled with ripe tomato and soft Filipino white cheese."
+  },
+  {
+    "slug": "ginataang-mais-breakfast",
+    "title": "Ginataang Mais Breakfast Bowl",
+    "meal": "Breakfast",
+    "appliance": "Rice cooker",
+    "servings": 2,
+    "costPHP": 35,
+    "blurb": "Glutinous rice and sweet corn simmered in coconut milk.",
+    "ingredients": [
+      {
+        "name": "glutinous rice",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "sweet corn kernel",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "coconut milk",
+        "amount": 150,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 400,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 2,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse and drain the rice. Put it in the cooker with the water.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Start the porridge program. Cook until the grains are very soft, continuing the cycle as needed.",
+        "minutes": 32,
+        "phase": "cook"
+      },
+      {
+        "text": "Stir in corn and coconut milk. Continue on the porridge setting until the corn is tender and the liquid thickens slightly. Stir in sugar and salt.",
+        "minutes": 10,
+        "phase": "cook"
+      },
+      {
+        "text": "Turn off the cooker and let the porridge settle before spooning it into bowls.",
+        "minutes": 4,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "corn coconut rice porridge",
+      "gata",
+      "malagkit"
+    ],
+    "tip": "Use a 3-cup or larger cooker with a porridge setting. Follow its porridge fill line.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino glutinous rice porridge thickened with coconut milk, studded with yellow corn."
+  },
+  {
+    "slug": "saba-coconut-porridge",
+    "title": "Saba and Coconut Oat Porridge",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 27,
+    "blurb": "Ripe saba banana softens into coconut oats for a warm breakfast.",
+    "ingredients": [
+      {
+        "name": "saba banana",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "rolled oats",
+        "amount": 45,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "coconut milk",
+        "amount": 75,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 150,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ground cinnamon",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and slice the saba into 1 cm rounds.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Simmer the saba in water over medium-low heat until nearly tender.",
+        "minutes": 7,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Stir in oats and coconut milk. Simmer, stirring often, until the oats are soft and the saba is easily pierced, then add cinnamon.",
+        "minutes": 6,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "saging na saba",
+      "gata",
+      "banana oatmeal"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: coconut milk breakfast porridge topped with caramel-colored sliced saba banana."
+  },
+  {
+    "slug": "coconut-papaya-yogurt",
+    "title": "Papaya and Coconut Yogurt Bowl",
+    "meal": "Breakfast",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 44,
+    "blurb": "Cool yogurt, ripe papaya and coconut with no cooking.",
+    "ingredients": [
+      {
+        "name": "papaya",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "plain yogurt",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "desiccated coconut",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "honey",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and seed the papaya, then cut it into bite-size cubes.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Spoon cold yogurt into a bowl. Scatter the papaya and coconut on top, then drizzle with honey.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "papaya",
+      "niyog",
+      "yogurt breakfast"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small bowl of plain yogurt with orange papaya cubes and shaved coconut."
+  },
+  {
+    "slug": "tofu-sisig-silog",
+    "title": "Tofu Sisig Silog",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 56,
+    "blurb": "Crisp tofu with calamansi, onion and an egg over garlic rice.",
+    "ingredients": [
+      {
+        "name": "firm tofu",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "red onion",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "calamansi",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "long green chili",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "mayonnaise",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pat the tofu dry and cut into small cubes. Chop the onion, garlic and chili. Mix strained calamansi juice, soy sauce and mayonnaise.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Brown the tofu in half the oil over medium heat, turning to crisp several sides. Take the pan off the heat, toss the tofu with the sauce, onion and chili, and transfer it to a plate.",
+        "minutes": 8,
+        "phase": "cook"
+      },
+      {
+        "text": "Heat the rest of the oil and briefly sauté the garlic until fragrant. Add cooked rice and stir to heat through. If using chilled leftover rice, heat it to 74°C.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Clear a spot for the egg, or use the empty pan after plating the rice. Fry the egg until the white and yolk are firm, then serve alongside the tofu.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "tokwa",
+      "calamansi tofu",
+      "garlic rice",
+      "itlog"
+    ],
+    "tip": "Use a mayonnaise and soy sauce with allergen labels you can check.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino silog plate with crispy small diced tofu sisig, garlic rice and one cooked egg."
+  },
+  {
+    "slug": "tuyo-tomato-silog",
+    "title": "Tuyo and Tomato Silog",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 52,
+    "blurb": "Salty dried fish, fresh tomato and a firm fried egg with garlic rice.",
+    "ingredients": [
+      {
+        "name": "dried tuyo",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice the tomato and mince the garlic. Pat the dried fish dry if damp.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Fry the tuyo in half the oil on medium until hot and crisp on both sides. Set aside and remove any loose fish bits from the pan.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Sauté the garlic in the remaining oil until just golden, then toss in the rice and heat through. If it is chilled leftover rice, reheat it to 74°C.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Fry the egg in the same pan until the white and yolk are firm. Serve with the rice, tuyo and fresh tomato, checking for bones as you eat.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Fish"
+    ],
+    "searchTerms": [
+      "salted dried fish",
+      "kamatis",
+      "garlic rice",
+      "itlog"
+    ],
+    "tip": "Choose boneless tuyo when available and open a window before cooking.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino garlic rice, small crisp dried fish, diced red tomatoes and a firm fried egg."
+  },
+  {
+    "slug": "pechay-egg-scramble",
+    "title": "Pechay and Egg Scramble",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 38,
+    "blurb": "Tender pechay stems and wilted leaves folded into scrambled eggs.",
+    "ingredients": [
+      {
+        "name": "pechay",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "egg",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash the pechay thoroughly, then slice the stems and leaves separately. Mince the garlic and beat the eggs with salt.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat oil over medium. Cook the stems and garlic until the stems are crisp-tender. Add the leaves and cook until wilted.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Turn the heat to medium-low, add egg and fold gently until no liquid egg remains.",
+        "minutes": 3,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg"
+    ],
+    "searchTerms": [
+      "bok choy",
+      "itlog",
+      "ginisang pechay"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: soft yellow cooked scrambled egg with chopped green bok choy."
+  },
+  {
+    "slug": "longganisa-silog",
+    "title": "Longganisa Silog",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 70,
+    "blurb": "Sweet-savory local pork sausage, garlic rice and a fried egg.",
+    "ingredients": [
+      {
+        "name": "pork longganisa",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 60,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Crush and mince the garlic. Separate the sausage links if joined.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Place the sausages and water in a skillet, cover and simmer over medium. Uncover when nearly cooked and brown in half the oil. Check the center reaches 71°C.",
+        "minutes": 13,
+        "phase": "cook"
+      },
+      {
+        "text": "Move sausage to the serving plate and wipe away excess glaze. Sauté the garlic in the remaining oil, add the rice and heat it through. Reheat chilled leftover rice to 74°C.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Fry the egg until the white and yolk are firm, then plate with the rice and sausages.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg"
+    ],
+    "searchTerms": [
+      "longsilog",
+      "garlic sausage",
+      "sausage egg rice",
+      "itlog"
+    ],
+    "tip": "Check the sausage label for additional allergens.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: three caramelized Filipino longganisa sausages alongside garlic rice and fully cooked fried egg."
+  },
+  {
+    "slug": "tocino-silog",
+    "title": "Tocino Silog",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 74,
+    "blurb": "Sweet cured pork with glossy edges over garlic rice and egg.",
+    "ingredients": [
+      {
+        "name": "pork tocino strips",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 60,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mince the garlic and separate the tocino strips.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Simmer the thin pork strips and water in a skillet. When most of the water is gone, add half the oil and turn the strips to glaze both sides. Cook to 63°C in the thickest piece and move to a plate.",
+        "minutes": 12,
+        "phase": "cook"
+      },
+      {
+        "text": "Let the pork rest at least 3 minutes before serving.",
+        "minutes": 3,
+        "phase": "rest",
+        "timer": true
+      },
+      {
+        "text": "Wipe excess glaze from the pan. Sauté the garlic in the remaining oil and stir in the rice until hot. Reheat chilled leftover rice to 74°C.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Fry the egg until the yolk and white are firm. Plate with the pork and garlic rice.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg"
+    ],
+    "searchTerms": [
+      "tosilog",
+      "sweet cured pork",
+      "garlic rice",
+      "itlog"
+    ],
+    "tip": "Add a spoonful of water if the sugary glaze starts to catch before the tocino is cooked.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino sweet cured pork tocino in small glazed mahogany pieces with rice and fully cooked fried egg."
+  },
+  {
+    "slug": "daing-na-bangus-silog",
+    "title": "Daing na Bangus Silog",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 87,
+    "blurb": "Vinegar-marinated milkfish with browned skin, fried egg and garlic rice.",
+    "ingredients": [
+      {
+        "name": "boneless bangus fillet",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cane vinegar",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "calamansi",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mince the garlic. Coat the fish in vinegar, half the garlic and pepper, then cover.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Marinate the fish in the refrigerator. Pat the surface dry before frying and discard the used marinade.",
+        "minutes": 10,
+        "phase": "rest",
+        "timer": true
+      },
+      {
+        "text": "Heat half the oil on medium. Cook the fish skin-side down, flip once, and cook until the thickest part reaches 63°C and flakes easily.",
+        "minutes": 8,
+        "phase": "cook"
+      },
+      {
+        "text": "Sauté the remaining garlic in the rest of the oil. Add rice and heat through. Bring chilled leftover rice to 74°C.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Fry the egg until the yolk and white are firm. Serve the fish with egg, rice and cut calamansi.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Fish"
+    ],
+    "searchTerms": [
+      "bangsilog",
+      "milkfish",
+      "fish egg rice",
+      "itlog"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: golden pan-seared Filipino milkfish fillet, garlic rice and fully cooked fried egg."
+  },
+  {
+    "slug": "filipino-beef-tapa-silog",
+    "title": "Quick Beef Tapa Silog",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 98,
+    "blurb": "Garlicky beef strips seared for a sweet-salty silog.",
+    "ingredients": [
+      {
+        "name": "thin beef steak",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "calamansi",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the steak into thin strips, mince the garlic and juice the calamansi. Stir half the garlic with the juice, soy sauce and sugar, then coat the beef.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Marinate the covered beef in the refrigerator, then drain and discard the used marinade.",
+        "minutes": 10,
+        "phase": "rest",
+        "timer": true
+      },
+      {
+        "text": "Sear the strips in half the oil over medium-high heat, tossing until the thickest reaches 63°C. Transfer to a plate.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Rest the beef at least 3 minutes before serving.",
+        "minutes": 3,
+        "phase": "rest",
+        "timer": true
+      },
+      {
+        "text": "Cook the remaining garlic in the rest of the oil and stir in cooked rice until hot. If using chilled leftover rice, heat it to 74°C.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Cook the egg until the white and yolk are firm. Serve with the rice and steak.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "tapsilog",
+      "marinated beef",
+      "garlic rice",
+      "itlog"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino beef tapa breakfast, rich browned sliced beef, garlic rice and fully cooked fried egg."
+  },
+  {
+    "slug": "ampalaya-egg-breakfast",
+    "title": "Ampalaya with Egg",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 44,
+    "blurb": "Tender bitter melon with tomato and softly scrambled egg.",
+    "ingredients": [
+      {
+        "name": "ampalaya",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "egg",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 2,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Halve the ampalaya, scrape out the seeds and slice thinly. Chop the tomato and onion, and beat the eggs with salt.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté onion and tomato in oil until the tomato softens. Add ampalaya and water, cover and cook until crisp-tender.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Uncover and let excess water evaporate. Stir in the egg over medium-low heat until set throughout.",
+        "minutes": 3,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg"
+    ],
+    "searchTerms": [
+      "ginisang ampalaya",
+      "bitter melon",
+      "itlog",
+      "kamatis"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: thin ribbed green bitter melon half-moons sautéed with creamy golden fully cooked egg curds."
+  },
+  {
+    "slug": "sweet-corn-egg-rice",
+    "title": "Sweet Corn and Egg Rice",
+    "meal": "Breakfast",
+    "appliance": "Microwave",
+    "servings": 1,
+    "costPHP": 35,
+    "blurb": "A buttery corn rice bowl with fluffy microwave-scrambled egg.",
+    "ingredients": [
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "sweet corn kernel",
+        "amount": 65,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "butter",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Put the rice, corn and water in a microwave-safe bowl. Beat the egg in a separate microwave-safe bowl.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Vent the rice bowl and microwave on high, stirring halfway, until the corn is tender and the rice is hot. Chilled leftover rice should reach 74°C.",
+        "minutes": 3,
+        "phase": "cook"
+      },
+      {
+        "text": "Microwave the egg in 20-second bursts, stirring between them, until fully set. Fold it and the butter into the hot rice and add pepper.",
+        "minutes": 2,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Milk"
+    ],
+    "searchTerms": [
+      "mais",
+      "itlog",
+      "microwave rice bowl",
+      "buttered corn"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small bowl of golden fried rice with distinct yellow corn kernels and scrambled egg."
+  },
+  {
+    "slug": "kamote-breakfast-hash",
+    "title": "Kamote Breakfast Hash",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 39,
+    "blurb": "Crisped sweet potato cubes with onion and a firm fried egg.",
+    "ingredients": [
+      {
+        "name": "orange sweet potato",
+        "amount": 180,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 3,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Scrub the sweet potato and chop it into 1 cm cubes. Slice the onion.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Cook the vegetable cubes with oil, water and salt over medium heat under a lid. Stir once or twice and continue until nearly fork-tender.",
+        "minutes": 9,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Uncover and stir over medium heat until the water evaporates and the sweet potato edges brown. Make a well for the egg.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Crack the egg into the well, cover and cook on low until the white and yolk are firm.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg"
+    ],
+    "searchTerms": [
+      "sweet potato hash",
+      "kamote",
+      "itlog",
+      "skillet"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: browned diced orange sweet potatoes with onion and a cooked egg, modest breakfast portion."
+  },
+  {
+    "slug": "kalabasa-oat-porridge",
+    "title": "Kalabasa Oat Porridge",
+    "meal": "Breakfast",
+    "appliance": "Microwave",
+    "servings": 1,
+    "costPHP": 29,
+    "blurb": "Mashed squash turns creamy oats a warm golden orange.",
+    "ingredients": [
+      {
+        "name": "kalabasa",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "rolled oats",
+        "amount": 40,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "milk",
+        "amount": 90,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "water",
+        "amount": 100,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ground cinnamon",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and dice the squash into 1 cm cubes. Put it in a large, deep microwave-safe bowl with half the water.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Cover loosely and microwave on high, checking at 3 minutes, until the squash mashes easily. Mash most of it in the bowl.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Add oats, milk and remaining water. Microwave in short bursts and stir until thick and the oats are tender. Add sugar and cinnamon.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Let it stand to thicken so it can be eaten without splashing.",
+        "minutes": 2,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "squash oatmeal",
+      "kalabasa",
+      "pumpkin oats"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: thick golden squash oat porridge with a few roasted orange squash cubes."
+  },
+  {
+    "slug": "coffee-banana-oats",
+    "title": "Coffee Banana Oats",
+    "meal": "Breakfast",
+    "appliance": "Microwave",
+    "servings": 1,
+    "costPHP": 35,
+    "blurb": "Mellow instant coffee and ripe banana flavor a warm bowl of oats.",
+    "ingredients": [
+      {
+        "name": "rolled oats",
+        "amount": 45,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "banana",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "milk",
+        "amount": 120,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "water",
+        "amount": 100,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "instant coffee",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel the banana and mash half. Slice the rest. Stir the coffee, sugar and water together in a deep microwave-safe bowl.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Mix in the oats, milk and banana mash. Microwave in 60-second bursts, stirring between them, until the oats are soft.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Let stand so the oatmeal thickens, then top with the banana slices.",
+        "minutes": 2,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "kape",
+      "saging",
+      "oatmeal",
+      "coffee breakfast"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: brown coffee oatmeal in an ivory bowl topped with sliced banana."
+  },
+  {
+    "slug": "tablea-banana-oats",
+    "title": "Tablea and Banana Oats",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 42,
+    "blurb": "Unsweetened Filipino tablea melted into creamy oats with banana.",
+    "ingredients": [
+      {
+        "name": "unsweetened tablea",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "rolled oats",
+        "amount": 45,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "banana",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "milk",
+        "amount": 100,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "water",
+        "amount": 130,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Chop the tablea finely and slice the banana.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring the water to a simmer. Whisk in the tablea until it dissolves.",
+        "minutes": 3,
+        "phase": "cook"
+      },
+      {
+        "text": "Stir in oats and milk. Simmer gently and stir often until thick and soft. Sweeten and add the banana to serve.",
+        "minutes": 7,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "searchTerms": [
+      "tsokolate",
+      "cacao tablet",
+      "saging",
+      "chocolate oatmeal"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: deep cocoa oatmeal with a neat fan of sliced fresh banana."
+  },
+  {
+    "slug": "mango-graham-yogurt",
+    "title": "Mango Graham Yogurt Cup",
+    "meal": "Breakfast",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 56,
+    "blurb": "Ripe mango, plain yogurt and crumbled graham crackers in layers.",
+    "ingredients": [
+      {
+        "name": "ripe mango",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "plain yogurt",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "graham cracker",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cut the mango flesh into small cubes and crush the crackers into coarse crumbs.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Layer mango, yogurt and crumbs in a glass. Finish with a few mango cubes and serve cold.",
+        "minutes": 3,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "mangga",
+      "graham float",
+      "breakfast parfait"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: simple breakfast yogurt bowl with diced golden mango and graham cracker crumbs."
+  },
+  {
+    "slug": "coconut-ube-toast",
+    "title": "Coconut Ube Toast",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 37,
+    "blurb": "Crisp skillet toast spread with creamy ube jam and coconut.",
+    "ingredients": [
+      {
+        "name": "sliced bread",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "ube halaya",
+        "amount": 35,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "desiccated coconut",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "butter",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Dairy & eggs"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Measure the ube halaya and lightly butter both pieces of bread on one side.",
+        "minutes": 2,
+        "phase": "prep"
+      },
+      {
+        "text": "Toast the bread in a skillet over medium, turning once, until the edges are crisp and golden.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Spread ube halaya over the toast while it is still warm and sprinkle with coconut.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "ube halaya",
+      "niyog",
+      "purple yam jam",
+      "tinapay"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: two toast fingers spread with vivid natural ube and a small amount of coconut flakes."
+  },
+  {
+    "slug": "peanut-butter-banana-oat-mug",
+    "title": "Peanut Butter Banana Oat Mug",
+    "meal": "Breakfast",
+    "appliance": "Microwave",
+    "servings": 1,
+    "costPHP": 42,
+    "blurb": "Banana and peanut butter baked into a forkable single-serving oat mug.",
+    "ingredients": [
+      {
+        "name": "ripe banana",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "rolled oats",
+        "amount": 40,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "peanut butter",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "baking powder",
+        "amount": 0.5,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mash the banana in a large microwave-safe mug. Beat in egg and water, then mix in oats, peanut butter and baking powder. Keep the mug less than half full.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Microwave for 90 seconds, then continue in 20-second bursts until the center is fully set and reaches 71°C.",
+        "minutes": 3,
+        "phase": "cook"
+      },
+      {
+        "text": "Let the mug stand to cool slightly before eating.",
+        "minutes": 2,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Peanut"
+    ],
+    "searchTerms": [
+      "saging",
+      "oat mug cake",
+      "microwave oats"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: banana and peanut butter baked-looking oatmeal in a ceramic mug."
+  },
+  {
+    "slug": "arroz-a-la-cubana-breakfast",
+    "title": "Arroz a la Cubana Breakfast Bowl",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 69,
+    "blurb": "Filipino-style tomato pork mince with skillet saba, rice and egg.",
+    "ingredients": [
+      {
+        "name": "ground pork",
+        "amount": 80,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "saba banana",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Dice tomato and onion, mince garlic, and slice the peeled saba lengthwise into 1 cm pieces.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Pan-fry the saba in half the oil over medium, flipping once, until golden and tender. Transfer to a clean plate.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Sauté onion and garlic in remaining oil, then add pork, tomato and soy. Break up the pork and cook until the sauce thickens and the meat reaches 71°C.",
+        "minutes": 10,
+        "phase": "cook"
+      },
+      {
+        "text": "Fry the egg in the cleared pan until white and yolk are firm. Warm the rice in the same pan if needed, bringing chilled leftover rice to 74°C. Plate everything together.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "picadillo",
+      "giniling",
+      "saba",
+      "filipino cubana",
+      "rice"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino arroz a la cubana breakfast, mound of rice with savory minced meat, golden fried plantain slices and cooked egg."
+  },
+  {
+    "slug": "misua-egg-breakfast-soup",
+    "title": "Ginger Misua and Egg Soup",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 29,
+    "blurb": "Fine wheat noodles in a gingery broth with ribbons of egg.",
+    "ingredients": [
+      {
+        "name": "misua",
+        "amount": 35,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "ginger",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "chicken broth",
+        "amount": 400,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice ginger, mince garlic and chop scallion. Beat the egg in a bowl.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté ginger, garlic and white scallion in oil until aromatic. Add broth and bring to a simmer.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Add misua and simmer until tender. Drizzle in beaten egg, keeping the soup simmering until the ribbons have set. Finish with the scallion greens.",
+        "minutes": 4,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "miswa",
+      "itlog",
+      "noodle breakfast",
+      "luya"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino clear misua soup with soft fine noodle strands and cooked egg in ceramic bowl."
+  },
+  {
+    "slug": "pandesal-french-toast",
+    "title": "Pandesal French Toast",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 32,
+    "blurb": "Day-old pandesal soaked in cinnamon custard and pan-toasted.",
+    "ingredients": [
+      {
+        "name": "pandesal",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "milk",
+        "amount": 50,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "butter",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "ground cinnamon",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Split the rolls. Whisk egg, milk, sugar and cinnamon in a shallow bowl. Dip both sides of each roll half until just soaked.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Melt butter in a skillet over medium-low heat. Toast both sides of the rolls until golden and the egg-soaked centers reach 71°C.",
+        "minutes": 7,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "tinapay",
+      "cinnamon breakfast",
+      "leftover rolls"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: two golden pan-toasted pieces of halved pandesal French toast, fluffy cut sides."
+  },
+  {
+    "slug": "peanut-cocoa-banana-wrap",
+    "title": "Cocoa Banana Breakfast Wrap",
+    "meal": "Breakfast",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 41,
+    "blurb": "Banana and a cocoa-peanut spread tucked into a soft wrap.",
+    "ingredients": [
+      {
+        "name": "flour tortilla",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "banana",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "peanut butter",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cocoa powder",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "honey",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Stir peanut butter, cocoa and honey to form a spread. Peel the banana.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Spread the cocoa mixture on a ready-to-eat tortilla, add banana, roll firmly and slice crosswise.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Peanut",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "saging",
+      "peanut butter",
+      "rolled tortilla"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: sliced tortilla wrap with creamy cocoa peanut spread and banana cross sections visible."
+  },
+  {
+    "slug": "savory-egg-drop-oats",
+    "title": "Savory Egg Drop Oats",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 33,
+    "blurb": "Soft oats in a savory broth finished with ribbons of egg.",
+    "ingredients": [
+      {
+        "name": "rolled oats",
+        "amount": 50,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "chicken broth",
+        "amount": 300,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Thinly slice the scallion and beat the egg.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring broth to a simmer. Stir in oats and cook, stirring regularly, until tender.",
+        "minutes": 7,
+        "phase": "cook"
+      },
+      {
+        "text": "Stream the egg into the simmering oats and stir gently until fully set. Add soy sauce, pepper and scallion.",
+        "minutes": 2,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "maalat na oats",
+      "itlog",
+      "oatmeal",
+      "scallion"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: ivory bowl savory rolled oats with silky fully cooked egg ribbons and sliced scallions."
+  },
+  {
+    "slug": "carrot-scallion-egg-wrap",
+    "title": "Carrot and Scallion Egg Wrap",
+    "meal": "Breakfast",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 42,
+    "blurb": "A thin egg omelet with grated carrot rolled into a tortilla.",
+    "ingredients": [
+      {
+        "name": "flour tortilla",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "egg",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "carrot",
+        "amount": 40,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Grate the carrot, slice the scallion and beat the eggs with the salt.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat oil over medium-low. Spread the carrot and scallion in the pan, pour in eggs and cook the thin omelet until fully set. Flip if needed.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Slide the omelet into the ready-to-eat tortilla. Roll it up, tucking in the ends.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "itlog",
+      "carrot omelet wrap",
+      "breakfast burrito"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: cut golden egg and tortilla breakfast wrap with chopped scallions and orange carrot."
+  },
+  {
+    "slug": "cucumber-cream-cheese-pandesal",
+    "title": "Cucumber and Cream Cheese Pandesal",
+    "meal": "Breakfast",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 39,
+    "blurb": "Cool cucumber and cream cheese stuffed into soft bakery rolls.",
+    "ingredients": [
+      {
+        "name": "pandesal",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cream cheese",
+        "amount": 35,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cucumber",
+        "amount": 70,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash and thinly slice cucumber. Blot the slices dry and split the pandesal rolls.",
+        "minutes": 3,
+        "phase": "prep"
+      },
+      {
+        "text": "Spread cream cheese on the cut sides. Layer in the cucumber and finish with pepper.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "pipino",
+      "keso",
+      "cucumber sandwich",
+      "tinapay"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, captions, text, watermarks or graphic elements. One single photo. Dish: Plate with two round golden Filipino pandesal bread buns, soft white bread crumb visible at their split centers and toasted fine breadcrumbs on their tops. Each round bun is sliced horizontally and filled with overlapping thin green cucumber rounds and a modest layer of plain white cream cheese. Keep both round buns intact. No rolled wraps, tortillas or croissants."
+  },
+  {
+    "slug": "ginisang-tuna-pechay",
+    "title": "Ginisang Tuna and Pechay",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 57,
+    "blurb": "Canned tuna stretches into a full bowl with pechay, tomato and rice.",
+    "ingredients": [
+      {
+        "name": "canned tuna in water",
+        "amount": 90,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "pechay",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Drain tuna. Wash the pechay and cut stems and leaves separately. Dice the tomato and mince the garlic.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté garlic and tomato in oil over medium until the tomato softens and releases its juice.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Add pechay stems, then add leaves and tuna when the stems turn bright green. Toss until the leaves wilt and the tuna is hot. Season with pepper and serve with hot rice.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Fish"
+    ],
+    "searchTerms": [
+      "bok choy",
+      "canned tuna",
+      "ginisang pechay",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: sautéed greens and thick bok choy stems with flaky canned tuna."
+  },
+  {
+    "slug": "sardines-misua",
+    "title": "Sardines and Misua Soup",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 47,
+    "blurb": "Tomato sardines turn fine wheat noodles into a hearty soup.",
+    "ingredients": [
+      {
+        "name": "tomato sardine",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "misua",
+        "amount": 40,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "water",
+        "amount": 350,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Mince the garlic, dice the onion and chop the scallion.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté onion and garlic in oil. Add the sardines with their sauce, break them gently with a spoon, and pour in water. Bring to a simmer.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Add misua and simmer until tender, stirring as the noodles soften. Serve topped with scallion.",
+        "minutes": 4,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Fish",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "sardinas",
+      "miswa",
+      "tomato noodle soup",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino fine vermicelli in light red sardine tomato broth with chunks of fish."
+  },
+  {
+    "slug": "sitaw-kalabasa-gata",
+    "title": "Ginataang Sitaw at Kalabasa",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 45,
+    "blurb": "Soft squash and crisp sitaw in a lightly seasoned coconut sauce.",
+    "ingredients": [
+      {
+        "name": "kalabasa",
+        "amount": 250,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "sitaw",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "coconut milk",
+        "amount": 200,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 80,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and cube the squash. Trim the sitaw and cut it into short lengths. Mince the garlic and slice the onion.",
+        "minutes": 8,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat oil in a saucepan over medium. Sauté garlic and onion until soft, then stir in squash.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Add coconut milk, water and soy sauce. Simmer uncovered on low until the squash is almost fork-tender.",
+        "minutes": 12,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Add sitaw and simmer until tender-crisp and the squash is soft. Spoon the coconut sauce over the vegetables.",
+        "minutes": 6,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "squash",
+      "string bean",
+      "gata",
+      "coconut vegetable stew"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino coconut milk stew with diced orange squash and cut long beans."
+  },
+  {
+    "slug": "adobong-kangkong-tofu",
+    "title": "Adobong Kangkong with Tofu",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 47,
+    "blurb": "Water spinach and crisp tofu in a soy, vinegar and garlic glaze.",
+    "ingredients": [
+      {
+        "name": "kangkong",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "firm tofu",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cane vinegar",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 30,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash kangkong and separate the leaves from the stems. Cut stems into short lengths. Pat tofu dry, cut into cubes and mince the garlic.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Pan-fry tofu in oil over medium until golden on several sides. Move the cubes to a plate.",
+        "minutes": 8,
+        "phase": "cook"
+      },
+      {
+        "text": "Add garlic, soy sauce, vinegar, brown sugar and water. Bring to a boil, then add the kangkong stems. Simmer until almost tender.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Add the leaves and tofu and toss until the leaves wilt and the sauce coats the cubes.",
+        "minutes": 3,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "water spinach",
+      "tokwa",
+      "veggie adobo",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: sautéed vivid kangkong leaves and golden diced tofu glazed with soy vinegar."
+  },
+  {
+    "slug": "ginisang-sayote-egg",
+    "title": "Ginisang Sayote with Egg",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 35,
+    "blurb": "Mild chayote strips cooked with garlic and finished with egg.",
+    "ingredients": [
+      {
+        "name": "sayote",
+        "amount": 170,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "egg",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 40,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel the sayote, remove its center seed and cut it into short sticks. Mince garlic, slice onion and beat eggs with salt.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté onion and garlic in oil over medium until fragrant. Add sayote and water and cook covered until the sticks are tender with a little bite.",
+        "minutes": 7,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Uncover the pan and let the water evaporate. Add egg and stir until fully set.",
+        "minutes": 3,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Egg"
+    ],
+    "searchTerms": [
+      "chayote",
+      "itlog",
+      "vegetable sauté",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: translucent sautéed chayote matchsticks with soft yellow scrambled eggs."
+  },
+  {
+    "slug": "pechay-tokwa-tausi",
+    "title": "Pechay and Tokwa sa Tausi",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 49,
+    "blurb": "Tofu and pechay in a savory fermented black bean sauce.",
+    "ingredients": [
+      {
+        "name": "pechay",
+        "amount": 130,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "firm tofu",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "fermented black bean",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "ginger",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cornstarch",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 70,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse and chop the pechay, separating leaves from stems. Pat tofu dry and cube it. Mince garlic and ginger, rinse and lightly mash the beans, then stir cornstarch into the measured water.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Brown tofu in oil over medium, turning to crisp several sides. Move tofu out of the pan.",
+        "minutes": 8,
+        "phase": "cook"
+      },
+      {
+        "text": "Sauté garlic, ginger, beans and pechay stems until fragrant and almost tender. Add the leaves and tofu.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Stir the slurry again, pour it in and simmer until the sauce turns glossy and the leaves are tender.",
+        "minutes": 3,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Soy"
+    ],
+    "searchTerms": [
+      "bok choy",
+      "black bean tofu",
+      "fermented black bean",
+      "ulam"
+    ],
+    "tip": "Check the fermented black bean packet for added wheat.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: golden tofu and glossy bok choy with black salted fermented beans."
+  },
+  {
+    "slug": "ginisang-repolyo-carrot",
+    "title": "Ginisang Repolyo and Carrot",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 33,
+    "blurb": "A sweet, crisp-tender cabbage sauté with garlic, carrot and sesame.",
+    "ingredients": [
+      {
+        "name": "cabbage",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "carrot",
+        "amount": 70,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "sesame oil",
+        "amount": 0.5,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 2,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Shred cabbage, cut the carrot into thin sticks and mince the garlic.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté garlic and carrot in cooking oil, then add water and cook until the carrot bends slightly.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Toss in cabbage and soy sauce over medium-high until crisp-tender. Turn off the heat and add sesame oil.",
+        "minutes": 4,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat",
+      "Sesame"
+    ],
+    "searchTerms": [
+      "cabbage",
+      "karot",
+      "vegetable sauté",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: sautéed light green shredded cabbage and orange carrots, glossy and crisp tender."
+  },
+  {
+    "slug": "ginisang-ampalaya-tofu",
+    "title": "Ginisang Ampalaya with Tofu",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 47,
+    "blurb": "Bitter melon and tomato tossed with browned tofu and soy.",
+    "ingredients": [
+      {
+        "name": "ampalaya",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "firm tofu",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 2,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Remove the ampalaya seeds and slice the flesh thin. Pat tofu dry and dice it. Chop tomato and garlic.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Fry tofu in oil over medium, turning until several edges brown. Transfer to a plate.",
+        "minutes": 8,
+        "phase": "cook"
+      },
+      {
+        "text": "Cook the garlic and tomato in the same pan until soft. Add ampalaya, soy sauce and water, then cover briefly until the ampalaya is crisp-tender.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Uncover, fold in the tofu and toss to coat.",
+        "minutes": 2,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "bitter melon",
+      "tokwa",
+      "garlic tomato",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: bright green bitter melon half-moons with golden cubed pan-fried tofu."
+  },
+  {
+    "slug": "okra-tomato-bagoong-bowl",
+    "title": "Okra, Tomato and Bagoong Rice Bowl",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 48,
+    "blurb": "Tender okra and fresh tomato over rice with a little sautéed shrimp paste.",
+    "ingredients": [
+      {
+        "name": "okra",
+        "amount": 140,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "sautéed shrimp paste",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "calamansi",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wash okra and trim just the stem ends without cutting into the pods. Dice the tomato and squeeze the calamansi.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring enough water to cover the okra to a boil. Cook the pods until bright green and tender when pierced, then drain.",
+        "minutes": 8,
+        "phase": "cook"
+      },
+      {
+        "text": "Set the okra and tomato on hot rice. Stir the shrimp paste and calamansi juice together and spoon a little over each bite.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Crustacean shellfish"
+    ],
+    "searchTerms": [
+      "okra",
+      "kamatis",
+      "shrimp paste",
+      "bagoong alamang",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: sliced whole green okra and ripe tomato wedges over rice with a dab of shrimp paste."
+  },
+  {
+    "slug": "itlog-na-maalat-tomato-rice",
+    "title": "Itlog na Maalat and Tomato Rice",
+    "meal": "Lunch",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 39,
+    "blurb": "Salted duck egg, juicy tomato and calamansi make a quick rice topping.",
+    "ingredients": [
+      {
+        "name": "cooked salted duck egg",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "calamansi",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel the cooked egg and cut it into pieces. Dice the tomato, finely chop the onion and juice the calamansi.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Toss the tomato and onion with the calamansi juice. Fold in the egg and spoon over the ready-cooked rice.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Egg"
+    ],
+    "searchTerms": [
+      "salted duck egg",
+      "kamatis",
+      "itlog na pula",
+      "ulam"
+    ],
+    "tip": "Buy a cooked, ready-to-eat salted duck egg and use freshly cooked rice.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: rice bowl with chopped ripe tomatoes and a quartered salted duck egg with reddish golden firm yolk."
+  },
+  {
+    "slug": "lemon-pepper-chickpea-wrap",
+    "title": "Lemon Pepper Chickpea Wrap",
+    "meal": "Lunch",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 55,
+    "blurb": "Creamy chickpeas and crunchy cucumber folded into a soft tortilla.",
+    "ingredients": [
+      {
+        "name": "canned chickpea",
+        "amount": 110,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cucumber",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "lemon",
+        "amount": 0.5,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "plain yogurt",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "flour tortilla",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Drain and rinse chickpeas. Dice the cucumber and squeeze the lemon.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Mash the chickpeas with yogurt, lemon, pepper and salt. Fold in cucumber and roll up in a ready-to-eat tortilla.",
+        "minutes": 3,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "garbanzos",
+      "chickpea salad",
+      "pepper wrap",
+      "no cook"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: halved soft wrap stuffed with lemon pepper mashed chickpeas and crunchy leaves."
+  },
+  {
+    "slug": "tilapia-escabeche",
+    "title": "Skillet Tilapia Escabeche",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 79,
+    "blurb": "Pan-seared tilapia and crisp vegetables coated with sweet-sour vinegar sauce.",
+    "ingredients": [
+      {
+        "name": "tilapia fillet",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "red bell pepper",
+        "amount": 40,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "carrot",
+        "amount": 40,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "ginger",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cane vinegar",
+        "amount": 1.5,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cornstarch",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 60,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pat fish dry and season with salt. Cut pepper and carrot into thin sticks and mince the ginger. Stir vinegar, sugar, cornstarch and water.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat oil over medium. Sear the fillet, flipping once, until it flakes and the thickest part reaches 63°C. Transfer to a clean plate.",
+        "minutes": 8,
+        "phase": "cook"
+      },
+      {
+        "text": "In the same pan, stir-fry vegetables and ginger until crisp-tender. Stir the sauce again, pour it into the pan and simmer until clear and thick. Spoon over the fish.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Fish"
+    ],
+    "searchTerms": [
+      "sweet sour fish",
+      "escabecheng tilapia",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: golden tilapia fillet in light orange Filipino sweet-sour sauce with red pepper and ginger strips."
+  },
+  {
+    "slug": "ginisang-papaya-tinapa",
+    "title": "Ginisang Green Papaya with Tinapa",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 61,
+    "blurb": "Unripe papaya strips soak up the savor of smoked fish.",
+    "ingredients": [
+      {
+        "name": "green papaya",
+        "amount": 180,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "ready-to-eat tinapa",
+        "amount": 45,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "ginger",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 60,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and seed the green papaya, then cut it into thin sticks. Slice ginger, mince garlic and flake the cooked smoked fish, checking for bones.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté garlic and ginger in oil over medium until fragrant. Add the green papaya and stir.",
+        "minutes": 3,
+        "phase": "cook"
+      },
+      {
+        "text": "Add water and cover until the papaya is tender. Uncover and stir in tinapa and pepper, heating until the fish is steaming.",
+        "minutes": 10,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Fish"
+    ],
+    "searchTerms": [
+      "smoked fish",
+      "ginisang papaya",
+      "ulam",
+      "green papaya"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: sautéed green papaya slivers mixed with flakes of smoked fish."
+  },
+  {
+    "slug": "calderetang-sardinas",
+    "title": "Calderetang Sardinas",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 56,
+    "blurb": "Sardines simmered with potato and bell pepper in tomato sauce.",
+    "ingredients": [
+      {
+        "name": "tomato sardine",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "potato",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "green bell pepper",
+        "amount": 45,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 90,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and dice potato into 1 cm cubes. Dice bell pepper and onion and mince garlic.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté onion and garlic in oil over medium until soft. Stir in potato.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Add water and cover. Simmer until the potato is nearly fork-tender.",
+        "minutes": 10,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Add bell pepper and sardines with their sauce. Simmer uncovered until the potato is tender, the fish is hot and the sauce thickens. Season with pepper.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Fish"
+    ],
+    "searchTerms": [
+      "sardines stew",
+      "kalderetang sardinas",
+      "potato",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small sardine pieces and potatoes in thick reddish caldereta sauce."
+  },
+  {
+    "slug": "ginisang-patola-sotanghon",
+    "title": "Patola and Sotanghon Soup",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 39,
+    "blurb": "Silky patola and glass noodles in a light garlic broth.",
+    "ingredients": [
+      {
+        "name": "patola",
+        "amount": 140,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "sotanghon",
+        "amount": 45,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 15,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "vegetable broth",
+        "amount": 400,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel the patola and slice into small half-moons. Mince garlic, chop onion and slice scallion.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté onion and garlic in oil until fragrant. Pour in broth and bring to a simmer.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Add patola and cook until nearly tender. Add sotanghon and cook according to its packet until soft and translucent. Finish with scallion.",
+        "minutes": 6,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [],
+    "searchTerms": [
+      "sponge gourd",
+      "glass noodles",
+      "sayote alternative",
+      "ulam"
+    ],
+    "tip": "Use plain mung bean glass noodles and check the stock ingredients.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: savory glass noodles with green ribbed sponge gourd rounds."
+  },
+  {
+    "slug": "mushroom-adobo-rice",
+    "title": "Oyster Mushroom Adobo Rice",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 55,
+    "blurb": "Browned oyster mushrooms in a soy-vinegar glaze over rice.",
+    "ingredients": [
+      {
+        "name": "oyster mushroom",
+        "amount": 130,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cane vinegar",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 30,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Wipe the mushrooms and tear into strips. Mince garlic and slice scallion, then combine soy sauce, vinegar, sugar and water.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat oil over medium-high. Sear the mushrooms in a single layer until browned, turning once and cooking in batches if needed.",
+        "minutes": 7,
+        "phase": "cook"
+      },
+      {
+        "text": "Add garlic and pepper, then the sauce. Simmer until the mushrooms are tender and shiny. Serve over hot rice with scallion.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "adobong kabute",
+      "mushroom bowl",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: glossy browned soy-vinegar mushrooms atop rice with a bay leaf."
+  },
+  {
+    "slug": "tofu-bistek",
+    "title": "Tofu Bistek with Calamansi",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 55,
+    "blurb": "Crisp tofu bathed in calamansi and soy with sweet softened onion rings.",
+    "ingredients": [
+      {
+        "name": "firm tofu",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "red onion",
+        "amount": 55,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "calamansi",
+        "amount": 3,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 50,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "black pepper",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pat tofu dry and cut into flat 1 cm slices. Slice the onion into rings, mince the garlic and juice the calamansi. Mix soy sauce, juice and water.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Pan-fry the tofu in oil over medium until both faces are golden, then transfer to a plate.",
+        "minutes": 9,
+        "phase": "cook"
+      },
+      {
+        "text": "Cook onion rings in the same pan until soft around the edges. Add garlic and pepper, then the sauce. Simmer and spoon over the tofu.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "tokwa",
+      "bistek tagalog",
+      "onion rings",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: golden tofu slices in dark Filipino calamansi soy sauce with visible onion rings."
+  },
+  {
+    "slug": "chicken-pineapple-pininyahang",
+    "title": "Pininyahang Manok",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 89,
+    "blurb": "Chicken and pineapple in a creamy, lightly sweet evaporated milk sauce.",
+    "ingredients": [
+      {
+        "name": "boneless chicken thigh",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "red bell pepper",
+        "amount": 50,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "canned pineapple chunk",
+        "amount": 80,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "evaporated milk",
+        "amount": 70,
+        "unit": "ml",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "red onion",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 50,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cube chicken into 2 cm pieces. With a clean board and knife, dice bell pepper and onion and mince garlic. Drain pineapple.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté onion and garlic in oil over medium. Add chicken and stir until the outside turns opaque.",
+        "minutes": 7,
+        "phase": "cook"
+      },
+      {
+        "text": "Add pineapple, pepper, soy sauce and water. Cover and simmer until the largest chicken piece reaches 74°C.",
+        "minutes": 9,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Reduce to low heat and add evaporated milk. Stir until warmed and slightly thickened, keeping it below a full boil.",
+        "minutes": 3,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "chicken pineapple",
+      "pineapple stew",
+      "pininyahang chicken",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: Filipino chicken and bite-size pineapple in golden creamy sauce."
+  },
+  {
+    "slug": "monggo-sardines",
+    "title": "Monggo with Tomato Sardines",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 2,
+    "costPHP": 46,
+    "blurb": "Tomato sardines add protein and savory depth to a simple mung bean stew.",
+    "ingredients": [
+      {
+        "name": "dry mung bean",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "tomato sardine",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "red onion",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "water",
+        "amount": 550,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse mung beans and pick out any grit. Dice onion, mince garlic and slice scallion.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring mung beans and water to a boil, then reduce to a steady simmer. Cook until the beans split and mash easily, adding water if needed.",
+        "minutes": 38,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Heat oil in a skillet, then sauté onion and garlic. Add sardines with their sauce and gently break up the fish.",
+        "minutes": 6,
+        "phase": "cook"
+      },
+      {
+        "text": "Stir the sardine mixture into the cooked beans and simmer until hot and thickened. Serve with scallion.",
+        "minutes": 5,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Fish"
+    ],
+    "searchTerms": [
+      "mung beans",
+      "munggo sardinas",
+      "sardine soup",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: thick green brown mung bean stew finished with flakes of canned sardine."
+  },
+  {
+    "slug": "ginisang-kalabasa-tinapa",
+    "title": "Ginisang Kalabasa with Tinapa",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 53,
+    "blurb": "Soft squash cubes and smoky milkfish flakes with garlic and tomato.",
+    "ingredients": [
+      {
+        "name": "kalabasa",
+        "amount": 200,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "ready-to-eat tinapa",
+        "amount": 40,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "red onion",
+        "amount": 20,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 70,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Peel and cube the squash. Flake the cooked smoked fish, checking carefully for bones. Dice tomato, mince garlic and chop onion.",
+        "minutes": 7,
+        "phase": "prep"
+      },
+      {
+        "text": "Sauté onion and garlic in oil over medium. Stir in tomato until soft.",
+        "minutes": 5,
+        "phase": "cook"
+      },
+      {
+        "text": "Add squash and water. Cover and simmer until a fork slides in readily. Add the fish near the end and heat until steaming.",
+        "minutes": 13,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Fish"
+    ],
+    "searchTerms": [
+      "squash",
+      "smoked fish",
+      "ginisang kalabasa",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: sautéed orange squash cubes with smoked fish flakes."
+  },
+  {
+    "slug": "rice-cooker-pancit-bihon",
+    "title": "Rice Cooker Pancit Bihon",
+    "meal": "Lunch",
+    "appliance": "Rice cooker",
+    "servings": 2,
+    "costPHP": 46,
+    "blurb": "Rice vermicelli cooks with cabbage, carrot and tofu in seasoned broth.",
+    "ingredients": [
+      {
+        "name": "bihon",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cabbage",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "carrot",
+        "amount": 65,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "firm tofu",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "vegetable broth",
+        "amount": 440,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "calamansi",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Shred cabbage, cut carrot into thin sticks and cut tofu into small cubes. Follow the bihon packet's soaking instructions if needed.",
+        "minutes": 8,
+        "phase": "prep"
+      },
+      {
+        "text": "Add broth, carrot and soy sauce to a small rice cooker and start the regular cook cycle. Once the broth simmers, add cabbage and tofu.",
+        "minutes": 9,
+        "phase": "cook"
+      },
+      {
+        "text": "Add noodles and stir gently so all strands are moistened. Cook until tender, checking often and adding a little hot water if needed. Switch off and squeeze calamansi over the noodles.",
+        "minutes": 7,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "pansit",
+      "rice vermicelli",
+      "bihon",
+      "vegetable noodles"
+    ],
+    "tip": "If the cooker shuts off early, let it cool briefly and then resume the cycle. Follow its minimum and maximum fill marks.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: thin pale rice vermicelli noodles with carrot threads and crisp vegetables."
+  },
+  {
+    "slug": "pancit-sotanghon-kettle",
+    "title": "Kettle Sotanghon Cup",
+    "meal": "Lunch",
+    "appliance": "Kettle",
+    "servings": 1,
+    "costPHP": 46,
+    "blurb": "Instant sotanghon dressed with soy, sesame and crisp cucumber.",
+    "ingredients": [
+      {
+        "name": "instant glass noodle",
+        "amount": 55,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cucumber",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cane vinegar",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "sesame oil",
+        "amount": 0.5,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 350,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice cucumber into fine sticks and chop the scallion. Mix soy sauce, vinegar and sesame oil in a separate bowl.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Bring the water to a boil in the kettle. Put noodles in a heatproof bowl and immediately pour over enough boiling water to cover.",
+        "minutes": 4,
+        "phase": "cook"
+      },
+      {
+        "text": "Cover and soak according to the packet until the noodles are tender and translucent. Drain carefully, toss with dressing, and add cucumber and scallion.",
+        "minutes": 5,
+        "phase": "rest",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat",
+      "Sesame"
+    ],
+    "searchTerms": [
+      "pansit",
+      "glass noodles",
+      "kettle lunch",
+      "sotanghon"
+    ],
+    "tip": "Use only a packet of instant glass noodles that specifies a boiling-water soak. Boil water by itself in the kettle.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: soft clear Filipino glass noodles lightly seasoned, mixed with finely cut vegetables."
+  },
+  {
+    "slug": "cucumber-tuna-nori-cups",
+    "title": "Cucumber and Tuna Nori Cups",
+    "meal": "Lunch",
+    "appliance": "No cook",
+    "servings": 1,
+    "costPHP": 56,
+    "blurb": "Handheld nori squares with seasoned tuna, cucumber and rice.",
+    "ingredients": [
+      {
+        "name": "canned tuna in water",
+        "amount": 75,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "cucumber",
+        "amount": 45,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 120,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "nori sheet",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "mayonnaise",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "calamansi",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Drain tuna, dice cucumber and juice the calamansi. Use kitchen scissors to cut the nori sheet into four squares.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Mix tuna, mayonnaise and a little calamansi juice. Put a spoonful of rice, tuna and cucumber in each nori square, then fold up the sides and eat immediately.",
+        "minutes": 4,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Fish"
+    ],
+    "searchTerms": [
+      "pipino",
+      "tuna nori",
+      "seaweed rice bites",
+      "canned tuna"
+    ],
+    "tip": "Use fresh warm rice or safely chilled rice that has stayed refrigerated.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: small nori seaweed cups with cucumber and flaked tuna filling."
+  },
+  {
+    "slug": "eggplant-tomato-tortilla",
+    "title": "Talong and Tomato Tortilla",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 63,
+    "blurb": "Pan-seared talong and juicy tomato meet cheese inside a folded tortilla.",
+    "ingredients": [
+      {
+        "name": "eggplant",
+        "amount": 140,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "tomato",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cheese",
+        "amount": 30,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "flour tortilla",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slice eggplant into 5 mm rounds and pat them dry. Thinly slice the tomato and cheese.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat oil over medium. Fry eggplant slices in a single layer, turning once and seasoning with salt until both sides brown and the centers are tender.",
+        "minutes": 9,
+        "phase": "cook"
+      },
+      {
+        "text": "Put cheese, eggplant and tomato on one side of the tortilla. Fold and warm in the skillet until both sides toast and the cheese softens.",
+        "minutes": 4,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Milk",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "eggplant wrap",
+      "talong",
+      "skillet tortilla"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: cut soft tortilla wrap filled with browned eggplant and juicy tomato."
+  },
+  {
+    "slug": "mung-bean-sprout-tofu-gisado",
+    "title": "Ginisang Togue with Tofu",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 49,
+    "blurb": "A garlicky sprout sauté bulked out with browned tofu and carrots.",
+    "ingredients": [
+      {
+        "name": "mung bean sprout",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "firm tofu",
+        "amount": 110,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "carrot",
+        "amount": 50,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 40,
+        "unit": "ml",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Rinse and drain sprouts. Cut carrot into fine sticks, pat tofu dry and cut it into cubes, and mince the garlic.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Pan-fry tofu in oil over medium, turning until several sides are brown. Transfer to a plate.",
+        "minutes": 8,
+        "phase": "cook"
+      },
+      {
+        "text": "Sauté garlic and carrot, then add sprouts, soy sauce and water. Cook until the sprouts are steaming hot throughout, then fold the tofu back in.",
+        "minutes": 7,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "bean sprouts",
+      "tokwa",
+      "ginisang togue",
+      "mung bean sprout"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: short crisp bean sprouts and golden tofu cubes sautéed in a light glossy sauce."
+  },
+  {
+    "slug": "chicken-siopao-rice-bowl",
+    "title": "Siopao-Style Chicken Asado Rice Bowl",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 72,
+    "blurb": "Sweet soy chicken and onion inspired by asado siopao filling.",
+    "ingredients": [
+      {
+        "name": "boneless chicken thigh",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "red onion",
+        "amount": 25,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 1,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "brown sugar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cornstarch",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 1,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 80,
+        "unit": "ml",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cube chicken. On a clean board, cut onion into strips, mince garlic and slice scallion. Stir soy sauce, sugar and cornstarch into water.",
+        "minutes": 6,
+        "phase": "prep"
+      },
+      {
+        "text": "Heat the oil on medium. Sauté the onion and garlic, then add the chicken and cook until the outside turns opaque.",
+        "minutes": 7,
+        "phase": "cook"
+      },
+      {
+        "text": "Stir and add the sauce. Simmer until it coats the chicken and the largest pieces reach 74°C. Pile over hot rice and top with scallion.",
+        "minutes": 8,
+        "phase": "cook",
+        "timer": true
+      }
+    ],
+    "allergens": [
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "siopao filling",
+      "asado",
+      "chicken bowl",
+      "ulam"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: white rice topped with Filipino siopao-style shredded chicken asado in thick amber glaze."
+  },
+  {
+    "slug": "garlic-tomato-pasta",
+    "title": "Garlic and Fresh Tomato Pasta",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 50,
+    "blurb": "Pasta tossed with a fresh stovetop tomato and garlic sauce.",
+    "ingredients": [
+      {
+        "name": "spaghetti",
+        "amount": 80,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "tomato",
+        "amount": 170,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "garlic clove",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Produce"
+      },
+      {
+        "name": "cooking oil",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "chili flake",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Dice tomatoes and mince garlic. Put a pot of water over high heat.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Cook pasta in boiling salted water to the packet's timing. Reserve a few spoonfuls of pasta water and drain.",
+        "minutes": 11,
+        "phase": "cook"
+      },
+      {
+        "text": "Heat oil in the same pot over medium-low. Soften the garlic and chili, add tomatoes and stir until saucy. Toss with the pasta and a splash of its water.",
+        "minutes": 8,
+        "phase": "cook"
+      }
+    ],
+    "allergens": [
+      "Wheat"
+    ],
+    "searchTerms": [
+      "spaghetti",
+      "kamatis",
+      "aglio olio tomato",
+      "pasta"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: spaghetti tossed in a light red fresh tomato and garlic sauce."
+  },
+  {
+    "slug": "curried-egg-rice",
+    "title": "Curried Egg and Cucumber Rice",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 46,
+    "blurb": "Boiled eggs and fresh cucumber with a quick yogurt curry dressing.",
+    "ingredients": [
+      {
+        "name": "egg",
+        "amount": 2,
+        "unit": "pc",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "plain yogurt",
+        "amount": 35,
+        "unit": "g",
+        "aisle": "Dairy & eggs"
+      },
+      {
+        "name": "cucumber",
+        "amount": 75,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "curry powder",
+        "amount": 0.5,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "salt",
+        "amount": 1,
+        "unit": "pinch",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Cover the eggs in cool water and bring to a boil on the hot plate. Lower to a gentle boil, then cook 10 minutes or until the yolks are fully set.",
+        "minutes": 14,
+        "phase": "cook",
+        "timer": true
+      },
+      {
+        "text": "Cool the eggs under cold running water until they can be handled.",
+        "minutes": 3,
+        "phase": "rest"
+      },
+      {
+        "text": "Peel and quarter eggs, slice cucumber, and mix yogurt with curry powder and salt. Spoon over the eggs and serve with the cucumber and hot rice.",
+        "minutes": 5,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Milk"
+    ],
+    "searchTerms": [
+      "itlog",
+      "curry rice",
+      "cucumber rice bowl"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: sliced fully boiled eggs in light yellow curry sauce over white rice."
+  },
+  {
+    "slug": "kimchi-tofu-rice",
+    "title": "Kimchi and Tofu Rice Bowl",
+    "meal": "Lunch",
+    "appliance": "Microwave",
+    "servings": 1,
+    "costPHP": 54,
+    "blurb": "Warm rice and tofu finished with crunchy, tangy kimchi.",
+    "ingredients": [
+      {
+        "name": "cooked rice",
+        "amount": 150,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "firm tofu",
+        "amount": 100,
+        "unit": "g",
+        "aisle": "Protein"
+      },
+      {
+        "name": "vegan kimchi",
+        "amount": 60,
+        "unit": "g",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "sesame oil",
+        "amount": 0.5,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "water",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Pat the tofu dry and cube it. Roughly chop the kimchi and slice the scallion.",
+        "minutes": 4,
+        "phase": "prep"
+      },
+      {
+        "text": "Combine rice, tofu and water in a microwave-safe bowl and cover loosely. Microwave on high, stirring halfway, until hot. Chilled leftover rice should reach 74°C.",
+        "minutes": 3,
+        "phase": "cook"
+      },
+      {
+        "text": "Stir in sesame oil and part of the kimchi. Top with the rest of the kimchi and scallion.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Sesame",
+      "Soy"
+    ],
+    "searchTerms": [
+      "kimchi",
+      "tokwa",
+      "microwave rice bowl",
+      "korean"
+    ],
+    "tip": "Use vegan kimchi to avoid fish and shellfish. Check the kimchi label.",
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: white rice bowl with bright red-orange kimchi and golden slabs of tofu."
+  },
+  {
+    "slug": "peanut-sesame-cabbage-noodles",
+    "title": "Peanut Sesame Cabbage Noodles",
+    "meal": "Lunch",
+    "appliance": "Hot plate",
+    "servings": 1,
+    "costPHP": 54,
+    "blurb": "Springy egg noodles and cabbage in an easy peanut sauce.",
+    "ingredients": [
+      {
+        "name": "plain dry egg noodle",
+        "amount": 75,
+        "unit": "g",
+        "aisle": "Grains & bread"
+      },
+      {
+        "name": "cabbage",
+        "amount": 95,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "scallion",
+        "amount": 10,
+        "unit": "g",
+        "aisle": "Produce"
+      },
+      {
+        "name": "peanut butter",
+        "amount": 1,
+        "unit": "tbsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "soy sauce",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "cane vinegar",
+        "amount": 2,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      },
+      {
+        "name": "sesame oil",
+        "amount": 0.5,
+        "unit": "tsp",
+        "aisle": "Pantry"
+      }
+    ],
+    "steps": [
+      {
+        "text": "Shred cabbage and slice the scallion. Mix peanut butter, soy sauce, vinegar and sesame oil in the serving bowl.",
+        "minutes": 5,
+        "phase": "prep"
+      },
+      {
+        "text": "Boil the noodles according to the packet. Add cabbage for the final 2 minutes, then reserve a little cooking water and drain.",
+        "minutes": 10,
+        "phase": "cook"
+      },
+      {
+        "text": "Thin the peanut sauce with a spoonful of hot cooking water. Toss in noodles and cabbage, then finish with scallion.",
+        "minutes": 2,
+        "phase": "prep"
+      }
+    ],
+    "allergens": [
+      "Egg",
+      "Peanut",
+      "Sesame",
+      "Soy",
+      "Wheat"
+    ],
+    "searchTerms": [
+      "mani",
+      "repolyo",
+      "peanut butter noodles",
+      "stir fry"
+    ],
+    "photo": "Photorealistic commercial cookbook photography for a Philippine student recipe app. Simple ivory ceramic bowl or plate as appropriate, warm light oak table, diffused left window daylight, 45-degree overhead angle, delicious realistic textures and modest accessible portions, natural warm color, centered dish with all food in the central 70 percent. Compose for a 5:4 landscape crop. No people, packaging, captions, text, watermarks or graphic elements. One single photo. Dish: saucy peanut sesame noodles with shreds of crisp cabbage and sesame seeds."
+  }
+]

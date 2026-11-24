@@ -1,0 +1,49 @@
+<template>
+  <style>
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_500Medium.ttf'); font-weight: 500; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_600SemiBold.ttf'); font-weight: 600; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_700Bold.ttf'); font-weight: 700; }
+    @font-face { font-family: 'Jakarta'; src: url('assets/fonts/PlusJakartaSans_800ExtraBold.ttf'); font-weight: 800; }
+    @font-face { font-family: 'Gelasio'; src: url('assets/fonts/Gelasio_500Medium_Italic.ttf'); font-style: italic; font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #FFFFFF; font-family: 'Jakarta', sans-serif; }
+    #ck-line { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 0.24em;
+      font-weight: 800; font-size: 104px; letter-spacing: -0.045em; color: #D5DCD7; white-space: nowrap; }
+    #ck-word { position: relative; display: inline-block; padding: 0.06em 0.34em 0.12em; }
+    #ck-pill { position: absolute; inset: 0; border-radius: 999px; background: #0E7A4A; }
+    #ck-text { position: relative; }
+    #ck-meet { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 64px; color: #FFFFFF; letter-spacing: -0.03em; opacity: 0; }
+    #ck-cursor { position: absolute; left: 0; top: 0; width: 64px; height: 64px; }
+    #ck-ripple { position: absolute; left: 0; top: 0; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; border: 4px solid #34C77B; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="click" data-width="1920" data-height="1080">
+    <div id="ck-line">
+      <span id="ck1">What</span><span id="ck2">if</span><span id="ck3">it</span><span id="ck4">all</span><span id="ck5">just</span>
+      <span id="ck-word"><span id="ck-pill"></span><span id="ck-text">clicked?</span></span>
+    </div>
+    <div id="ck-ripple"></div>
+    <div id="ck-meet">Meet</div>
+    <svg id="ck-cursor" viewBox="0 0 64 64"><path d="M10 6 L10 50 L22 39 L30 58 L38 54 L30 36 L46 36 Z" fill="#0A1710" stroke="#FFFFFF" stroke-width="3.5" stroke-linejoin="round"/></svg>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+        const ids = ["#ck1", "#ck2", "#ck3", "#ck4", "#ck5", "#ck-text"];
+    const at = [0.08, 0.28, 0.37, 0.45, 0.6, 0.78];
+    tl.fromTo("#ck-line", { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "none" }, 0);
+    ids.forEach((w, i) => tl.fromTo(w, { color: "#D5DCD7" }, { color: "#0A1710", duration: 0.12, ease: "power2.out" }, at[i]));
+    // cursor glides in and clicks "clicked?" (word centre ~ x 1400, y 560)
+    tl.fromTo("#ck-cursor", { x: 1760, y: 980, opacity: 0 }, { x: 1415, y: 560, opacity: 1, duration: 0.55, ease: "power3.out" }, 0.3);
+    tl.to("#ck-cursor", { scale: 0.82, duration: 0.06, ease: "power2.in", transformOrigin: "10px 6px" }, 0.84);
+    tl.to("#ck-cursor", { scale: 1, duration: 0.18, ease: "power2.out" }, 0.9);
+    tl.fromTo("#ck-ripple", { x: 1425, y: 566, scale: 0.3, opacity: 0.9 }, { scale: 1.4, opacity: 0, duration: 0.45, ease: "expo.out" }, 0.86);
+    tl.fromTo("#ck-pill", { scale: 0 }, { scale: 1, duration: 0.5, ease: "back.out(2.4)" }, 0.86);
+    tl.to("#ck-text", { color: "#FFFFFF", duration: 0.1, ease: "none" }, 0.88);
+    tl.fromTo("#ck-word", { scale: 1 }, { scale: 1.06, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 }, 0.86);
+    tl.to("#ck-cursor", { x: 1700, y: 1000, opacity: 0, duration: 0.4, ease: "power3.in" }, 1.25);
+    // object becomes the world: pill grows past the frame
+    tl.to(["#ck1", "#ck2", "#ck3", "#ck4", "#ck5"], { opacity: 0, filter: "blur(14px)", duration: 0.3, ease: "power2.in", stagger: 0.03 }, 1.8);
+    tl.to("#ck-text", { opacity: 0, filter: "blur(10px)", scale: 1.3, duration: 0.25, ease: "power2.in" }, 2.0);
+    tl.to("#ck-pill", { scaleX: 9, scaleY: 15, borderRadius: 0, duration: 0.62, ease: "power3.in" }, 1.94);
+    tl.fromTo("#ck-meet", { opacity: 0, filter: "blur(10px)", y: 10 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.2, ease: "power3.out" }, 2.24);
+    window.__timelines["click"] = tl;
+  </script>
+</template>

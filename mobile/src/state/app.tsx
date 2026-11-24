@@ -1,5 +1,5 @@
 import type { Session } from '@supabase/supabase-js'
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Alert } from 'react-native'
 import { registerForServerPush, syncAlarmNotifications } from '@/lib/notifications'
 import * as repo from '@/lib/repo'
@@ -27,8 +27,9 @@ type AppState = {
   saveDeadline: (deadline: Deadline) => Promise<void>
   saveDeadlines: (deadlines: Deadline[]) => Promise<void>
   removeDeadline: (id: string) => Promise<void>
-  setMeal: (day: string, meal: Meal, recipeSlug: string | null) => Promise<void>
-  saveGrocery: (items: GroceryItem[]) => Promise<void>
+  setMeal: (day: string, meal: Meal, recipeSlug: string | null) => Promise<boolean>
+  fillMealPlan: (entries: MealPlanEntry[]) => Promise<boolean>
+  saveGrocery: (items: GroceryItem[] | ((current: GroceryItem[]) => GroceryItem[])) => Promise<boolean>
   signOut: () => Promise<void>
 }
 
@@ -54,6 +55,53 @@ type Data = {
 const EMPTY: Data = { profile: null, classes: [], alarms: [], deadlines: [], mealPlan: [], grocery: [] }
 const DEMO: Data = { profile: demoProfile, classes: demoClasses, alarms: demoAlarms, deadlines: demoDeadlines, mealPlan: demoMealPlan, grocery: demoGrocery }
 
+function useKitchenSave<T>(owner: string | undefined, items: T[], apply: (items: T[]) => void, write: (owner: string, items: T[]) => Promise<void>) {
+  const current = useRef({ owner, shown: items, persisted: items, pending: 0, queue: Promise.resolve() })
+  useEffect(() => {
+    const store = current.current
+    if (store.owner !== owner) {
+      current.current = { owner, shown: items, persisted: items, pending: 0, queue: Promise.resolve() }
+    } else if (store.pending === 0) {
+      store.shown = items
+      store.persisted = items
+    }
+  }, [items, owner])
+
+  return useCallback((update: (items: T[]) => T[]) => {
+    const active = current.current
+    if (owner !== active.owner) return Promise.resolve(false)
+    const next = update(active.shown)
+    if (next === active.shown) return Promise.resolve(true)
+    active.shown = next
+    apply(next)
+    if (!owner) {
+      active.persisted = next
+      return Promise.resolve(true)
+    }
+    active.pending += 1
+    const save = active.queue.then(async () => {
+      try {
+        await write(owner, next)
+        active.persisted = next
+        return true
+      } catch (error) {
+        if (current.current === active) {
+          if (active.pending === 1) {
+            active.shown = active.persisted
+            apply(active.persisted)
+          }
+          report(error)
+        }
+        return false
+      } finally {
+        active.pending -= 1
+      }
+    })
+    active.queue = save.then(() => undefined)
+    return save
+  }, [apply, owner, write])
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const demo = !isConfigured
   const [authChecked, setAuthChecked] = useState(demo)
@@ -65,6 +113,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const patch = useCallback((p: Partial<Data> | ((d: Data) => Partial<Data>)) =>
     setData(d => ({ ...d, ...(typeof p === 'function' ? p(d) : p) })), [])
+  const patchPlan = useCallback((mealPlan: MealPlanEntry[]) => patch({ mealPlan }), [patch])
+  const patchGrocery = useCallback((grocery: GroceryItem[]) => patch({ grocery }), [patch])
+  const saveKitchenPlan = useKitchenSave(userId, data.mealPlan, patchPlan, repo.setMealPlan)
+  const saveKitchenGrocery = useKitchenSave(userId, data.grocery, patchGrocery, repo.setGrocery)
 
   const load = useCallback(async (id: string) => {
     try {
@@ -106,7 +158,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [demo, userId, ready])
 
   const value = useMemo<AppState>(() => {
-    const { profile, classes, alarms, deadlines, mealPlan } = data
+    const { profile, classes, alarms, deadlines } = data
     /** Optimistic write: apply locally, persist, roll back to the snapshot on failure. */
     const persist = async (fn: (id: string) => Promise<unknown>) => {
       if (demo || !userId) return
@@ -172,23 +224,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await persist(id => repo.deleteDeadline(id, deadlineId))
       },
 
-      async setMeal(day, meal, recipeSlug) {
-        const next = mealPlan.filter(m => !(m.day === day && m.meal === meal))
-        if (recipeSlug) next.push({ day, meal, recipeSlug })
-        patch({ mealPlan: next })
-        await persist(id => repo.setMealPlan(id, next))
+      setMeal(day, meal, recipeSlug) {
+        return saveKitchenPlan(current => {
+          const next = current.filter(item => !(item.day === day && item.meal === meal))
+          if (recipeSlug) next.push({ day, meal, recipeSlug })
+          return next
+        })
       },
 
-      async saveGrocery(items) {
-        patch({ grocery: items })
-        await persist(id => repo.setGrocery(id, items))
+      fillMealPlan(entries) {
+        return saveKitchenPlan(current => [
+          ...current,
+          ...entries.filter(entry => !current.some(saved => saved.day === entry.day && saved.meal === entry.meal)),
+        ])
+      },
+
+      saveGrocery(items) {
+        return saveKitchenGrocery(current => typeof items === 'function' ? items(current) : items)
       },
 
       async signOut() {
         if (!demo) await supabase.auth.signOut()
       },
     }
-  }, [ready, demo, session, data, userId, load, patch])
+  }, [ready, demo, session, data, userId, load, patch, saveKitchenPlan, saveKitchenGrocery])
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
