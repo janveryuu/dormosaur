@@ -1,22 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { deletePushSubscriptionById } from '@/lib/db'
-import { apiError } from '@/lib/api-security'
+import { apiError, isStrictUuid, requireAuthenticated } from '@/lib/api-security'
 
 export async function DELETE(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { supabase, user } = await requireAuthenticated('push-devices', 30)
     const { id } = await context.params
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    if (!id || id.length > 100) {
+    if (!isStrictUuid(id)) {
       return NextResponse.json({ error: 'Device ID required' }, { status: 400 })
     }
 

@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useTransition } from 'react'
+import { useCallback, useEffect, useState, useTransition } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { Search, ChevronLeft, ChevronRight, User } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, User, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -47,10 +47,14 @@ export function UsersTable({
   const searchParams = useSearchParams()
 
   const [query, setQuery] = useState(initialSearch)
-  const [filter, setFilter] = useState(initialFilter)
+  const [lastInitialSearch, setLastInitialSearch] = useState(initialSearch)
+  if (initialSearch !== lastInitialSearch) {
+    setLastInitialSearch(initialSearch)
+    setQuery(initialSearch)
+  }
   const [isPending, startTransition] = useTransition()
 
-  const updateQueryParams = (newSearch: string, newFilter: string, newPage: number) => {
+  const updateQueryParams = useCallback((newSearch: string, newFilter: string, newPage: number) => {
     const params = new URLSearchParams(searchParams.toString())
     if (newSearch) params.set('search', newSearch)
     else params.delete('search')
@@ -61,24 +65,31 @@ export function UsersTable({
     if (newPage > 1) params.set('page', newPage.toString())
     else params.delete('page')
 
+    const qs = params.toString()
     startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`)
+      router.push(qs ? `${pathname}?${qs}` : pathname)
     })
-  }
+  }, [pathname, router, searchParams])
+
+  useEffect(() => {
+    if (query === initialSearch) return
+    const timer = setTimeout(() => {
+      updateQueryParams(query, initialFilter, 1)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [query, initialSearch, initialFilter, updateQueryParams])
 
   const handleSearchChange = (val: string) => {
     setQuery(val)
-    updateQueryParams(val, filter, 1)
   }
 
   const handleFilterChange = (val: string | null) => {
     if (!val) return
-    setFilter(val)
     updateQueryParams(query, val, 1)
   }
 
   const handlePageChange = (newPage: number) => {
-    updateQueryParams(query, filter, newPage)
+    updateQueryParams(query, initialFilter, newPage)
   }
 
   return (
@@ -91,12 +102,25 @@ export function UsersTable({
             value={query}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search by name, email, or school..."
-            className="h-10 rounded-full pl-9 bg-background/50"
+            aria-label="Search students"
+            className="h-10 rounded-full pl-9 pr-8 bg-background/50"
           />
+          {query && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Clear search"
+              onClick={() => handleSearchChange('')}
+              className="absolute top-1/2 right-1.5 size-7 -translate-y-1/2 rounded-full"
+            >
+              <X className="size-3.5" />
+            </Button>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
-          <Select value={filter} onValueChange={handleFilterChange}>
+          <Select value={initialFilter} onValueChange={handleFilterChange}>
             <SelectTrigger className="h-10 w-full rounded-full sm:w-48 bg-background/50">
               <SelectValue placeholder="All Students" />
             </SelectTrigger>

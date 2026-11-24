@@ -3,7 +3,7 @@
   "short_name": "Dormosaur",
   "description": "Dorm life, decoded. Smart schedule timetable, class alarms, and micro-kitchen recipes.",
   "id": "/",
-  "start_url": "/dashboard",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#1F6F50",

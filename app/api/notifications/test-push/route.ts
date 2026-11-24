@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { sendClassReminder } from '@/lib/notification-service'
 import { apiError, boundedText, readJson, requireAuthenticated } from '@/lib/api-security'
 
@@ -16,7 +15,7 @@ export async function POST(req: NextRequest) {
       title: customTitle,
       body: customMessage,
       tag: `test-push-${Date.now()}`,
-      url: '/dashboard',
+      url: '/',
     })
 
     return NextResponse.json({

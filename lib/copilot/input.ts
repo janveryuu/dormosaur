@@ -89,6 +89,10 @@ export function resolveContext(authenticated: boolean, cloud: StudentContext | n
 }
 
 export async function readPayload(request: Request, maxBytes = MAX_BODY_BYTES): Promise<Record<string, unknown>> {
+  const contentType = (request.headers.get('content-type') || '').trim()
+  if (!/^application\/(?:json|[a-z0-9.+-]+\+json)\b/i.test(contentType)) {
+    throw new InputError('Send a JSON request.', 415)
+  }
   if (Number(request.headers.get('content-length')) > maxBytes) throw new InputError('This upload is too large.', 413)
   if (!request.body) throw new InputError('Send a JSON conversation.')
   const reader = request.body.getReader()

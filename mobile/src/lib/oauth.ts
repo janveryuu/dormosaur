@@ -27,5 +27,5 @@ export async function signInWithGoogle(): Promise<{ error?: string; cancelled?: 
   const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo)
   if (result.type !== 'success') return { cancelled: true }
 
-  return completeAuthFromUrl(result.url)
+  return completeAuthFromUrl(result.url, { allowImplicitSession: true })
 }

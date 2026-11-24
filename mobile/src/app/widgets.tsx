@@ -67,7 +67,7 @@ export default function Widgets() {
         <View style={{ flexDirection: 'row', gap: 12, padding: 16, borderRadius: radius.md, backgroundColor: c.card }}>
           <Sym name="info.circle" fallback={Info} size={18} color={c.ink3} />
           <T v="footnote" color={c.ink2} style={{ flex: 1 }}>
-            Live widgets need the installed Dormosaur app; Expo Go can’t add them. Until then, a schedule wallpaper puts your week on the Lock Screen.
+            Live Home & Lock Screen widgets are coming in a future update. For now, save a schedule wallpaper for your Lock Screen or share your week as text.
           </T>
         </View>
       </ScrollView>

@@ -32,8 +32,8 @@ function reply(content: string, mode: ChatReply['mode'], answer?: ProviderAnswer
 }
 
 function snapshot(context: StudentContext, clock: Clock): string {
-  const data = { ...context, classes: context.classes.map(({ id: _id, ...c }) => c),
-    alarms: context.alarms.map(({ classId: _id, time, ...a }) => {
+  const data = { ...context, classes: context.classes.map(({ id, ...c }) => { void id; return c }),
+    alarms: context.alarms.map(({ classId, time, ...a }) => { void classId;
       const anchor = timeMinutes(time)
       return { ...a, anchorTime: time, wakeTime: anchor !== null && a.lead !== undefined ? displayTime(anchor - a.lead) : null,
         wakeDayOffset: anchor !== null && a.lead !== undefined ? Math.floor((anchor - a.lead) / 1440) : null }

@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker'
 import { router, useNavigation, usePreventRemove } from 'expo-router'
 import { Camera, Check, ChevronRight, Home, Image as ImageIcon, School as SchoolIcon, Trash2, TrainFront, type LucideIcon } from 'lucide-react-native'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -52,6 +52,8 @@ export default function Profile() {
 
   // Ask before throwing away unsaved edits (back button, swipe or Android back).
   const [allowLeave, setAllowLeave] = useState(false)
+  const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => { if (navTimer.current) clearTimeout(navTimer.current) }, [])
   usePreventRemove(dirty && !allowLeave, ({ data }) => {
     Alert.alert('Discard changes?', 'Your edits to your profile have not been saved.', [
       { text: 'Keep editing', style: 'cancel' },
@@ -63,14 +65,18 @@ export default function Profile() {
     if (saving || nameError) return
     setSaving(true)
     try {
-      await saveProfile({
+      const ok = await saveProfile({
         name: cleanName, initials: initialsOf(cleanName), school: tidy(school), year,
         is_dorm_student: isDorm, dorm: isDorm ? tidy(dorm) : '',
       })
+      if (!ok) {
+        setSaving(false)
+        return
+      }
       haptic.success()
       setSaved(true)
       setAllowLeave(true)
-      setTimeout(() => { if (router.canGoBack()) router.back() }, 550)
+      navTimer.current = setTimeout(() => { if (router.canGoBack()) router.back() }, 550)
     } catch {
       Alert.alert('Not saved', 'We could not save your profile. Check your connection and try again.')
       setSaving(false)
@@ -110,7 +116,7 @@ export default function Profile() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <NavHeader title="Profile" />
       <ScrollView contentContainerStyle={{ padding: 20, gap: 24, paddingBottom: insets.bottom + 32 }} keyboardShouldPersistTaps="handled">
         {/* Photo */}

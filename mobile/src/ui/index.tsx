@@ -2,7 +2,7 @@ import * as Haptics from 'expo-haptics'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import { ChevronLeft, type LucideIcon } from 'lucide-react-native'
-import { useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import {
   ActivityIndicator, Platform, Pressable, Text as RNText, TextInput, View,
   type PressableProps, type StyleProp, type TextInputProps, type TextProps, type ViewStyle,
@@ -70,6 +70,7 @@ export function Button({ title, icon: Icon, kind = 'primary', size = 'lg', loadi
     <Press
       disabled={disabled || loading}
       accessibilityLabel={title}
+      hitSlop={size === 'sm' ? { top: 6, bottom: 6 } : undefined}
       style={[{ height: h, borderRadius: radius.pill, backgroundColor: bg, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: size === 'sm' ? 14 : 22 },
         kind === 'primary' && elevation(c, 2), style]}
       {...rest}
@@ -186,7 +187,7 @@ export function Segmented<V extends string>({ value, options, onChange }: { valu
 export function Chip({ label, on, onPress, icon: Icon }: { label: string; on?: boolean; onPress?: () => void; icon?: LucideIcon }) {
   const { c } = useTheme()
   return (
-    <Press onPress={onPress} scale={0.94} accessibilityState={{ selected: on }}
+    <Press onPress={onPress} hitSlop={{ top: 4, bottom: 4 }} scale={0.94} accessibilityState={{ selected: on }}
       style={{ height: 36, paddingHorizontal: 14, borderRadius: radius.pill, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: on ? c.green : c.fill }}>
       {Icon && <Icon size={15} color={on ? c.onGreen : c.ink2} strokeWidth={2.4} />}
       <T v="subhead" color={on ? c.onGreen : c.ink} style={{ fontWeight: '600' }}>{label}</T>
@@ -223,10 +224,19 @@ export function NavHeader({ title, right, onBack }: { title?: string; right?: Re
 }
 
 /** Header for modal sheets: grabber-friendly title + action. */
-export function SheetHeader({ title, action, onAction, actionDisabled }: { title: string; action?: string; onAction?: () => void | Promise<void>; actionDisabled?: boolean }) {
+export function SheetHeader({ title, action, onAction, actionDisabled }: { title: string; action?: string; onAction?: () => void | boolean | Promise<void | boolean>; actionDisabled?: boolean }) {
   const { c } = useTheme()
   // One tap only: a double tap used to save twice and close the sheet twice (GO_BACK error).
   const [busy, setBusy] = useState(false)
+  const mountedRef = useRef(true)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 }}>
       <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button"><T v="body" color={c.green}>Cancel</T></Pressable>
@@ -234,8 +244,16 @@ export function SheetHeader({ title, action, onAction, actionDisabled }: { title
       {action ? (
         <Pressable onPress={async () => {
           if (busy) return
-          setBusy(true); haptic.success()
-          try { await onAction?.() } finally { setTimeout(() => setBusy(false), 800) }
+          setBusy(true)
+          try {
+            const res = await onAction?.()
+            if (res !== false) haptic.success()
+          } finally {
+            if (mountedRef.current) {
+              if (timerRef.current) clearTimeout(timerRef.current)
+              timerRef.current = setTimeout(() => { if (mountedRef.current) setBusy(false) }, 300)
+            }
+          }
         }} disabled={actionDisabled || busy} hitSlop={10} accessibilityRole="button">
           <T v="headline" color={actionDisabled || busy ? c.ink3 : c.green}>{action}</T>
         </Pressable>

@@ -3,12 +3,35 @@
  * Dormosaur Branded HTML Email Templates for Supabase Auth & Resend.
  */
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function safeHttpUrl(raw: string | undefined, fallback: string): string {
+  const cleaned = (raw || '').trim().replace(/[\r\n\0]/g, '')
+  try {
+    const parsed = new URL(cleaned)
+    if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+      return cleaned
+    }
+  } catch { /* fall back below */ }
+  return fallback
+}
+
 export function getDormosaurConfirmationEmailHtml(params: {
   name?: string
   confirmationUrl: string
 }): string {
-  const studentName = params.name ? params.name.trim() : 'Student'
-  const confirmUrl = params.confirmationUrl || 'https://dormosaur.vercel.app/api/auth/callback'
+  const appUrl = safeHttpUrl(process.env.NEXT_PUBLIC_APP_URL, 'https://dormosaur.vercel.app').replace(/\/+$/, '')
+  const rawName = params.name && params.name.trim() ? params.name.trim().slice(0, 120) : 'Student'
+  const studentName = escapeHtml(rawName)
+  const confirmUrl = escapeHtml(safeHttpUrl(params.confirmationUrl, `${appUrl}/api/auth/callback`))
+  const escapedAppUrl = escapeHtml(appUrl)
 
   return `
 <!DOCTYPE html>
@@ -111,7 +134,7 @@ export function getDormosaurConfirmationEmailHtml(params: {
 <body>
   <div class="container">
     <div class="header">
-      <img src="https://dormosaur-app.vercel.app/android-chrome-192x192.png" alt="Dormosaur Logo" />
+      <img src="${escapedAppUrl}/android-chrome-192x192.png" alt="Dormosaur Logo" />
       <h1>Dormosaur</h1>
       <p>THE AI CAMPUS ASSISTANT FOR STUDENTS</p>
     </div>
@@ -133,7 +156,7 @@ export function getDormosaurConfirmationEmailHtml(params: {
     </div>
     <div class="footer">
       Dormosaur App • Built for College Students<br>
-      https://dormosaur.vercel.app
+      ${escapedAppUrl}
     </div>
   </div>
 </body>

@@ -13,8 +13,52 @@ export async function POST(req: NextRequest) {
       days = [],
       upcoming_deadlines = [],
     } = await readJson(req, 32 * 1024)
-    if (!Array.isArray(days) || days.length > 7 || !Array.isArray(upcoming_deadlines) || upcoming_deadlines.length > 30 ||
-      days.some(d => !d || typeof d.day_name !== 'string' || d.day_name.length > 15 || typeof d.total_class_hours !== 'number' || !Number.isFinite(d.total_class_hours) || d.total_class_hours < 0 || d.total_class_hours > 24)) throw new InputError('Please check the weekly schedule data.')
+    const strOpt = (v: unknown, max: number) => v === undefined || v === null || (typeof v === 'string' && v.length <= max)
+    const validClass = (c: unknown) =>
+      Boolean(c && typeof c === 'object' && !Array.isArray(c)) &&
+      [
+        (c as { subject?: unknown }).subject,
+        (c as { start_time?: unknown }).start_time,
+        (c as { end_time?: unknown }).end_time,
+        (c as { room?: unknown }).room,
+      ].every(v => strOpt(v, 120))
+    const validDeadline = (u: unknown) =>
+      Boolean(u && typeof u === 'object' && !Array.isArray(u)) &&
+      typeof (u as { subject?: unknown }).subject === 'string' &&
+      (u as { subject: string }).subject.length > 0 &&
+      (u as { subject: string }).subject.length <= 120 &&
+      strOpt((u as { type?: unknown }).type, 60) &&
+      strOpt((u as { date?: unknown }).date, 40)
+    const validDay = (d: unknown) =>
+      Boolean(d && typeof d === 'object' && !Array.isArray(d)) &&
+      typeof (d as { day_name?: unknown }).day_name === 'string' &&
+      (d as { day_name: string }).day_name.length <= 15 &&
+      typeof (d as { total_class_hours?: unknown }).total_class_hours === 'number' &&
+      Number.isFinite((d as { total_class_hours: number }).total_class_hours) &&
+      (d as { total_class_hours: number }).total_class_hours >= 0 &&
+      (d as { total_class_hours: number }).total_class_hours <= 24 &&
+      ((d as { longest_gap_minutes?: unknown }).longest_gap_minutes === undefined ||
+        (d as { longest_gap_minutes?: unknown }).longest_gap_minutes === null ||
+        (typeof (d as { longest_gap_minutes?: unknown }).longest_gap_minutes === 'number' &&
+          Number.isFinite((d as { longest_gap_minutes: number }).longest_gap_minutes) &&
+          (d as { longest_gap_minutes: number }).longest_gap_minutes >= 0 &&
+          (d as { longest_gap_minutes: number }).longest_gap_minutes <= 1440)) &&
+      ((d as { classes?: unknown }).classes === undefined ||
+        (Array.isArray((d as { classes: unknown[] }).classes) &&
+          (d as { classes: unknown[] }).classes.length <= 24 &&
+          (d as { classes: unknown[] }).classes.every(validClass)))
+    if (
+      typeof week_start_date !== 'string' ||
+      week_start_date.length > 32 ||
+      !Array.isArray(days) ||
+      days.length > 7 ||
+      !Array.isArray(upcoming_deadlines) ||
+      upcoming_deadlines.length > 30 ||
+      !days.every(validDay) ||
+      !upcoming_deadlines.every(validDeadline)
+    ) {
+      throw new InputError('Please check the weekly schedule data.')
+    }
     if (!days.length || days.every(d => !d.total_class_hours)) return NextResponse.json({ digest: 'No classes are saved for this week yet. Add your schedule to see weekly insights.', source: 'local' })
 
     const inputData = JSON.stringify(
@@ -81,7 +125,7 @@ Output: one short paragraph, nothing else.`
 
     if (upcoming_deadlines.length > 0) {
       const firstDeadline = upcoming_deadlines[0]
-      fallbackText += ` You've also got ${firstDeadline.subject} (${firstDeadline.type}) coming up on ${firstDeadline.date} — worth starting review early.`
+      fallbackText += ` You've also got ${firstDeadline.subject} (${firstDeadline.type || 'deadline'}) coming up${firstDeadline.date ? ` on ${firstDeadline.date}` : ' soon'} — worth starting review early.`
     }
 
     return NextResponse.json({ digest: fallbackText, source: 'dormosaur/local-ai-fallback' })

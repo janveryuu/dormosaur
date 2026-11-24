@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -25,7 +26,7 @@ function SignInContent() {
   const [loading, setLoading] = React.useState(false)
   const [googleLoading, setGoogleLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(
-    callbackError === 'confirmation_expired' ? 'This confirmation link has expired or was already used. Request a new link from Sign up, or sign in if you already confirmed your email.' : callbackError ? 'Sign-in failed. Please try again.' : null,
+    callbackError === 'confirmation_expired' ? 'This confirmation link has expired or was already used. Request a new link from the Dormosaur Android app, or sign in if you already confirmed your email.' : callbackError ? 'Sign-in failed. Please try again.' : null,
   )
 
   const supabase = createClient()
@@ -57,7 +58,7 @@ function SignInContent() {
         setError('Sign-in failed. Please try again.')
         setLoading(false)
       }
-    } catch (err: unknown) {
+    } catch {
       console.warn('[Auth]', { category: 'signin_failed' })
       setError('Something went wrong, please try again.')
       setLoading(false)
@@ -100,7 +101,7 @@ function SignInContent() {
         >
           {/* Mobile Logo Header */}
           <div className="flex flex-col items-center gap-3 text-center lg:hidden">
-            <img
+            <Image
               src="/android-chrome-192x192.png"
               alt="Dormosaur"
               width={56}
@@ -115,7 +116,7 @@ function SignInContent() {
               Welcome back
             </h1>
             <p className="text-sm font-medium text-muted-foreground">
-              Sign in to your Dormosaur account
+              Sign in to the Dormosaur admin console
             </p>
           </div>
 
@@ -129,7 +130,7 @@ function SignInContent() {
                   whileTap={{ scale: 0.97 }}
                   whileHover={{ scale: 1.01 }}
                   onClick={handleGoogleSignIn}
-                  disabled={googleLoading}
+                  disabled={loading || googleLoading}
                   className="flex w-full items-center justify-center gap-3 rounded-2xl bg-fill py-3.5 text-[15px] font-semibold text-foreground transition-colors hover:bg-accent disabled:opacity-60 border border-border/40"
                 >
                   {googleLoading ? (
@@ -163,8 +164,9 @@ function SignInContent() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="24-01096@g.batstate.edu.ph"
+                    placeholder="admin@dormosaur.app"
                     autoComplete="email"
+                    disabled={loading || googleLoading}
                     spellCheck={false}
                     aria-invalid={Boolean(error)}
                     aria-describedby={error ? 'sign-in-error' : undefined}
@@ -225,7 +227,7 @@ function SignInContent() {
                 <div className="p-5">
                   <PillButton
                     type="submit"
-                    disabled={loading || !email || !password}
+                    disabled={loading || googleLoading || !email || !password}
                     full
                     size="lg"
                   >

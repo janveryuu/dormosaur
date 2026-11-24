@@ -7,7 +7,7 @@ import sharp from 'sharp'
  * dark pixels are most "peaky" is the one that makes table lines horizontal.
  */
 export async function estimateSkew(input: Buffer): Promise<number> {
-  const { data, info } = await sharp(input).rotate().greyscale().resize({ width: 700 }).raw().toBuffer({ resolveWithObject: true })
+  const { data, info } = await sharp(input, { limitInputPixels: 25_000_000 }).rotate().greyscale().resize({ width: 700 }).raw().toBuffer({ resolveWithObject: true })
   const w = info.width, h = info.height
   // Top edges of table lines and text: a pixel clearly darker than the one two rows above.
   const xs: number[] = [], ys: number[] = []
@@ -33,7 +33,7 @@ export async function straighten(input: Buffer): Promise<Buffer | null> {
   try {
     const angle = await estimateSkew(input)
     if (Math.abs(angle) < 0.4) return null
-    return await sharp(input).rotate().rotate(-angle, { background: '#ffffff' }).png({ compressionLevel: 6 }).toBuffer()
+    return await sharp(input, { limitInputPixels: 25_000_000 }).rotate().rotate(-angle, { background: '#ffffff' }).png({ compressionLevel: 6 }).toBuffer()
   } catch {
     return null
   }

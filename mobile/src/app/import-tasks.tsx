@@ -3,7 +3,7 @@ import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
 import { router } from 'expo-router'
 import { Camera, Check, FileUp, ImageUp, Sparkles } from 'lucide-react-native'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -31,15 +31,19 @@ export default function ImportTasks() {
   const [mode, setMode] = useState<'photo' | 'text'>('photo')
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const scanRunId = useRef(0)
   const proGate = useMyPro()
   const [found, setFound] = useState<Draft[] | null>(null)
   const [open, setOpen] = useState<string | null>(null)
 
   async function run(make: () => Promise<{ mode: 'text' | 'photo' | 'file'; content: string }>) {
     if (!proGate.canUse('syllabus_scan')) { openPaywall('syllabus_scan'); return }
+    const runId = ++scanRunId.current
     setBusy(true)
     try {
       const drafts = await parseDeadlines(await make())
+      if (scanRunId.current !== runId) return
       if (!drafts.length) throw new Error('No deadlines found.')
       setFound(drafts.map(d => {
         const cls = classes.find(x => x.code && d.code && norm(x.code) === norm(d.code))
@@ -54,17 +58,30 @@ export default function ImportTasks() {
       haptic.success()
       if (proGate.userId) pro.refresh(proGate.userId, proGate.demo)
     } catch (e) {
+      if (scanRunId.current !== runId) return
       if (proGate.onError(e)) return
       haptic.warn()
       Alert.alert("Couldn't read tasks", e instanceof Error ? e.message : 'Try again.')
     } finally {
-      setBusy(false)
+      if (scanRunId.current === runId) setBusy(false)
     }
   }
 
   async function pick(source: 'camera' | 'library') {
     const opts: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 1 }
-    if (source === 'camera' && !(await ImagePicker.requestCameraPermissionsAsync()).granted) return
+    if (source === 'camera') {
+      const perm = await ImagePicker.requestCameraPermissionsAsync()
+      if (!perm.granted) {
+        Alert.alert('Camera access needed', 'Allow camera access in your phone settings to snap your syllabus.')
+        return
+      }
+    } else {
+      const perm = await ImagePicker.requestMediaLibraryPermissionsAsync()
+      if (!perm.granted) {
+        Alert.alert('Photo access needed', 'Allow photo library access in your phone settings to choose an image.')
+        return
+      }
+    }
     const res = source === 'camera' ? await ImagePicker.launchCameraAsync(opts) : await ImagePicker.launchImageLibraryAsync(opts)
     const a = res.assets?.[0]
     if (res.canceled || !a) return
@@ -132,13 +149,25 @@ export default function ImportTasks() {
         </ScrollView>
         <View style={{ position: 'absolute', left: 20, right: 20, bottom: insets.bottom + 16, gap: 8 }}>
           {undated > 0 && <T v="footnote" color={c.warn} center>Set a date for {undated === 1 ? '1 deadline' : `${undated} deadlines`}, or untick it.</T>}
-          <Button title={`Add ${chosen.length}`} icon={Check} disabled={!chosen.length || undated > 0} onPress={async () => {
-            await saveDeadlines(chosen.map(d => ({
-              id: d.id, title: d.title.trim() || 'Task', code: d.code, type: d.type, color: d.color, completed: false,
-              due: new Date(`${d.date}T${d.time || '23:59'}:00`).toISOString(),
-            })))
-            haptic.success()
-            router.replace('/tasks')
+          <Button title={saving ? 'Saving…' : `Add ${chosen.length}`} icon={Check} loading={saving} disabled={saving || !chosen.length || undated > 0} onPress={async () => {
+            if (saving) return
+            const invalid = chosen.find(d => !Number.isFinite(Date.parse(`${d.date}T${d.time || '23:59'}:00`)))
+            if (invalid) {
+              Alert.alert('Invalid due date', `Check the date for "${invalid.title}".`)
+              return
+            }
+            setSaving(true)
+            try {
+              const ok = await saveDeadlines(chosen.map(d => ({
+                id: d.id, title: d.title.trim() || 'Task', code: d.code, type: d.type, color: d.color, completed: false,
+                due: new Date(`${d.date}T${d.time || '23:59'}:00`).toISOString(),
+              })))
+              if (!ok) return
+              haptic.success()
+              router.replace('/tasks')
+            } finally {
+              setSaving(false)
+            }
           }} />
         </View>
       </View>
@@ -146,7 +175,7 @@ export default function ImportTasks() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <NavHeader title="Scan syllabus" />
       <ScrollView contentContainerStyle={{ padding: 20, gap: 18, paddingBottom: insets.bottom + 24 }} keyboardShouldPersistTaps="handled">
         <Animated.View entering={rise(0)} style={{ alignItems: 'center', gap: 6 }}>
@@ -159,6 +188,7 @@ export default function ImportTasks() {
           <Animated.View entering={fade()} style={{ alignItems: 'center', gap: 12, padding: 30 }}>
             <ActivityIndicator color={c.green} size="large" />
             <T v="headline" color={c.ink2}>Finding deadlines…</T>
+            <Button title="Cancel" kind="ghost" size="md" onPress={() => { scanRunId.current += 1; setBusy(false) }} />
           </Animated.View>
         ) : mode === 'photo' ? (
           <Animated.View key="p" entering={fade(0, 200)} style={{ gap: 10 }}>

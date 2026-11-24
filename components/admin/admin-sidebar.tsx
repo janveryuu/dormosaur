@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
   Activity,
@@ -9,12 +9,14 @@ import {
   ChefHat,
   Globe2,
   LayoutGrid,
+  LogOut,
   Settings,
   Users,
   Wallet,
   ArrowLeft,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Overview', icon: LayoutGrid },
@@ -39,11 +41,19 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar({
-  adminName = 'Janver Manlapaz',
-  adminInitials = 'JM',
+  adminName = 'Administrator',
+  adminInitials = 'AD',
   pendingPayments = 0,
 }: AdminSidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut().catch(() => {})
+    router.push('/sign-in')
+    router.refresh()
+  }
 
   return (
     <aside className="fixed top-6 bottom-6 left-6 z-40 hidden w-64 flex-col rounded-4xl bg-card p-4 shadow-ios-lg lg:flex border border-border/40">
@@ -107,12 +117,20 @@ export function AdminSidebar({
 
       <div className="mt-4 flex flex-col gap-2">
         <Link
-          href="/dashboard"
+          href="/"
           className="flex items-center gap-2 rounded-2xl bg-secondary/80 px-3 py-2 text-[13px] font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <ArrowLeft className="size-4" />
-          <span>Back to App</span>
+          <span>View Site</span>
         </Link>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="flex items-center gap-2 rounded-2xl bg-secondary/40 px-3 py-2 text-[13px] font-semibold text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+        >
+          <LogOut className="size-4" />
+          <span>Sign Out</span>
+        </button>
 
         <div className="flex items-center gap-3 rounded-3xl bg-fill p-3 border border-border/40">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-[13px] font-semibold text-primary-foreground shadow-xs">

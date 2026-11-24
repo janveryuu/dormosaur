@@ -25,22 +25,33 @@ export default function TaskEditor() {
   const [code, setCode] = useState(existing?.code ?? '')
   const [date, setDate] = useState(`${init.getFullYear()}-${pad(init.getMonth() + 1)}-${pad(init.getDate())}`)
   const [time, setTime] = useState(`${pad(init.getHours())}:${pad(init.getMinutes())}`)
+  const [saving, setSaving] = useState(false)
   const codes = [...new Set(classes.map(x => x.code || x.subject).filter(Boolean))]
 
   const save = async () => {
-    const cls = classes.find(x => (x.code || x.subject) === code)
+    if (saving || !title.trim()) return
     const due = new Date(`${date}T${time}:00`)
-    const t: Deadline = {
-      id: existing?.id ?? uid(), title: title.trim(), code, type, due: due.toISOString(),
-      color: (cls?.color ?? existing?.color ?? 1) as SubjectColor, completed: existing?.completed ?? false,
+    if (!Number.isFinite(due.getTime())) {
+      Alert.alert('Invalid due date', 'Choose a valid date and time.')
+      return
     }
-    await saveDeadline(t)
-    router.back()
+    setSaving(true)
+    try {
+      const cls = classes.find(x => (x.code || x.subject) === code)
+      const t: Deadline = {
+        id: existing?.id ?? uid(), title: title.trim(), code, type, due: due.toISOString(),
+        color: (cls?.color ?? existing?.color ?? 1) as SubjectColor, completed: existing?.completed ?? false,
+      }
+      const ok = await saveDeadline(t)
+      if (ok) router.back()
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <SheetHeader title={existing ? 'Edit task' : 'New task'} action="Save" actionDisabled={!title.trim()} onAction={save} />
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <SheetHeader title={existing ? 'Edit task' : 'New task'} action={saving ? 'Saving' : 'Save'} actionDisabled={!title.trim() || saving} onAction={save} />
       <ScrollView contentContainerStyle={{ padding: 20, gap: 18, paddingBottom: insets.bottom + 24 }} keyboardShouldPersistTaps="handled">
         <Field label="Title" value={title} onChangeText={setTitle} placeholder="Lab report" autoFocus={!existing} />
         <View style={{ gap: 8 }}>
@@ -63,8 +74,15 @@ export default function TaskEditor() {
           <View style={{ flex: 1 }}><PickerField label="Time" mode="time" value={time} onChange={setTime} /></View>
         </View>
         {existing && (
-          <Button title="Delete task" kind="danger" style={{ marginTop: 8 }} onPress={() =>
-            Alert.alert('Delete task?', existing.title, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => { haptic.warn(); removeDeadline(existing.id); router.back() } }])} />
+          <Button title="Delete task" kind="danger" disabled={saving} style={{ marginTop: 8 }} onPress={() =>
+            Alert.alert('Delete task?', existing.title, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: async () => {
+              if (saving) return
+              setSaving(true)
+              haptic.warn()
+              const ok = await removeDeadline(existing.id)
+              setSaving(false)
+              if (ok) router.back()
+            } }])} />
         )}
       </ScrollView>
     </KeyboardAvoidingView>

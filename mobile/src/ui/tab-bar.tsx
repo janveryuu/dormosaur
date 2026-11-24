@@ -51,7 +51,7 @@ export function TabBar({ state }: Props) {
                 onPress={() => { if (!on) { haptic.select(); router.navigate(`/${r.name}` as never) } }}
                 style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3 }}>
                 <Sym name={meta.sf[on ? 1 : 0]} fallback={meta.icon} size={22} color={on ? c.green : c.ink2} weight={on ? 'semibold' : 'regular'} />
-                <Animated.Text style={{ fontSize: 10, fontWeight: on ? '700' : '500', color: on ? c.green : c.ink2 }}>{meta.label}</Animated.Text>
+                <Animated.Text allowFontScaling maxFontSizeMultiplier={1.4} numberOfLines={1} style={{ fontSize: 10, fontWeight: on ? '700' : '500', color: on ? c.green : c.ink2 }}>{meta.label}</Animated.Text>
               </Pressable>
             )
           })}

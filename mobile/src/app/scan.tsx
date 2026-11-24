@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { LinearGradient } from 'expo-linear-gradient'
 import { router, useLocalSearchParams } from 'expo-router'
 import { AlertTriangle, Camera, Check, ChevronDown, ClipboardType, FileText, FileUp, ImageUp, RotateCcw, Sparkles } from 'lucide-react-native'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native'
 import Animated, { Easing, ReduceMotion, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -40,12 +40,16 @@ export default function Scan() {
   const [text, setText] = useState('')
   const [textMode, setTextMode] = useState(src === 'text')
   const [open, setOpen] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const scanRunId = useRef(0)
 
   async function run(prepare: () => Promise<{ text: string } | { image: string }>, preview?: string, label = 'Schedule') {
     if (!proGate.canUse('schedule_scan')) { openPaywall('schedule_scan'); return }
+    const runId = ++scanRunId.current
     setPhase({ k: 'scanning', preview, label })
     try {
       const res = await parseSchedule(await prepare())
+      if (scanRunId.current !== runId) return
       if (!res.classes.length) throw new Error('No classes found. Try a sharper screenshot or the original PDF.')
       // Keep the colour a subject already has; otherwise use the scanner's per-subject colour.
       const known = new Map(existing.map(e => [key(e.code || e.subject), e.color]))
@@ -63,6 +67,7 @@ export default function Scan() {
       setPhase({ k: 'review', found: fresh, duplicates: all.length - fresh.length, hint: res.hint })
       if (proGate.userId) pro.refresh(proGate.userId, proGate.demo)
     } catch (e) {
+      if (scanRunId.current !== runId) return
       if (proGate.onError(e)) { setPhase({ k: 'pick' }); return }
       haptic.warn()
       Alert.alert("Couldn't read that", e instanceof Error ? e.message : 'Try again.')
@@ -72,7 +77,19 @@ export default function Scan() {
 
   async function pickImage(source: 'camera' | 'library') {
     const opts: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 1 }
-    if (source === 'camera' && !(await ImagePicker.requestCameraPermissionsAsync()).granted) return
+    if (source === 'camera') {
+      const perm = await ImagePicker.requestCameraPermissionsAsync()
+      if (!perm.granted) {
+        Alert.alert('Camera access needed', 'Allow camera access in your phone settings to snap your schedule.')
+        return
+      }
+    } else {
+      const perm = await ImagePicker.requestMediaLibraryPermissionsAsync()
+      if (!perm.granted) {
+        Alert.alert('Photo access needed', 'Allow photo library access in your phone settings to choose a schedule screenshot.')
+        return
+      }
+    }
     const res = source === 'camera' ? await ImagePicker.launchCameraAsync(opts) : await ImagePicker.launchImageLibraryAsync(opts)
     const a = res.assets?.[0]
     if (res.canceled || !a) return
@@ -97,7 +114,7 @@ export default function Scan() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  if (phase.k === 'scanning') return <Scanning preview={phase.preview} label={phase.label} />
+  if (phase.k === 'scanning') return <Scanning preview={phase.preview} label={phase.label} onCancel={() => { scanRunId.current += 1; setPhase({ k: 'pick' }) }} />
 
   if (phase.k === 'review') {
     const update = (id: string, patch: Partial<Draft>, cleared?: string[]) => setPhase(p => p.k !== 'review' ? p : {
@@ -135,13 +152,20 @@ export default function Scan() {
         </ScrollView>
         <View style={{ position: 'absolute', left: 20, right: 20, bottom: insets.bottom + 16, gap: 8 }}>
           {blocked > 0 && <T v="footnote" color={c.warn} center>Add the missing day or time to {blocked === 1 ? '1 class' : `${blocked} classes`} first.</T>}
-          <Button title={`Add ${chosen.length} ${chosen.length === 1 ? 'class' : 'classes'}`} icon={Check} disabled={!chosen.length || blocked > 0}
+          <Button title={saving ? 'Saving…' : `Add ${chosen.length} ${chosen.length === 1 ? 'class' : 'classes'}`} icon={Check} loading={saving} disabled={saving || !chosen.length || blocked > 0}
             onPress={async () => {
-              await saveClasses(chosen.map(({ include: _i, ...d }) => ({ ...d, confidence: 'high', lowFields: [] })))
-              haptic.success()
-              // Onboarding waits on its review step; everywhere else lands on the schedule.
-              if (from === 'onboarding') router.back()
-              else router.replace('/schedule')
+              if (saving) return
+              setSaving(true)
+              try {
+                const ok = await saveClasses(chosen.map(({ include: _i, ...d }) => ({ ...d, confidence: 'high', lowFields: [] })))
+                if (!ok) return
+                haptic.success()
+                // Onboarding waits on its review step; everywhere else lands on the schedule.
+                if (from === 'onboarding') router.back()
+                else router.replace('/schedule')
+              } finally {
+                setSaving(false)
+              }
             }} />
         </View>
       </View>
@@ -149,7 +173,7 @@ export default function Scan() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <NavHeader title="Schedule scanner" />
       <ScrollView contentContainerStyle={{ padding: 20, gap: 18, paddingBottom: insets.bottom + 24 }} keyboardShouldPersistTaps="handled">
         <Animated.View entering={rise(0)} style={{ alignItems: 'center', gap: 8 }}>
@@ -266,7 +290,7 @@ function ReviewRow({ d, i, open, onOpen, onToggle, onChange }: {
 }
 
 /** Animated scan: laser sweep over the image, rotating status lines. */
-function Scanning({ preview, label }: { preview?: string; label: string }) {
+function Scanning({ preview, label, onCancel }: { preview?: string; label: string; onCancel: () => void }) {
   const { c } = useTheme()
   const [h, setH] = useState(360)
   const [step, setStep] = useState(0)
@@ -310,6 +334,9 @@ function Scanning({ preview, label }: { preview?: string; label: string }) {
         <Animated.View key={step} entering={fade(0, 260)}>
           <T v="title3" color="#fff" center>{STEPS[step]}</T>
         </Animated.View>
+        <Press onPress={onCancel} hitSlop={8} accessibilityLabel="Cancel scan" style={{ marginTop: 8, paddingHorizontal: 18, paddingVertical: 10, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.12)' }}>
+          <T v="subhead" color="rgba(255,255,255,0.85)" style={{ fontWeight: '600' }}>Cancel</T>
+        </Press>
       </View>
     </View>
   )

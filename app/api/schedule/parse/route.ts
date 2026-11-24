@@ -38,16 +38,17 @@ export async function POST(req: Request) {
   const started = Date.now()
   let refund: () => Promise<void> = async () => {}
   try {
-    // Free accounts get one AI scan; Pro is unlimited. Failed scans are refunded below.
-    refund = await consumeFeature(userId, 'schedule_scan')
     let result
     if (body.image !== undefined) {
-      if (typeof body.image !== 'string') throw new ScanError('invalid_image')
+      if (typeof body.image !== 'string' || !body.image.startsWith('data:')) throw new ScanError('invalid_image')
+      // Free accounts get one AI scan; Pro is unlimited. Failed scans are refunded below.
+      refund = await consumeFeature(userId, 'schedule_scan')
       result = await scanSchedule({ image: body.image })
     } else {
       const text = body.text ?? body.content ?? ''
       if (typeof text !== 'string' || !text.trim()) throw new ScanError('no_schedule')
       if (text.length > 30_000) throw new InputError('Please keep schedule text under 30,000 characters.', 413)
+      refund = await consumeFeature(userId, 'schedule_scan')
       result = await scanSchedule({ text })
     }
     // Controlled diagnostics only: never the schedule, image or key.

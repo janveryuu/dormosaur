@@ -164,7 +164,11 @@ test('browser roles, message length, count and total history are bounded', () =>
 })
 
 test('payload bytes are bounded even without content-length', async () => {
-  const request = (body: string) => new Request('https://example.test/api/chat', { method: 'POST', body })
+  const request = (body: string) => new Request('https://example.test/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body,
+  })
   assert.deepEqual(await readPayload(request('{"messages":[]}')), { messages: [] })
   await assert.rejects(readPayload(request('not json')), InputError); await assert.rejects(readPayload(request('[]')), InputError)
   await assert.rejects(readPayload(request('x'.repeat(MAX_BODY_BYTES + 1))), (e: unknown) => e instanceof InputError && e.status === 413)

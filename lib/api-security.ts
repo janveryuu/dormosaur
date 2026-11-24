@@ -6,6 +6,27 @@ import { createClient } from '@/lib/supabase/server'
 import { InputError, readPayload } from '@/lib/copilot/input'
 
 export { InputError }
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+export function isStrictUuid(value: unknown): value is string {
+  return typeof value === 'string' && UUID_RE.test(value.trim())
+}
+/** Resolves caller IP from platform-managed headers first, then rightmost proxy hop. */
+export function clientIp(req: Request): string {
+  const trusted = req.headers.get('x-vercel-forwarded-for')
+    || req.headers.get('cf-connecting-ip')
+    || req.headers.get('x-real-ip')
+  if (trusted) {
+    const first = trusted.split(',')[0]?.trim()
+    if (first) return first.slice(0, 64)
+  }
+  const forwarded = req.headers.get('x-forwarded-for')
+  if (forwarded) {
+    const parts = forwarded.split(',').map(s => s.trim()).filter(Boolean)
+    const last = parts.at(-1)
+    if (last) return last.slice(0, 64)
+  }
+  return 'unknown'
+}
 // Bounded, per-runtime protection. Production WAF limits must also cover cold
 // starts/multiple instances; this is not a distributed quota ledger.
 const requests = new Map<string, { count: number; expires: number }>()
@@ -16,7 +37,11 @@ export function consumeRateLimit(key: string, limit = 20, windowMs = 60_000) {
   if (entry && entry.count >= limit) throw new InputError('Please wait a minute before trying again.', 429)
   if (entry) entry.count++
   else {
-    if (requests.size >= 10_000) throw new InputError('Please try again shortly.', 503)
+    while (requests.size >= 10_000) {
+      const oldest = requests.keys().next().value
+      if (oldest === undefined) break
+      requests.delete(oldest)
+    }
     requests.set(key, { count: 1, expires: now + windowMs })
   }
 }
@@ -37,8 +62,14 @@ export async function requireAuthenticated(bucket = 'ai', limit = 20) {
   const bearer = await bearerClient()
   const supabase = bearer?.supabase ?? await createClient()
   const { data: { user }, error } = bearer ? await supabase.auth.getUser(bearer.token) : await supabase.auth.getUser()
+  if (error) {
+    const status = (error as { status?: number }).status
+    const msg = (error.message || '').toLowerCase()
+    if (!status || status >= 500 || /fetch|network|timeout|unavailable/.test(msg)) {
+      throw new InputError('We could not check your session. Please try again.', 503)
+    }
+  }
   if (!user || user.is_anonymous) throw new InputError('Please sign in to continue.', 401)
-  if (error) throw new InputError('We could not check your session. Please try again.', 503)
   consumeRateLimit(`${bucket}:${user.id}`, limit)
   return { supabase, user }
 }

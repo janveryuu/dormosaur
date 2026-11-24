@@ -1,12 +1,12 @@
 import { router } from 'expo-router'
-import { Search, Smartphone } from 'lucide-react-native'
+import { Search, Smartphone, X } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { Platform, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { fade, rise } from '@/design/motion'
 import { radius, type, useTheme } from '@/design/theme'
-import { DAYS } from '@/lib/repo'
+import { DAYS, type ClassEntry } from '@/lib/repo'
 import { classesOn, dayOf, formatTime, minutesOf } from '@/lib/time'
 import { useApp } from '@/state/app'
 import { Empty, IconButton, LargeTitle, Press, Segmented, T, haptic } from '@/ui'
@@ -40,6 +40,11 @@ export default function Schedule() {
           <Search size={18} color={c.ink3} />
           <TextInput value={q} onChangeText={setQ} placeholder="Search classes, rooms, instructors" placeholderTextColor={c.ink3} selectionColor={c.green}
             style={[type.callout, { flex: 1, color: c.ink, height: '100%' }, Platform.OS === 'web' && ({ outlineStyle: 'none' } as object)]} />
+          {!!q && (
+            <Press onPress={() => setQ('')} hitSlop={8} accessibilityLabel="Clear search">
+              <X size={16} color={c.ink3} />
+            </Press>
+          )}
         </View>
         <Segmented value={view} onChange={setView} options={[{ value: 'week', label: 'Week' }, { value: 'day', label: 'Day' }]} />
       </View>
@@ -71,6 +76,31 @@ export default function Schedule() {
       )}
     </View>
   )
+}
+
+function layoutDayColumns(entries: ClassEntry[]) {
+  const sorted = [...entries].sort((a, b) => minutesOf(a.start) - minutesOf(b.start) || minutesOf(a.end) - minutesOf(b.end))
+  const out: { entry: ClassEntry; lane: number; lanes: number }[] = []
+  let i = 0
+  while (i < sorted.length) {
+    const cluster: { entry: ClassEntry; lane: number }[] = []
+    const laneEnds: number[] = []
+    let clusterEnd = -1
+    while (i < sorted.length) {
+      const e = sorted[i]
+      const start = minutesOf(e.start)
+      const end = Math.max(start + 15, minutesOf(e.end))
+      if (cluster.length > 0 && start >= clusterEnd) break
+      let lane = laneEnds.findIndex(le => le <= start)
+      if (lane === -1) { lane = laneEnds.length; laneEnds.push(end) } else laneEnds[lane] = end
+      cluster.push({ entry: e, lane })
+      clusterEnd = Math.max(clusterEnd, end)
+      i++
+    }
+    const lanes = Math.max(1, laneEnds.length)
+    for (const item of cluster) out.push({ ...item, lanes })
+  }
+  return out
 }
 
 function WeekGrid({ classes, today, selected, onPickDay, nowMin, bottom }: { classes: ReturnType<typeof useApp>['classes']; today: string; selected: string; onPickDay: (d: string) => void; nowMin: number; bottom: number }) {
@@ -131,17 +161,20 @@ function WeekGrid({ classes, today, selected, onPickDay, nowMin, bottom }: { cla
 
             {days.map(d => {
               const on = d === today
+              const laidOut = layoutDayColumns(classes.filter(e => e.days.includes(d)))
               return (
                 <View key={d} style={{ width: colW, backgroundColor: on ? (dark ? 'rgba(61,214,140,0.06)' : 'rgba(14,122,74,0.045)') : 'transparent', borderRadius: 12 }}>
-                  {classes.filter(e => e.days.includes(d)).map(e => {
+                  {laidOut.map(({ entry: e, lane, lanes }) => {
                     const tone = subject(e.color)
                     const y = top(minutesOf(e.start))
                     const h = Math.max(34, top(minutesOf(e.end)) - y - 3)
                     const live = on && minutesOf(e.start) <= nowMin && nowMin < minutesOf(e.end)
                     const roomLines = h > 96 ? 3 : h > 64 ? 2 : 1
+                    const w = colW / lanes - 3
+                    const x = (colW / lanes) * lane + 1.5
                     return (
                       <Press key={e.id} onPress={() => router.push({ pathname: '/class', params: { id: e.id } })} scale={0.94} accessibilityLabel={`${e.subject}, ${formatTime(e.start)}${e.room ? `, ${e.room}` : ''}`}
-                        style={{ position: 'absolute', top: y + 1.5, left: 2, right: 2, height: h, borderRadius: 10, backgroundColor: tone.bg, overflow: 'hidden',
+                        style={{ position: 'absolute', top: y + 1.5, left: x, width: Math.max(20, w), height: h, borderRadius: 10, backgroundColor: tone.bg, overflow: 'hidden',
                           borderWidth: live ? 1.5 : 0, borderColor: tone.bar, shadowColor: tone.bar, shadowOpacity: dark ? 0 : 0.16, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 1 }}>
                         <View style={{ height: 3, backgroundColor: tone.bar }} />
                         <View style={{ paddingHorizontal: 5, paddingTop: 4, gap: 2, flex: 1 }}>

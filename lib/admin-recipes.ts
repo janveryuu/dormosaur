@@ -1,75 +1,85 @@
-export type MealType = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack' | 'Dessert'
+import originals from '@/mobile/data/kitchen/recipes/originals.json'
+import breakfastLunch from '@/mobile/data/kitchen/recipes/breakfast-lunch.json'
+import dinnerSnacks from '@/mobile/data/kitchen/recipes/dinner-snacks.json'
+import meriendaDrinks from '@/mobile/data/kitchen/recipes/merienda-and-drinks.json'
 
-export interface Recipe {
+export type MealType = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack' | 'Drink' | 'Dessert'
+export type ApplianceType = 'Microwave' | 'Hot plate' | 'Rice cooker' | 'No cook' | 'Kettle'
+
+export interface AdminRecipe {
   id: string
   name: string
   mealType: MealType
+  appliance: ApplianceType
   description: string
   cookTimeMinutes: number
   servings: number
-  costUSD: number
-  views: number
-  image?: string
-  dietaryTags: string[]
-  ingredients?: string[]
-  instructions?: string[]
+  costPHP: number
+  ingredientCount: number
+  image: string | null
 }
 
-export const INITIAL_ADMIN_RECIPES: Recipe[] = [
-  {
-    id: 'champorado-chocolate-rice',
-    name: 'Champorado (Sweet Chocolate Rice Porridge)',
-    mealType: 'Breakfast',
-    description: 'Traditional Filipino sweet chocolate rice porridge made with glutinous rice and cocoa, topped with condensed milk.',
-    cookTimeMinutes: 20,
-    servings: 2,
-    costUSD: 1.80,
-    views: 1420,
-    image: '/champorado_chocolate_rice_1786454664569.png',
-    dietaryTags: ['Vegetarian', 'Budget Friendly'],
-    ingredients: ['Glutinous Rice', 'Cocoa Powder', 'Sugar', 'Evaporated Milk'],
-    instructions: ['Boil rice in water until soft', 'Stir in cocoa powder and sugar', 'Serve with milk'],
-  },
-  {
-    id: 'sinangag-garlic-rice-egg',
-    name: 'Sinangag (Garlic Fried Rice & Egg)',
-    mealType: 'Breakfast',
-    description: 'Classic student breakfast of fragrant garlic fried rice served with crispy fried egg and tomatoes.',
-    cookTimeMinutes: 10,
-    servings: 1,
-    costUSD: 1.20,
-    views: 2890,
-    image: '/placeholder.jpg',
-    dietaryTags: ['Quick & Easy', 'Gluten-Free'],
-    ingredients: ['Day-old Rice', 'Minced Garlic', 'Egg', 'Cooking Oil', 'Salt'],
-    instructions: ['Sauté garlic until golden', 'Add rice and toss', 'Fry egg on top'],
-  },
-  {
-    id: 'kimchi-fried-rice',
-    name: 'Kimchi Fried Rice',
-    mealType: 'Lunch',
-    description: 'Spicy, tangy Korean fried rice topped with a sunny-side-up egg and sesame seeds.',
-    cookTimeMinutes: 15,
-    servings: 2,
-    costUSD: 2.20,
-    views: 3100,
-    image: '/placeholder.jpg',
-    dietaryTags: ['Spicy', 'Quick & Easy'],
-    ingredients: ['Kimchi', 'Rice', 'Gochujang', 'Egg', 'Sesame Oil'],
-    instructions: ['Chop kimchi and sauté', 'Add rice and gochujang', 'Top with fried egg'],
-  },
-  {
-    id: 'adobo-rice-bowl',
-    name: 'Adobo Rice Bowl',
-    mealType: 'Dinner',
-    description: 'Savory chicken or pork adobo served over warm steamed white rice.',
-    cookTimeMinutes: 25,
-    servings: 2,
-    costUSD: 3.50,
-    views: 4500,
-    image: '/placeholder.jpg',
-    dietaryTags: ['High Protein', 'Savory'],
-    ingredients: ['Chicken Thighs', 'Soy Sauce', 'Vinegar', 'Garlic', 'Bay Leaf'],
-    instructions: ['Simmer chicken in soy sauce and vinegar', 'Reduce sauce until thick', 'Serve over rice'],
-  },
-]
+const RECIPE_IMAGE_SLUGS = new Set([
+  'champorado-chocolate-rice',
+  'chicken-tinola-soup',
+  'corned-beef-rice-bowl',
+  'dorm-simple-menudo',
+  'garlic-rice-egg-dinner',
+  'ginisang-munggo-stew',
+  'instant-pancit-canton-egg',
+  'kettle-eggs',
+  'kettle-poached-eggs',
+  'kimchi-fried-rice-mug',
+  'luncheon-meat-rice-bowl',
+  'microwave-mug-pancakes',
+  'monay-with-egg',
+  'mug-pancakes',
+  'overnight-oats',
+  'quick-chicken-adobo-bowl',
+  'rice-cooker-congee',
+  'rice-cooker-lugaw',
+  'sinangag-garlic-rice-egg',
+  'sinigang-mug-soup',
+  'skillet-quesadilla',
+  'taho-overnight-oats',
+  'tamago-kake-gohan',
+  'tortang-talong-omelet',
+  'upgraded-ramen',
+])
+
+type RawMobileRecipe = {
+  slug: string
+  title: string
+  meal: string
+  appliance: string
+  servings: number
+  costPHP: number
+  blurb: string
+  ingredients?: unknown[]
+  steps?: { minutes?: number }[]
+}
+
+export function loadMobileRecipes(): AdminRecipe[] {
+  const all = [
+    ...(originals as RawMobileRecipe[]),
+    ...(breakfastLunch as RawMobileRecipe[]),
+    ...(dinnerSnacks as RawMobileRecipe[]),
+    ...(meriendaDrinks as RawMobileRecipe[]),
+  ]
+
+  return all.map((r) => {
+    const minutes = (r.steps || []).reduce((sum, s) => sum + (Number(s.minutes) || 0), 0)
+    return {
+      id: r.slug,
+      name: r.title,
+      mealType: r.meal as MealType,
+      appliance: r.appliance as ApplianceType,
+      description: r.blurb,
+      cookTimeMinutes: minutes > 0 ? minutes : 5,
+      servings: r.servings || 1,
+      costPHP: r.costPHP,
+      ingredientCount: Array.isArray(r.ingredients) ? r.ingredients.length : 0,
+      image: RECIPE_IMAGE_SLUGS.has(r.slug) ? `/recipes/${r.slug}.jpg` : null,
+    }
+  })
+}

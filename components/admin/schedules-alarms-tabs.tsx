@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { AlarmClock, CheckCircle2, Search, XCircle, Bell } from 'lucide-react'
+import { AlarmClock, CheckCircle2, Search, XCircle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'

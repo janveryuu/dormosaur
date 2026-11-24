@@ -1,11 +1,22 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Check, ExternalLink, Inbox, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import type { AdminPayment, PaymentStatus } from '@/lib/pro-admin'
 
 const QUICK_REASONS = [
@@ -37,6 +48,7 @@ export function PaymentsReview({ payments, tab, focusId }: { payments: AdminPaym
 function PaymentCard({ p, focused }: { p: AdminPayment; focused: boolean }) {
   const router = useRouter()
   const [busy, setBusy] = useState<'approve' | 'reject' | null>(null)
+  const [confirmApprove, setConfirmApprove] = useState(false)
   const [rejecting, setRejecting] = useState(false)
   const [reason, setReason] = useState('')
   const [error, setError] = useState('')
@@ -49,9 +61,11 @@ function PaymentCard({ p, focused }: { p: AdminPayment; focused: boolean }) {
       const res = await fetch(`/api/admin/payments/${p.id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, reason: reason.trim() }) })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(json.error || 'Something went wrong. Please try again.')
+      setConfirmApprove(false)
       router.refresh()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.')
+    } finally {
       setBusy(null)
     }
   }
@@ -69,7 +83,7 @@ function PaymentCard({ p, focused }: { p: AdminPayment; focused: boolean }) {
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <a href={`/admin/users/${p.userId}`} className="text-lg font-bold hover:underline">{p.name}</a>
+            <Link href={`/admin/users/${p.userId}`} className="text-lg font-bold hover:underline">{p.name}</Link>
             <p className="text-sm text-muted-foreground">{p.email}</p>
           </div>
           <div className="text-right">
@@ -104,13 +118,29 @@ function PaymentCard({ p, focused }: { p: AdminPayment; focused: boolean }) {
             )}
             {error && <p className="text-sm font-medium text-destructive" role="alert">{error}</p>}
             <div className="flex flex-wrap gap-2">
-              <Button onClick={() => act('approve')} disabled={!!busy} className="rounded-full px-5">
+              <Button onClick={() => setConfirmApprove(true)} disabled={!!busy} className="rounded-full px-5">
                 <Check className="size-4" /> {busy === 'approve' ? 'Approving…' : 'Approve & turn on Pro'}
               </Button>
               {rejecting
                 ? <Button variant="destructive" onClick={() => act('reject')} disabled={!!busy} className="rounded-full px-5"><X className="size-4" /> {busy === 'reject' ? 'Rejecting…' : 'Send rejection'}</Button>
                 : <Button variant="outline" onClick={() => setRejecting(true)} disabled={!!busy} className="rounded-full px-5">Reject…</Button>}
             </div>
+            <AlertDialog open={confirmApprove} onOpenChange={setConfirmApprove}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Approve ₱{p.amount} {p.planName} payment?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Confirm you verified ₱{p.amount} from {p.name} ({p.walletName}, code {p.referenceCode}). This grants Pro access immediately and sends a confirmation email.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={!!busy}>Cancel</AlertDialogCancel>
+                  <AlertDialogAction disabled={!!busy} onClick={(e) => { e.preventDefault(); void act('approve') }}>
+                    {busy === 'approve' ? 'Approving…' : 'Confirm approval'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </>
         ) : (
           <div className="flex flex-wrap items-center gap-2">

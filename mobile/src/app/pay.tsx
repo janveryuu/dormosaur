@@ -19,7 +19,7 @@ import { Button, Field, NavHeader, Press, T, haptic } from '@/ui'
 import { useMyPro } from '@/ui/pro-gate'
 
 type Draft = { plan: PaidPlan; wallet: Wallet; step: 1 | 2; txn: string; key: string }
-const DRAFT_KEY = 'dormosaur.pay.draft.v1'
+const MAX_RECEIPT_BYTES = 850 * 1024
 const newKey = () => `pay-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 
 /** Two steps: pay with a QR code, then upload the receipt for review. Progress survives app restarts. */
@@ -28,30 +28,38 @@ export default function Pay() {
   const insets = useSafeAreaInsets()
   const params = useLocalSearchParams<{ plan?: string }>()
   const { status, userId, demo } = useMyPro()
+  const draftKey = userId ? `dormosaur.pay.draft.v1.${userId}` : 'dormosaur.pay.draft.v1'
   const initialPlan = (PLANS.some(p => p.id === params.plan) ? params.plan : 'semester') as PaidPlan
   const [d, setD] = useState<Draft>({ plan: initialPlan, wallet: 'gcash', step: 1, txn: '', key: newKey() })
   const [receipt, setReceipt] = useState<{ uri: string; dataUrl: string } | null>(null)
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const loaded = useRef(false)
   const plan = PLANS.find(p => p.id === d.plan)!
   const wallet = WALLETS.find(w => w.id === d.wallet)!
-  const ref = status?.referenceCode ?? '…'
+  const refReady = Boolean(status?.referenceCode)
+  const ref = status?.referenceCode ?? 'Loading…'
 
-  // Restore an unfinished payment (same plan) so a dropped connection never means paying twice.
+  useEffect(() => () => { if (copyTimer.current) clearTimeout(copyTimer.current) }, [])
+
+  // Restore an unfinished payment (same plan & user) so a dropped connection never means paying twice.
   useEffect(() => {
-    AsyncStorage.getItem(DRAFT_KEY).then(raw => {
+    loaded.current = false
+    AsyncStorage.getItem(draftKey).then(raw => {
       const saved = raw ? (JSON.parse(raw) as Draft) : null
       if (saved && saved.plan === initialPlan) setD(saved)
     }).catch(() => {}).finally(() => { loaded.current = true })
-  }, [initialPlan])
-  useEffect(() => { if (loaded.current) AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(d)).catch(() => {}) }, [d])
+  }, [draftKey, initialPlan])
+  useEffect(() => { if (loaded.current) AsyncStorage.setItem(draftKey, JSON.stringify(d)).catch(() => {}) }, [d, draftKey])
   const set = (p: Partial<Draft>) => setD(prev => ({ ...prev, ...p }))
 
   const copy = async () => {
+    if (!refReady) return
     await Clipboard.setStringAsync(ref)
     haptic.success(); setCopied(true)
-    setTimeout(() => setCopied(false), 1800)
+    if (copyTimer.current) clearTimeout(copyTimer.current)
+    copyTimer.current = setTimeout(() => setCopied(false), 1800)
   }
 
   const saveQr = async () => {
@@ -75,12 +83,27 @@ export default function Pay() {
       const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 1 })
       const a = res.canceled ? null : res.assets[0]
       if (!a) return
-      // Receipts stay readable at 1400px; JPEG 0.8 keeps them well under the 900 KB limit.
-      const long = Math.max(a.width, a.height)
-      let ctx = ImageManipulator.manipulate(a.uri)
-      if (long > 1400) ctx = ctx.resize(a.width >= a.height ? { width: 1400 } : { height: 1400 })
-      const out = await (await ctx.renderAsync()).saveAsync({ format: SaveFormat.JPEG, compress: 0.8, base64: true })
-      if (!out.base64) throw new Error()
+      // Receipts stay readable at <= 1400px while remaining strictly under server 900 KB limit.
+      const edges = [1400, 1080]
+      const qualities = [0.8, 0.65, 0.5]
+      let out: { uri: string; base64?: string } | null = null
+      for (const edge of edges) {
+        const long = Math.max(a.width, a.height)
+        let ctx = ImageManipulator.manipulate(a.uri)
+        if (long > edge) ctx = ctx.resize(a.width >= a.height ? { width: edge } : { height: edge })
+        const rendered = await ctx.renderAsync()
+        for (const q of qualities) {
+          const candidate = await rendered.saveAsync({ format: SaveFormat.JPEG, compress: q, base64: true })
+          out = candidate
+          if (candidate.base64 && candidate.base64.length * 0.75 <= MAX_RECEIPT_BYTES) break
+        }
+        if (out?.base64 && out.base64.length * 0.75 <= MAX_RECEIPT_BYTES) break
+      }
+      if (!out?.base64) throw new Error('Could not read that screenshot.')
+      if (out.base64.length * 0.75 > MAX_RECEIPT_BYTES) {
+        Alert.alert('Image too large', 'Please pick or crop a smaller receipt screenshot (under 900 KB).')
+        return
+      }
       setReceipt({ uri: out.uri, dataUrl: `data:image/jpeg;base64,${out.base64}` })
       haptic.select()
     } catch {
@@ -98,7 +121,7 @@ export default function Pay() {
       if (demo) throw new Error('Sign in to submit a payment.')
       const next = await proApi.submitPayment({ plan: d.plan, wallet: d.wallet, transactionRef: txn, receipt: receipt.dataUrl, idempotencyKey: d.key })
       pro.apply(userId, next)
-      await AsyncStorage.removeItem(DRAFT_KEY).catch(() => {})
+      await AsyncStorage.removeItem(draftKey).catch(() => {})
       haptic.success()
       Alert.alert('Receipt sent! 🦕', 'We’ll check your payment and turn on Pro, usually within 24 hours. You’ll get a notification.', [
         { text: 'OK', onPress: () => router.dismissTo('/pro') },
@@ -106,12 +129,13 @@ export default function Pay() {
     } catch (e) {
       haptic.warn()
       Alert.alert('Not sent yet', e instanceof Error ? e.message : 'Please check your connection and try again.')
+    } finally {
       setBusy(false)
     }
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <NavHeader title={d.step === 1 ? `Pay ₱${plan.amount}` : 'Upload receipt'} onBack={d.step === 2 ? () => set({ step: 1 }) : undefined} />
       <ScrollView contentContainerStyle={{ padding: 20, gap: 18, paddingBottom: insets.bottom + 32 }} keyboardShouldPersistTaps="handled">
         <Steps step={d.step} />
@@ -132,7 +156,7 @@ export default function Pay() {
             </Animated.View>
 
             <Animated.View key={d.wallet} entering={fade(0, 200)} style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: '#fff', alignItems: 'center' }}>
-              <Image source={wallet.qr} style={{ width: '100%', aspectRatio: d.wallet === 'gcash' ? 0.65 : d.wallet === 'maribank' ? 1.05 : d.wallet === 'maya' ? 0.9 : 0.82 }} contentFit="contain" accessibilityLabel={`${wallet.name} QR code for Janver Manlapaz`} />
+              <Image source={wallet.qr} style={{ width: '100%', aspectRatio: d.wallet === 'gcash' ? 0.65 : d.wallet === 'maribank' ? 1.05 : d.wallet === 'maya' ? 0.9 : 0.82 }} contentFit="contain" accessibilityLabel={`${wallet.name} payment QR code`} />
             </Animated.View>
 
             <Button title="Save QR to Photos" icon={Download} kind="secondary" size="md" onPress={saveQr} />
@@ -143,8 +167,8 @@ export default function Pay() {
               <Row label="Plan" value={`${plan.name} · ${plan.length}`} />
               <View style={{ gap: 6 }}>
                 <T v="footnote" color={c.ink2} style={{ fontWeight: '600' }}>Put this code in the message / note</T>
-                <Press onPress={copy} scale={0.97} accessibilityLabel={`Copy code ${ref}`}
-                  style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 52, paddingHorizontal: 16, borderRadius: radius.md, backgroundColor: c.greenSoft, borderWidth: 1.5, borderColor: c.green, borderStyle: 'dashed' }}>
+                <Press onPress={copy} disabled={!refReady} scale={0.97} accessibilityLabel={refReady ? `Copy code ${ref}` : 'Loading reference code'}
+                  style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 52, paddingHorizontal: 16, borderRadius: radius.md, backgroundColor: c.greenSoft, borderWidth: 1.5, borderColor: c.green, borderStyle: 'dashed', opacity: refReady ? 1 : 0.6 }}>
                   <T v="headline" style={{ fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', letterSpacing: 1 }}>{ref}</T>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     {copied ? <Check size={18} color={c.green} strokeWidth={3} /> : <Copy size={18} color={c.green} />}

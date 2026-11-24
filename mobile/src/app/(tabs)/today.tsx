@@ -27,7 +27,24 @@ export default function Today() {
   const next = nextClass(classes, now)
   const due = deadlines.filter(d => !d.completed).slice(0, 3)
   const meal = mealPlan.find(m => m.day === today)
-  const suggestedRecipes = recipes.filter(item => item.meal === 'Breakfast' || item.meal === 'Lunch' || item.meal === 'Dinner')
+  const mainMeals = recipes.filter(item => item.meal === 'Breakfast' || item.meal === 'Lunch' || item.meal === 'Dinner')
+  const normKey = (s: string) => s.toLowerCase().replace(/[^a-z]/g, '')
+  const userApps = profile?.appliances?.length ? new Set(profile.appliances.map(normKey)) : null
+  const diet = (profile?.dietary_preference || '').toLowerCase()
+  const dietSafe = (item: (typeof recipes)[number]) => {
+    if (!diet || diet === 'none' || diet === 'unspecified') return true
+    const hay = `${item.title} ${item.allergens.join(' ')} ${item.ingredients.map(i => i.name).join(' ')}`.toLowerCase()
+    if (diet.includes('vegan')) return !/(egg|milk|cheese|butter|cream|meat|pork|beef|chicken|fish|tuna|sardine|shrimp)/.test(hay)
+    if (diet.includes('vegetarian')) return !/(meat|pork|beef|chicken|fish|tuna|sardine|shrimp|bacon|ham|hotdog|corned)/.test(hay)
+    if (diet.includes('pork') || diet.includes('halal')) return !/(pork|bacon|ham|chorizo|longganisa)/.test(hay)
+    if (diet.includes('dairy') || diet.includes('lactose')) return !/(milk|cheese|butter|cream|yogurt)/.test(hay)
+    return true
+  }
+  const filteredSuggested = mainMeals.filter(item => {
+    const appOk = !userApps || item.appliance === 'No cook' || userApps.has(normKey(item.appliance))
+    return appOk && dietSafe(item)
+  })
+  const suggestedRecipes = filteredSuggested.length ? filteredSuggested : mainMeals
   const recipe = (meal && recipeBySlug.get(meal.recipeSlug)) || suggestedRecipes[now.getDate() % suggestedRecipes.length]
   const nowMin = now.getHours() * 60 + now.getMinutes()
   const left = todays.filter(t => minutesOf(t.end) > nowMin).length

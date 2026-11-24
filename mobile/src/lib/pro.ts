@@ -47,13 +47,17 @@ export const REASONS: Record<string, { title: string; body: string }> = {
 type Cached = { userId: string; status: ProStatus }
 const KEY = 'dormosaur.pro.v1'
 let state: Cached | null = null
-let loading: Promise<void> | null = null
+let loadingFor: { userId: string; promise: Promise<void> } | null = null
 const listeners = new Set<() => void>()
 
 function set(next: Cached | null) {
   state = next
   listeners.forEach(l => l())
-  AsyncStorage.setItem(KEY, JSON.stringify(next)).catch(() => {})
+  if (next === null) {
+    AsyncStorage.removeItem(KEY).catch(() => {})
+  } else {
+    AsyncStorage.setItem(KEY, JSON.stringify(next)).catch(() => {})
+  }
 }
 
 const DEMO: ProStatus = {
@@ -64,22 +68,25 @@ const DEMO: ProStatus = {
 
 async function refresh(userId: string, demo: boolean) {
   if (demo) { if (state?.userId !== userId) set({ userId, status: DEMO }); return }
-  if (loading) return loading
-  loading = (async () => {
+  if (loadingFor && loadingFor.userId === userId) return loadingFor.promise
+  let run!: Promise<void>
+  run = (async () => {
     try {
       if (!state || state.userId !== userId) {
         const raw = await AsyncStorage.getItem(KEY).catch(() => null)
         const cached = raw ? (JSON.parse(raw) as Cached | null) : null
         if (cached?.userId === userId) { state = cached; listeners.forEach(l => l()) }
       }
-      set({ userId, status: await proApi.status() })
+      const nextStatus = await proApi.status()
+      set({ userId, status: nextStatus })
     } catch {
       // Offline: keep the cached status. The server still enforces limits.
     } finally {
-      loading = null
+      if (loadingFor?.promise === run) loadingFor = null
     }
   })()
-  return loading
+  loadingFor = { userId, promise: run }
+  return run
 }
 
 /** Pro is active right now (also re-checks the end date locally so expiry is instant). */

@@ -44,7 +44,9 @@ export function parseDataUrl(dataUrl: string): Inline | null {
     : mime === 'image/jpeg' ? bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255
     : mime === 'image/webp' ? bytes.subarray(0, 4).toString() === 'RIFF' && bytes.subarray(8, 12).toString() === 'WEBP'
     : mime === 'image/gif' ? /^GIF8[79]a$/.test(bytes.subarray(0, 6).toString())
-    : bytes.subarray(4, 8).toString() === 'ftyp'
+    : bytes.length >= 12 &&
+      bytes.subarray(4, 8).toString() === 'ftyp' &&
+      /^(heic|heix|hevc|hevx|mif1|msf1|heif)$/.test(bytes.subarray(8, 12).toString())
   return ok ? { mimeType: mime, data: m[2], bytes } : null
 }
 

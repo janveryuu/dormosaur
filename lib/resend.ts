@@ -10,7 +10,7 @@ import { getDormosaurConfirmationEmailHtml } from './email-templates'
 const resendApiKey = process.env.RESEND_API_KEY || ''
 const resend = resendApiKey ? new Resend(resendApiKey) : null
 
-export const DEFAULT_SENDER_EMAIL = 'Dormosaur <onboarding@resend.dev>'
+export const DEFAULT_SENDER_EMAIL = process.env.RESEND_FROM_EMAIL || 'Dormosaur <onboarding@resend.dev>'
 
 interface SendConfirmationEmailParams {
   email: string

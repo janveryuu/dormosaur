@@ -1,13 +1,15 @@
 import type { Alarm, ClassEntry } from '@/lib/data'
-import type { DeadlineItem } from '@/components/schedule-provider'
+import type { DeadlineItem } from '@/lib/types'
 import { addDays, clockAt, DAYS } from './copilot/time'
 import { localDateTimeToIso, validTime } from './date-time'
 
 export type ReminderEvent = { key: string; title: string; body: string; url: string }
-export function dueReminders(userId: string, classes: ClassEntry[], alarms: Alarm[], deadlines: DeadlineItem[], now: Date, timezone: string): ReminderEvent[] {
+export function dueReminders(userId: string, classes: ClassEntry[], alarms: Alarm[], deadlines: DeadlineItem[], now: Date, timezone: string, windowMinutes?: number): ReminderEvent[] {
   const events = new Map<string, ReminderEvent>()
   const clock = clockAt(now, timezone)
-  const triggered = (time: number) => now.getTime() >= time && now.getTime() - time < 5 * 60_000
+  const parsedWindow = Number(windowMinutes ?? process.env.REMINDER_WINDOW_MINUTES)
+  const effectiveWindow = Number.isFinite(parsedWindow) && parsedWindow >= 5 && parsedWindow <= 1440 ? parsedWindow : 5
+  const triggered = (time: number) => now.getTime() >= time && now.getTime() - time < effectiveWindow * 60_000
   for (const alarm of alarms) {
     if (!alarm.enabled || ![15, 30, 60].includes(alarm.lead)) continue
     const cls = classes.find(c => c.id === alarm.classId)

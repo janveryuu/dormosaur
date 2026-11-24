@@ -13,6 +13,9 @@ const APK_URL = process.env.NEXT_PUBLIC_APK_URL || '/dormosaur.apk'
 export function DocsShell({ children }: { children: ReactNode }) {
   const [menu, setMenu] = useState(false)
   const [search, setSearch] = useState(false)
+  const menuBtnRef = useRef<HTMLButtonElement>(null)
+  const closeMenuBtnRef = useRef<HTMLButtonElement>(null)
+  const wasMenuOpen = useRef(false)
   const pathname = usePathname()
 
   // Close the drawer whenever the route changes.
@@ -21,6 +24,26 @@ export function DocsShell({ children }: { children: ReactNode }) {
     setLastPath(pathname)
     setMenu(false)
   }
+
+  useEffect(() => {
+    if (menu) {
+      wasMenuOpen.current = true
+      closeMenuBtnRef.current?.focus()
+      const root = document.documentElement
+      root.style.overflow = 'hidden'
+      const onEsc = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') setMenu(false)
+      }
+      window.addEventListener('keydown', onEsc)
+      return () => {
+        root.style.overflow = ''
+        window.removeEventListener('keydown', onEsc)
+      }
+    } else if (wasMenuOpen.current) {
+      wasMenuOpen.current = false
+      menuBtnRef.current?.focus()
+    }
+  }, [menu])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -42,7 +65,7 @@ export function DocsShell({ children }: { children: ReactNode }) {
 
       <header className="sticky top-0 z-40 border-b border-black/[0.06] bg-white/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-3 px-4 sm:px-6">
-          <button type="button" onClick={() => setMenu(true)} aria-label="Open navigation" className="-ml-2 grid size-11 place-items-center rounded-full text-black/70 hover:bg-black/[0.04] lg:hidden">
+          <button ref={menuBtnRef} type="button" onClick={() => setMenu(true)} aria-label="Open navigation" aria-expanded={menu} className="-ml-2 grid size-11 place-items-center rounded-full text-black/70 hover:bg-black/[0.04] lg:hidden">
             <Menu className="size-5" />
           </button>
           <Link href="/" className="flex items-center gap-2 rounded-md font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#34C77B]">
@@ -81,7 +104,7 @@ export function DocsShell({ children }: { children: ReactNode }) {
           <div className="docs-drawer absolute inset-y-0 left-0 w-[86%] max-w-[320px] overflow-y-auto bg-white px-4 pb-10 pt-4 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
               <span className="font-semibold">Dormosaur Help</span>
-              <button type="button" onClick={() => setMenu(false)} aria-label="Close navigation" className="grid size-11 place-items-center rounded-full hover:bg-black/[0.04]">
+              <button ref={closeMenuBtnRef} type="button" onClick={() => setMenu(false)} aria-label="Close navigation" className="grid size-11 place-items-center rounded-full hover:bg-black/[0.04]">
                 <X className="size-5" />
               </button>
             </div>

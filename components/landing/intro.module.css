@@ -1,0 +1,126 @@
+.logo {
+  animation: dormo-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.letter {
+  display: inline-block;
+  animation: dormo-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.caption {
+  animation: dormo-fade 0.6s ease 0.9s both;
+}
+
+.corner {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-color: #0e7a4a;
+  border-style: solid;
+  border-width: 0;
+  border-radius: 10px;
+  animation: dormo-frame 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+}
+
+.tl {
+  top: 0;
+  left: 0;
+  border-top-width: 3px;
+  border-left-width: 3px;
+  --fx: -26px;
+  --fy: -26px;
+}
+
+.tr {
+  top: 0;
+  right: 0;
+  border-top-width: 3px;
+  border-right-width: 3px;
+  --fx: 26px;
+  --fy: -26px;
+}
+
+.bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 3px;
+  border-left-width: 3px;
+  --fx: -26px;
+  --fy: 26px;
+}
+
+.br {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 3px;
+  border-right-width: 3px;
+  --fx: 26px;
+  --fy: 26px;
+}
+
+.flash {
+  animation: dormo-flash 0.32s ease-out both;
+}
+
+@keyframes dormo-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-8deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes dormo-rise {
+  from {
+    opacity: 0;
+    transform: translateY(110%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes dormo-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dormo-frame {
+  from {
+    opacity: 0;
+    transform: translate(var(--fx), var(--fy));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes dormo-flash {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo,
+  .letter,
+  .caption,
+  .corner {
+    animation: dormo-fade 0.2s ease both;
+  }
+}

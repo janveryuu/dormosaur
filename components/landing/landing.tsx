@@ -4,9 +4,10 @@ import {
   AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform,
 } from 'framer-motion'
 import {
-  Camera, Check, ChevronDown, FileText, ListChecks, Pause, Play, ScanLine, type LucideIcon,
+  Camera, Check, ChevronDown, FileText, ListChecks, Menu, Pause, Play, ScanLine, X, type LucideIcon,
 } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { SiteFooter } from '@/components/site-footer'
 import { DownloadButton } from './download-button'
@@ -33,16 +34,19 @@ export function Landing({ apkUrl, apkVersion }: { apkUrl: string; apkVersion: st
     <MotionConfig reducedMotion={animations ? 'user' : 'always'}>
       <div className="relative min-h-dvh overflow-x-clip bg-white text-[#0A1710] selection:bg-[#34C77B]/30" style={{ fontFamily: 'var(--font-geist), -apple-system, system-ui, sans-serif' }}>
         <Intro onDone={handleIntroDone} />
+        <a href="#landing-main" className="sr-only z-[70] rounded-md bg-[#0A1710] px-4 py-2 text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-3">
+          Skip to content
+        </a>
         <ScrollProgress />
         <Nav apkUrl={apkUrl} />
-        <main>
+        <main id="landing-main">
           <Hero apkUrl={apkUrl} apkVersion={apkVersion} animate={animate} go={introDone} />
           <Schools animate={animations} />
           <NumberOne />
           <Bento />
           <Scanner />
-          <FeatureCloud />
-          <Testimonials />
+          <FeatureCloud animate={animate} />
+          <Testimonials animate={animate} />
           <InstallSteps />
           <Faq />
           <FinalCta apkUrl={apkUrl} apkVersion={apkVersion} />
@@ -66,14 +70,21 @@ function ScrollProgress() {
 function Nav({ apkUrl }: { apkUrl: string }) {
   const { scrollY } = useScroll()
   const [pill, setPill] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => scrollY.on('change', v => setPill(v > 40)), [scrollY])
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenuOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [menuOpen])
   const links = [['Features', '#features'], ['Scanner', '#scanner'], ['Reviews', '#reviews'], ['FAQ', '#faq']]
   return (
-    <div className="fixed inset-x-0 top-3 z-50 flex justify-center px-4">
+    <div className="fixed inset-x-0 top-3 z-50 flex flex-col items-center px-4">
       <motion.nav
         layout
         transition={spring}
-        className={`flex w-full items-center gap-6 rounded-full border transition-colors duration-300 ${
+        className={`flex w-full items-center gap-3 sm:gap-6 rounded-full border transition-colors duration-300 ${
           pill ? 'max-w-[680px] border-black/[0.07] bg-white/75 py-2 pl-3 pr-2 shadow-[0_10px_40px_-12px_rgba(10,23,16,0.25)] backdrop-blur-xl' : 'max-w-[1100px] border-transparent bg-transparent py-3 pl-2 pr-2'
         }`}
         aria-label="Main"
@@ -87,8 +98,31 @@ function Nav({ apkUrl }: { apkUrl: string }) {
             <a key={href} href={href} className="rounded-full px-3 py-1.5 text-sm text-black/60 transition-colors hover:bg-black/[0.04] hover:text-black">{label}</a>
           ))}
         </div>
-        <div className="ml-auto sm:ml-0"><DownloadButton apkUrl={apkUrl} size="sm" /></div>
+        <div className="ml-auto flex items-center gap-1.5 sm:ml-0">
+          <DownloadButton apkUrl={apkUrl} size="sm" />
+          <button
+            type="button"
+            onClick={() => setMenuOpen(o => !o)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            className="grid size-10 place-items-center rounded-full border border-black/[0.08] bg-white/80 text-black/80 sm:hidden"
+          >
+            {menuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+          </button>
+        </div>
       </motion.nav>
+      {menuOpen && (
+        <div role="region" aria-label="Mobile navigation" className="mt-2 flex w-full max-w-[420px] flex-col gap-1 rounded-3xl border border-black/[0.08] bg-white/95 p-3 shadow-xl backdrop-blur-xl sm:hidden">
+          {links.map(([label, href]) => (
+            <a key={href} href={href} onClick={() => setMenuOpen(false)} className="rounded-2xl px-4 py-2.5 text-sm font-medium text-black/80 hover:bg-black/[0.04]">
+              {label}
+            </a>
+          ))}
+          <Link href="/docs" onClick={() => setMenuOpen(false)} className="rounded-2xl px-4 py-2.5 text-sm font-medium text-[#0E7A4A] hover:bg-black/[0.04]">
+            Help Docs
+          </Link>
+        </div>
+      )}
     </div>
   )
 }
@@ -301,13 +335,13 @@ function Scanner() {
 
 // ─── Feature cloud ────────────────────────────────────────────────────────
 
-function FeatureCloud() {
+function FeatureCloud({ animate }: { animate: boolean }) {
   return (
     <section className="px-4 py-20 text-center">
       <Reveal>
         <h2 className="text-[40px] leading-[1.05] tracking-tight sm:text-[56px]" style={serif}>A class schedule<br /><em className="text-[#0E7A4A]">and dorm life planner</em> in one app</h2>
       </Reveal>
-      <FeatureTiles />
+      <FeatureTiles animate={animate} />
     </section>
   )
 }

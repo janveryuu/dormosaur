@@ -114,7 +114,7 @@ const KEY = 'dormosaur.theme'
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const system = useColorScheme()
-  const [pref, setPrefState] = useState<ThemePref>('light')
+  const [pref, setPrefState] = useState<ThemePref>('system')
 
   useEffect(() => {
     AsyncStorage.getItem(KEY).then(v => { if (v === 'light' || v === 'dark' || v === 'system') setPrefState(v) }).catch(() => {})

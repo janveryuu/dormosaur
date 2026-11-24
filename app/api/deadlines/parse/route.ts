@@ -20,6 +20,8 @@ export async function POST(req: Request) {
     const mode = body.mode || 'text'
     if (!['text', 'camera', 'photo', 'file'].includes(mode as string)) throw new InputError('Please choose text or an image to import.')
     const content = boundedText(body.content, mode === 'text' ? 30_000 : 4.4 * 1024 * 1024, 'deadline content', true)
+    const file = mode !== 'text' ? parseDataUrl(content) : null
+    if (mode !== 'text' && !file) throw new InputError('Please upload a valid PNG, JPG or PDF file.')
     refund = await consumeFeature(user.id, 'syllabus_scan')
     const [classes, profile] = await Promise.all([getClasses(supabase, user.id), getUserProfile(supabase, user.id)])
     const timezone = profile?.timezone || 'Asia/Manila'
@@ -29,9 +31,7 @@ export async function POST(req: Request) {
 
     let source: string | null = mode === 'text' ? content : null
     let parts: unknown[] = [{ text: `${prompt}\n\nMATERIAL:\n"""\n${content}\n"""` }]
-    if (mode !== 'text') {
-      const file = parseDataUrl(content)
-      if (!file) throw new InputError('Please upload a valid PNG, JPG or PDF file.')
+    if (file) {
       // A digital PDF has exact text: read it and verify dates against it.
       const pdfText = file.mimeType === 'application/pdf' ? await textFromPdf(file.bytes).catch(() => '') : ''
       if (pdfText.trim().length > 40) { source = pdfText; parts = [{ text: `${prompt}\n\nMATERIAL:\n"""\n${pdfText.slice(0, 30_000)}\n"""` }] }

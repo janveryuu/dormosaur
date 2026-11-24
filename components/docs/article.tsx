@@ -77,7 +77,7 @@ function BlockView({ b }: { b: Block }) {
     )
   }
   if ('contact' in b) {
-    const email = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'janvermanlapaz@gmail.com'
+    const email = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@dormosaur.app'
     if (!email) return null
     return (
       <a href={`mailto:${email}?subject=${encodeURIComponent('Dormosaur help')}`} className="group mt-6 flex items-center gap-4 rounded-2xl border border-black/[0.07] bg-[#F8FAF7] p-5 transition-all hover:border-[#34C77B]/50 hover:bg-white">

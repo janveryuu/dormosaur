@@ -3,7 +3,7 @@ import { Asset, requestPermissionsAsync } from 'expo-media-library'
 import * as Sharing from 'expo-sharing'
 import { Download, Share as ShareIcon } from 'lucide-react-native'
 import { useRef, useState, type ComponentRef } from 'react'
-import { ActionSheetIOS, Alert, Dimensions, PixelRatio, Platform, ScrollView, Share, Switch, View, useWindowDimensions } from 'react-native'
+import { ActionSheetIOS, Alert, PixelRatio, Platform, ScrollView, Share, Switch, View, useWindowDimensions } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { captureRef } from 'react-native-view-shot'
@@ -18,15 +18,14 @@ import { useNow } from '@/ui/blocks'
 import { LockGuides, ScheduleCanvas, scheduleText, type CanvasLayout } from '@/ui/schedule-canvas'
 import { Sym } from '@/ui/symbol'
 
-/** The device's own screen, so the saved image fits this phone edge to edge. */
-const screen = Dimensions.get('screen')
-const ASPECT = Math.min(2.25, Math.max(1.9, screen.height / screen.width))
-const OUT_W = Math.round(Math.min(1290, screen.width * PixelRatio.get()))
-
 export default function Wallpaper() {
   const { c } = useTheme()
   const insets = useSafeAreaInsets()
-  const { width } = useWindowDimensions()
+  const { width, height } = useWindowDimensions()
+  const safeW = Math.max(320, width)
+  const safeH = Math.max(600, height)
+  const aspect = Math.min(2.25, Math.max(1.9, safeH / safeW))
+  const outW = Math.round(Math.min(1290, safeW * PixelRatio.get()))
   const { classes } = useApp()
   const now = useNow()
   const [themeId, setThemeId] = useState(WALLPAPER_THEMES[0].id)
@@ -40,10 +39,10 @@ export default function Wallpaper() {
   const theme = (isPro ? WALLPAPER_THEMES.find(t => t.id === themeId) : undefined) ?? WALLPAPER_THEMES[0]
   const hasClasses = classes.some(e => e.days.length)
 
-  const w = Math.min(Math.round(width * 0.62), 272)
+  const w = Math.min(Math.round(safeW * 0.62), 272)
   const BAR = 56 + 24 + Math.max(insets.bottom, 12)
 
-  const capture = () => captureRef(shot, { format: 'png', quality: 1, width: OUT_W, height: Math.round(OUT_W * ASPECT) })
+  const capture = () => captureRef(shot, { format: 'png', quality: 1, width: outW, height: Math.round(outW * aspect) })
 
   async function save() {
     setBusy('save')
@@ -98,13 +97,13 @@ export default function Wallpaper() {
         {/* Preview */}
         <View style={{ alignItems: 'center', paddingTop: 8 }}>
           <View style={{ padding: 5, borderRadius: 44 * (w / 272) + 5, backgroundColor: '#0B0B0C' }}>
-            <View style={{ width: w, height: w * ASPECT, borderRadius: 44 * (w / 272), overflow: 'hidden' }}>
+            <View style={{ width: w, height: w * aspect, borderRadius: 44 * (w / 272), overflow: 'hidden' }}>
               <Animated.View key={`${themeId}-${layout}`} entering={fade(0, 220)}>
                 <View ref={shot} collapsable={false}>
-                  <ScheduleCanvas theme={theme} classes={classes} layout={layout} showRooms={rooms} width={w} aspect={ASPECT} watermark={!isPro} />
+                  <ScheduleCanvas theme={theme} classes={classes} layout={layout} showRooms={rooms} width={w} aspect={aspect} watermark={!isPro} />
                 </View>
               </Animated.View>
-              {guides && <LockGuides theme={theme} width={w} aspect={ASPECT} now={now} />}
+              {guides && <LockGuides theme={theme} width={w} aspect={aspect} now={now} />}
             </View>
           </View>
           <T v="footnote" color={c.ink3} center style={{ marginTop: 12, paddingHorizontal: 40 }}>
@@ -122,7 +121,7 @@ export default function Wallpaper() {
               return (
                 <Press key={t.id} onPress={() => { haptic.select(); if (locked) openPaywall('wallpaper'); else setThemeId(t.id) }} scale={0.94} accessibilityLabel={`${t.name} background`} accessibilityState={{ selected: on }} style={{ alignItems: 'center', gap: 6, width: 64 }}>
                   <View style={{ padding: 2.5, borderRadius: 14, borderWidth: 2, borderColor: on ? c.green : 'transparent' }}>
-                    <View style={{ width: 52, height: 52 * ASPECT * 0.92, borderRadius: 10, overflow: 'hidden', backgroundColor: t.bg, borderWidth: 0.5, borderColor: c.line }}>
+                    <View style={{ width: 52, height: 52 * aspect * 0.92, borderRadius: 10, overflow: 'hidden', backgroundColor: t.bg, borderWidth: 0.5, borderColor: c.line }}>
                       {t.image ? <Image source={t.image} style={{ position: 'absolute', inset: 0 }} contentFit="cover" /> : null}
                     </View>
                     {locked && <ProPill style={{ position: 'absolute', top: 6, right: 4 }} />}
@@ -154,7 +153,7 @@ export default function Wallpaper() {
       <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingTop: 12, paddingHorizontal: 20, paddingBottom: Math.max(insets.bottom, 12), backgroundColor: c.grouped, borderTopWidth: 0.5, borderColor: c.line, flexDirection: 'row', gap: 12 }}>
         <Button title="Save to Photos" icon={Download} loading={busy === 'save'} disabled={!hasClasses || !!busy} onPress={save} style={{ flex: 1 }} />
         <Press onPress={share} disabled={!hasClasses || !!busy} accessibilityLabel="Share schedule" scale={0.9}
-          style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: c.card, alignItems: 'center', justifyContent: 'center', borderWidth: 0.5, borderColor: c.line }}>
+          style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: c.card, alignItems: 'center', justifyContent: 'center', borderWidth: 0.5, borderColor: c.line, opacity: !hasClasses || !!busy ? 0.45 : 1 }}>
           <Sym name="square.and.arrow.up" fallback={ShareIcon} size={21} color={c.green} weight="semibold" />
         </Press>
       </View>

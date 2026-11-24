@@ -1,5 +1,5 @@
 import { Image } from 'expo-image'
-import { ArrowUp } from 'lucide-react-native'
+import { ArrowUp, RotateCcw } from 'lucide-react-native'
 import { useEffect, useRef, useState } from 'react'
 import { FlatList, KeyboardAvoidingView, Platform, TextInput, View } from 'react-native'
 import Animated, { ReduceMotion, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
@@ -11,6 +11,9 @@ import { openPaywall, pro } from '@/lib/pro'
 import { ProLockCard, useMyPro } from '@/ui/pro-gate'
 import { useApp } from '@/state/app'
 import { Chip, NavHeader, Press, T } from '@/ui'
+
+type LocalMessage = ChatMessage & { id: string; retryText?: string }
+const nextMsgId = () => `m-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
 
 const STARTERS = ["What's my next class? 📚", 'When am I free this week?', "What's due soon?", 'Quick dinner idea 🍳', 'Help me plan a study session']
 const DORMO = require('@/assets/mascots/dormosaur-thinking.png')
@@ -42,30 +45,35 @@ export default function Copilot() {
   const insets = useSafeAreaInsets()
   const { demo, profile } = useApp()
   const first = profile?.name?.trim().split(/\s+/)[0]
-  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [messages, setMessages] = useState<LocalMessage[]>([])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [limited, setLimited] = useState(false)
   const { status, isPro, userId } = useMyPro()
-  const left = status ? Math.max(0, status.usage.copilot.limit - status.usage.copilot.used) : null
-  const list = useRef<FlatList<ChatMessage>>(null)
+  const copilotLimit = status?.usage.copilot.limit ?? 5
+  const left = status ? Math.max(0, copilotLimit - status.usage.copilot.used) : null
+  const list = useRef<FlatList<LocalMessage>>(null)
 
-  async function send(text: string) {
+  async function send(text: string, isRetry = false) {
     const content = text.trim()
-    if (!content || busy) return
-    const next: ChatMessage[] = [...messages, { role: 'user', content }]
-    setMessages(next); setInput(''); setBusy(true)
+    if (!content || busy || (limited && !isPro)) return
+    const cleanHistory = messages.filter(m => !m.retryText)
+    const nextHistory: LocalMessage[] = isRetry
+      ? cleanHistory
+      : [...cleanHistory, { id: nextMsgId(), role: 'user', content }]
+    setMessages(nextHistory); setInput(''); setBusy(true)
     try {
-      const reply = demo ? "I'm in preview mode right now 🦕 Sign in and I can read your real schedule and tasks." : await askCopilot(next.slice(-12))
-      setMessages(m => [...m, { role: 'assistant', content: plainText(reply) || "Hmm, I blanked on that one 🦕 Could you ask again?" }])
+      const apiMessages: ChatMessage[] = nextHistory.slice(-12).map(({ role, content: msg }) => ({ role, content: msg }))
+      const reply = demo ? "I'm in preview mode right now 🦕 Sign in and I can read your real schedule and tasks." : await askCopilot(apiMessages)
+      setMessages(m => [...m, { id: nextMsgId(), role: 'assistant', content: plainText(reply) || "Hmm, I blanked on that one 🦕 Could you ask again?" }])
       if (userId) pro.refresh(userId, demo)
     } catch (e) {
       if (e instanceof UpgradeError) {
         setLimited(true)
-        setMessages(m => [...m, { role: 'assistant', content: e.message }])
+        setMessages(m => [...m, { id: nextMsgId(), role: 'assistant', content: e.message }])
         if (userId) pro.refresh(userId, demo)
       } else {
-        setMessages(m => [...m, { role: 'assistant', content: "Oops, I couldn't reach my brain just now 🦕 Check your connection and try again." }])
+        setMessages(m => [...m, { id: nextMsgId(), role: 'assistant', content: "Oops, I couldn't reach my brain just now 🦕 Check your connection and try again.", retryText: content }])
       }
     } finally {
       setBusy(false)
@@ -74,11 +82,18 @@ export default function Copilot() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <NavHeader title="Dormo" />
+      <NavHeader
+        title="Dormo"
+        right={messages.length > 0 ? (
+          <Press onPress={() => { setMessages([]); setLimited(false) }} disabled={busy} hitSlop={8} accessibilityLabel="New chat" style={{ padding: 8 }}>
+            <RotateCcw size={18} color={c.green} />
+          </Press>
+        ) : undefined}
+      />
       <FlatList
         ref={list}
         data={messages}
-        keyExtractor={(_, i) => String(i)}
+        keyExtractor={item => item.id}
         onContentSizeChange={() => list.current?.scrollToEnd({ animated: true })}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ padding: 16, gap: 12, flexGrow: 1 }}
@@ -101,8 +116,13 @@ export default function Copilot() {
             <Animated.View entering={fade(0, 220)} style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8, alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: mine ? '85%' : '92%' }}>
               {!mine && (showFace ? <Face /> : <View style={{ width: 30 }} />)}
               <View style={{ flexShrink: 1, backgroundColor: mine ? c.green : c.card,
-                borderRadius: radius.lg, borderBottomRightRadius: mine ? 6 : radius.lg, borderBottomLeftRadius: mine ? radius.lg : 6, paddingHorizontal: 16, paddingVertical: 11 }}>
+                borderRadius: radius.lg, borderBottomRightRadius: mine ? 6 : radius.lg, borderBottomLeftRadius: mine ? radius.lg : 6, paddingHorizontal: 16, paddingVertical: 11, gap: 6 }}>
                 <T v="callout" color={mine ? c.onGreen : c.ink} selectable style={{ lineHeight: 23 }}>{item.content}</T>
+                {item.retryText && (
+                  <Press onPress={() => void send(item.retryText!, true)} hitSlop={6} accessibilityLabel="Retry message" style={{ alignSelf: 'flex-start' }}>
+                    <T v="footnote" color={c.green} style={{ fontWeight: '700' }}>Tap to retry</T>
+                  </Press>
+                )}
               </View>
             </Animated.View>
           )
@@ -122,15 +142,15 @@ export default function Copilot() {
       />
       {!isPro && left !== null && !limited && (
         <Press onPress={() => openPaywall('copilot')} haptics={false} accessibilityLabel={`${left} free messages left today. See Pro`} style={{ alignSelf: 'center', paddingTop: 6 }}>
-          <T v="caption" color={left ? c.ink3 : c.danger} style={{ fontWeight: '600' }}>{left} of 5 free messages left today · <T v="caption" color={c.green} style={{ fontWeight: '700' }}>Get Pro</T></T>
+          <T v="caption" color={left ? c.ink3 : c.danger} style={{ fontWeight: '600' }}>{left} of {copilotLimit} free messages left today · <T v="caption" color={c.green} style={{ fontWeight: '700' }}>Get Pro</T></T>
         </Press>
       )}
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 10, paddingHorizontal: 16, paddingTop: 8, paddingBottom: insets.bottom + 12 }}>
-        <TextInput value={input} onChangeText={setInput} placeholder="Ask Dormo anything" placeholderTextColor={c.ink3} multiline maxLength={2000} selectionColor={c.green}
+        <TextInput value={input} onChangeText={setInput} editable={!limited || isPro} placeholder={limited && !isPro ? 'Daily limit reached · Unlock Pro' : 'Ask Dormo anything'} placeholderTextColor={c.ink3} multiline maxLength={2000} selectionColor={c.green}
           accessibilityLabel="Message Dormo"
-          style={[type.callout, { flex: 1, minHeight: 48, maxHeight: 130, backgroundColor: c.card, color: c.ink, borderRadius: 24, paddingHorizontal: 18, paddingTop: 13, paddingBottom: 13 }, Platform.OS === 'web' && ({ outlineStyle: 'none' } as object)]} />
-        <Press onPress={() => send(input)} disabled={!input.trim() || busy} accessibilityLabel="Send" scale={0.88}
-          style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: c.green, alignItems: 'center', justifyContent: 'center', opacity: !input.trim() || busy ? 0.45 : 1 }}>
+          style={[type.callout, { flex: 1, minHeight: 48, maxHeight: 130, backgroundColor: c.card, color: c.ink, borderRadius: 24, paddingHorizontal: 18, paddingTop: 13, paddingBottom: 13, opacity: limited && !isPro ? 0.6 : 1 }, Platform.OS === 'web' && ({ outlineStyle: 'none' } as object)]} />
+        <Press onPress={() => send(input)} disabled={!input.trim() || busy || (limited && !isPro)} accessibilityLabel="Send" scale={0.88}
+          style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: c.green, alignItems: 'center', justifyContent: 'center', opacity: !input.trim() || busy || (limited && !isPro) ? 0.45 : 1 }}>
           <ArrowUp size={22} color={c.onGreen} strokeWidth={2.6} />
         </Press>
       </View>

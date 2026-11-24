@@ -5,7 +5,7 @@ import { StatCard } from '@/components/admin/stat-card'
 import { RecentLoginsCard } from '@/components/admin/recent-logins-card'
 import { UsersByCountryChart } from '@/components/admin/users-by-country-chart'
 import { UsersByDietChart } from '@/components/admin/users-by-diet-chart'
-import { Users, BookOpen, AlarmClock, Calendar, Bell } from 'lucide-react'
+import { Users, BookOpen, AlarmClock, Calendar } from 'lucide-react'
 
 export const revalidate = 0 // Live real-time queries
 

@@ -5,13 +5,14 @@ import {
   AlarmClock, CalendarDays, ChevronRight, Heart, Image as ImageIcon, LayoutGrid, ListChecks, LogOut, MessageCircle,
   MessageSquareText, RefreshCw, ScanLine, Sparkles, type LucideIcon,
 } from 'lucide-react-native'
+import { useState } from 'react'
 import { Alert, ScrollView, View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { rise } from '@/design/motion'
 import { elevation, radius, useTheme, type ThemePref } from '@/design/theme'
 import { useApp } from '@/state/app'
-import { avatar } from '@/lib/avatar'
+import { proApi } from '@/lib/api'
 import { LargeTitle, Press, Segmented, T } from '@/ui'
 import { Avatar } from '@/ui/avatar'
 import { ProBadge } from '@/ui/pro-badge'
@@ -19,8 +20,9 @@ import { TAB_CLEARANCE } from '@/ui/tab-bar'
 import { useMyPro } from '@/ui/pro-gate'
 import { daysLeft, pro } from '@/lib/pro'
 
-const FEEDBACK_EMAIL = 'mailto:hello@dormosaur.app?subject=Dormosaur%20feedback'
-const SITE = 'https://dormosaur.vercel.app'
+const SUPPORT_EMAIL = process.env.EXPO_PUBLIC_SUPPORT_EMAIL || 'support@dormosaur.app'
+const FEEDBACK_EMAIL = `mailto:${SUPPORT_EMAIL}?subject=Dormosaur%20feedback`
+const SITE = (process.env.EXPO_PUBLIC_API_URL ?? 'https://dormosaur.vercel.app').replace(/\/$/, '')
 
 /** The Settings tab: profile, Pro, schedule tools, appearance and account. */
 export default function Settings() {
@@ -30,8 +32,33 @@ export default function Settings() {
   const name = profile?.name || 'Student'
   const details = [profile?.year, profile?.school].filter(Boolean).join(' · ')
   const { isPro } = useMyPro()
+  const [restoring, setRestoring] = useState(false)
 
   const open = (url: string) => Linking.openURL(url).catch(() => Alert.alert('Could not open link', 'Please try again in a moment.'))
+
+  const restorePro = async () => {
+    if (restoring) return
+    if (demo || !session?.user.id) {
+      Alert.alert('Sign in needed', 'Sign in to check your Dormosaur Pro entitlement.')
+      return
+    }
+    setRestoring(true)
+    try {
+      const latest = await proApi.status()
+      pro.apply(session.user.id, latest)
+      if (latest.isPro) {
+        Alert.alert('Pro restored', latest.lifetime ? 'Your Lifetime Pro plan is active.' : 'Your Dormosaur Pro access is active.')
+      } else if (latest.pendingPayment) {
+        Alert.alert('Payment under review', `Your ₱${latest.pendingPayment.amount} payment is still being verified.`)
+      } else {
+        Alert.alert('No active Pro found', 'This account is currently on the Free plan.')
+      }
+    } catch {
+      Alert.alert('Could not check status', 'Check your connection and try again.')
+    } finally {
+      setRestoring(false)
+    }
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: c.grouped, paddingTop: insets.top }}>
@@ -88,7 +115,7 @@ export default function Settings() {
           <Section title="App">
             <Item icon={Heart} title="Rate Dormosaur" onPress={() => open(SITE)} />
             <Item icon={MessageSquareText} title="Send feedback" onPress={() => open(FEEDBACK_EMAIL)} />
-            <Item icon={RefreshCw} title="Restore purchases" onPress={() => Alert.alert('Nothing to restore', 'Dormosaur Pro is not available yet.')} last />
+            <Item icon={RefreshCw} title={restoring ? 'Checking Pro status...' : 'Restore Pro status'} onPress={restorePro} last />
           </Section>
         </Animated.View>
 
@@ -97,7 +124,7 @@ export default function Settings() {
             <Item icon={LogOut} title="Sign out" destructive last onPress={() =>
               Alert.alert('Sign out?', 'Your classes and tasks stay saved to your account.', [
                 { text: 'Cancel', style: 'cancel' },
-                { text: 'Sign out', style: 'destructive', onPress: () => { avatar.clear(); pro.clear(); signOut() } },
+                { text: 'Sign out', style: 'destructive', onPress: () => { void signOut() } },
               ])} />
           </Section>
         )}

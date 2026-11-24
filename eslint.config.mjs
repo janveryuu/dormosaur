@@ -16,6 +16,12 @@ const eslintConfig = defineConfig([
     "android/**",
     "mobile/**",
   ]),
+  {
+    files: ["remotion/**/*.{ts,tsx}"],
+    rules: {
+      "@next/next/no-img-element": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

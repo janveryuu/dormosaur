@@ -7,32 +7,57 @@ export class UpgradeError extends Error {
 }
 
 const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? 'https://dormosaur.vercel.app').replace(/\/$/, '')
+const DEFAULT_TIMEOUT_MS = 20_000
+const AI_TIMEOUT_MS = 60_000
 
-async function request<T>(method: 'GET' | 'POST' | 'DELETE', path: string, body?: unknown): Promise<T> {
+async function sendOnce(method: 'GET' | 'POST' | 'DELETE', path: string, token: string | undefined, body: unknown, timeoutMs: number) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fetch(`${API_URL}${path}`, {
+      method,
+      signal: controller.signal,
+      headers: {
+        ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    })
+  } catch (err) {
+    if ((err as { name?: string })?.name === 'AbortError') {
+      throw new Error('That took too long. Check your connection and try again.')
+    }
+    throw err
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+async function request<T>(method: 'GET' | 'POST' | 'DELETE', path: string, body?: unknown, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<T> {
   const { data } = await supabase.auth.getSession()
-  const token = data.session?.access_token
-  const res = await fetch(`${API_URL}${path}`, {
-    method,
-    headers: {
-      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  })
+  const initialToken = data.session?.access_token
+  let res = await sendOnce(method, path, initialToken, body, timeoutMs)
+  if (res.status === 401 && initialToken) {
+    const refreshed = await supabase.auth.refreshSession().catch(() => null)
+    const nextToken = refreshed?.data?.session?.access_token
+    if (nextToken && nextToken !== initialToken) {
+      res = await sendOnce(method, path, nextToken, body, timeoutMs)
+    }
+  }
   const json = await res.json().catch(() => ({}))
   if (res.status === 402 && json.upgrade) throw new UpgradeError(json.error || 'This is a Pro feature.', json.feature ?? null)
   if (!res.ok || json.success === false) throw new Error(json.error || 'Something went wrong. Try again.')
   return json as T
 }
 
-const post = <T,>(path: string, body: unknown) => request<T>('POST', path, body)
+const post = <T,>(path: string, body: unknown, timeoutMs = DEFAULT_TIMEOUT_MS) => request<T>('POST', path, body, timeoutMs)
 
 type ParsedClass = Omit<ClassEntry, 'id' | 'color'> & { id?: string; color?: number }
 export type ScheduleScan = { classes: ParsedClass[]; provider: string; skipped: number; hint: 'grid_text' | null }
 
 /** Schedule text, an image or a PDF (as a data URL) → organized classes with review flags. */
 export async function parseSchedule(input: { text: string } | { image: string }): Promise<ScheduleScan> {
-  const res = await post<Partial<ScheduleScan>>('/api/schedule/parse', input)
+  const res = await post<Partial<ScheduleScan>>('/api/schedule/parse', input, AI_TIMEOUT_MS)
   return { classes: res.classes ?? [], provider: res.provider ?? '', skipped: res.skipped ?? 0, hint: res.hint ?? null }
 }
 
@@ -40,7 +65,7 @@ export type DeadlineDraft = { title: string; code?: string; dueDate?: string; du
 
 /** Deadline text, a photo or a PDF (as a data URL) → deadline drafts. Unknown dates stay empty. */
 export async function parseDeadlines(input: { mode: 'text' | 'photo' | 'file'; content: string }) {
-  const res = await post<{ deadlines: DeadlineDraft[] }>('/api/deadlines/parse', input)
+  const res = await post<{ deadlines: DeadlineDraft[] }>('/api/deadlines/parse', input, AI_TIMEOUT_MS)
   return res.deadlines ?? []
 }
 
@@ -51,13 +76,18 @@ export async function askCopilot(messages: ChatMessage[]) {
   const res = await post<{ reply?: string; message?: string; content?: string }>('/api/chat', {
     messages,
     context: { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, now: new Date().toISOString() },
-  })
+  }, AI_TIMEOUT_MS)
   return res.reply ?? res.message ?? res.content ?? ''
 }
 
 /** Registers this device's Expo push token for server-sent deadline reminders. */
 export async function registerExpoPushToken(token: string, deviceLabel: string) {
   await post('/api/push/expo', { token, deviceLabel })
+}
+
+/** Removes this device's Expo push token from server reminders on sign-out. */
+export async function unregisterExpoPushToken(token: string) {
+  await request('DELETE', '/api/push/subscribe', { endpoint: token })
 }
 
 export type SignedAvatar = { url: string; expiresAt: number } | null
@@ -91,5 +121,5 @@ export const proApi = {
   status: () => request<ProStatus>('GET', '/api/pro/status'),
   startTrial: () => request<ProStatus>('POST', '/api/pro/trial', {}),
   submitPayment: (input: { plan: PaidPlan; wallet: Wallet; transactionRef: string; receipt: string; idempotencyKey: string }) =>
-    request<ProStatus>('POST', '/api/pro/payments', input),
+    request<ProStatus>('POST', '/api/pro/payments', input, AI_TIMEOUT_MS),
 }

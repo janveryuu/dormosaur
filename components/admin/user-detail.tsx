@@ -8,7 +8,6 @@ import {
   BookOpen,
   CalendarDays,
   ChevronLeft,
-  Laptop,
   LogIn,
   Mail,
   School,
@@ -31,13 +30,17 @@ import {
 } from '@/components/ui/alert-dialog'
 import { ListGroup, ListRow } from '@/components/ios/list-group'
 import type { AdminUserDetail } from '@/lib/admin-db'
-import { formatDate, formatDateTime } from '@/lib/format-admin'
+import { formatDate } from '@/lib/format-admin'
 
 export function UserDetail({ userDetail }: { userDetail: AdminUserDetail }) {
   const router = useRouter()
   const { profile, classes, alarms, deadlines } = userDetail
-  const [suspended, setSuspended] = useState(false)
+  const [suspended, setSuspended] = useState(
+    () => Boolean(profile.banned_until && Date.parse(profile.banned_until) > Date.now()),
+  )
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [actionError, setActionError] = useState('')
 
   return (
     <div>
@@ -52,11 +55,14 @@ export function UserDetail({ userDetail }: { userDetail: AdminUserDetail }) {
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-center gap-4">
           {profile.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              alt={profile.name}
-              className="size-16 shrink-0 rounded-3xl object-cover shadow-ios-sm"
-            />
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL from private storage */}
+              <img
+                src={profile.avatar_url}
+                alt={profile.name}
+                className="size-16 shrink-0 rounded-3xl object-cover shadow-ios-sm"
+              />
+            </>
           ) : (
             <span className="flex size-16 shrink-0 items-center justify-center rounded-3xl bg-primary text-[22px] font-black text-primary-foreground shadow-ios-sm">
               {profile.initials}
@@ -77,13 +83,23 @@ export function UserDetail({ userDetail }: { userDetail: AdminUserDetail }) {
 
         <Button
           variant={suspended ? 'outline' : 'destructive'}
-          onClick={() => setConfirmOpen(true)}
+          disabled={busy}
+          onClick={() => {
+            setActionError('')
+            setConfirmOpen(true)
+          }}
           className="rounded-full font-bold"
         >
           <Ban className="size-4 mr-1.5" />
-          {suspended ? 'Reinstate Account' : 'Suspend Account'}
+          {busy ? 'Updating...' : suspended ? 'Reinstate Account' : 'Suspend Account'}
         </Button>
       </div>
+
+      {actionError && (
+        <div role="alert" className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive">
+          {actionError}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-6 lg:col-span-1">
@@ -115,7 +131,7 @@ export function UserDetail({ userDetail }: { userDetail: AdminUserDetail }) {
           <ListGroup title="Dorm Appliances">
             {profile.appliances.length > 0 ? (
               profile.appliances.map((a) => (
-                <ListRow key={a} label={a.replace('_', ' ').toUpperCase()} />
+                <ListRow key={a} label={a.replaceAll('_', ' ').toUpperCase()} />
               ))
             ) : (
               <ListRow label="No appliances registered" detail="Standard dorm setup" />
@@ -131,7 +147,7 @@ export function UserDetail({ userDetail }: { userDetail: AdminUserDetail }) {
                   key={c.id || i}
                   icon={<BookOpen className="size-4" />}
                   label={`${c.code ? `${c.code}: ` : ''}${c.subject}`}
-                  detail={`${Array.isArray(c.days) ? c.days.join(', ') : c.days} \u00B7 ${c.start} - ${c.end} \u00B7 ${c.room || 'No room'}`}
+                  detail={`${Array.isArray(c.days) ? c.days.join(', ') : c.days || ''} \u00B7 ${(c.start_time || c.start || 'Time unset')} - ${(c.end_time || c.end || 'Time unset')} \u00B7 ${c.room || 'No room'}`}
                 />
               ))
             ) : (
@@ -146,7 +162,7 @@ export function UserDetail({ userDetail }: { userDetail: AdminUserDetail }) {
                   key={a.id || i}
                   icon={<AlarmClock className="size-4" />}
                   label={a.label || a.subject || 'Class Alarm'}
-                  detail={`Time: ${a.time} \u00B7 ${Array.isArray(a.days) ? a.days.join(', ') : a.days}`}
+                  detail={`Time: ${a.time} \u00B7 ${Array.isArray(a.days) ? a.days.join(', ') : a.day || a.days || 'Scheduled'}`}
                   trailing={
                     <Badge variant={a.enabled !== false ? 'default' : 'outline'}>
                       {a.enabled !== false ? 'Active' : 'Disabled'}
@@ -189,14 +205,35 @@ export function UserDetail({ userDetail }: { userDetail: AdminUserDetail }) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                setSuspended((s) => !s)
-                router.refresh()
+              disabled={busy}
+              onClick={async (e) => {
+                e.preventDefault()
+                if (busy) return
+                const nextSuspended = !suspended
+                setBusy(true)
+                setActionError('')
+                try {
+                  const res = await fetch(`/api/admin/users/${profile.id}/suspend`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ suspend: nextSuspended }),
+                  })
+                  const json = await res.json().catch(() => ({}))
+                  if (!res.ok) throw new Error(json.error || 'Could not update account status.')
+                  setSuspended(nextSuspended)
+                  setConfirmOpen(false)
+                  router.refresh()
+                } catch (err) {
+                  setActionError(err instanceof Error ? err.message : 'Could not update account status.')
+                  setConfirmOpen(false)
+                } finally {
+                  setBusy(false)
+                }
               }}
             >
-              {suspended ? 'Reinstate' : 'Suspend'}
+              {busy ? 'Saving...' : suspended ? 'Reinstate' : 'Suspend'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

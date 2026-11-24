@@ -22,8 +22,12 @@ export const aiConfigured = () => Boolean(KEY())
  * DORMOSAUR_SCHEDULE_MODELS="model-a,model-b".
  */
 export const VERIFIED_MODELS = ['gemini-3-flash-preview', 'gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.5-flash']
+const SAFE_MODEL_RE = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,119}$/
 export function modelChain(): string[] {
-  const env = (process.env.DORMOSAUR_SCHEDULE_MODELS || '').split(',').map(s => s.trim()).filter(Boolean)
+  const env = (process.env.DORMOSAUR_SCHEDULE_MODELS || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => SAFE_MODEL_RE.test(s))
   return env.length ? env : [...VERIFIED_MODELS, 'gemini-2.5-flash']
 }
 
@@ -122,7 +126,7 @@ async function callModel(model: string, parts: unknown[], signal: AbortSignal, s
   }
   let res: Response
   try {
-    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-goog-api-key': KEY() },
       body: JSON.stringify(body),
@@ -236,7 +240,7 @@ ${JSON.stringify(blocks)}`
     const ctrl = new AbortController()
     const timer = setTimeout(() => ctrl.abort(), 20_000)
     try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
         method: 'POST', signal: ctrl.signal,
         headers: { 'content-type': 'application/json', 'x-goog-api-key': KEY() },
         body: JSON.stringify({ contents: [{ role: 'user', parts: [image, { text: prompt }] }], generationConfig: { responseMimeType: 'application/json', responseSchema: schema, mediaResolution: 'MEDIA_RESOLUTION_HIGH', thinkingConfig: { thinkingLevel: 'low' } } }),

@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import webpush from 'web-push'
 import { upsertPushSubscription, deletePushSubscriptionByEndpoint, updateSubscriptionLastSeen } from '@/lib/db'
 import { apiError, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
-import { validatePushSubscription, validPushEndpoint } from '@/lib/push-validation'
+import { validatePushSubscription, validExpoPushToken, validPushEndpoint } from '@/lib/push-validation'
+
+export const runtime = 'nodejs'
 
 // Configure VAPID details
 const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
       tag: 'test-push-confirmation',
       icon: '/android-chrome-192x192.png',
       badge: '/apple-icon.png',
-      data: { url: '/dashboard' },
+      data: { url: '/' },
     })
 
     try {
@@ -69,7 +71,9 @@ export async function DELETE(req: NextRequest) {
   try {
     const { supabase, user } = await requireAuthenticated('push-remove', 10)
     const { endpoint } = await readJson(req, 4096)
-    if (!validPushEndpoint(endpoint)) throw new InputError('Please choose a valid notification device.')
+    if (!validPushEndpoint(endpoint) && !validExpoPushToken(endpoint)) {
+      throw new InputError('Please choose a valid notification device.')
+    }
 
     await deletePushSubscriptionByEndpoint(supabase, user.id, endpoint)
 

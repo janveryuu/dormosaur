@@ -1,6 +1,6 @@
-import type { DeadlineItem } from '@/components/schedule-provider'
+import type { DeadlineItem } from '@/lib/types'
 import { addDays, clockAt } from './copilot/time'
-import { validDate, validTime } from './date-time'
+import { validDate } from './date-time'
 
 export function parseDeadlineText(text: string, now = new Date(), timezone = 'Asia/Manila'): DeadlineItem[] {
   const today = clockAt(now, timezone).date

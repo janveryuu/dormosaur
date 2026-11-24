@@ -41,7 +41,8 @@ export async function sendClassReminder(payload: ClassReminderPayload, client?: 
   successCount: number
   failureCount: number
 }> {
-  const { userId, title, body, tag = 'dormosaur-alarm', url = '/dashboard', data = {} } = payload
+  const { userId, title, body, tag = 'dormosaur-alarm', url = '/', data = {} } = payload
+  const expoChannel = url === '/deadlines' ? 'deadlines' : url === '/pro' ? 'pro' : 'classes'
 
   let successCount = 0
   let failureCount = 0
@@ -67,7 +68,7 @@ export async function sendClassReminder(payload: ClassReminderPayload, client?: 
       if (validExpoPushToken(sub.endpoint)) {
         // The native app schedules class alarms locally; only deadline-style reminders go over Expo push.
         if (url === '/schedule') return
-        const result = await sendExpoPush(sub.endpoint, { title, body, data: { ...data, url } })
+        const result = await sendExpoPush(sub.endpoint, { title, body, channelId: expoChannel, data: { ...data, url } })
         if (result === 'sent') successCount++
         else {
           failureCount++
@@ -109,12 +110,12 @@ export async function sendClassReminder(payload: ClassReminderPayload, client?: 
 }
 
 /** Sends one notification through the Expo push service. */
-async function sendExpoPush(token: string, message: { title: string; body: string; data: Record<string, unknown> }): Promise<'sent' | 'gone' | 'failed'> {
+async function sendExpoPush(token: string, message: { title: string; body: string; channelId: string; data: Record<string, unknown> }): Promise<'sent' | 'gone' | 'failed'> {
   try {
     const res = await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ to: token, sound: 'default', channelId: 'classes', ...message }),
+      body: JSON.stringify({ to: token, sound: 'default', ...message }),
       signal: AbortSignal.timeout(8000),
     })
     const json = await res.json().catch(() => ({})) as { data?: { status?: string; details?: { error?: string } } }

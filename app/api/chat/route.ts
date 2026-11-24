@@ -13,12 +13,13 @@ export async function POST(req: NextRequest) {
   const requestId = crypto.randomUUID()
   // Only operational metadata: never raw errors, messages, IDs, profiles or keys.
   const diagnostic: Diagnostic = (event, details) => console.info('[Dormosaur Copilot]', JSON.stringify({ requestId, event, ...details }))
+  let refund: () => Promise<void> = async () => {}
   try {
     const { supabase, user } = await requireAuthenticated('copilot', 20)
     const body = await readPayload(req)
     const messages = sanitizeMessages(body.messages)
     // Free: 5 messages a day. Pro: 100 a day (fair use). Refunded if Copilot fails outright.
-    const refund = await consumeFeature(user.id, 'copilot')
+    refund = await consumeFeature(user.id, 'copilot')
     const device = record(body.context ?? body.userContext)
     let context = emptyContext('unavailable')
     let authTimer: ReturnType<typeof setTimeout> | undefined
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
     if (result.mode === 'limited') await refund().catch(() => {})
     return NextResponse.json(result, { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
+    await refund().catch(() => {})
     if (error instanceof InputError) return apiError(error, 'Copilot could not complete that request.')
     if (error instanceof Error && error.message === 'usage_unavailable') return NextResponse.json({ error: 'Copilot couldn’t complete that request. Please try again shortly.' }, { status: 503 })
     diagnostic('request_failed', { reason: 'unexpected_error' })

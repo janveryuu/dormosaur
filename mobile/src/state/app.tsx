@@ -1,7 +1,10 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import type { Session } from '@supabase/supabase-js'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Alert } from 'react-native'
-import { registerForServerPush, syncAlarmNotifications } from '@/lib/notifications'
+import { avatar } from '@/lib/avatar'
+import { clearScheduledAlarms, registerForServerPush, syncAlarmNotifications, unregisterServerPush } from '@/lib/notifications'
+import { pro } from '@/lib/pro'
 import * as repo from '@/lib/repo'
 import type { Alarm, ClassEntry, Deadline, GroceryItem, Meal, MealPlanEntry, Profile } from '@/lib/repo'
 import { isConfigured, supabase } from '@/lib/supabase'
@@ -18,15 +21,15 @@ type AppState = {
   mealPlan: MealPlanEntry[]
   grocery: GroceryItem[]
   refresh: () => Promise<void>
-  saveProfile: (patch: Partial<Profile>) => Promise<void>
-  saveClasses: (entries: ClassEntry[]) => Promise<void>
+  saveProfile: (patch: Partial<Profile>) => Promise<boolean>
+  saveClasses: (entries: ClassEntry[]) => Promise<boolean>
   /** Saves several alarms in one write (one local update, one request). */
-  saveAlarms: (list: Alarm[]) => Promise<void>
-  removeClass: (id: string) => Promise<void>
-  saveAlarm: (alarm: Alarm) => Promise<void>
-  saveDeadline: (deadline: Deadline) => Promise<void>
-  saveDeadlines: (deadlines: Deadline[]) => Promise<void>
-  removeDeadline: (id: string) => Promise<void>
+  saveAlarms: (list: Alarm[]) => Promise<boolean>
+  removeClass: (id: string) => Promise<boolean>
+  saveAlarm: (alarm: Alarm) => Promise<boolean>
+  saveDeadline: (deadline: Deadline) => Promise<boolean>
+  saveDeadlines: (deadlines: Deadline[]) => Promise<boolean>
+  removeDeadline: (id: string) => Promise<boolean>
   setMeal: (day: string, meal: Meal, recipeSlug: string | null) => Promise<boolean>
   fillMealPlan: (entries: MealPlanEntry[]) => Promise<boolean>
   saveGrocery: (items: GroceryItem[] | ((current: GroceryItem[]) => GroceryItem[])) => Promise<boolean>
@@ -54,6 +57,13 @@ type Data = {
 
 const EMPTY: Data = { profile: null, classes: [], alarms: [], deadlines: [], mealPlan: [], grocery: [] }
 const DEMO: Data = { profile: demoProfile, classes: demoClasses, alarms: demoAlarms, deadlines: demoDeadlines, mealPlan: demoMealPlan, grocery: demoGrocery }
+
+function emptyProfile(id: string): Profile {
+  return {
+    id, name: '', school: '', dorm: '', year: '', initials: '',
+    is_dorm_student: true, onboarding_completed: false,
+  }
+}
 
 function useKitchenSave<T>(owner: string | undefined, items: T[], apply: (items: T[]) => void, write: (owner: string, items: T[]) => Promise<void>) {
   const current = useRef({ owner, shown: items, persisted: items, pending: 0, queue: Promise.resolve() })
@@ -108,11 +118,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [data, setData] = useState<Data>(demo ? DEMO : EMPTY)
   const [loadedFor, setLoadedFor] = useState<string | null>(null)
+  const dataRef = useRef<Data>(data)
   const userId = session?.user.id
+  const activeUserRef = useRef<string | undefined>(userId)
+  useEffect(() => {
+    dataRef.current = data
+    activeUserRef.current = userId
+  }, [data, userId])
   const ready = demo || (authChecked && (!userId || loadedFor === userId))
 
-  const patch = useCallback((p: Partial<Data> | ((d: Data) => Partial<Data>)) =>
-    setData(d => ({ ...d, ...(typeof p === 'function' ? p(d) : p) })), [])
+  const commit = useCallback((updater: (prev: Data) => Data) => {
+    const next = updater(dataRef.current)
+    dataRef.current = next
+    setData(next)
+    return next
+  }, [])
+
+  const patch = useCallback((p: Partial<Data> | ((d: Data) => Partial<Data>)) => {
+    commit(d => ({ ...d, ...(typeof p === 'function' ? p(d) : p) }))
+  }, [commit])
+
   const patchPlan = useCallback((mealPlan: MealPlanEntry[]) => patch({ mealPlan }), [patch])
   const patchGrocery = useCallback((grocery: GroceryItem[]) => patch({ grocery }), [patch])
   const saveKitchenPlan = useKitchenSave(userId, data.mealPlan, patchPlan, repo.setMealPlan)
@@ -123,11 +148,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const [profile, classes, alarms, deadlines, mealPlan, grocery] = await Promise.all([
         repo.getProfile(id), repo.getClasses(id), repo.getAlarms(id), repo.getDeadlines(id), repo.getMealPlan(id), repo.getGrocery(id),
       ])
-      setData({ profile, classes, alarms, deadlines, mealPlan, grocery })
+      if (activeUserRef.current !== id) return
+      const loaded = { profile, classes, alarms, deadlines, mealPlan, grocery }
+      dataRef.current = loaded
+      setData(loaded)
     } catch (e) {
       report(e)
     } finally {
-      setLoadedFor(id)
+      if (activeUserRef.current === id) setLoadedFor(id)
     }
   }, [])
 
@@ -140,8 +168,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const id = next?.user.id ?? null
       if (id === current) return
       current = id
+      activeUserRef.current = id ?? undefined
       if (id) load(id)
-      else { setData(EMPTY); setLoadedFor(null) }
+      else {
+        dataRef.current = EMPTY
+        setData(EMPTY)
+        setLoadedFor(null)
+      }
     }
     supabase.auth.getSession().then(({ data: { session: s } }) => { apply(s); setAuthChecked(true) })
     const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => apply(next))
@@ -158,70 +191,130 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [demo, userId, ready])
 
   const value = useMemo<AppState>(() => {
-    const { profile, classes, alarms, deadlines } = data
-    /** Optimistic write: apply locally, persist, roll back to the snapshot on failure. */
-    const persist = async (fn: (id: string) => Promise<unknown>) => {
-      if (demo || !userId) return
-      const snapshot = data
-      try { await fn(userId) } catch (e) { setData(snapshot); report(e) }
+    /** Optimistic slice write: apply locally, persist, roll back only touched keys on failure. */
+    const persistSlices = async <K extends keyof Data>(
+      keys: readonly K[],
+      optimistic: (curr: Data) => Pick<Data, K>,
+      fn: (id: string) => Promise<void>,
+    ): Promise<boolean> => {
+      const before = dataRef.current
+      const snapshot = {} as Pick<Data, K>
+      for (const k of keys) snapshot[k] = before[k]
+      commit(curr => ({ ...curr, ...optimistic(curr) }))
+      if (demo) return true
+      if (!userId) return false
+      const ownerAtStart = userId
+      try {
+        await fn(ownerAtStart)
+        return true
+      } catch (e) {
+        if (activeUserRef.current === ownerAtStart) {
+          commit(curr => ({ ...curr, ...snapshot }))
+          report(e)
+        }
+        return false
+      }
     }
 
     return {
       ready, demo, session, ...data,
       refresh: async () => { if (!demo && userId) await load(userId) },
 
-      async saveProfile(p) {
-        patch({ profile: { ...(profile ?? demoProfile), ...p } })
-        await persist(async id => patch({ profile: await repo.saveProfile(id, p) }))
+      saveProfile(p) {
+        return persistSlices(
+          ['profile'],
+          curr => {
+            const base = curr.profile ?? (demo ? demoProfile : emptyProfile(userId ?? ''))
+            return { profile: { ...base, ...p } }
+          },
+          async id => {
+            const saved = await repo.saveProfile(id, p)
+            if (activeUserRef.current === id) patch({ profile: saved })
+          },
+        )
       },
 
-      async saveClasses(entries) {
-        const byId = new Map(classes.map(c => [c.id, c]))
+      saveClasses(entries) {
+        const curr = dataRef.current
+        const byId = new Map(curr.classes.map(c => [c.id, c]))
         entries.forEach(e => byId.set(e.id, e))
         const newAlarms: Alarm[] = entries
-          .filter(e => !alarms.some(a => a.classId === e.id))
-          .map(e => ({ id: repo.uid(), classId: e.id, subject: e.subject, code: e.code, time: e.start, day: e.days[0] ?? 'Mon', lead: 30, enabled: true, color: e.color }))
-        const synced = alarms.map(a => {
+          .filter(e => !curr.alarms.some(a => a.classId === e.id))
+          .map(e => ({ id: repo.uid(), classId: e.id, subject: e.subject, code: e.code, time: e.start, day: e.days[0] ?? 'Mon', lead: 15, enabled: true, color: e.color }))
+        const synced = curr.alarms.map(a => {
           const e = entries.find(x => x.id === a.classId)
           return e ? { ...a, subject: e.subject, code: e.code, time: e.start, day: e.days[0] ?? a.day, color: e.color } : a
         })
-        patch({ classes: [...byId.values()], alarms: [...synced, ...newAlarms] })
-        await persist(async id => {
-          await repo.upsertClasses(id, entries)
-          await repo.upsertAlarms(id, [...synced.filter(a => entries.some(e => e.id === a.classId)), ...newAlarms])
-        })
+        const nextClasses = [...byId.values()]
+        const nextAlarms = [...synced, ...newAlarms]
+        return persistSlices(
+          ['classes', 'alarms'],
+          () => ({ classes: nextClasses, alarms: nextAlarms }),
+          async id => {
+            await repo.upsertClasses(id, entries)
+            await repo.upsertAlarms(id, [...synced.filter(a => entries.some(e => e.id === a.classId)), ...newAlarms])
+          },
+        )
       },
 
-      async removeClass(classId) {
-        patch({ classes: classes.filter(c => c.id !== classId), alarms: alarms.filter(a => a.classId !== classId) })
-        await persist(async id => { await repo.deleteAlarmsForClass(id, classId); await repo.deleteClass(id, classId) })
+      removeClass(classId) {
+        return persistSlices(
+          ['classes', 'alarms'],
+          curr => ({
+            classes: curr.classes.filter(c => c.id !== classId),
+            alarms: curr.alarms.filter(a => a.classId !== classId),
+          }),
+          async id => {
+            await repo.deleteAlarmsForClass(id, classId)
+            await repo.deleteClass(id, classId)
+          },
+        )
       },
 
-      async saveAlarm(alarm) {
-        patch({ alarms: alarms.map(a => (a.id === alarm.id ? alarm : a)) })
-        await persist(id => repo.upsertAlarms(id, [alarm]))
+      saveAlarm(alarm) {
+        return persistSlices(
+          ['alarms'],
+          curr => ({ alarms: curr.alarms.map(a => (a.id === alarm.id ? alarm : a)) }),
+          id => repo.upsertAlarms(id, [alarm]),
+        )
       },
 
-      async saveAlarms(list) {
+      saveAlarms(list) {
         const byId = new Map(list.map(a => [a.id, a]))
-        patch({ alarms: alarms.map(a => byId.get(a.id) ?? a) })
-        await persist(id => repo.upsertAlarms(id, list))
+        return persistSlices(
+          ['alarms'],
+          curr => ({ alarms: curr.alarms.map(a => byId.get(a.id) ?? a) }),
+          id => repo.upsertAlarms(id, list),
+        )
       },
 
-      async saveDeadline(deadline) {
-        patch({ deadlines: [...deadlines.filter(d => d.id !== deadline.id), deadline].sort((a, b) => a.due.localeCompare(b.due)) })
-        await persist(id => repo.upsertDeadline(id, deadline))
+      saveDeadline(deadline) {
+        return persistSlices(
+          ['deadlines'],
+          curr => ({
+            deadlines: [...curr.deadlines.filter(d => d.id !== deadline.id), deadline].sort((a, b) => a.due.localeCompare(b.due)),
+          }),
+          id => repo.upsertDeadline(id, deadline),
+        )
       },
 
-      async saveDeadlines(list) {
+      saveDeadlines(list) {
         const ids = new Set(list.map(d => d.id))
-        patch({ deadlines: [...deadlines.filter(d => !ids.has(d.id)), ...list].sort((a, b) => a.due.localeCompare(b.due)) })
-        await persist(async id => { for (const d of list) await repo.upsertDeadline(id, d) })
+        return persistSlices(
+          ['deadlines'],
+          curr => ({
+            deadlines: [...curr.deadlines.filter(d => !ids.has(d.id)), ...list].sort((a, b) => a.due.localeCompare(b.due)),
+          }),
+          id => repo.upsertDeadlines(id, list),
+        )
       },
 
-      async removeDeadline(deadlineId) {
-        patch({ deadlines: deadlines.filter(d => d.id !== deadlineId) })
-        await persist(id => repo.deleteDeadline(id, deadlineId))
+      removeDeadline(deadlineId) {
+        return persistSlices(
+          ['deadlines'],
+          curr => ({ deadlines: curr.deadlines.filter(d => d.id !== deadlineId) }),
+          id => repo.deleteDeadline(id, deadlineId),
+        )
       },
 
       setMeal(day, meal, recipeSlug) {
@@ -244,10 +337,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
       },
 
       async signOut() {
-        if (!demo) await supabase.auth.signOut()
+        if (demo) return
+        const uidBeforeOut = activeUserRef.current
+        await unregisterServerPush().catch(() => {})
+        await clearScheduledAlarms().catch(() => {})
+        avatar.clear()
+        pro.clear()
+        await AsyncStorage.multiRemove([
+          'dormosaur.onboarding.draft',
+          'dormosaur.pay.draft.v1',
+          ...(uidBeforeOut ? [`dormosaur.onboarding.draft.${uidBeforeOut}`, `dormosaur.pay.draft.v1.${uidBeforeOut}`] : []),
+        ]).catch(() => {})
+        await supabase.auth.signOut()
+        activeUserRef.current = undefined
+        dataRef.current = EMPTY
+        setData(EMPTY)
+        setLoadedFor(null)
+        setSession(null)
       },
     }
-  }, [ready, demo, session, data, userId, load, patch, saveKitchenPlan, saveKitchenGrocery])
+  }, [ready, demo, session, data, userId, load, commit, patch, saveKitchenPlan, saveKitchenGrocery])
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

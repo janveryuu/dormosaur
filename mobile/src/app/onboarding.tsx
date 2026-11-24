@@ -17,18 +17,20 @@ import { Button, Field, Press, T, haptic } from '@/ui'
 import { ClassRow } from '@/ui/blocks'
 import { Dormo } from '@/ui/dormo'
 import { OnboardingFrame } from '@/ui/onboarding-frame'
+import { ProPill, useMyPro } from '@/ui/pro-gate'
 import { SchoolSearch } from '@/ui/school-search'
 
 const TOTAL = 6
 const LEADS: Alarm['lead'][] = [15, 30, 60]
-const DRAFT_KEY = 'dormosaur.onboarding.draft'
 const DAY_NAMES: Record<string, string> = { Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday' }
 
 type Draft = { step: number; name: string; school: string; year: string; dorm: boolean; lead: Alarm['lead']; reminders: boolean }
 
 /** First-run setup: name, school, schedule, review, reminders, done. Saves a draft at every step. */
 export default function Onboarding() {
-  const { profile, classes, alarms, saveProfile, saveAlarms } = useApp()
+  const { session, profile, classes, alarms, saveProfile, saveAlarms } = useApp()
+  const { isPro } = useMyPro()
+  const draftKey = session?.user.id ? `dormosaur.onboarding.draft.${session.user.id}` : 'dormosaur.onboarding.draft'
   const [d, setD] = useState<Draft>({
     step: 1, name: profile?.name ?? '', school: profile?.school ?? '', year: profile?.year ?? '',
     dorm: profile?.is_dorm_student ?? true, lead: 15, reminders: true,
@@ -37,11 +39,12 @@ export default function Onboarding() {
   const loaded = useRef(false)
   const set = (patch: Partial<Draft>) => setD(p => ({ ...p, ...patch }))
 
-  // Restore the draft once, then keep it saved on every change.
+  // Restore the draft once per account, then keep it saved on every change.
   useEffect(() => {
-    AsyncStorage.getItem(DRAFT_KEY).then(v => { if (v) setD(p => ({ ...p, ...JSON.parse(v) })) }).catch(() => {}).finally(() => { loaded.current = true })
-  }, [])
-  useEffect(() => { if (loaded.current) AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(d)).catch(() => {}) }, [d])
+    loaded.current = false
+    AsyncStorage.getItem(draftKey).then(v => { if (v) setD(p => ({ ...p, ...JSON.parse(v) })) }).catch(() => {}).finally(() => { loaded.current = true })
+  }, [draftKey])
+  useEffect(() => { if (loaded.current) AsyncStorage.setItem(draftKey, JSON.stringify(d)).catch(() => {}) }, [d, draftKey])
 
   // Coming back from the scanner or class editor with new classes: move on to review.
   const seen = useRef(classes.length)
@@ -54,31 +57,39 @@ export default function Onboarding() {
   const back = d.step > 1 && d.step < TOTAL ? () => set({ step: d.step - 1 }) : undefined
 
   async function saveAbout() {
+    if (busy) return
     setBusy(true)
     try {
       const name = d.name.trim()
       const initials = name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase()
-      await saveProfile({ name, school: d.school.trim(), year: d.year, is_dorm_student: d.dorm, initials })
-      go(3)
+      const ok = await saveProfile({ name, school: d.school.trim(), year: d.year, is_dorm_student: d.dorm, initials })
+      if (ok) go(3)
     } finally { setBusy(false) }
   }
 
   async function reminders(on: boolean) {
+    if (busy) return
     setBusy(true)
     try {
       const granted = on ? await ensurePermission() : false
       if (on && !granted) Alert.alert('Notifications are off', 'You can turn reminders on later in Settings > Class alarms.')
-      if (alarms.length) await saveAlarms(alarms.map(a => ({ ...a, lead: d.lead, enabled: on && granted })))
-      set({ reminders: on && granted, step: TOTAL })
+      const chosenLead: Alarm['lead'] = isPro ? d.lead : 15
+      if (alarms.length) {
+        const ok = await saveAlarms(alarms.map(a => ({ ...a, lead: chosenLead, enabled: on && granted })))
+        if (!ok) return
+      }
+      set({ lead: chosenLead, reminders: on && granted, step: TOTAL })
       haptic.select()
     } finally { setBusy(false) }
   }
 
   async function finish() {
+    if (busy) return
     setBusy(true)
     try {
-      await saveProfile({ onboarding_completed: true })
-      await AsyncStorage.removeItem(DRAFT_KEY).catch(() => {})
+      const ok = await saveProfile({ onboarding_completed: true })
+      if (!ok) return
+      await AsyncStorage.removeItem(draftKey).catch(() => {})
       haptic.success()
     } finally { setBusy(false) }
   }
@@ -88,8 +99,8 @@ export default function Onboarding() {
     case 2: return <SchoolStep d={d} set={set} onBack={back} busy={busy} onNext={saveAbout} />
     case 3: return <MethodStep hasClasses={classes.length > 0} onBack={back} onReview={() => go(4)} onSkip={() => go(TOTAL)} />
     case 4: return <ReviewStep onBack={back} onNext={() => go(5)} />
-    case 5: return <ReminderStep lead={d.lead} onLead={lead => set({ lead })} busy={busy} onBack={back} onAnswer={reminders} />
-    default: return <DoneStep lead={d.reminders ? d.lead : null} busy={busy} onFinish={finish} />
+    case 5: return <ReminderStep lead={isPro ? d.lead : 15} isPro={isPro} onLead={lead => set({ lead })} busy={busy} onBack={back} onAnswer={reminders} />
+    default: return <DoneStep lead={d.reminders ? (isPro ? d.lead : 15) : null} busy={busy} onFinish={finish} />
   }
 }
 
@@ -266,7 +277,7 @@ function ReviewStep({ onBack, onNext }: { onBack?: () => void; onNext: () => voi
 
 // ─── 5. Reminders ────────────────────────────────────────────────────────────
 
-function ReminderStep({ lead, onLead, onAnswer, onBack, busy }: { lead: Alarm['lead']; onLead: (l: Alarm['lead']) => void; onAnswer: (on: boolean) => void; onBack?: () => void; busy: boolean }) {
+function ReminderStep({ lead, isPro, onLead, onAnswer, onBack, busy }: { lead: Alarm['lead']; isPro: boolean; onLead: (l: Alarm['lead']) => void; onAnswer: (on: boolean) => void; onBack?: () => void; busy: boolean }) {
   const { c } = useTheme()
   return (
     <OnboardingFrame step={5} total={TOTAL} onBack={onBack} hero={<Dormo mood="thinking" size={140} hops={false} />}
@@ -281,12 +292,21 @@ function ReminderStep({ lead, onLead, onAnswer, onBack, busy }: { lead: Alarm['l
         <T v="footnote" color={c.ink3} center style={{ fontWeight: '600' }}>Remind me</T>
         <View style={{ flexDirection: 'row', gap: 10 }}>
           {LEADS.map(l => {
+            const locked = !isPro && l !== 15
             const on = lead === l
             return (
-              <Press key={l} onPress={() => { haptic.select(); onLead(l) }} scale={0.95} accessibilityState={{ selected: on }} accessibilityLabel={`${l} minutes before`}
+              <Press key={l} onPress={() => {
+                if (locked) {
+                  Alert.alert('15-minute Free default', 'Custom 30 and 60 minute alarm lead times unlock with Dormosaur Pro.')
+                  return
+                }
+                haptic.select()
+                onLead(l)
+              }} scale={0.95} accessibilityState={{ selected: on }} accessibilityLabel={locked ? `${l} minutes before, Pro` : `${l} minutes before`}
                 style={{ flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', backgroundColor: on ? c.green : c.fill }}>
-                <T v="title3" color={on ? c.onGreen : c.ink}>{l}</T>
+                <T v="title3" color={on ? c.onGreen : locked ? c.ink3 : c.ink}>{l}</T>
                 <T v="caption" color={on ? c.onGreen : c.ink2}>min before</T>
+                {locked && <View style={{ marginTop: 4 }}><ProPill /></View>}
               </Press>
             )
           })}

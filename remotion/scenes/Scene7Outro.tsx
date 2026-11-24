@@ -3,7 +3,6 @@ import { interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from
 import { AmbientBackground } from '../components/AmbientBackground';
 import { ApplePhoneMockup } from '../components/ApplePhoneMockup';
 import { KineticText } from '../components/KineticText';
-import { theme } from '../theme';
 
 export const Scene7Outro: React.FC = () => {
   const frame = useCurrentFrame();

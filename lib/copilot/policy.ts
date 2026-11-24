@@ -17,6 +17,7 @@ const META: [Intent, RegExp][] = [
 // These high-confidence rules handle obvious abuse before generation. Nuanced
 // domain decisions belong to the provider, which returns a semantic scope verdict.
 export function guardRequest(message: string, history: ChatMessage[] = []): Guard {
+  void history
   if (/\b(?:api[ _-]?keys?|environment variables?|env vars?|system prompt|hidden prompt|system instructions|server secrets?|another user(?:'s)? (?:data|schedule|profile))\b/i.test(message) &&
       /\b(?:show|print|reveal|give|tell|dump|expose|read|access|what is)\b/i.test(message)) return 'private'
   if (/\b(?:ignore|forget|override)\b.{0,60}\b(?:instructions|rules|scope|restrictions)\b|\b(?:unrestricted assistant|pretend you have no restrictions|become chatgpt)\b/i.test(message)) return 'injection'

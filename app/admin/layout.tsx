@@ -26,7 +26,7 @@ export default async function AdminLayout({
       <main className="flex-1 pb-24 pt-6 px-4 lg:pl-76 lg:pr-8 lg:pb-8">
         <div className="mx-auto max-w-6xl">{children}</div>
       </main>
-      <AdminMobileNav />
+      <AdminMobileNav pendingPayments={pendingPayments} />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import { Bell } from 'lucide-react'
 import { DormosaurMascot } from '@/components/brand/dormosaur-mascot'
 
@@ -21,7 +22,7 @@ export function BrandPanel() {
 
       {/* Dormosaur Logo Branding */}
       <div className="relative z-10 flex items-center gap-2.5">
-        <img
+        <Image
           src="/android-chrome-192x192.png"
           alt="Dormosaur"
           width={48}

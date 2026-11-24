@@ -16,8 +16,8 @@ export function AdminTopbar({
   title,
   description,
   actions,
-  adminName = 'Janver Manlapaz',
-  adminInitials = 'JM',
+  adminName = 'Administrator',
+  adminInitials = 'AD',
 }: AdminTopbarProps) {
   return (
     <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -31,11 +31,11 @@ export function AdminTopbar({
       <div className="flex items-center gap-3">
         {actions}
         <Link
-          href="/dashboard"
+          href="/"
           className="hidden items-center gap-1.5 rounded-full bg-card px-3.5 py-2 text-[13px] font-semibold text-muted-foreground shadow-ios transition-colors hover:text-foreground sm:flex border border-border/40"
         >
           <ArrowLeft className="size-3.5" strokeWidth={2.2} />
-          Back to app
+          View site
         </Link>
         <div className="flex items-center gap-2.5 rounded-full bg-card py-1.5 pr-4 pl-1.5 shadow-ios border border-border/40">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-[12px] font-bold text-primary-foreground shadow-xs">

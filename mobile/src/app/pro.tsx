@@ -52,7 +52,7 @@ export default function Pro() {
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }} bounces={false}>
         <LinearGradient colors={top} style={{ paddingTop: Platform.OS === 'ios' ? 18 : insets.top + 12, height: 210 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 18 }}>
-            <Press onPress={() => router.back()} accessibilityLabel="Close" style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.16)', alignItems: 'center', justifyContent: 'center' }}>
+            <Press onPress={() => router.back()} hitSlop={8} accessibilityLabel="Close" style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.16)', alignItems: 'center', justifyContent: 'center' }}>
               <X size={20} color="#fff" strokeWidth={2.4} />
             </Press>
             <ProBadge />
@@ -60,8 +60,14 @@ export default function Pro() {
           <Animated.View entering={rise(0)} style={{ alignItems: 'center', marginTop: 2 }}>
             <Emblem />
           </Animated.View>
-          {[[48, 70, 14], [300, 54, 18], [96, 150, 10], [272, 140, 12], [330, 100, 9]].map(([x, y, s], i) => (
-            <Sparkles key={i} size={s} color="rgba(255,255,255,0.7)" style={{ position: 'absolute', left: x, top: y }} />
+          {([
+            ['12%', 70, 14],
+            ['78%', 54, 18],
+            ['24%', 150, 10],
+            ['72%', 140, 12],
+            ['86%', 100, 9],
+          ] as const).map(([leftPct, topPx, s], i) => (
+            <Sparkles key={i} size={s} color="rgba(255,255,255,0.7)" style={{ position: 'absolute', left: leftPct, top: topPx }} />
           ))}
         </LinearGradient>
         <Svg width="100%" height={36} viewBox="0 0 400 36" preserveAspectRatio="none" style={{ marginTop: -35 }}>
@@ -106,7 +112,7 @@ export default function Pro() {
             </Animated.View>
           )}
 
-          {!pending && (
+          {!pending && !status?.lifetime && (
             <Animated.View entering={rise(2)} style={{ flexDirection: 'row', gap: 10, paddingTop: 10 }}>
               {PLANS.map(p => {
                 const on = p.id === plan
@@ -144,7 +150,7 @@ export default function Pro() {
         </View>
       </ScrollView>
 
-      {!pending && (
+      {!pending && !status?.lifetime && (
         <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: insets.bottom + 10, gap: 10, borderTopWidth: 0.5, borderColor: c.line, backgroundColor: c.bg }}>
           <T v="footnote" color={c.ink2} center>
             {trial
@@ -157,7 +163,7 @@ export default function Pro() {
                 <Button title={`Pay ₱${chosen.amount} now instead`} kind="secondary" size="md" onPress={() => router.push({ pathname: '/pay', params: { plan } })} />
               </>
             : <Button title={isPro ? `Add ${chosen.name} · ₱${chosen.amount}` : `Continue · ₱${chosen.amount}`} onPress={() => router.push({ pathname: '/pay', params: { plan } })} />}
-          <Press onPress={() => router.back()} accessibilityLabel="Not now" haptics={false} style={{ alignSelf: 'center', paddingVertical: 6 }}>
+          <Press onPress={() => router.back()} hitSlop={8} accessibilityLabel="Not now" haptics={false} style={{ alignSelf: 'center', paddingVertical: 10, paddingHorizontal: 16 }}>
             <T v="subhead" color={c.ink2} style={{ fontWeight: '600' }}>Not now</T>
           </Press>
         </View>

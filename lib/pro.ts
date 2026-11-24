@@ -79,6 +79,7 @@ export async function getProStatus(userId: string): Promise<ProStatus> {
     admin.from('pro_usage').select('feature,period,count').eq('user_id', userId),
     admin.from('pro_payments').select('id,plan,amount_php,wallet,status,reject_reason,created_at,reviewed_at').eq('user_id', userId).order('created_at', { ascending: false }).limit(5),
   ])
+  if (usageRes.error || paymentsRes.error) throw new Error('status_unavailable')
   const now = Date.now()
   const live = active(rows, now)
   const lifetime = live.some(r => r.ends_at === null)
@@ -149,20 +150,32 @@ export async function startTrial(userId: string) {
 }
 
 /**
- * Grants a paid plan. Time stacks: a new period starts when the current
- * paid/trial period ends, so paying early never loses days.
+ * Grants a paid plan atomically via Postgres advisory-locked RPC (`pro_grant_plan`).
+ * Falls back gracefully only if the RPC migration has not yet been applied.
  */
 export async function grantPlan(userId: string, plan: PaidPlan, opts: { source: 'payment' | 'manual'; paymentId?: string; by?: string }) {
+  const admin = getSupabaseAdminClient()
+  const { error: rpcErr } = await admin.rpc('pro_grant_plan', {
+    p_user: userId,
+    p_plan: plan,
+    p_source: opts.source,
+    p_payment_id: opts.paymentId ?? null,
+    p_by: opts.by ?? null,
+  })
+  if (!rpcErr || rpcErr.code === '23505') return
+  if (rpcErr.code !== '42883' && rpcErr.code !== 'PGRST202') throw new Error('grant_failed')
+
+  console.warn('[Pro Billing]', { category: 'pro_grant_rpc_missing' })
   const rows = await getEntitlements(userId)
   const now = Date.now()
   const latestEnd = remaining(rows, now).reduce((m, r) => (r.ends_at ? Math.max(m, Date.parse(r.ends_at)) : m), now)
   const days = PLANS[plan].days
   const starts = days === null ? now : latestEnd
-  const { error } = await getSupabaseAdminClient().from('pro_entitlements').insert({
+  const { error } = await admin.from('pro_entitlements').insert({
     user_id: userId, plan, source: opts.source, payment_id: opts.paymentId ?? null, created_by: opts.by ?? null,
     starts_at: new Date(starts).toISOString(), ends_at: days === null ? null : new Date(starts + days * DAY).toISOString(),
   })
-  if (error?.code === '23505') return // already granted for this payment (double click)
+  if (error?.code === '23505') return
   if (error) throw new Error('grant_failed')
 }
 

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { sendClassReminder } from '@/lib/notification-service'
 import { apiError, boundedText, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
 

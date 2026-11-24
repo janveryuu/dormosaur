@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { apiError, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
 import { getSupabaseAdminClient } from '@/lib/admin-db'
+import { sanitizeJpegUpload } from '@/lib/image-upload'
 import { PLANS, TRIAL_DAYS, WALLETS, getProStatus, isPlan, isWallet, referenceCode } from '@/lib/pro'
 import { sendPaymentAlert } from '@/lib/pro-email'
 
@@ -10,7 +11,7 @@ const MAX_RECEIPT = 900 * 1024
 
 /**
  * Student submits proof of a QR payment. The receipt goes to the private
- * `receipts` bucket; Pro is granted only after an admin approves it.
+ * `receipts` bucket with EXIF stripped; Pro is granted only after an admin approves it.
  */
 export async function POST(req: Request) {
   try {
@@ -28,14 +29,26 @@ export async function POST(req: Request) {
     const ok = async () => NextResponse.json({ success: true, ...(await getProStatus(user.id)), referenceCode: referenceCode(user.id), plans: PLANS, trialDays: TRIAL_DAYS }, { headers: { 'Cache-Control': 'no-store' } })
 
     // Same submission retried after a dropped connection: return the original instead of a duplicate.
-    const { data: existing } = await admin.from('pro_payments').select('id').eq('user_id', user.id).eq('idempotency_key', key).maybeSingle()
-    if (existing) return ok()
+    const { data: existing, error: existingErr } = await admin.from('pro_payments')
+      .select('id,plan,transaction_ref')
+      .eq('user_id', user.id)
+      .eq('idempotency_key', key)
+      .maybeSingle()
+    if (existingErr) throw new Error('payment_lookup_failed')
+    if (existing) {
+      if (existing.transaction_ref !== transactionRef || existing.plan !== plan) {
+        throw new InputError('Please refresh and start a new payment submission.', 409)
+      }
+      return ok()
+    }
 
-    const match = typeof body.receipt === 'string' ? /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(body.receipt) : null
-    if (!match) throw new InputError('Please attach a screenshot of your receipt.')
-    const bytes = Buffer.from(match[1], 'base64')
-    if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8 || bytes[2] !== 0xff) throw new InputError('That file is not a valid image.')
-    if (bytes.length > MAX_RECEIPT) throw new InputError('That screenshot is too large. Please try another one.', 413)
+    const bytes = await sanitizeJpegUpload(body.receipt, {
+      maxBytes: MAX_RECEIPT,
+      missingMessage: 'Please attach a screenshot of your receipt.',
+      invalidMessage: 'That file is not a valid image.',
+      tooLargeMessage: 'That screenshot is too large. Please try another one.',
+      quality: 82,
+    })
 
     const id = crypto.randomUUID()
     const path = `${user.id}/${id}.jpg`
@@ -49,7 +62,9 @@ export async function POST(req: Request) {
     if (error) {
       await admin.storage.from('receipts').remove([path]).catch(() => {})
       if (error.code === '23505') {
-        throw new InputError(error.message.includes('one_pending')
+        const msg = `${error.message || ''} ${(error as { details?: string }).details || ''}`.toLowerCase()
+        if (msg.includes('idempotency')) return ok()
+        throw new InputError(msg.includes('one_pending')
           ? 'You already have a payment under review. We’ll let you know soon.'
           : 'This receipt’s reference number was already submitted.', 409)
       }

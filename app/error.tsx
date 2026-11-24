@@ -49,7 +49,7 @@ export default function RootErrorBoundary({
           Dormosaur hit a temporary hiccup loading this view. Your classes, alarms, and student settings are securely stored.
         </p>
 
-        {error?.message && (
+        {process.env.NODE_ENV !== 'production' && error?.message && (
           <div className="mt-4 overflow-hidden rounded-2xl border border-border/70 bg-fill/80 p-3 text-left">
             <p className="text-[11.5px] font-mono text-muted-foreground break-all line-clamp-3">
               {error.message}
@@ -63,10 +63,10 @@ export default function RootErrorBoundary({
             Reload Screen
           </PillButton>
 
-          <Link href="/dashboard" className="w-full">
+          <Link href="/" className="w-full">
             <PillButton variant="secondary" size="lg" full>
               <Home className="size-4 mr-2" />
-              Return to Dashboard
+              Return to Home
             </PillButton>
           </Link>
         </div>

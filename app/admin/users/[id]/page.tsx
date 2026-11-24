@@ -5,6 +5,7 @@ import { AdminTopbar } from '@/components/admin/admin-topbar'
 import { UserDetail } from '@/components/admin/user-detail'
 import { ProControl } from '@/components/admin/pro-control'
 import { getProStatus } from '@/lib/pro'
+import { isStrictUuid } from '@/lib/api-security'
 
 export const revalidate = 0
 
@@ -17,6 +18,9 @@ interface PageProps {
 export default async function AdminUserDetailPage({ params }: PageProps) {
   const adminUser = await requireAdminSession()
   const { id } = await params
+  if (!isStrictUuid(id)) {
+    notFound()
+  }
 
   const [userDetail, pro] = await Promise.all([getUserDetail(id), getProStatus(id)])
 

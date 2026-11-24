@@ -1,7 +1,20 @@
 import { getSupabaseAdminClient } from './admin-db'
 
 export type ActivityLogParams = {
-  eventType: 'login' | 'signup' | 'schedule_parsed' | 'alarm_failed' | 'recipe_edited' | 'settings_updated' | 'user_updated'
+  eventType:
+    | 'login'
+    | 'signup'
+    | 'schedule_parsed'
+    | 'alarm_failed'
+    | 'recipe_edited'
+    | 'settings_updated'
+    | 'user_updated'
+    | 'pro_granted'
+    | 'pro_revoked'
+    | 'payment_approved'
+    | 'payment_rejected'
+    | 'user_suspended'
+    | 'user_reinstated'
   description: string
   relatedUserId?: string
   performedBy?: string

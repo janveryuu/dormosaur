@@ -24,7 +24,7 @@ export default function Alarms() {
   const { isPro } = useMyPro()
   const { c, subject } = useTheme()
   const insets = useSafeAreaInsets()
-  const { alarms, classes, saveAlarm } = useApp()
+  const { alarms, classes, saveAlarm, saveAlarms } = useApp()
   const [open, setOpen] = useState<string | null>(null)
   const on = alarms.filter(a => a.enabled).length
   const allOn = alarms.length > 0 && on === alarms.length
@@ -40,7 +40,7 @@ export default function Alarms() {
             <T v="footnote" color={c.onGreen} style={{ opacity: 0.85 }}>Rings before every class, even offline.</T>
           </View>
           {alarms.length > 0 && (
-            <Switch value={allOn} onValueChange={v => { haptic.select(); alarms.forEach(a => a.enabled !== v && saveAlarm({ ...a, enabled: v })) }}
+            <Switch value={allOn} onValueChange={v => { haptic.select(); void saveAlarms(alarms.map(a => ({ ...a, enabled: v }))) }}
               trackColor={{ true: 'rgba(255,255,255,0.4)', false: 'rgba(255,255,255,0.2)' }} thumbColor="#fff" accessibilityLabel="All alarms" />
           )}
         </Animated.View>

@@ -4,6 +4,16 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Crown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 type Plan = 'monthly' | 'semester' | 'lifetime'
 const PLAN_LABEL: Record<string, string> = { trial: '7-day trial', monthly: 'Monthly', semester: 'Semester', lifetime: 'Lifetime' }
@@ -13,18 +23,20 @@ export function ProControl({ userId, isPro, plan, endsAt, lifetime }: { userId: 
   const router = useRouter()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [confirmRevoke, setConfirmRevoke] = useState(false)
 
   const send = async (body: { action: 'grant'; plan: Plan } | { action: 'revoke' }) => {
     if (busy) return
-    if (body.action === 'revoke' && !confirm('End this student’s Pro now? This cannot be undone.')) return
     setBusy(true); setError('')
     try {
       const res = await fetch('/api/admin/pro', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, ...body }) })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(json.error || 'Something went wrong.')
+      setConfirmRevoke(false)
       router.refresh()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong.')
+      setConfirmRevoke(false)
     } finally {
       setBusy(false)
     }
@@ -50,8 +62,25 @@ export function ProControl({ userId, isPro, plan, endsAt, lifetime }: { userId: 
             Give {PLAN_LABEL[p]}
           </Button>
         ))}
-        {isPro && <Button variant="destructive" size="sm" disabled={busy} className="rounded-full" onClick={() => send({ action: 'revoke' })}>End Pro</Button>}
+        {isPro && <Button variant="destructive" size="sm" disabled={busy} className="rounded-full" onClick={() => setConfirmRevoke(true)}>End Pro</Button>}
       </div>
+
+      <AlertDialog open={confirmRevoke} onOpenChange={setConfirmRevoke}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>End this student’s Pro access?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This revokes all active and queued Pro entitlements immediately. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
+            <AlertDialogAction disabled={busy} onClick={(e) => { e.preventDefault(); void send({ action: 'revoke' }) }}>
+              {busy ? 'Revoking…' : 'End Pro'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   )
 }

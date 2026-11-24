@@ -78,7 +78,7 @@ export async function GET(request: Request) {
 
         // Students confirm here, then continue in the app; only explicit admin destinations stay on the web.
         return NextResponse.redirect(nextParam?.startsWith('/admin') ? `${origin}${defaultNext}` : `${origin}/?confirmed=1`)
-      } catch (dbErr) {
+      } catch {
         console.warn('[Auth Callback]', { category: 'profile_unavailable' })
         return NextResponse.redirect(`${origin}/?confirmed=1`)
       }
@@ -94,7 +94,7 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}/?confirmed=1`)
       }
     }
-  } catch (err) {
+  } catch {
     console.warn('[Auth Callback]', { category: 'callback_failed' })
   }
 

@@ -123,7 +123,7 @@ test('production schedule probe is disabled before a provider request', async ()
 })
 test('failed collection write never deletes the existing schedule', async () => {
   const calls = []
-  const db = { from(table) {
+  const db = { from() {
     const q = { then(fn) { return Promise.resolve({ data: [{ id: 'old' }], error: calls.some((c) => c === 'insert' || c === 'upsert') ? { message: 'write failed' } : null }).then(fn) } }
     for (const method of ['select', 'eq', 'delete', 'insert', 'upsert', 'in', 'not']) q[method] = () => { calls.push(method); return q }
     return q
@@ -182,7 +182,7 @@ test('authenticated AI inputs are bounded and malformed JSON is recoverable', as
   const route = load('app/api/schedule/edit/route.ts', authOverride(client().db))
   assert.equal((await route.POST(request({ prompt: 'x'.repeat(2001) }))).status, 400)
   assert.equal((await route.POST(request({ prompt: 'x'.repeat(70000) }))).status, 413)
-  assert.equal((await route.POST(new Request('http://localhost', { method: 'POST', body: '{broken' }))).status, 400)
+  assert.equal((await route.POST(new Request('http://localhost', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{broken' }))).status, 400)
 })
 test('recipe fallback noodles respect microwave-only equipment', () => {
   const safety = load('lib/recipe-safety.ts')
@@ -409,4 +409,489 @@ test('plain-text schedule imports leave missing days, times, course codes and in
   assert.equal(meeting.days[0], 'Mon')
   assert.equal(meeting.start, '08:00')
   assert.equal(meeting.instructor, '')
+})
+
+test('clientIp prefers Vercel-managed headers over spoofable x-forwarded-for', () => {
+  const sec = load('lib/api-security.ts', { 'next/headers': { headers: async () => new Headers() }, '@/lib/supabase/server': { createClient: async () => client().db } })
+  const spoofed = new Request('http://localhost', {
+    headers: { 'x-forwarded-for': '1.2.3.4', 'x-real-ip': '203.0.113.9' },
+  })
+  assert.equal(sec.clientIp(spoofed), '203.0.113.9')
+  const vercel = new Request('http://localhost', {
+    headers: { 'x-forwarded-for': '1.2.3.4', 'x-vercel-forwarded-for': '198.51.100.7, 10.0.0.1' },
+  })
+  assert.equal(sec.clientIp(vercel), '198.51.100.7')
+})
+
+test('signup enforces email confirmation, uses trusted IP rate limiting and avoids 409 enumeration', async () => {
+  let signUpPayload
+  let adminCreateCalled = false
+  const db = {
+    auth: {
+      signUp: async (payload) => { signUpPayload = payload; return { data: { user: { id: 'u1', identities: [] }, session: null }, error: { message: 'User already registered' } } },
+      admin: { createUser: async () => { adminCreateCalled = true; return { error: null } } },
+    },
+  }
+  const route = load('app/api/auth/signup/route.ts', {
+    '@/lib/supabase/server': { createClient: async () => db },
+    '@/lib/admin-db': { getSupabaseAdminClient: () => db },
+    'next/headers': { headers: async () => new Headers() },
+  }, { NEXT_PUBLIC_APP_URL: 'https://dormosaur.vercel.app' })
+  const res = await route.POST(new Request('http://localhost/api/auth/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-real-ip': '198.51.100.22' },
+    body: JSON.stringify({ email: 'student@g.batstate-u.edu.ph', name: 'Student', password: 'Password123!' }),
+  }))
+  assert.equal(adminCreateCalled, false)
+  assert.equal(res.status, 200)
+  const json = await res.json()
+  assert.equal(json.requiresConfirmation, true)
+  assert.equal(signUpPayload.options.emailRedirectTo, 'https://dormosaur.vercel.app/api/auth/callback')
+})
+
+test('unconfirmed users cannot start the 7-day Pro trial', async () => {
+  const { db } = client({ id: 'student-a', email: 'student@g.batstate-u.edu.ph', email_confirmed_at: null })
+  let started = false
+  const route = load('app/api/pro/trial/route.ts', {
+    '@/lib/supabase/server': { createClient: async () => db },
+    '@/lib/pro': { ...proStub, startTrial: async () => { started = true }, getProStatus: async () => ({}), referenceCode: () => 'DORMO-TEST', PLANS: {}, TRIAL_DAYS: 7 },
+    'next/headers': { headers: async () => new Headers() },
+  })
+  const res = await route.POST(new Request('http://localhost/api/pro/trial', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }))
+  assert.equal(res.status, 403)
+  assert.equal(started, false)
+})
+
+test('next.config.ts configures strict HTTP security headers and intro has no raw inline script or style', async () => {
+  const config = load('next.config.ts').default
+  assert.equal(typeof config.headers, 'function')
+  const entries = await config.headers()
+  const rootRule = entries.find(e => e.source === '/(.*)')
+  assert.ok(rootRule)
+  const headerMap = Object.fromEntries(rootRule.headers.map(h => [h.key.toLowerCase(), h.value]))
+  assert.ok(headerMap['strict-transport-security'])
+  assert.equal(headerMap['x-content-type-options'], 'nosniff')
+  assert.equal(headerMap['x-frame-options'], 'DENY')
+  assert.ok(headerMap['content-security-policy'].includes("frame-ancestors 'none'"))
+  assert.ok(headerMap['content-security-policy'].includes("object-src 'none'"))
+  const introSource = readFileSync('components/landing/intro.tsx', 'utf8')
+  assert.ok(!/<script/i.test(introSource), 'Intro must not inject raw inline <script>')
+  assert.ok(!/<style/i.test(introSource), 'Intro must not inject raw <style dangerouslySetInnerHTML>')
+})
+
+test('JSON body parser rejects non-JSON Content-Type with 415 CSRF protection', async () => {
+  const input = load('lib/copilot/input.ts')
+  await assert.rejects(
+    () => input.readPayload(new Request('http://localhost/api/test', { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: '{"a":1}' })),
+    err => err.status === 415,
+  )
+})
+
+test('strict UUID validation, env admin allowlist without UUID bypass, and Origin CSRF guard', async () => {
+  const sec = load('lib/api-security.ts', { 'next/headers': { headers: async () => new Headers() }, '@/lib/supabase/server': { createClient: async () => client().db } })
+  assert.equal(sec.isStrictUuid('------------------------------------'), false)
+  assert.equal(sec.isStrictUuid('550e8400-e29b-41d4-a716-446655440000'), true)
+
+  const db = {
+    auth: { getUser: async () => ({ data: { user: { id: '550e8400-e29b-41d4-a716-446655440000', email: 'admin@dormosaur.app' } }, error: null }) },
+    from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { is_admin: true, name: 'Admin', school: '', initials: 'AD' }, error: null }) }) }) }),
+  }
+  const auth = load('lib/admin-auth.ts', {
+    '@supabase/ssr': { createServerClient: () => db },
+    '@/lib/admin-db': { getSupabaseAdminClient: () => db },
+    './admin-db': { getSupabaseAdminClient: () => db },
+    'next/headers': { cookies: async () => ({ getAll: () => [] }), headers: async () => new Headers() },
+    'next/navigation': { redirect: () => { throw new Error('NEXT_REDIRECT') } },
+  }, { ADMIN_ALLOWED_EMAILS: 'admin@dormosaur.app', NEXT_PUBLIC_APP_URL: 'https://dormosaur.vercel.app' })
+
+  await assert.rejects(
+    () => auth.requireAdminApi(new Request('https://dormosaur.vercel.app/api/admin/settings', {
+      method: 'POST',
+      headers: { Origin: 'https://evil.example', Host: 'dormosaur.vercel.app' },
+    })),
+    err => err.status === 403,
+  )
+
+  const okAdmin = await auth.requireAdminApi(new Request('https://dormosaur.vercel.app/api/admin/settings', {
+    method: 'POST',
+    headers: { Origin: 'https://dormosaur.vercel.app', Host: 'dormosaur.vercel.app' },
+  }))
+  assert.equal(okAdmin.email, 'admin@dormosaur.app')
+
+  const src = readFileSync('lib/admin-auth.ts', 'utf8')
+  assert.ok(!src.includes('bfa33a51-'), 'Hardcoded UUID admin bypass must be removed')
+})
+
+test('SQL migrations lock down RLS on all tables, block is_admin escalation, and define atomic Pro RPCs', () => {
+  const m1 = readFileSync('supabase/migrations/0001_schema_constraints_and_rls.sql', 'utf8')
+  const m2 = readFileSync('supabase/migrations/0002_pro_atomic_rpcs.sql', 'utf8')
+  for (const table of [
+    'profiles', 'classes', 'alarms', 'deadlines', 'meal_plan', 'grocery_items',
+    'push_subscriptions', 'notification_deliveries', 'pro_entitlements',
+    'pro_payments', 'pro_usage', 'activity_log', 'admin_settings',
+  ]) {
+    assert.ok(m1.toLowerCase().includes(`alter table public.${table} enable row level security`), `RLS missing for ${table}`)
+  }
+  assert.match(m1, /protect_profile_admin_column/i)
+  assert.match(m1, /add primary key\s*\(id\)/i)
+  assert.match(m2, /create or replace function public\.pro_grant_plan/i)
+  assert.match(m2, /create or replace function public\.pro_review_payment/i)
+  assert.match(m2, /pg_advisory_xact_lock/i)
+})
+
+test('getProStatus throws when pro_usage or pro_payments query fails and reviewPayment uses atomic RPC', async () => {
+  let rpcCalled = ''
+  const db = {
+    from(table) {
+      const q = {
+        select() { return q }, eq() { return q }, order() { return q }, limit() { return q }, is() { return q },
+        then(resolve) {
+          if (table === 'pro_entitlements') return Promise.resolve({ data: [], error: null }).then(resolve)
+          if (table === 'pro_usage') return Promise.resolve({ data: null, error: { message: 'db down' } }).then(resolve)
+          return Promise.resolve({ data: [], error: null }).then(resolve)
+        },
+      }
+      return q
+    },
+    rpc: async (name) => {
+      rpcCalled = name
+      return { data: [{ changed: true, user_id: '550e8400-e29b-41d4-a716-446655440000', plan: 'semester' }], error: null }
+    },
+  }
+  const proMod = load('lib/pro.ts', { '@/lib/admin-db': { getSupabaseAdminClient: () => db } })
+  await assert.rejects(() => proMod.getProStatus('550e8400-e29b-41d4-a716-446655440000'), /status_unavailable/)
+
+  const adminMod = load('lib/pro-admin.ts', {
+    '@/lib/admin-db': { getSupabaseAdminClient: () => db },
+    '@/lib/notification-service': { sendClassReminder: async () => ({ successCount: 1, failureCount: 0 }) },
+    '@/lib/pro': proMod,
+  })
+  const res = await adminMod.reviewPayment('550e8400-e29b-41d4-a716-446655440001', 'approve', '550e8400-e29b-41d4-a716-446655440002')
+  assert.equal(rpcCalled, 'pro_review_payment')
+  assert.equal(res.changed, true)
+})
+
+test('receipt and avatar uploads strip EXIF metadata via sharp and DELETE surfaces storage errors', async () => {
+  const sharp = require('sharp')
+  const jpegWithExif = await sharp({
+    create: { width: 32, height: 32, channels: 3, background: { r: 20, g: 120, b: 80 } },
+  }).jpeg().withMetadata({ exif: { IFD0: { Make: 'TestPhoneGPSLeak' } } }).toBuffer()
+  assert.ok(jpegWithExif.includes(Buffer.from('TestPhoneGPSLeak')), 'fixture must start with EXIF marker')
+
+  let uploadedReceipt
+  let uploadedAvatar
+  const adminMock = {
+    from() {
+      const q = {
+        select() { return q }, eq() { return q }, order() { return q }, limit() { return q },
+        insert: async () => ({ error: null }),
+        maybeSingle: async () => ({ data: null, error: null }),
+        then(resolve) { return Promise.resolve({ data: [], error: null }).then(resolve) },
+      }
+      return q
+    },
+    storage: {
+      from(bucket) {
+        return {
+          upload: async (_p, buf) => {
+            if (bucket === 'receipts') uploadedReceipt = buf
+            else uploadedAvatar = buf
+            return { error: null }
+          },
+          createSignedUrl: async () => ({ data: { signedUrl: 'https://example.test/signed' }, error: null }),
+          remove: async () => ({ error: { message: 'storage down' } }),
+        }
+      },
+    },
+  }
+  const { db } = client({ id: '550e8400-e29b-41d4-a716-446655440000', email: 'student@g.batstate-u.edu.ph' })
+  const paymentsRoute = load('app/api/pro/payments/route.ts', {
+    '@/lib/supabase/server': { createClient: async () => db },
+    '@/lib/admin-db': { getSupabaseAdminClient: () => adminMock },
+    '@/lib/pro-email': { sendPaymentAlert: async () => {} },
+    'next/headers': { headers: async () => new Headers() },
+  })
+  const payRes = await paymentsRoute.POST(request({
+    plan: 'monthly',
+    wallet: 'gcash',
+    transactionRef: 'REF123456',
+    idempotencyKey: 'idem-key-12345',
+    receipt: `data:image/jpeg;base64,${jpegWithExif.toString('base64')}`,
+  }))
+  assert.equal(payRes.status, 200)
+  assert.ok(uploadedReceipt && !Buffer.from(uploadedReceipt).includes(Buffer.from('TestPhoneGPSLeak')), 'Receipt EXIF metadata must be stripped')
+
+  const avatarRoute = load('app/api/profile/avatar/route.ts', {
+    '@/lib/supabase/server': { createClient: async () => db },
+    '@/lib/admin-db': { getSupabaseAdminClient: () => adminMock },
+    'next/headers': { headers: async () => new Headers() },
+  })
+  const avRes = await avatarRoute.POST(request({ image: `data:image/jpeg;base64,${jpegWithExif.toString('base64')}` }))
+  assert.equal(avRes.status, 200)
+  assert.ok(uploadedAvatar && !Buffer.from(uploadedAvatar).includes(Buffer.from('TestPhoneGPSLeak')), 'Avatar EXIF metadata must be stripped')
+
+  const delRes = await avatarRoute.DELETE()
+  assert.equal(delRes.status, 503)
+})
+
+test('cron skips /schedule claims for Expo-only devices and sw.js/subscribe drop retired /dashboard URL', async () => {
+  const claims = []
+  let sentCount = 0
+  const db = {
+    auth: { admin: { getUserById: async () => ({ data: { user: { user_metadata: {} } }, error: null }) } },
+    from(table) {
+      const q = {
+        select() { return q }, limit() { return q }, order() { return q }, range() { return q },
+        in() { return q }, eq() { return q }, is() { return q }, gte() { return q }, lt() { return q }, or() { return q },
+        insert(value) { claims.push(value.event_key); return Promise.resolve({ error: null }) },
+        update() { return q },
+        then(resolve) {
+          if (table === 'push_subscriptions') {
+            return Promise.resolve({ data: [{ user_id: 'student-a', endpoint: 'ExponentPushToken[abc123]' }], error: null }).then(resolve)
+          }
+          if (table === 'profiles') return Promise.resolve({ data: [{ id: 'student-a', timezone: 'Asia/Manila' }], error: null }).then(resolve)
+          return Promise.resolve({ data: [], error: null }).then(resolve)
+        },
+      }
+      return q
+    },
+  }
+  class FixedDate extends Date { constructor(...args) { super(...(args.length ? args : ['2026-10-05T01:30:00Z'])) } static now() { return Date.parse('2026-10-05T01:30:00Z') } }
+  const route = load('app/api/notifications/cron/route.ts', {
+    '@/lib/admin-db': { getSupabaseAdminClient: () => db },
+    '@/lib/db': { getClasses: async () => [classA], getAlarms: async () => [{ id: 'alarm-a', classId: classA.id, time: '10:00', lead: 30, enabled: true }], getDeadlines: async () => [] },
+    '@/lib/notification-service': { sendClassReminder: async () => { sentCount++; return { successCount: 0, failureCount: 0 } } },
+  }, { CRON_SECRET: 'fixture-secret' }, { Date: FixedDate })
+  const res = await route.GET(new Request('http://localhost/api/notifications/cron', { headers: { Authorization: 'Bearer fixture-secret' } }))
+  assert.equal(res.status, 200)
+  assert.equal(claims.length, 0, 'Expo-only device must not claim /schedule reminders as failed')
+  assert.equal(sentCount, 0)
+
+  const sw = readFileSync('public/sw.js', 'utf8')
+  const manifest = readFileSync('public/site.webmanifest', 'utf8')
+  assert.ok(!sw.includes('/dashboard'), 'sw.js must not reference retired /dashboard')
+  assert.ok(!manifest.includes('/dashboard'), 'site.webmanifest must not reference retired /dashboard')
+})
+
+test('sendExpoPush routes Android channelId by notification type', async () => {
+  const realFetch = globalThis.fetch
+  const bodies = []
+  try {
+    const mockDb = {
+      from() {
+        const q = {
+          select() { return q }, eq() { return q }, order() { return q }, delete() { return q },
+          then(resolve) {
+            return Promise.resolve({ data: [{ id: 'sub1', user_id: 'u1', endpoint: 'ExponentPushToken[abc123]', p256dh: 'expo', auth: 'expo' }], error: null }).then(resolve)
+          },
+        }
+        return q
+      },
+    }
+    const svc = load('lib/notification-service.ts', {
+      '@/lib/supabase/server': { createClient: async () => mockDb },
+    }, {}, {
+      fetch: async (_url, init) => {
+        bodies.push(JSON.parse(init.body))
+        return new Response(JSON.stringify({ data: { status: 'ok' } }), { status: 200 })
+      },
+    })
+    await svc.sendClassReminder({ userId: 'u1', title: 'Due', body: '1h', url: '/deadlines' }, mockDb)
+    await svc.sendClassReminder({ userId: 'u1', title: 'Pro', body: 'Active', url: '/pro' }, mockDb)
+    assert.equal(bodies[0].channelId, 'deadlines')
+    assert.equal(bodies[1].channelId, 'pro')
+  } finally {
+    globalThis.fetch = realFetch
+  }
+})
+
+test('push devices support Bearer auth, check anon/UUIDs, and reject bad parse inputs before quota', async () => {
+  const { db } = client({ id: '550e8400-e29b-41d4-a716-446655440000' })
+  const devicesRoute = load('app/api/push/devices/route.ts', {
+    '@/lib/supabase/server': { createClient: async () => client(null).db },
+    '@/lib/api-security': { requireAuthenticated: async () => ({ supabase: db, user: { id: '550e8400-e29b-41d4-a716-446655440000' } }), apiError: (e) => Response.json({ error: String(e) }, { status: 500 }) },
+  })
+  const getRes = await devicesRoute.GET(new Request('http://localhost/api/push/devices', { headers: { Authorization: 'Bearer token' } }))
+  assert.equal(getRes.status, 200)
+
+  const deviceIdRoute = load('app/api/push/devices/[id]/route.ts', {
+    '@/lib/supabase/server': { createClient: async () => db },
+    'next/headers': { headers: async () => new Headers() },
+  })
+  const badDel = await deviceIdRoute.DELETE(new Request('http://localhost/api/push/devices/not-a-uuid', { method: 'DELETE' }), { params: Promise.resolve({ id: 'not-a-uuid' }) })
+  assert.equal(badDel.status, 400)
+
+  let refunded = false
+  const chatRoute = load('app/api/chat/route.ts', {
+    '@/lib/supabase/server': { createClient: async () => db },
+    '@/lib/pro': { consumeFeature: async () => async () => { refunded = true }, ProLimitError: proStub.ProLimitError },
+    '@/lib/copilot/service': { answerConversation: async () => { throw new Error('boom') } },
+    'next/headers': { headers: async () => new Headers() },
+  })
+  const chatRes = await chatRoute.POST(request({ messages: [{ role: 'user', content: 'hi' }] }))
+  assert.equal(chatRes.status, 500)
+  assert.equal(refunded, true, 'Unexpected Copilot throw must refund quota')
+
+  let consumed = false
+  const scanQuotaStub = { consumeFeature: async () => { consumed = true; return async () => {} }, ProLimitError: proStub.ProLimitError }
+  const scheduleParse = load('app/api/schedule/parse/route.ts', {
+    '@/lib/supabase/server': { createClient: async () => db },
+    '@/lib/pro': scanQuotaStub,
+    'next/headers': { headers: async () => new Headers() },
+  })
+  const badScan = await scheduleParse.POST(request({ image: 'not-a-data-url' }))
+  assert.equal(badScan.status, 400)
+  assert.equal(consumed, false, 'Invalid schedule image must fail before consuming quota')
+
+  const deadlineParse = load('app/api/deadlines/parse/route.ts', {
+    '@/lib/supabase/server': { createClient: async () => db },
+    '@/lib/pro': scanQuotaStub,
+    'next/headers': { headers: async () => new Headers() },
+  })
+  const badDead = await deadlineParse.POST(request({ mode: 'photo', content: 'not-a-data-url' }))
+  assert.equal(badDead.status, 400)
+  assert.equal(consumed, false, 'Invalid deadline upload must fail before consuming quota')
+})
+
+test('email templates HTML-escape inputs and digest validates upcoming_deadlines and nested classes', async () => {
+  const tpl = load('lib/email-templates.ts', {}, { NEXT_PUBLIC_APP_URL: 'https://dormosaur.vercel.app' })
+  const html = tpl.getDormosaurConfirmationEmailHtml({
+    name: '<img src=x onerror=alert(1)>',
+    confirmationUrl: 'https://dormosaur.vercel.app/api/auth/callback?a=1&b="x"',
+  })
+  assert.ok(!html.includes('<img src=x onerror=alert(1)>'))
+  assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;'))
+  assert.ok(!html.includes('dormosaur-app.vercel.app'))
+  assert.ok(html.includes('https://dormosaur.vercel.app/api/auth/callback?a=1&amp;b=&quot;x&quot;'))
+
+  const digestRoute = load('app/api/digest/weekly/route.ts', authOverride(client().db))
+  const badDigest = await digestRoute.POST(request({
+    days: [{ day_name: 'Mon', total_class_hours: 2, classes: 'invalid' }],
+    upcoming_deadlines: [{ subject: { evil: true } }],
+  }))
+  assert.equal(badDigest.status, 400)
+})
+
+test('admin DB reads real class/alarm columns, notification_deliveries stats, paginated auth users, and empty filtered logs', async () => {
+  let listedPages = []
+  let queriedTables = []
+  const fakeAdmin = {
+    auth: {
+      admin: {
+        listUsers: async ({ page = 1 } = {}) => {
+          listedPages.push(page)
+          if (page === 1) {
+            return {
+              data: {
+                users: [{ id: '11111111-1111-4111-8111-111111111111', email: 'one@up.edu.ph', last_sign_in_at: '2026-10-01T00:00:00Z' }],
+                nextPage: 2,
+              },
+              error: null,
+            }
+          }
+          return {
+            data: {
+              users: [{ id: '22222222-2222-4222-8222-222222222222', email: 'page2@up.edu.ph', last_sign_in_at: '2026-10-02T00:00:00Z' }],
+              nextPage: null,
+            },
+            error: null,
+          }
+        },
+      },
+    },
+    from(table) {
+      queriedTables.push(table)
+      return {
+        select() { return this },
+        eq() { return this },
+        gte() { return this },
+        order() { return this },
+        limit() { return this },
+        maybeSingle() { return Promise.resolve({ data: null, error: null }) },
+        then(resolve) {
+          if (table === 'profiles') {
+            return Promise.resolve({
+              data: [
+                { id: '11111111-1111-4111-8111-111111111111', name: 'One', school: 'UP', country: 'PH', created_at: '2026-10-01T00:00:00Z', is_dorm_student: true, onboarding_completed: true },
+                { id: '22222222-2222-4222-8222-222222222222', name: 'Page Two', school: 'UP', country: 'PH', created_at: '2026-10-02T00:00:00Z', is_dorm_student: true, onboarding_completed: true },
+              ],
+              count: 2,
+              error: null,
+            }).then(resolve)
+          }
+          if (table === 'classes') {
+            return Promise.resolve({
+              data: [{ id: 'c1', user_id: '11111111-1111-4111-8111-111111111111', subject: 'Math 21', code: 'MATH 21', days: ['Mon'], start_time: '09:00', end_time: '10:30', room: 'MB 101' }],
+              error: null,
+            }).then(resolve)
+          }
+          if (table === 'alarms') {
+            return Promise.resolve({
+              data: [{ id: 'a1', user_id: '11111111-1111-4111-8111-111111111111', subject: 'Math 21', time: '08:30', day: 'Mon', lead: 15, enabled: true }],
+              error: null,
+            }).then(resolve)
+          }
+          if (table === 'notification_deliveries') {
+            return Promise.resolve({ data: [], error: null }).then(resolve)
+          }
+          if (table === 'activity_log') {
+            return Promise.resolve({ data: [], error: null }).then(resolve)
+          }
+          return Promise.resolve({ data: [], error: null }).then(resolve)
+        },
+      }
+    },
+  }
+  const adminDb = load('lib/admin-db.ts', {
+    '@supabase/supabase-js': { createClient: () => fakeAdmin },
+  }, {
+    NEXT_PUBLIC_SUPABASE_URL: 'https://example.supabase.co',
+    SUPABASE_SERVICE_ROLE_KEY: 'service-role-test',
+  })
+
+  const usersRes = await adminDb.getUsersList({ page: 1, pageSize: 10 })
+  assert.deepEqual(listedPages, [1, 2], 'getUsersList should paginate past page 1 of auth users')
+  const pageTwoRow = usersRes.users.find(u => u.id === '22222222-2222-4222-8222-222222222222')
+  assert.equal(pageTwoRow?.email, 'page2@up.edu.ph')
+
+  const schedRes = await adminDb.getSchedulesAndAlarmsData()
+  assert.equal(schedRes.parsedSchedules[0].time, '09:00 - 10:30')
+  assert.equal(schedRes.activeAlarms[0].days, 'Mon')
+  assert.equal(schedRes.stats.sent24h, 0, 'Empty notification_deliveries must report 0 rather than fake 24')
+  assert.ok(!queriedTables.includes('alarm_delivery_logs'), 'Should query notification_deliveries instead of nonexistent alarm_delivery_logs')
+
+  const filteredLogs = await adminDb.getActivityLogs('alarm_failed')
+  assert.deepEqual(filteredLogs, [], 'Empty filtered activity_log must not synthesize signup rows')
+
+  let bannedArgs = null
+  let loggedActivity = null
+  const suspendRoute = load('app/api/admin/users/[id]/suspend/route.ts', {
+    '@/lib/admin-auth': {
+      requireAdminApi: async () => ({ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', email: 'admin@dormosaur.app', name: 'Admin' }),
+    },
+    '@/lib/admin-db': {
+      getSupabaseAdminClient: () => ({
+        auth: {
+          admin: {
+            updateUserById: async (uid, attrs) => {
+              bannedArgs = { uid, attrs }
+              return { data: { user: { id: uid, banned_until: '2126-01-01T00:00:00Z' } }, error: null }
+            },
+          },
+        },
+      }),
+    },
+    '@/lib/activity-logger': {
+      logActivity: async (entry) => { loggedActivity = entry },
+    },
+  })
+  const badSuspend = await suspendRoute.POST(request({ suspend: true }), { params: Promise.resolve({ id: 'not-a-uuid' }) })
+  assert.equal(badSuspend.status, 400)
+  const selfSuspend = await suspendRoute.POST(request({ suspend: true }), { params: Promise.resolve({ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' }) })
+  assert.equal(selfSuspend.status, 400)
+  const okSuspend = await suspendRoute.POST(request({ suspend: true }), { params: Promise.resolve({ id: '11111111-1111-4111-8111-111111111111' }) })
+  assert.equal(okSuspend.status, 200)
+  assert.equal(bannedArgs.uid, '11111111-1111-4111-8111-111111111111')
+  assert.equal(bannedArgs.attrs.ban_duration, '876000h')
+  assert.equal(loggedActivity.eventType, 'user_suspended')
 })

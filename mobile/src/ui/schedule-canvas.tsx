@@ -131,8 +131,8 @@ function Timetable({ classes, theme, u, bandH, showRooms }: { classes: ClassEntr
   const dark = isDarkHex(theme.panel.startsWith('rgba') ? theme.bg : theme.panel)
   const cols = DAYS.filter((d, i) => i < 5 || classesOn(classes, d).length)
   const all = classes.filter(c => c.days.length && c.start && c.end)
-  const h0 = Math.floor(Math.min(...all.map(c => minutesOf(c.start))) / 60)
-  const h1 = Math.ceil(Math.max(...all.map(c => minutesOf(c.end))) / 60)
+  const h0 = all.length ? Math.floor(Math.min(...all.map(c => minutesOf(c.start))) / 60) : 8
+  const h1 = all.length ? Math.ceil(Math.max(...all.map(c => minutesOf(c.end))) / 60) : 17
   const hours = Math.max(1, h1 - h0)
   const PAD = 10, HEAD = 22, RULER = 30
   const hourH = Math.min(46, (bandH - 2 * PAD - HEAD) / hours)

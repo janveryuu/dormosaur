@@ -7,7 +7,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { deadlineFields, localDateTimeToIso, validTime } from '@/lib/date-time'
 import { DAYS } from '@/lib/copilot/time'
 import type { ClassEntry, Alarm, SubjectColor } from '@/lib/data'
-import type { DeadlineItem, GroceryItem, MealPlanEntry } from '@/components/schedule-provider'
+import type { DeadlineItem, GroceryItem, MealPlanEntry } from '@/lib/types'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import DateTimePicker, { DateTimePickerAndroid, type DateTimePickerEvent } from '@react-native-community/datetimepicker'
-import { Platform, View } from 'react-native'
-import { radius, useTheme } from '@/design/theme'
+import { Platform, TextInput, View } from 'react-native'
+import { radius, type, useTheme } from '@/design/theme'
 import { formatTime } from '@/lib/time'
 import { Press, T } from './index'
 
@@ -28,9 +28,18 @@ export function PickerField({ label, mode, value, onChange }: { label: string; m
         <View style={{ height: 52, backgroundColor: c.fill, borderRadius: radius.md, justifyContent: 'center', alignItems: 'flex-start', paddingHorizontal: 8 }}>
           <DateTimePicker value={asDate} mode={mode} display="compact" onChange={commit} accentColor={c.green} themeVariant={dark ? 'dark' : 'light'} />
         </View>
+      ) : Platform.OS === 'web' ? (
+        <TextInput
+          value={value}
+          onChangeText={onChange}
+          placeholder={mode === 'time' ? '08:00' : 'YYYY-MM-DD'}
+          placeholderTextColor={c.ink3}
+          accessibilityLabel={label}
+          style={[type.body, { height: 52, backgroundColor: c.fill, color: c.ink, borderRadius: radius.md, paddingHorizontal: 16, fontWeight: '600' }]}
+        />
       ) : (
         <Press accessibilityLabel={`${label}, ${display}`} scale={0.97}
-          onPress={() => Platform.OS === 'android' && DateTimePickerAndroid.open({ value: asDate, mode, onChange: commit, is24Hour: false })}
+          onPress={() => DateTimePickerAndroid.open({ value: asDate, mode, onChange: commit, is24Hour: false })}
           style={{ height: 52, backgroundColor: c.fill, borderRadius: radius.md, justifyContent: 'center', paddingHorizontal: 16 }}>
           <T v="body" style={{ fontWeight: '600' }}>{display}</T>
         </Press>

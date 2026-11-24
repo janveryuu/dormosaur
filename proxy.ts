@@ -13,6 +13,16 @@ const RETIRED_ROUTES = ['/dashboard', '/schedule', '/alarms', '/deadlines', '/ki
 const matches = (pathname: string, routes: string[]) =>
   routes.some(route => pathname === route || pathname.startsWith(`${route}/`))
 
+function isAllowedAdminEmail(email: string | undefined | null): boolean {
+  const normalized = (email || '').trim().toLowerCase()
+  if (!normalized) return false
+  return (process.env.ADMIN_ALLOWED_EMAILS || '')
+    .split(',')
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean)
+    .includes(normalized)
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -37,7 +47,7 @@ export async function proxy(request: NextRequest) {
     return redirectWithCookies(url)
   }
 
-  if (matches(pathname, AUTH_ROUTES) && user) {
+  if (matches(pathname, AUTH_ROUTES) && user && isAllowedAdminEmail(user.email)) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin'
     url.search = ''

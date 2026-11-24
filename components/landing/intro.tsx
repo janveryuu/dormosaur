@@ -3,6 +3,7 @@
 import { animate, motion, useMotionValue, useReducedMotion } from 'framer-motion'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import styles from './intro.module.css'
 
 const SEEN_KEY = 'dormo-intro-seen'
 const MIN_MS = 1300
@@ -11,9 +12,6 @@ const MAX_MS = 2600
 /**
  * Brand intro, once per browser session: the logo is framed in a camera viewfinder, a shutter
  * flash "snaps" it, and the frame shrinks into the hero phone screen to hand off to the page.
- *
- * The overlay is server-rendered with CSS keyframes so it covers the page before hydration.
- * An inline script hides it before first paint when this session has already seen it.
  */
 export function Intro({ onDone }: { onDone: () => void }) {
   const reduce = useReducedMotion()
@@ -106,67 +104,39 @@ export function Intro({ onDone }: { onDone: () => void }) {
   if (phase === 'gone') return null
 
   return (
-    <>
+    <motion.div
+      id="dormo-intro"
+      ref={ref}
+      role="status"
+      aria-label="Loading Dormosaur"
+      suppressHydrationWarning
+      onClick={() => exitRef.current()}
+      style={{ clipPath: clip, opacity }}
+      className="fixed inset-0 z-[100] grid cursor-pointer place-items-center bg-[radial-gradient(ellipse_at_50%_45%,#EAF6EC_0%,#F7FBF4_55%,#F3F7EF_100%)]"
+    >
       <motion.div
-        id="dormo-intro"
-        ref={ref}
-        role="status"
-        aria-label="Loading Dormosaur"
-        suppressHydrationWarning
-        onClick={() => exitRef.current()}
-        style={{ clipPath: clip, opacity }}
-        className="fixed inset-0 z-[100] grid cursor-pointer place-items-center bg-[radial-gradient(ellipse_at_50%_45%,#EAF6EC_0%,#F7FBF4_55%,#F3F7EF_100%)]"
+        animate={phase === 'exit' ? { scale: 0.6, opacity: 0 } : { scale: 1, opacity: 1 }}
+        transition={{ duration: 0.45, ease: [0.4, 0, 1, 1] }}
+        className="flex flex-col items-center"
       >
-        <motion.div
-          animate={phase === 'exit' ? { scale: 0.6, opacity: 0 } : { scale: 1, opacity: 1 }}
-          transition={{ duration: 0.45, ease: [0.4, 0, 1, 1] }}
-          className="flex flex-col items-center"
-        >
-          <div className="relative grid size-[168px] place-items-center">
-            {(['tl', 'tr', 'bl', 'br'] as const).map(c => (
-              <span key={c} aria-hidden className={`dormo-intro-corner dormo-intro-${c}`} />
-            ))}
-            <div className="dormo-intro-logo">
-              <Image src="/dormosaur-logo.png" alt="" width={88} height={88} priority className="rounded-[24px] shadow-[0_18px_40px_-14px_rgba(14,122,74,0.55)]" />
-            </div>
+        <div className="relative grid size-[168px] place-items-center">
+          {(['tl', 'tr', 'bl', 'br'] as const).map(c => (
+            <span key={c} aria-hidden className={`${styles.corner} ${styles[c]}`} />
+          ))}
+          <div className={styles.logo}>
+            <Image src="/dormosaur-logo.png" alt="" width={88} height={88} priority className="rounded-[24px] shadow-[0_18px_40px_-14px_rgba(14,122,74,0.55)]" />
           </div>
-          <p className="mt-6 flex overflow-hidden text-[28px] font-semibold tracking-[-0.03em] text-[#0A1710]" aria-hidden>
-            {'Dormosaur'.split('').map((ch, i) => (
-              <span key={i} className="dormo-intro-letter" style={{ animationDelay: `${320 + i * 38}ms` }}>{ch}</span>
-            ))}
-          </p>
-          <p className="dormo-intro-caption mt-2 text-[13px] text-[#48564D]">Snapping your week…</p>
-        </motion.div>
-
-        {phase === 'flash' && <span aria-hidden className="dormo-intro-flash pointer-events-none absolute inset-0 bg-white" />}
-        <p className="dormo-intro-caption absolute bottom-8 text-[12px] text-[#48564D]/70">Tap to skip</p>
+        </div>
+        <p className="mt-6 flex overflow-hidden text-[28px] font-semibold tracking-[-0.03em] text-[#0A1710]" aria-hidden>
+          {'Dormosaur'.split('').map((ch, i) => (
+            <span key={i} className={styles.letter} style={{ animationDelay: `${320 + i * 38}ms` }}>{ch}</span>
+          ))}
+        </p>
+        <p className={`${styles.caption} mt-2 text-[13px] text-[#48564D]`}>Snapping your week…</p>
       </motion.div>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `try{if(sessionStorage.getItem('${SEEN_KEY}')==='1'){var d=document.getElementById('dormo-intro');if(d)d.style.display='none'}}catch(e){}`,
-        }}
-      />
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-.dormo-intro-logo{animation:dormo-pop .7s cubic-bezier(.34,1.56,.64,1) both}
-.dormo-intro-letter{display:inline-block;animation:dormo-rise .6s cubic-bezier(.22,1,.36,1) both}
-.dormo-intro-caption{animation:dormo-fade .6s ease .9s both}
-.dormo-intro-corner{position:absolute;width:34px;height:34px;border-color:#0E7A4A;border-style:solid;border-width:0;border-radius:10px;animation:dormo-frame .8s cubic-bezier(.22,1,.36,1) .35s both}
-.dormo-intro-tl{top:0;left:0;border-top-width:3px;border-left-width:3px;--fx:-26px;--fy:-26px}
-.dormo-intro-tr{top:0;right:0;border-top-width:3px;border-right-width:3px;--fx:26px;--fy:-26px}
-.dormo-intro-bl{bottom:0;left:0;border-bottom-width:3px;border-left-width:3px;--fx:-26px;--fy:26px}
-.dormo-intro-br{bottom:0;right:0;border-bottom-width:3px;border-right-width:3px;--fx:26px;--fy:26px}
-.dormo-intro-flash{animation:dormo-flash .32s ease-out both}
-@keyframes dormo-pop{from{opacity:0;transform:scale(.4) rotate(-8deg)}to{opacity:1;transform:none}}
-@keyframes dormo-rise{from{opacity:0;transform:translateY(110%)}to{opacity:1;transform:none}}
-@keyframes dormo-fade{from{opacity:0}to{opacity:1}}
-@keyframes dormo-frame{from{opacity:0;transform:translate(var(--fx),var(--fy))}to{opacity:1;transform:none}}
-@keyframes dormo-flash{0%{opacity:0}25%{opacity:.95}100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.dormo-intro-logo,.dormo-intro-letter,.dormo-intro-caption,.dormo-intro-corner{animation:dormo-fade .2s ease both}}
-`,
-        }}
-      />
-    </>
+
+      {phase === 'flash' && <span aria-hidden className={`${styles.flash} pointer-events-none absolute inset-0 bg-white`} />}
+      <p className={`${styles.caption} absolute bottom-8 text-[12px] text-[#48564D]/70`}>Tap to skip</p>
+    </motion.div>
   )
 }

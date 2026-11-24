@@ -2,7 +2,7 @@ import Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
 import { Platform } from 'react-native'
-import { registerExpoPushToken } from './api'
+import { registerExpoPushToken, unregisterExpoPushToken } from './api'
 import type { Alarm, ClassEntry } from './repo'
 import { DAYS } from './repo'
 import { formatTime, minutesOf } from './time'
@@ -22,6 +22,15 @@ export async function ensurePermission() {
       name: 'Class alarms',
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 150, 250],
+    })
+    await Notifications.setNotificationChannelAsync('deadlines', {
+      name: 'Deadline reminders',
+      importance: Notifications.AndroidImportance.HIGH,
+      vibrationPattern: [0, 250, 150, 250],
+    })
+    await Notifications.setNotificationChannelAsync('pro', {
+      name: 'Account & Pro updates',
+      importance: Notifications.AndroidImportance.DEFAULT,
     })
   }
   const current = await Notifications.getPermissionsAsync()
@@ -102,6 +111,30 @@ export function updateKitchenNotification(identifier: string, title: string, ste
  * Class alarms stay local; the server skips class reminders for Expo devices.
  * Needs FCM credentials uploaded to EAS for Android; failures are silent.
  */
+export async function clearScheduledAlarms() {
+  if (Platform.OS === 'web') return
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync().catch(() => [])
+  await Promise.all(
+    scheduled
+      .filter(notification => notification.content.data?.alarmId)
+      .map(notification => Notifications.cancelScheduledNotificationAsync(notification.identifier).catch(() => {})),
+  )
+}
+
+export async function unregisterServerPush() {
+  try {
+    if (!Device.isDevice) return
+    const current = await Notifications.getPermissionsAsync()
+    if (!current.granted) return
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined
+    if (!projectId) return
+    const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId })
+    if (token) await unregisterExpoPushToken(token)
+  } catch (e) {
+    console.warn('[push] unregistration skipped', (e as Error)?.message)
+  }
+}
+
 export async function registerForServerPush() {
   try {
     if (!Device.isDevice || !(await ensurePermission())) return

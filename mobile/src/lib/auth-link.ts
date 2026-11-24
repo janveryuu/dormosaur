@@ -17,9 +17,14 @@ export const oauthRedirect = () =>
 /** Where Supabase sends users back after Google or an email confirmation link. */
 export const authRedirect = () => Linking.createURL('auth/callback')
 
-/** Reads tokens or a PKCE code from an auth redirect URL and starts the session. */
-export async function completeAuthFromUrl(raw: string): Promise<{ error?: string }> {
-  const url = new URL(raw)
+/** Reads a PKCE code (or OAuth implicit tokens inside a verified browser session) and starts the session. */
+export async function completeAuthFromUrl(raw: string, opts?: { allowImplicitSession?: boolean }): Promise<{ error?: string }> {
+  let url: URL
+  try {
+    url = new URL(raw)
+  } catch {
+    return { error: 'Invalid sign-in link.' }
+  }
   const params = new URLSearchParams(url.hash.replace(/^#/, ''))
   url.searchParams.forEach((v, k) => params.set(k, v))
 
@@ -31,6 +36,7 @@ export async function completeAuthFromUrl(raw: string): Promise<{ error?: string
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     return error ? { error: error.message } : {}
   }
+  if (!opts?.allowImplicitSession) return {}
   const access_token = params.get('access_token')
   const refresh_token = params.get('refresh_token')
   if (!access_token || !refresh_token) return {}

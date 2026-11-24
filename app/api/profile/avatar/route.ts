@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
-import { apiError, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
+import { apiError, readJson, requireAuthenticated } from '@/lib/api-security'
 import { getSupabaseAdminClient } from '@/lib/admin-db'
+import { sanitizeJpegUpload } from '@/lib/image-upload'
 
 export const runtime = 'nodejs'
 
@@ -34,12 +35,14 @@ export async function POST(req: Request) {
   try {
     const { user } = await requireAuthenticated('avatar-write', 10)
     const body = await readJson(req, 600 * 1024)
-    const match = typeof body.image === 'string' ? /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(body.image) : null
-    if (!match) throw new InputError('Please choose a JPEG photo.')
-    const bytes = Buffer.from(match[1], 'base64')
-    // JPEG magic number check: never trust the declared type alone.
-    if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8 || bytes[2] !== 0xff) throw new InputError('That file is not a valid photo.')
-    if (bytes.length > MAX_BYTES) throw new InputError('That photo is too large. Please pick another one.', 413)
+    const bytes = await sanitizeJpegUpload(body.image, {
+      maxBytes: MAX_BYTES,
+      missingMessage: 'Please choose a JPEG photo.',
+      invalidMessage: 'That file is not a valid photo.',
+      tooLargeMessage: 'That photo is too large. Please pick another one.',
+      maxEdge: 512,
+      quality: 82,
+    })
     const { error } = await getSupabaseAdminClient().storage.from(BUCKET)
       .upload(pathOf(user.id), bytes, { contentType: 'image/jpeg', upsert: true, cacheControl: '3600' })
     if (error) throw new Error('upload_failed')
@@ -52,7 +55,8 @@ export async function POST(req: Request) {
 export async function DELETE() {
   try {
     const { user } = await requireAuthenticated('avatar-write', 10)
-    await getSupabaseAdminClient().storage.from(BUCKET).remove([pathOf(user.id)])
+    const { error } = await getSupabaseAdminClient().storage.from(BUCKET).remove([pathOf(user.id)])
+    if (error) throw new Error('avatar_delete_failed')
     return NextResponse.json({ success: true, avatar: null }, { headers: noStore })
   } catch (error) {
     return apiError(error, 'We could not remove your profile picture. Please try again.')

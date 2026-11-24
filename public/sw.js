@@ -1,6 +1,6 @@
 // Dormosaur Service Worker — Web Push Notifications Handler
 
-self.addEventListener('install', function (event) {
+self.addEventListener('install', function () {
   self.skipWaiting()
 })
 
@@ -15,14 +15,14 @@ self.addEventListener('push', function (event) {
     icon: '/apple-icon.png',
     badge: '/apple-icon.png',
     tag: 'dormosaur-notification',
-    data: { url: '/dashboard' },
+    data: { url: '/' },
   }
 
   if (event.data) {
     try {
       const parsed = event.data.json()
       data = { ...data, ...parsed }
-    } catch (e) {
+    } catch {
       data.body = event.data.text() || data.body
     }
   }
@@ -35,9 +35,9 @@ self.addEventListener('push', function (event) {
     renotify: false,
     requireInteraction: true,
     vibrate: [200, 100, 200],
-    data: data.data || { url: '/dashboard' },
+    data: data.data || { url: '/' },
     actions: [
-      { action: 'open', title: 'Open Dashboard' },
+      { action: 'open', title: 'Open Dormosaur' },
       { action: 'dismiss', title: 'Dismiss' },
     ],
   }
@@ -50,11 +50,11 @@ self.addEventListener('notificationclick', function (event) {
 
   if (event.action === 'dismiss') return
 
-  let targetUrl = new URL('/dashboard', self.location.origin).href
+  let targetUrl = new URL('/', self.location.origin).href
   try {
-    const requested = new URL((event.notification.data && event.notification.data.url) || '/dashboard', self.location.origin)
+    const requested = new URL((event.notification.data && event.notification.data.url) || '/', self.location.origin)
     if (requested.origin === self.location.origin) targetUrl = requested.href
-  } catch { /* Use the dashboard for invalid/external links. */ }
+  } catch { /* Fall back to home for invalid/external links. */ }
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {

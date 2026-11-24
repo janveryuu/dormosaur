@@ -1,6 +1,6 @@
 import React, { type CSSProperties } from 'react';
 import { Img, staticFile } from 'remotion';
-import { AlarmClock, ArrowRight, Bell, CalendarDays, Check, ChefHat, ChevronRight, Clock3, Home, MapPin, MessageCircle, Plus, Sparkles } from 'lucide-react';
+import { AlarmClock, ArrowRight, Bell, CalendarDays, ChefHat, ChevronRight, Clock3, Home, MapPin, MessageCircle, Sparkles } from 'lucide-react';
 import { color, enter, font, type ChapterId } from './design';
 
 const card: CSSProperties = { background: color.white, border: `1px solid ${color.line}`, borderRadius: 20, boxShadow: '0 7px 20px rgba(18,54,39,.065)' };

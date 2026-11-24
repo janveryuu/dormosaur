@@ -2,7 +2,7 @@ import 'server-only'
 import { Resend } from 'resend'
 import { DEFAULT_SENDER_EMAIL } from '@/lib/resend'
 
-const ADMIN_EMAIL = 'janvermanlapaz@gmail.com'
+const ADMIN_EMAIL = (process.env.ADMIN_ALERT_EMAIL || '').trim()
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'https://dormosaur.vercel.app').replace(/\/$/, '')
 const ESC: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
 const esc = (s: string) => s.replace(/[&<>"']/g, c => ESC[c])
@@ -10,8 +10,8 @@ const esc = (s: string) => s.replace(/[&<>"']/g, c => ESC[c])
 /** Emails the admin whenever a student submits a Pro payment receipt. */
 export async function sendPaymentAlert(p: { paymentId: string; email: string; plan: string; amount: number; wallet: string; transactionRef: string; referenceCode: string }) {
   const key = process.env.RESEND_API_KEY
-  if (!key) return
-  const link = `${APP_URL}/admin/payments?id=${p.paymentId}`
+  if (!key || !ADMIN_EMAIL) return
+  const link = `${APP_URL}/admin/payments?id=${encodeURIComponent(p.paymentId)}`
   const row = (k: string, v: string) => `<tr><td style="padding:6px 12px 6px 0;color:#667">${k}</td><td style="padding:6px 0;font-weight:600">${esc(v)}</td></tr>`
   await new Resend(key).emails.send({
     from: DEFAULT_SENDER_EMAIL,

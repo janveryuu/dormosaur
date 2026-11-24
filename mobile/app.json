@@ -13,14 +13,12 @@
     },
     "android": {
       "package": "app.dormosaur.mobile",
+      "allowBackup": false,
       "adaptiveIcon": {
         "backgroundColor": "#1E5C40",
         "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
-      "predictiveBackGestureEnabled": false,
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+      "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "single",
@@ -56,7 +54,14 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-media-library",
+        {
+          "savePhotosPermission": "Dormosaur saves QR codes and schedule wallpapers to your gallery.",
+          "isAccessMediaLocationEnabled": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

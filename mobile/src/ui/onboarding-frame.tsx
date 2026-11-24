@@ -30,7 +30,7 @@ export function OnboardingFrame({ step, total, onBack, action, hero, title, sub,
   const progress = useAnimatedStyle(() => ({ width: withSpring(`${(step / total) * 100}%`, springSoft) }))
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.bg }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.bg }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View style={{ paddingTop: insets.top + 8, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <View style={{ width: 40, opacity: onBack ? 1 : 0 }} pointerEvents={onBack ? 'auto' : 'none'}>
           <IconButton icon={ChevronLeft} label="Back" tone="clear" onPress={onBack} />

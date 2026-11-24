@@ -52,7 +52,7 @@ export async function getCurrentEndpoint(): Promise<string | null> {
     if (!reg) return null
     const sub = await reg.pushManager.getSubscription()
     return sub ? sub.endpoint : null
-  } catch (e) {
+  } catch {
     return null
   }
 }
@@ -125,7 +125,7 @@ export async function requestAndSubscribePush(): Promise<{
       deviceLabel: data.deviceLabel || deviceLabel,
       permission,
     }
-  } catch (err: unknown) {
+  } catch {
     console.warn('[Web Push]', { category: 'subscription_failed' })
     return { success: false, deviceLabel, permission: Notification.permission, error: 'We could not enable notifications. Check your browser permissions and try again.' }
   }
@@ -160,7 +160,7 @@ export async function triggerPushNotification(options: {
   tag?: string
   url?: string
 }): Promise<boolean> {
-  const { title, body, tag, url = '/dashboard' } = options
+  const { title, body, tag, url = '/' } = options
 
   if (typeof window === 'undefined') return false
 

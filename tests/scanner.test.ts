@@ -141,8 +141,22 @@ test('text parser: initials and room words are not weekdays', () => {
 
 test('uploads: magic bytes are checked', () => {
   assert.equal(parseDataUrl('data:image/png;base64,aGVsbG8='), null)
+  assert.equal(parseDataUrl(`data:image/heic;base64,${Buffer.from('\x00\x00\x00\x18ftypisom\x00\x00\x02\x00').toString('base64')}`), null)
+  assert.ok(parseDataUrl(`data:image/heic;base64,${Buffer.from('\x00\x00\x00\x18ftypheic\x00\x00\x00\x00').toString('base64')}`))
+  assert.ok(parseDataUrl(`data:image/heif;base64,${Buffer.from('\x00\x00\x00\x18ftypmif1\x00\x00\x00\x00').toString('base64')}`))
   assert.ok(parseDataUrl(`data:image/png;base64,${readFileSync(FX + 'bsu-grid.png').toString('base64')}`))
   assert.ok(parseDataUrl(`data:application/pdf;base64,${readFileSync(FX + 'bsu-grid.pdf').toString('base64')}`))
+})
+
+test('modelChain rejects unsafe model path characters', () => {
+  const prev = process.env.DORMOSAUR_SCHEDULE_MODELS
+  process.env.DORMOSAUR_SCHEDULE_MODELS = 'gemini-3-flash-preview,../evil-path,bad?query'
+  try {
+    assert.deepEqual(modelChain(), ['gemini-3-flash-preview'])
+  } finally {
+    if (prev === undefined) delete process.env.DORMOSAUR_SCHEDULE_MODELS
+    else process.env.DORMOSAUR_SCHEDULE_MODELS = prev
+  }
 })
 
 test('photos: tilt is measured so rows line up', async () => {

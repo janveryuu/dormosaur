@@ -5,7 +5,7 @@ import {
   ListChecksIcon, MoonStarsIcon, ScanIcon, ShieldCheckIcon, SparkleIcon, TimerIcon, WifiSlashIcon,
   type Icon as PhosphorIcon,
 } from '@phosphor-icons/react'
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { spring } from './shared'
@@ -140,14 +140,16 @@ const tiles: { icon: PhosphorIcon; label: string; from: string; to: string; line
  * Spotlight grid: one icon at a time lifts, glows and explains itself.
  * Auto-advances every 2.4s; hovering or focusing a tile takes over and pauses the cycle.
  */
-export function FeatureTiles() {
+export function FeatureTiles({ animate = true }: { animate?: boolean }) {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
+  const reduceMotion = useReducedMotion()
+  const running = animate && !reduceMotion && !paused
   useEffect(() => {
-    if (paused) return
+    if (!running) return
     const t = setInterval(() => setActive(a => (a + 1) % tiles.length), 2400)
     return () => clearInterval(t)
-  }, [paused])
+  }, [running])
   const current = tiles[active]
 
   return (
@@ -187,7 +189,7 @@ export function FeatureTiles() {
           </motion.p>
         </AnimatePresence>
         <div className="h-[3px] w-24 overflow-hidden rounded-full bg-black/[0.07]">
-          {!paused && <motion.div key={active} style={{ background: current.to }} className="h-full rounded-full" initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ duration: 2.4, ease: 'linear' }} />}
+          {running && <motion.div key={active} style={{ background: current.to }} className="h-full rounded-full" initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ duration: 2.4, ease: 'linear' }} />}
         </div>
       </div>
     </div>

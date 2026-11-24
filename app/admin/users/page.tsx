@@ -19,7 +19,8 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
 
   const search = params.search || ''
   const filter = params.filter || 'all'
-  const page = parseInt(params.page || '1', 10)
+  const parsedPage = Number.parseInt(params.page || '1', 10)
+  const page = Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1
 
   const data = await getUsersList({ search, filter, page, pageSize: 10 })
 

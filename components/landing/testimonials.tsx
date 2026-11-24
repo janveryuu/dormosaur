@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { BellRingingIcon, CheckCircleIcon, QuotesIcon, ScanIcon } from '@phosphor-icons/react'
 import { Reveal, serif } from './shared'
 
@@ -107,7 +107,9 @@ function Column({ cards, dir, duration, className = '' }: { cards: Card[]; dir: 
   )
 }
 
-export function Testimonials() {
+export function Testimonials({ animate = true }: { animate?: boolean }) {
+  const reduceMotion = useReducedMotion()
+  const scrolling = animate && !reduceMotion
   return (
     <section id="reviews" className="scroll-mt-24 px-4 py-16 sm:py-24">
       <div className="mx-auto max-w-[1100px]">
@@ -117,12 +119,24 @@ export function Testimonials() {
           </h2>
           <p className="mx-auto mt-4 max-w-md text-[16px] text-black/55">From first-years to working students: how Dormosaur fits into their week.</p>
         </Reveal>
-        <div className="mt-12 grid gap-4 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] md:grid-cols-3">
-          <Column cards={MOBILE} dir={1} duration={150} className="md:hidden" />
-          <Column cards={COLUMNS[0]} dir={1} duration={62} className="hidden md:block" />
-          <Column cards={COLUMNS[1]} dir={-1} duration={74} className="hidden md:block" />
-          <Column cards={COLUMNS[2]} dir={1} duration={56} className="hidden md:block" />
-        </div>
+        {scrolling ? (
+          <div className="mt-12 grid gap-4 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] md:grid-cols-3">
+            <Column cards={MOBILE} dir={1} duration={150} className="md:hidden" />
+            <Column cards={COLUMNS[0]} dir={1} duration={62} className="hidden md:block" />
+            <Column cards={COLUMNS[1]} dir={-1} duration={74} className="hidden md:block" />
+            <Column cards={COLUMNS[2]} dir={1} duration={56} className="hidden md:block" />
+          </div>
+        ) : (
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
+            {COLUMNS.map((col, idx) => (
+              <div key={idx} className="space-y-4">
+                {col.map((c, i) => (
+                  <div key={i}>{c.kind === 'quote' ? <QuoteCard q={c} /> : <MomentCard m={c} />}</div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

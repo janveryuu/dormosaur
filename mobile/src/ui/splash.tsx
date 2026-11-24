@@ -38,6 +38,13 @@ export function AnimatedSplash({ ready, onDone }: { ready: boolean; onDone: () =
   const [artwork, setArtwork] = useState({ native: false, dormo: false, map: false })
   const [introDone, setIntroDone] = useState(false)
   const leaving = useRef(false)
+  const doneSent = useRef(false)
+  const finishOnce = () => {
+    if (doneSent.current) return
+    doneSent.current = true
+    SplashScreen.hideAsync().catch(() => {})
+    onDone()
+  }
   const artworkReady = artwork.native && artwork.dormo && artwork.map
   const nativeOpacity = useSharedValue(reduceMotion ? 0 : 1)
   const route = useSharedValue(reduceMotion ? 1 : 0)
@@ -79,16 +86,30 @@ export function AnimatedSplash({ ready, onDone }: { ready: boolean; onDone: () =
   }, [layoutReady, artworkReady, reduceMotion, nativeOpacity, route, map, dormo, wordmark, stop, stopScale])
 
   useEffect(() => {
+    const watchdog = setTimeout(() => {
+      SplashScreen.hideAsync().catch(() => {})
+      setLayoutReady(true)
+      setArtwork({ native: true, dormo: true, map: true })
+      setIntroDone(true)
+    }, 2500)
+    return () => clearTimeout(watchdog)
+  }, [])
+
+  useEffect(() => {
     if (!ready || !introDone || leaving.current) return
     leaving.current = true
+    const exitDuration = reduceMotion ? REDUCED_FADE : TIMING.complete - TIMING.handoff
+    const fallback = setTimeout(() => finishOnce(), exitDuration + 200)
     exit.set(withTiming(0, {
-      duration: reduceMotion ? REDUCED_FADE : TIMING.complete - TIMING.handoff,
+      duration: exitDuration,
       easing: Easing.linear,
       reduceMotion: ReduceMotion.Never,
     }, finished => {
-      if (finished) runOnJS(onDone)()
+      if (finished) runOnJS(finishOnce)()
     }))
-  }, [ready, introDone, reduceMotion, exit, onDone])
+    return () => clearTimeout(fallback)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, introDone, reduceMotion, exit])
 
   const overlayStyle = useAnimatedStyle(() => ({ opacity: exit.get() }))
   const nativeStyle = useAnimatedStyle(() => ({ opacity: nativeOpacity.get() }))

@@ -17,6 +17,7 @@ export default function ClassEditor() {
   const { id } = useLocalSearchParams<{ id?: string }>()
   const { classes, saveClasses, removeClass } = useApp()
   const existing = classes.find(x => x.id === id)
+  const [saving, setSaving] = useState(false)
   const [d, setD] = useState<ClassEntry>(existing ?? {
     id: uid(), subject: '', code: '', instructor: '', room: '', days: [], start: '08:00', end: '09:00', color: ((classes.length % 5) + 1) as SubjectColor,
   })
@@ -24,11 +25,20 @@ export default function ClassEditor() {
   const valid = !!d.subject.trim() && d.days.length > 0 && TIME.test(d.start) && TIME.test(d.end) && d.start < d.end
   const tone = subject(d.color)
 
-  const save = async () => { await saveClasses([{ ...d, subject: d.subject.trim(), confidence: 'high', lowFields: [] }]); router.back() }
+  const save = async () => {
+    if (saving || !valid) return
+    setSaving(true)
+    try {
+      const ok = await saveClasses([{ ...d, subject: d.subject.trim(), confidence: 'high', lowFields: [] }])
+      if (ok) router.back()
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <SheetHeader title={existing ? 'Edit class' : 'New class'} action="Save" actionDisabled={!valid} onAction={save} />
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.grouped }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <SheetHeader title={existing ? 'Edit class' : 'New class'} action={saving ? 'Saving' : 'Save'} actionDisabled={!valid || saving} onAction={save} />
       <ScrollView contentContainerStyle={{ padding: 20, gap: 18, paddingBottom: insets.bottom + 24 }} keyboardShouldPersistTaps="handled">
         {/* Live preview */}
         <View style={{ flexDirection: 'row', gap: 12, padding: 16, borderRadius: radius.lg, backgroundColor: tone.bg }}>
@@ -88,8 +98,15 @@ export default function ClassEditor() {
         </View>
 
         {existing && (
-          <Button title="Delete class" kind="danger" style={{ marginTop: 8 }} onPress={() =>
-            Alert.alert('Delete class?', d.subject, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => { haptic.warn(); removeClass(d.id); router.back() } }])} />
+          <Button title="Delete class" kind="danger" disabled={saving} style={{ marginTop: 8 }} onPress={() =>
+            Alert.alert('Delete class?', d.subject, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: async () => {
+              if (saving) return
+              setSaving(true)
+              haptic.warn()
+              const ok = await removeClass(d.id)
+              setSaving(false)
+              if (ok) router.back()
+            } }])} />
         )}
       </ScrollView>
     </KeyboardAvoidingView>
