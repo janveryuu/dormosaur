@@ -1,14 +1,16 @@
 import { router } from 'expo-router'
-import { Camera, ClipboardType, FileUp, ListPlus, PencilLine, ScanText, type LucideIcon } from 'lucide-react-native'
+import { Camera, ChevronRight, ClipboardType, FileUp, ListChecks, ListPlus, PencilLine, ScanText, type LucideIcon } from 'lucide-react-native'
 import { ScrollView, View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { rise } from '@/design/motion'
 import { radius, useTheme } from '@/design/theme'
+import { useApp } from '@/state/app'
 import { Press, T } from '@/ui'
 
 /** "+" sheet: MySched-style choice grid, with Scan as the hero option. */
 export default function Add() {
   const { c } = useTheme()
+  const open = useApp().deadlines.filter(d => !d.completed).length
   const go = (href: Parameters<typeof router.push>[0]) => { router.back(); setTimeout(() => router.push(href), 60) }
 
   return (
@@ -28,11 +30,20 @@ export default function Add() {
       </View>
 
       <Animated.View entering={rise(5)} style={{ marginTop: 10, gap: 10 }}>
-        <T v="footnote" color={c.ink3} style={{ fontWeight: '700', textTransform: 'uppercase', marginLeft: 4 }}>Deadlines</T>
+        <T v="footnote" color={c.ink3} style={{ fontWeight: '700', textTransform: 'uppercase', marginLeft: 4 }}>Tasks</T>
         <View style={{ flexDirection: 'row', gap: 12 }}>
           <Wide icon={ListPlus} title="New task" onPress={() => go('/task')} />
           <Wide icon={ScanText} title="Scan syllabus" onPress={() => go('/import-tasks')} />
         </View>
+        <Press onPress={() => go('/tasks')} accessibilityLabel={`My tasks, ${open} open`} scale={0.97}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 12, height: 60, borderRadius: radius.md, paddingHorizontal: 16, backgroundColor: c.greenSoft }}>
+          <ListChecks size={22} color={c.green} strokeWidth={2.3} />
+          <View style={{ flex: 1 }}>
+            <T v="headline">My tasks</T>
+            <T v="footnote" color={c.ink2}>{open ? `${open} open ${open === 1 ? 'task' : 'tasks'}` : 'All caught up'}</T>
+          </View>
+          <ChevronRight size={20} color={c.green} />
+        </Press>
       </Animated.View>
     </ScrollView>
   )

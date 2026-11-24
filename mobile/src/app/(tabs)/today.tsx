@@ -1,7 +1,7 @@
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import type { SFSymbol } from 'expo-symbols'
-import { AlarmClock, CheckCircle2, LayoutGrid, ScanLine, Sparkles, Sun, type LucideIcon } from 'lucide-react-native'
+import { AlarmClock, CheckCircle2, LayoutGrid, ScanLine, Settings, Sparkles, Sun, type LucideIcon } from 'lucide-react-native'
 import { ScrollView, View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -15,7 +15,6 @@ import { Press, Section, T } from '@/ui'
 import { TaskRow, useNow } from '@/ui/blocks'
 import { NextCard } from '@/ui/next-card'
 import { Sym } from '@/ui/symbol'
-import { Avatar } from '@/ui/avatar'
 import { TAB_CLEARANCE } from '@/ui/tab-bar'
 
 export default function Today() {
@@ -45,9 +44,9 @@ export default function Today() {
           <T v="largeTitle" accessibilityRole="header">{greeting(now)}{first ? `,\n${first}` : ''}</T>
           <T v="subhead" color={c.ink2}>{dateLabel} · {dayLine}</T>
         </View>
-        <Press onPress={() => router.navigate('/you')} accessibilityLabel="Your profile and settings" scale={0.9} hitSlop={4}
-          style={{ borderRadius: 24, padding: 2, backgroundColor: dark ? c.fill : c.card, marginTop: 2, borderWidth: dark ? 0 : 0.5, borderColor: c.line }}>
-          <Avatar size={42} />
+        <Press onPress={() => router.navigate('/settings')} accessibilityLabel="Settings" scale={0.9} hitSlop={4}
+          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: dark ? c.fill : c.card, alignItems: 'center', justifyContent: 'center', marginTop: 2, borderWidth: dark ? 0 : 0.5, borderColor: c.line }}>
+          <Sym name="gearshape" fallback={Settings} size={21} color={c.ink} />
         </Press>
       </Animated.View>
 

@@ -20,8 +20,8 @@ import { TAB_CLEARANCE } from '@/ui/tab-bar'
 const FEEDBACK_EMAIL = 'mailto:hello@dormosaur.app?subject=Dormosaur%20feedback'
 const SITE = 'https://dormosaur.vercel.app'
 
-/** The You tab: profile, Pro, schedule tools, appearance and account. */
-export default function You() {
+/** The Settings tab: profile, Pro, schedule tools, appearance and account. */
+export default function Settings() {
   const { c, pref, setPref } = useTheme()
   const insets = useSafeAreaInsets()
   const { profile, session, signOut, demo } = useApp()
@@ -32,7 +32,7 @@ export default function You() {
 
   return (
     <View style={{ flex: 1, backgroundColor: c.grouped, paddingTop: insets.top }}>
-      <LargeTitle title="You" />
+      <LargeTitle title="Settings" />
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 4, gap: 28, paddingBottom: TAB_CLEARANCE + insets.bottom }} showsVerticalScrollIndicator={false}>
         <Animated.View entering={rise(0)}>
           <Press onPress={() => router.push('/profile')} scale={0.98} accessibilityLabel="Edit profile"
