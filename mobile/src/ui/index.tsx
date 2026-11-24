@@ -223,15 +223,21 @@ export function NavHeader({ title, right, onBack }: { title?: string; right?: Re
 }
 
 /** Header for modal sheets: grabber-friendly title + action. */
-export function SheetHeader({ title, action, onAction, actionDisabled }: { title: string; action?: string; onAction?: () => void; actionDisabled?: boolean }) {
+export function SheetHeader({ title, action, onAction, actionDisabled }: { title: string; action?: string; onAction?: () => void | Promise<void>; actionDisabled?: boolean }) {
   const { c } = useTheme()
+  // One tap only: a double tap used to save twice and close the sheet twice (GO_BACK error).
+  const [busy, setBusy] = useState(false)
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 }}>
       <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button"><T v="body" color={c.green}>Cancel</T></Pressable>
       <T v="headline" center style={{ flex: 1 }}>{title}</T>
       {action ? (
-        <Pressable onPress={() => { haptic.success(); onAction?.() }} disabled={actionDisabled} hitSlop={10} accessibilityRole="button">
-          <T v="headline" color={actionDisabled ? c.ink3 : c.green}>{action}</T>
+        <Pressable onPress={async () => {
+          if (busy) return
+          setBusy(true); haptic.success()
+          try { await onAction?.() } finally { setTimeout(() => setBusy(false), 800) }
+        }} disabled={actionDisabled || busy} hitSlop={10} accessibilityRole="button">
+          <T v="headline" color={actionDisabled || busy ? c.ink3 : c.green}>{action}</T>
         </Pressable>
       ) : <View style={{ width: 50 }} />}
     </View>

@@ -1,7 +1,7 @@
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import type { SFSymbol } from 'expo-symbols'
-import { AlarmClock, CheckCircle2, LayoutGrid, ScanLine, Settings, Sparkles, Sun, type LucideIcon } from 'lucide-react-native'
+import { AlarmClock, CheckCircle2, LayoutGrid, ListChecks, ScanLine, Settings, Sparkles, Sun, type LucideIcon } from 'lucide-react-native'
 import { ScrollView, View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -68,7 +68,7 @@ export default function Today() {
 
       {/* Shortcuts */}
       <Animated.View entering={rise(2)} style={{ flexDirection: 'row', gap: 10 }}>
-        <Shortcut sf="viewfinder" icon={ScanLine} label="Scan" onPress={() => router.push('/scan')} />
+        <Shortcut sf="checklist" icon={ListChecks} label="Tasks" onPress={() => router.push('/tasks')} />
         <Shortcut sf="alarm" icon={AlarmClock} label="Alarms" onPress={() => router.push('/alarms')} />
         <Shortcut sf="square.grid.2x2" icon={LayoutGrid} label="Widgets" onPress={() => router.push('/widgets')} />
         <Shortcut sf="sparkles" icon={Sparkles} label="Copilot" onPress={() => router.push('/copilot')} />

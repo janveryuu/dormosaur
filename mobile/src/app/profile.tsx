@@ -70,7 +70,7 @@ export default function Profile() {
       haptic.success()
       setSaved(true)
       setAllowLeave(true)
-      setTimeout(() => router.back(), 550)
+      setTimeout(() => { if (router.canGoBack()) router.back() }, 550)
     } catch {
       Alert.alert('Not saved', 'We could not save your profile. Check your connection and try again.')
       setSaving(false)
