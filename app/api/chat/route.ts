@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { apiError, requireAuthenticated } from '@/lib/api-security'
+import { consumeFeature } from '@/lib/pro'
 import { loadStudentContext, type Diagnostic } from '@/lib/copilot/context'
 import { emptyContext, InputError, readPayload, record, resolveContext, sanitizeMessages } from '@/lib/copilot/input'
 import { providerConfigs } from '@/lib/copilot/providers'
@@ -16,6 +17,8 @@ export async function POST(req: NextRequest) {
     const { supabase, user } = await requireAuthenticated('copilot', 20)
     const body = await readPayload(req)
     const messages = sanitizeMessages(body.messages)
+    // Free: 5 messages a day. Pro: 100 a day (fair use). Refunded if Copilot fails outright.
+    const refund = await consumeFeature(user.id, 'copilot')
     const device = record(body.context ?? body.userContext)
     let context = emptyContext('unavailable')
     let authTimer: ReturnType<typeof setTimeout> | undefined
@@ -32,9 +35,11 @@ export async function POST(req: NextRequest) {
     } finally { clearTimeout(authTimer) }
     const result = await answerConversation({ messages, context, timeZone: context.profile.timezone || device.timeZone,
       providers: providerConfigs(process.env, diagnostic), diagnostic })
+    if (result.mode === 'limited') await refund().catch(() => {})
     return NextResponse.json(result, { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
     if (error instanceof InputError) return apiError(error, 'Copilot could not complete that request.')
+    if (error instanceof Error && error.message === 'usage_unavailable') return NextResponse.json({ error: 'Copilot couldn’t complete that request. Please try again shortly.' }, { status: 503 })
     diagnostic('request_failed', { reason: 'unexpected_error' })
     return NextResponse.json({ error: 'Copilot couldn’t complete that request. Please try again shortly.' }, { status: 500 })
   }

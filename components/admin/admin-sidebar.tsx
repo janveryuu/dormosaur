@@ -11,6 +11,7 @@ import {
   LayoutGrid,
   Settings,
   Users,
+  Wallet,
   ArrowLeft,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -18,6 +19,7 @@ import { cn } from '@/lib/utils'
 const NAV_ITEMS = [
   { href: '/admin', label: 'Overview', icon: LayoutGrid },
   { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/payments', label: 'Pro Payments', icon: Wallet },
   { href: '/admin/schedules', label: 'Schedules & Alarms', icon: AlarmClock },
   { href: '/admin/kitchen', label: 'Kitchen Content', icon: ChefHat },
   { href: '/admin/countries', label: 'Countries & Localization', icon: Globe2 },
@@ -33,11 +35,13 @@ function isActive(pathname: string, href: string) {
 interface AdminSidebarProps {
   adminName?: string
   adminInitials?: string
+  pendingPayments?: number
 }
 
 export function AdminSidebar({
   adminName = 'Janver Manlapaz',
   adminInitials = 'JM',
+  pendingPayments = 0,
 }: AdminSidebarProps) {
   const pathname = usePathname()
 
@@ -89,6 +93,11 @@ export function AdminSidebar({
                   >
                     {item.label}
                   </span>
+                  {item.href === '/admin/payments' && pendingPayments > 0 && (
+                    <span className="relative z-10 ml-auto rounded-full bg-destructive px-2 py-0.5 text-[11px] font-bold text-white" aria-label={`${pendingPayments} pending`}>
+                      {pendingPayments}
+                    </span>
+                  )}
                 </Link>
               </li>
             )

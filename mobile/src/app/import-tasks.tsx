@@ -10,6 +10,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { fade, layout, rise } from '@/design/motion'
 import { radius, useTheme } from '@/design/theme'
 import { parseDeadlines } from '@/lib/api'
+import { openPaywall, pro } from '@/lib/pro'
+import { useMyPro } from '@/ui/pro-gate'
 import { uid, type Deadline, type DeadlineType } from '@/lib/repo'
 import { formatTime } from '@/lib/time'
 import { prepareFile, prepareImage } from '@/lib/upload'
@@ -29,10 +31,12 @@ export default function ImportTasks() {
   const [mode, setMode] = useState<'photo' | 'text'>('photo')
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
+  const proGate = useMyPro()
   const [found, setFound] = useState<Draft[] | null>(null)
   const [open, setOpen] = useState<string | null>(null)
 
   async function run(make: () => Promise<{ mode: 'text' | 'photo' | 'file'; content: string }>) {
+    if (!proGate.canUse('syllabus_scan')) { openPaywall('syllabus_scan'); return }
     setBusy(true)
     try {
       const drafts = await parseDeadlines(await make())
@@ -48,7 +52,9 @@ export default function ImportTasks() {
       }))
       setOpen(null)
       haptic.success()
+      if (proGate.userId) pro.refresh(proGate.userId, proGate.demo)
     } catch (e) {
+      if (proGate.onError(e)) return
       haptic.warn()
       Alert.alert("Couldn't read tasks", e instanceof Error ? e.message : 'Try again.')
     } finally {

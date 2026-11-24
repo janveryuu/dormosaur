@@ -9,6 +9,8 @@ import { radius, useTheme } from '@/design/theme'
 import type { Alarm } from '@/lib/repo'
 import { formatTime, minutesOf } from '@/lib/time'
 import { useApp } from '@/state/app'
+import { openPaywall } from '@/lib/pro'
+import { ProPill, useMyPro } from '@/ui/pro-gate'
 import { Empty, NavHeader, Press, T, haptic } from '@/ui'
 
 const LEADS: Alarm['lead'][] = [15, 30, 60]
@@ -19,6 +21,7 @@ function ringAt(a: Alarm, start: string) {
 }
 
 export default function Alarms() {
+  const { isPro } = useMyPro()
   const { c, subject } = useTheme()
   const insets = useSafeAreaInsets()
   const { alarms, classes, saveAlarm } = useApp()
@@ -60,12 +63,18 @@ export default function Alarms() {
               </Press>
               {expanded && (
                 <Animated.View entering={fade(0, 200)} style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 18, paddingBottom: 18 }}>
-                  {LEADS.map(l => (
-                    <Press key={l} onPress={() => saveAlarm({ ...a, lead: l })} scale={0.94} accessibilityState={{ selected: a.lead === l }}
-                      style={{ flex: 1, height: 42, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', backgroundColor: a.lead === l ? c.green : c.fill }}>
-                      <T v="subhead" color={a.lead === l ? c.onGreen : c.ink2} style={{ fontWeight: '700' }}>{l} min</T>
-                    </Press>
-                  ))}
+                  {LEADS.map(l => {
+                    // Free: 15 min before every class. Pro: choose per class.
+                    const locked = !isPro && l !== 15
+                    return (
+                      <Press key={l} onPress={() => locked ? openPaywall('alarms') : saveAlarm({ ...a, lead: l })} scale={0.94} accessibilityState={{ selected: a.lead === l }}
+                        accessibilityLabel={locked ? `${l} minutes before, Pro` : `${l} minutes before`}
+                        style={{ flex: 1, height: 42, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6, backgroundColor: a.lead === l ? c.green : c.fill }}>
+                        <T v="subhead" color={a.lead === l ? c.onGreen : locked ? c.ink3 : c.ink2} style={{ fontWeight: '700' }}>{l} min</T>
+                        {locked && <ProPill />}
+                      </Press>
+                    )
+                  })}
                 </Animated.View>
               )}
             </Animated.View>

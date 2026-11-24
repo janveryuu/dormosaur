@@ -11,6 +11,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { fade, layout, rise } from '@/design/motion'
 import { elevation, radius, useTheme } from '@/design/theme'
 import { parseSchedule } from '@/lib/api'
+import { openPaywall, pro } from '@/lib/pro'
+import { useMyPro } from '@/ui/pro-gate'
 import { DAYS, uid, type ClassEntry, type SubjectColor } from '@/lib/repo'
 import { formatRange } from '@/lib/time'
 import { prepareFile, prepareImage } from '@/lib/upload'
@@ -34,11 +36,13 @@ export default function Scan() {
   const { src, from } = useLocalSearchParams<{ src?: Src; from?: 'onboarding' }>()
   const { classes: existing, saveClasses } = useApp()
   const [phase, setPhase] = useState<Phase>({ k: 'pick' })
+  const proGate = useMyPro()
   const [text, setText] = useState('')
   const [textMode, setTextMode] = useState(src === 'text')
   const [open, setOpen] = useState<string | null>(null)
 
   async function run(prepare: () => Promise<{ text: string } | { image: string }>, preview?: string, label = 'Schedule') {
+    if (!proGate.canUse('schedule_scan')) { openPaywall('schedule_scan'); return }
     setPhase({ k: 'scanning', preview, label })
     try {
       const res = await parseSchedule(await prepare())
@@ -57,7 +61,9 @@ export default function Scan() {
       haptic.success()
       setOpen(null)
       setPhase({ k: 'review', found: fresh, duplicates: all.length - fresh.length, hint: res.hint })
+      if (proGate.userId) pro.refresh(proGate.userId, proGate.demo)
     } catch (e) {
+      if (proGate.onError(e)) { setPhase({ k: 'pick' }); return }
       haptic.warn()
       Alert.alert("Couldn't read that", e instanceof Error ? e.message : 'Try again.')
       setPhase({ k: 'pick' })

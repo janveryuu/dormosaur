@@ -52,6 +52,7 @@ function Routes() {
           <Stack.Screen name="tasks" />
           <Stack.Screen name="profile" />
           <Stack.Screen name="pro" options={{ presentation: 'modal', contentStyle: { backgroundColor: c.bg } }} />
+          <Stack.Screen name="pay" options={{ presentation: 'modal', contentStyle: { backgroundColor: c.grouped } }} />
           <Stack.Screen name="wallpaper" />
           <Stack.Screen name="widgets" />
           <Stack.Screen name="copilot" />

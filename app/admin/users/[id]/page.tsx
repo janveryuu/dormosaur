@@ -3,6 +3,8 @@ import { getUserDetail } from '@/lib/admin-db'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { AdminTopbar } from '@/components/admin/admin-topbar'
 import { UserDetail } from '@/components/admin/user-detail'
+import { ProControl } from '@/components/admin/pro-control'
+import { getProStatus } from '@/lib/pro'
 
 export const revalidate = 0
 
@@ -16,7 +18,7 @@ export default async function AdminUserDetailPage({ params }: PageProps) {
   const adminUser = await requireAdminSession()
   const { id } = await params
 
-  const userDetail = await getUserDetail(id)
+  const [userDetail, pro] = await Promise.all([getUserDetail(id), getProStatus(id)])
 
   if (!userDetail) {
     notFound()
@@ -38,6 +40,7 @@ export default async function AdminUserDetailPage({ params }: PageProps) {
         adminInitials={adminInitials}
       />
 
+      <ProControl userId={id} isPro={pro.isPro} plan={pro.plan} endsAt={pro.endsAt} lifetime={pro.lifetime} />
       <UserDetail userDetail={userDetail} />
     </div>
   )

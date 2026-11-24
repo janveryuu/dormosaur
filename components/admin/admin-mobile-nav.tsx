@@ -10,12 +10,14 @@ import {
   LayoutGrid,
   Settings,
   Users,
+  Wallet,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const MOBILE_NAV_ITEMS = [
   { href: '/admin', label: 'Overview', icon: LayoutGrid },
   { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/payments', label: 'Payments', icon: Wallet },
   { href: '/admin/schedules', label: 'Schedules', icon: AlarmClock },
   { href: '/admin/kitchen', label: 'Kitchen', icon: ChefHat },
   { href: '/admin/countries', label: 'Countries', icon: Globe2 },

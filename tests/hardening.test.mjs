@@ -53,7 +53,9 @@ function client(user = { id: 'student-a' }, data = []) {
 const request = (body, path = '/api/test') => new Request(`http://localhost${path}`, {
   method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
 })
-const authOverride = (db) => ({ '@/lib/supabase/server': { createClient: async () => db } })
+// Pro limits are covered separately; route tests run as an unlimited account.
+const proStub = { consumeFeature: async () => async () => {}, ProLimitError: class ProLimitError extends Error {} }
+const authOverride = (db) => ({ '@/lib/supabase/server': { createClient: async () => db }, '@/lib/pro': proStub })
 const classA = { id: 'class-a', subject: 'Physics', code: 'PHY 101', instructor: '', room: '201', days: ['Mon'], start: '10:00', end: '11:00', color: 1 }
 
 for (const path of ['chat', 'schedule/parse', 'deadlines/parse', 'schedule/edit', 'recipes/generate', 'recipes/schedule-aware', 'alarms/smart-nudge', 'digest/weekly']) {

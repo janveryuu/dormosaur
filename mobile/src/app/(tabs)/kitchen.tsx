@@ -1,6 +1,8 @@
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
-import { Check, Plus, Sparkles, Trash2 } from 'lucide-react-native'
+import { Check, Lock, Plus, Sparkles, Trash2 } from 'lucide-react-native'
+import { openPaywall } from '@/lib/pro'
+import { ProLockCard, ProPill, useMyPro } from '@/ui/pro-gate'
 import { useState } from 'react'
 import { Platform, ScrollView, TextInput, View } from 'react-native'
 import Animated from 'react-native-reanimated'
@@ -41,6 +43,7 @@ function Plan() {
   const { c } = useTheme()
   const insets = useSafeAreaInsets()
   const { mealPlan, fillMealPlan } = useApp()
+  const { isPro } = useMyPro()
   const [budget, setBudget] = useState('1000')
   const [status, setStatus] = useState('')
   const [saving, setSaving] = useState(false)
@@ -68,7 +71,8 @@ function Plan() {
 
   return (
     <ScrollView style={{ width: '100%', maxWidth: 680, alignSelf: 'center' }} contentContainerStyle={{ paddingHorizontal: 20, gap: 14, paddingBottom: TAB_CLEARANCE + insets.bottom }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-      <View style={{ backgroundColor: c.greenSoft, borderRadius: radius.lg, padding: 16, gap: 11 }}>
+      {!isPro && <ProLockCard reason="meal_plan" title="Plan your whole week" body="Free plans today’s meals. Pro fills every day within your budget and builds the grocery list." />}
+      {isPro && <View style={{ backgroundColor: c.greenSoft, borderRadius: radius.lg, padding: 16, gap: 11 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <T v="headline" style={{ flexShrink: 1 }}>Fill my week</T>
           <T v="footnote" color={c.ink2}>{formatPesos(plannedCost(mealPlan))} planned</T>
@@ -84,19 +88,22 @@ function Plan() {
           <Button title="Suggest meals" icon={Sparkles} size="md" loading={saving} onPress={fillWeek} />
         </View>
         {!!status && <T v="footnote" color={c.ink2} accessibilityLiveRegion="polite">{status}</T>}
-      </View>
-      {DAYS.map(day => (
-        <View key={day} style={[{ backgroundColor: c.card, borderRadius: radius.lg, padding: 14, gap: 10, borderWidth: day === today ? 1.5 : 0, borderColor: c.green }, elevation(c, 1)]}>
+      </View>}
+      {DAYS.map(day => {
+        const locked = !isPro && day !== today
+        return (
+        <View key={day} style={[{ backgroundColor: c.card, borderRadius: radius.lg, padding: 14, gap: 10, borderWidth: day === today ? 1.5 : 0, borderColor: c.green, opacity: locked ? 0.55 : 1 }, elevation(c, 1)]}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <T v="headline" style={{ flex: 1 }}>{day}</T>
             {day === today && <T v="caption" color={c.green} style={{ fontWeight: '800' }}>TODAY</T>}
+            {locked && <ProPill />}
           </View>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             {MEALS.slice(0, 3).map(meal => {
               const entry = mealPlan.find(value => value.day === day && value.meal === meal)
               const recipe = entry ? recipeBySlug.get(entry.recipeSlug) : undefined
               return (
-                <Press key={meal} onPress={() => router.push({ pathname: '/meal-pick', params: { day, meal } })} scale={0.94}
+                <Press key={meal} onPress={() => locked ? openPaywall('meal_plan') : router.push({ pathname: '/meal-pick', params: { day, meal } })} scale={0.94}
                   accessibilityLabel={recipe ? `${day} ${meal}, ${recipe.title}` : `Add ${day} ${meal}`}
                   style={{ flex: 1, minHeight: 92, borderRadius: radius.md, overflow: 'hidden', backgroundColor: c.fill, alignItems: 'center', justifyContent: 'center' }}>
                   {recipe ? (
@@ -118,7 +125,8 @@ function Plan() {
             })}
           </View>
         </View>
-      ))}
+        )
+      })}
     </ScrollView>
   )
 }
@@ -135,7 +143,9 @@ function Grocery() {
     void saveGrocery(current => [{ id: uid(), name, checked: false, custom: true }, ...current])
     setText('')
   }
+  const { isPro } = useMyPro()
   const fromPlan = () => {
+    if (!isPro) { openPaywall('meal_plan'); return }
     const ingredients = ingredientsFromPlan(mealPlan)
     if (!ingredients.length) return
     haptic.success()
@@ -156,7 +166,7 @@ function Grocery() {
           <Plus size={22} color={c.onGreen} strokeWidth={2.6} />
         </Press>
       </View>
-      {mealPlan.length > 0 && <Chip label="Sync ingredients from meal plan" icon={Plus} onPress={fromPlan} />}
+      {mealPlan.length > 0 && <Chip label={isPro ? 'Sync ingredients from meal plan' : 'Sync from meal plan · Pro'} icon={isPro ? Plus : Lock} onPress={fromPlan} />}
       {grocery.length === 0 && <Empty image={chef} title="Your grocery list is empty" body="Add an item or pull ingredients from your meal plan." />}
       {sections.map(({ title, items }) => (
         <View key={title} style={{ gap: 8 }}>

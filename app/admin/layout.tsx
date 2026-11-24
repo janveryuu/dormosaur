@@ -2,6 +2,7 @@ import * as React from 'react'
 import { requireAdminSession } from '@/lib/admin-auth'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { AdminMobileNav } from '@/components/admin/admin-mobile-nav'
+import { countPending } from '@/lib/pro-admin'
 
 export default async function AdminLayout({
   children,
@@ -10,6 +11,7 @@ export default async function AdminLayout({
 }) {
   // Security Check: Redirect non-admin users immediately
   const adminUser = await requireAdminSession()
+  const pendingPayments = await countPending().catch(() => 0)
 
   const adminInitials = adminUser.name
     .split(' ')
@@ -20,7 +22,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
-      <AdminSidebar adminName={adminUser.name} adminInitials={adminInitials} />
+      <AdminSidebar adminName={adminUser.name} adminInitials={adminInitials} pendingPayments={pendingPayments} />
       <main className="flex-1 pb-24 pt-6 px-4 lg:pl-76 lg:pr-8 lg:pb-8">
         <div className="mx-auto max-w-6xl">{children}</div>
       </main>

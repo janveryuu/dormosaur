@@ -46,6 +46,10 @@ export async function readJson(req: Request, maxBytes = 64 * 1024) {
   return readPayload(req, maxBytes)
 }
 export function apiError(error: unknown, message: string) {
+  // 402 = a free-tier limit was reached: tell the app to open the Pro paywall.
+  if (error instanceof InputError && error.status === 402) return NextResponse.json({
+    success: false, error: error.message, upgrade: true, feature: (error as InputError & { feature?: string }).feature ?? null,
+  }, { status: 402 })
   if (error instanceof InputError) return NextResponse.json({ success: false, error: error.message }, {
     status: error.status, headers: error.status === 429 ? { 'Retry-After': '60' } : undefined,
   })

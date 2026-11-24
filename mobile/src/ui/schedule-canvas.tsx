@@ -44,9 +44,11 @@ type Props = {
   showRooms: boolean
   width: number
   aspect: number
+  /** Free wallpapers carry a small "Made with Dormosaur" mark; Pro removes it. */
+  watermark?: boolean
 }
 
-export function ScheduleCanvas({ theme, classes, layout, showRooms, width, aspect }: Props) {
+export function ScheduleCanvas({ theme, classes, layout, showRooms, width, aspect, watermark }: Props) {
   const u = width / BASE_W
   const zone = band(theme, aspect)
   const days = DAYS.filter(d => classesOn(classes, d).length)
@@ -60,6 +62,11 @@ export function ScheduleCanvas({ theme, classes, layout, showRooms, width, aspec
           ? <Timetable classes={classes} theme={theme} u={u} bandH={zone.height} showRooms={showRooms} />
           : <List days={days} classes={classes} theme={theme} u={u} bandH={zone.height} showRooms={showRooms} />}
       </View>
+      {watermark && (
+        <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: (zone.top + zone.height) * u + 6 * u, alignItems: 'center' }}>
+          <Txt u={u} size={9} weight="700" color={theme.text} style={{ opacity: 0.55, letterSpacing: 0.4 }}>Made with Dormosaur 🦕</Txt>
+        </View>
+      )}
     </View>
   )
 }

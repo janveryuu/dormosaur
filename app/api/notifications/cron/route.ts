@@ -57,6 +57,31 @@ export async function GET(req: Request) {
         } catch { failures++; console.warn('[Reminder Cron]', { category: 'user_processing_failed' }) }
       }
     }
+    // Pro ending soon: one nudge per period. Isolated so it can never block class reminders.
+    try {
+      const soonFrom = new Date(now.getTime() + 24 * 3600_000).toISOString(), soonTo = new Date(now.getTime() + 72 * 3600_000).toISOString()
+      const { data: ending } = await supabase.from('pro_entitlements').select('id,user_id,plan,ends_at')
+        .is('revoked_at', null).gte('ends_at', soonFrom).lt('ends_at', soonTo).limit(1000)
+      for (const row of ending ?? []) {
+        // Skip if another period continues after this one (stacked purchase or lifetime).
+        const { count } = await supabase.from('pro_entitlements').select('id', { count: 'exact', head: true })
+          .eq('user_id', row.user_id).is('revoked_at', null).or(`ends_at.is.null,ends_at.gt.${row.ends_at}`)
+        if (count) continue
+        const key = `pro-ending:${row.id}`
+        const { error: claimError } = await supabase.from('notification_deliveries').insert({ event_key: key, user_id: row.user_id })
+        if (claimError) continue
+        const trial = row.plan === 'trial'
+        const result = await sendClassReminder({
+          userId: row.user_id, tag: key, url: '/pro',
+          title: trial ? 'Your Pro trial ends soon 🦕' : 'Your Pro plan ends soon',
+          body: trial ? '2 days left of unlimited scans and Copilot. Keep Pro from ₱29.' : 'Renew now to keep unlimited scans, Copilot and meal plans.',
+        }, supabase)
+        await supabase.from('notification_deliveries').update({
+          status: result.successCount ? 'sent' : 'failed', completed_at: new Date().toISOString(), success_count: result.successCount, failure_count: result.failureCount,
+        }).eq('event_key', key).eq('user_id', row.user_id)
+        if (result.successCount) notificationsDispatched++
+      }
+    } catch { console.warn('[Reminder Cron]', { category: 'pro_expiry_failed' }) }
     return NextResponse.json({ success: failures === 0, usersProcessed, notificationsDispatched, failures }, { status: failures ? 503 : 200 })
   } catch { console.warn('[Reminder Cron]', { category: 'cron_failed' }); return NextResponse.json({ error: 'Scheduled reminders could not complete. Please retry shortly.' }, { status: 503 }) }
 }

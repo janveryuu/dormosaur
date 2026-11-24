@@ -6,7 +6,9 @@ import Animated, { ReduceMotion, useAnimatedStyle, useSharedValue, withDelay, wi
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { fade, rise } from '@/design/motion'
 import { radius, type, useTheme } from '@/design/theme'
-import { askCopilot, type ChatMessage } from '@/lib/api'
+import { UpgradeError, askCopilot, type ChatMessage } from '@/lib/api'
+import { openPaywall, pro } from '@/lib/pro'
+import { ProLockCard, useMyPro } from '@/ui/pro-gate'
 import { useApp } from '@/state/app'
 import { Chip, NavHeader, Press, T } from '@/ui'
 
@@ -43,6 +45,9 @@ export default function Copilot() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
+  const [limited, setLimited] = useState(false)
+  const { status, isPro, userId } = useMyPro()
+  const left = status ? Math.max(0, status.usage.copilot.limit - status.usage.copilot.used) : null
   const list = useRef<FlatList<ChatMessage>>(null)
 
   async function send(text: string) {
@@ -53,8 +58,15 @@ export default function Copilot() {
     try {
       const reply = demo ? "I'm in preview mode right now 🦕 Sign in and I can read your real schedule and tasks." : await askCopilot(next.slice(-12))
       setMessages(m => [...m, { role: 'assistant', content: plainText(reply) || "Hmm, I blanked on that one 🦕 Could you ask again?" }])
-    } catch {
-      setMessages(m => [...m, { role: 'assistant', content: "Oops, I couldn't reach my brain just now 🦕 Check your connection and try again." }])
+      if (userId) pro.refresh(userId, demo)
+    } catch (e) {
+      if (e instanceof UpgradeError) {
+        setLimited(true)
+        setMessages(m => [...m, { role: 'assistant', content: e.message }])
+        if (userId) pro.refresh(userId, demo)
+      } else {
+        setMessages(m => [...m, { role: 'assistant', content: "Oops, I couldn't reach my brain just now 🦕 Check your connection and try again." }])
+      }
     } finally {
       setBusy(false)
     }
@@ -95,7 +107,11 @@ export default function Copilot() {
             </Animated.View>
           )
         }}
-        ListFooterComponent={busy ? (
+        ListFooterComponent={limited && !isPro ? (
+          <Animated.View entering={fade()} style={{ marginTop: 12 }}>
+            <ProLockCard reason="copilot" title="Keep chatting with Dormo" body="Pro gets 100 messages a day, study plans and exam catch-up." />
+          </Animated.View>
+        ) : busy ? (
           <Animated.View entering={fade()} style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8, marginTop: 12 }} accessibilityLabel="Dormo is typing">
             <Face />
             <View style={{ backgroundColor: c.card, borderRadius: radius.lg, borderBottomLeftRadius: 6, paddingHorizontal: 16, height: 44, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
@@ -104,6 +120,11 @@ export default function Copilot() {
           </Animated.View>
         ) : undefined}
       />
+      {!isPro && left !== null && !limited && (
+        <Press onPress={() => openPaywall('copilot')} haptics={false} accessibilityLabel={`${left} free messages left today. See Pro`} style={{ alignSelf: 'center', paddingTop: 6 }}>
+          <T v="caption" color={left ? c.ink3 : c.danger} style={{ fontWeight: '600' }}>{left} of 5 free messages left today · <T v="caption" color={c.green} style={{ fontWeight: '700' }}>Get Pro</T></T>
+        </Press>
+      )}
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 10, paddingHorizontal: 16, paddingTop: 8, paddingBottom: insets.bottom + 12 }}>
         <TextInput value={input} onChangeText={setInput} placeholder="Ask Dormo anything" placeholderTextColor={c.ink3} multiline maxLength={2000} selectionColor={c.green}
           accessibilityLabel="Message Dormo"

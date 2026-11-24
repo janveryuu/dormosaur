@@ -10,6 +10,8 @@ import { captureRef } from 'react-native-view-shot'
 import { fade } from '@/design/motion'
 import { useTheme } from '@/design/theme'
 import { WALLPAPER_THEMES } from '@/lib/wallpapers'
+import { openPaywall } from '@/lib/pro'
+import { ProPill, useMyPro } from '@/ui/pro-gate'
 import { useApp } from '@/state/app'
 import { Button, Group, NavHeader, Press, Row, Segmented, T, haptic } from '@/ui'
 import { useNow } from '@/ui/blocks'
@@ -33,7 +35,9 @@ export default function Wallpaper() {
   const [guides, setGuides] = useState(true)
   const [busy, setBusy] = useState<'save' | 'share' | null>(null)
   const shot = useRef<ComponentRef<typeof View>>(null)
-  const theme = WALLPAPER_THEMES.find(t => t.id === themeId) ?? WALLPAPER_THEMES[0]
+  const { isPro } = useMyPro()
+  // Free: the first theme. Pro: every theme, no watermark.
+  const theme = (isPro ? WALLPAPER_THEMES.find(t => t.id === themeId) : undefined) ?? WALLPAPER_THEMES[0]
   const hasClasses = classes.some(e => e.days.length)
 
   const w = Math.min(Math.round(width * 0.62), 272)
@@ -97,7 +101,7 @@ export default function Wallpaper() {
             <View style={{ width: w, height: w * ASPECT, borderRadius: 44 * (w / 272), overflow: 'hidden' }}>
               <Animated.View key={`${themeId}-${layout}`} entering={fade(0, 220)}>
                 <View ref={shot} collapsable={false}>
-                  <ScheduleCanvas theme={theme} classes={classes} layout={layout} showRooms={rooms} width={w} aspect={ASPECT} />
+                  <ScheduleCanvas theme={theme} classes={classes} layout={layout} showRooms={rooms} width={w} aspect={ASPECT} watermark={!isPro} />
                 </View>
               </Animated.View>
               {guides && <LockGuides theme={theme} width={w} aspect={ASPECT} now={now} />}
@@ -112,14 +116,16 @@ export default function Wallpaper() {
         <View style={{ gap: 8 }}>
           <T v="footnote" color={c.ink3} style={{ textTransform: 'uppercase', marginLeft: 36, fontWeight: '600' }}>Background</T>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingHorizontal: 20 }}>
-            {WALLPAPER_THEMES.map(t => {
-              const on = t.id === themeId
+            {WALLPAPER_THEMES.map((t, i) => {
+              const on = t.id === theme.id
+              const locked = !isPro && i > 0
               return (
-                <Press key={t.id} onPress={() => { haptic.select(); setThemeId(t.id) }} scale={0.94} accessibilityLabel={`${t.name} background`} accessibilityState={{ selected: on }} style={{ alignItems: 'center', gap: 6, width: 64 }}>
+                <Press key={t.id} onPress={() => { haptic.select(); if (locked) openPaywall('wallpaper'); else setThemeId(t.id) }} scale={0.94} accessibilityLabel={`${t.name} background`} accessibilityState={{ selected: on }} style={{ alignItems: 'center', gap: 6, width: 64 }}>
                   <View style={{ padding: 2.5, borderRadius: 14, borderWidth: 2, borderColor: on ? c.green : 'transparent' }}>
                     <View style={{ width: 52, height: 52 * ASPECT * 0.92, borderRadius: 10, overflow: 'hidden', backgroundColor: t.bg, borderWidth: 0.5, borderColor: c.line }}>
                       {t.image ? <Image source={t.image} style={{ position: 'absolute', inset: 0 }} contentFit="cover" /> : null}
                     </View>
+                    {locked && <ProPill style={{ position: 'absolute', top: 6, right: 4 }} />}
                   </View>
                   <T v="caption" numberOfLines={1} color={on ? c.ink : c.ink2} style={{ fontWeight: on ? '700' : '500' }}>{t.name}</T>
                 </Press>

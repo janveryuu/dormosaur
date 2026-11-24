@@ -16,6 +16,8 @@ import { LargeTitle, Press, Segmented, T } from '@/ui'
 import { Avatar } from '@/ui/avatar'
 import { ProBadge } from '@/ui/pro-badge'
 import { TAB_CLEARANCE } from '@/ui/tab-bar'
+import { useMyPro } from '@/ui/pro-gate'
+import { daysLeft, pro } from '@/lib/pro'
 
 const FEEDBACK_EMAIL = 'mailto:hello@dormosaur.app?subject=Dormosaur%20feedback'
 const SITE = 'https://dormosaur.vercel.app'
@@ -27,6 +29,7 @@ export default function Settings() {
   const { profile, session, signOut, demo } = useApp()
   const name = profile?.name || 'Student'
   const details = [profile?.year, profile?.school].filter(Boolean).join(' · ')
+  const { isPro } = useMyPro()
 
   const open = (url: string) => Linking.openURL(url).catch(() => Alert.alert('Could not open link', 'Please try again in a moment.'))
 
@@ -39,7 +42,10 @@ export default function Settings() {
             style={[{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, borderRadius: radius.lg, backgroundColor: c.card }, elevation(c, 1)]}>
             <Avatar size={60} />
             <View style={{ flex: 1, gap: 2 }}>
-              <T v="headline" numberOfLines={1} style={{ fontSize: 19, fontWeight: '700' }}>{name}</T>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <T v="headline" numberOfLines={1} style={{ fontSize: 19, fontWeight: '700', flexShrink: 1 }}>{name}</T>
+                {isPro && <ProBadge />}
+              </View>
               <T v="subhead" color={c.ink2} numberOfLines={1}>{demo ? 'Preview mode' : session?.user.email}</T>
               {!!details && <T v="footnote" color={c.ink3} numberOfLines={1}>{details}</T>}
             </View>
@@ -91,7 +97,7 @@ export default function Settings() {
             <Item icon={LogOut} title="Sign out" destructive last onPress={() =>
               Alert.alert('Sign out?', 'Your classes and tasks stay saved to your account.', [
                 { text: 'Cancel', style: 'cancel' },
-                { text: 'Sign out', style: 'destructive', onPress: () => { avatar.clear(); signOut() } },
+                { text: 'Sign out', style: 'destructive', onPress: () => { avatar.clear(); pro.clear(); signOut() } },
               ])} />
           </Section>
         )}
@@ -102,8 +108,17 @@ export default function Settings() {
 
 function ProCard({ onPress }: { onPress: () => void }) {
   const { c, dark } = useTheme()
+  const { status, isPro } = useMyPro()
+  const left = daysLeft(status?.endsAt ?? null)
+  const plan = status?.plan === 'trial' ? 'Free trial' : status?.plan ? status.plan[0].toUpperCase() + status.plan.slice(1) : 'Pro'
+  const line = isPro
+    ? (status?.lifetime ? `${plan} · yours forever` : `${plan} · ${left} ${left === 1 ? 'day' : 'days'} left`)
+    : status?.pendingPayment ? `₱${status.pendingPayment.amount} payment under review`
+    : status?.trialAvailable === false ? 'From ₱29 · pay with GCash, Maya and more'
+    : '7 days free, then from ₱29. No auto-renewal.'
+  const cta = isPro ? 'Manage Pro' : status?.pendingPayment ? 'View status' : status?.trialAvailable === false ? 'Get Pro' : 'Try Pro free'
   return (
-    <Press onPress={onPress} scale={0.98} accessibilityLabel="Try Dormosaur Pro free" style={[{ borderRadius: radius.xl, overflow: 'hidden' }, elevation(c, 2)]}>
+    <Press onPress={onPress} scale={0.98} accessibilityLabel={`Dormosaur Pro. ${line}. ${cta}`} style={[{ borderRadius: radius.xl, overflow: 'hidden' }, elevation(c, 2)]}>
       <LinearGradient colors={dark ? ['#0F5A39', '#0A3D27'] : ['#14915A', '#0B6A40']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: 20, gap: 14 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <T v="title3" color="#fff">Dormosaur</T>
@@ -111,9 +126,9 @@ function ProCard({ onPress }: { onPress: () => void }) {
           <View style={{ flex: 1 }} />
           <Sparkles size={20} color="rgba(255,255,255,0.75)" />
         </View>
-        <T v="callout" color="rgba(255,255,255,0.92)" style={{ fontWeight: '600' }}>1 month free, then ₱99.00 every 6 months</T>
+        <T v="callout" color="rgba(255,255,255,0.92)" style={{ fontWeight: '600' }}>{line}</T>
         <View style={{ height: 48, borderRadius: radius.pill, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
-          <T v="headline" color="#0B6A40" style={{ fontWeight: '700' }}>Try Pro free</T>
+          <T v="headline" color="#0B6A40" style={{ fontWeight: '700' }}>{cta}</T>
         </View>
       </LinearGradient>
     </Press>

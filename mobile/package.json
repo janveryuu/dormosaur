@@ -14,6 +14,7 @@
     "eslint-config-expo": "~58.0.4",
     "expo": "~58.0.26",
     "expo-blur": "~58.0.6",
+    "expo-clipboard": "~58.0.4",
     "expo-constants": "~58.0.16",
     "expo-device": "~58.0.5",
     "expo-document-picker": "~58.0.5",

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { ProLimitError, consumeFeature } from '@/lib/pro'
 import { apiError, boundedText, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
 import { getClasses, getUserProfile } from '@/lib/db'
 import { parseDeadlineText } from '@/lib/deadline-parser'
@@ -12,12 +13,14 @@ export const maxDuration = 60
 
 export async function POST(req: Request) {
   const started = Date.now()
+  let refund: () => Promise<void> = async () => {}
   try {
     const { supabase, user } = await requireAuthenticated('deadline-import', 8)
     const body = await readJson(req, 4.4 * 1024 * 1024)
     const mode = body.mode || 'text'
     if (!['text', 'camera', 'photo', 'file'].includes(mode as string)) throw new InputError('Please choose text or an image to import.')
     const content = boundedText(body.content, mode === 'text' ? 30_000 : 4.4 * 1024 * 1024, 'deadline content', true)
+    refund = await consumeFeature(user.id, 'syllabus_scan')
     const [classes, profile] = await Promise.all([getClasses(supabase, user.id), getUserProfile(supabase, user.id)])
     const timezone = profile?.timezone || 'Asia/Manila'
     const today = clockAt(new Date(), timezone).date
@@ -51,6 +54,7 @@ export async function POST(req: Request) {
     console.info('[Deadline Scan]', { count: deadlines.length, flagged: deadlines.filter(d => d.confidence === 'low').length, ms: Date.now() - started })
     return NextResponse.json({ success: true, deadlines })
   } catch (error) {
+    if (!(error instanceof ProLimitError)) await refund().catch(() => {})
     return apiError(error, 'The deadline import could not complete. Please try again shortly.')
   }
 }

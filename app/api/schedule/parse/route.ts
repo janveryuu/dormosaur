@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { apiError, InputError, readJson, requireAuthenticated } from '@/lib/api-security'
+import { ProLimitError, consumeFeature } from '@/lib/pro'
 import { aiConfigured, modelChain } from '@/lib/scanner/ai'
 import { scanSchedule, ScanError } from '@/lib/scanner'
 
@@ -23,8 +24,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   let body: Record<string, unknown>
+  let userId = ''
   try {
-    await requireAuthenticated('schedule-import', 8)
+    userId = (await requireAuthenticated('schedule-import', 8)).user.id
     const input = await readJson(req, 4.4 * 1024 * 1024)
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw new InputError('The upload could not be read. Please select the file again.')
     body = input
@@ -34,7 +36,10 @@ export async function POST(req: Request) {
   }
 
   const started = Date.now()
+  let refund: () => Promise<void> = async () => {}
   try {
+    // Free accounts get one AI scan; Pro is unlimited. Failed scans are refunded below.
+    refund = await consumeFeature(userId, 'schedule_scan')
     let result
     if (body.image !== undefined) {
       if (typeof body.image !== 'string') throw new ScanError('invalid_image')
@@ -49,6 +54,7 @@ export async function POST(req: Request) {
     console.info('[Schedule Scan]', { provider: result.provider, classes: result.classes.length, flagged: result.classes.filter(c => c.confidence === 'low').length, ms: Date.now() - started })
     return NextResponse.json({ success: true, provider: result.provider, classes: result.classes, skipped: result.skipped, hint: result.hint ?? null })
   } catch (error) {
+    if (!(error instanceof ProLimitError)) await refund().catch(() => {})
     if (error instanceof InputError) return apiError(error, 'The schedule import could not complete.')
     if (error instanceof ScanError) {
       console.warn('[Schedule Scan]', { code: error.code, category: error.category ?? null, ms: Date.now() - started })
