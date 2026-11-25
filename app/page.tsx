@@ -13,11 +13,11 @@ const APK_URL = process.env.NEXT_PUBLIC_APK_URL || '/dormosaur.apk'
 const APK_VERSION = process.env.NEXT_PUBLIC_APK_VERSION || '1.0.0'
 
 export const metadata: Metadata = {
-  title: 'Dormosaur — Your class schedule, from one photo',
-  description: 'Import your class schedule from a photo, screenshot, or PDF. Dormosaur organizes your week, keeps track of deadlines, and helps plan dorm meals.',
+  title: 'Dormosaur: Your class schedule, from one photo',
+  description: 'Import your class schedule from a photo, screenshot, PDF, or pasted text. Set class alarms, track deadlines, and find recipes for your dorm.',
   openGraph: {
-    title: 'Dormosaur — Your class schedule, from one photo',
-    description: 'Your class schedule, from one photo. Free for Android.',
+    title: 'Dormosaur: Your class schedule, from one photo',
+    description: 'Turn a photo of your timetable into a weekly schedule. Free to download for Android.',
     images: ['/dormo-jumping.png'],
   },
 }

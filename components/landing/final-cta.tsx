@@ -44,9 +44,9 @@ export function FinalCta({ apkUrl, apkVersion }: { apkUrl: string; apkVersion: s
             animate={{ x: [0, -100, 0], y: [0, -50, 0] }} transition={{ duration: 19, repeat: Infinity, ease: 'easeInOut' }} />
 
           <h2 className="relative text-balance text-[40px] font-bold leading-[1.05] tracking-[-0.035em] sm:text-[60px]">
-            Never miss a class <span className="relative inline-block">again.<motion.span aria-hidden initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.6, ease: [0.22, 1, 0.36, 1] }} className="absolute -bottom-1 left-0 right-[0.3em] h-[6px] origin-left rounded-full bg-[#7DF0B5]" /></span>
+            Know when to leave for <span className="relative inline-block">class.<motion.span aria-hidden initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.6, ease: [0.22, 1, 0.36, 1] }} className="absolute -bottom-1 left-0 right-[0.3em] h-[6px] origin-left rounded-full bg-[#7DF0B5]" /></span>
           </h2>
-          <p className="relative mx-auto mt-4 max-w-md text-lg text-white/75">Download Dormosaur, snap your schedule, and let Dormo handle the rest.</p>
+          <p className="relative mx-auto mt-4 max-w-md text-lg text-white/75">Download Dormosaur for Android, scan your schedule, and check when your first class starts.</p>
 
           <div className="relative mt-8 flex flex-col items-center gap-3">
             <div
@@ -93,7 +93,7 @@ export function FinalCta({ apkUrl, apkVersion }: { apkUrl: string; apkVersion: s
                 transition={{ duration: excited ? 0.7 : 1.6, repeat: Infinity, ease: 'easeInOut' }}
                 className="origin-bottom"
               >
-                <Image src="/dormo-jumping.png" alt="Dormo the dinosaur, jumping for joy" width={776} height={934} sizes="240px" className="h-auto w-full drop-shadow-2xl" />
+                <Image src="/dormo-jumping.png" alt="Dormo jumping" width={776} height={934} sizes="240px" className="h-auto w-full drop-shadow-2xl" />
               </motion.div>
             </motion.div>
 

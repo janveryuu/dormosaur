@@ -20,10 +20,10 @@ const columns: { title: string; links: Link[] }[] = [
   {
     title: 'Dorm life',
     links: [
-      { label: 'Dorm-budget recipes', href: '/docs/recipes' },
+      { label: 'Recipes for dorm cooking', href: '/docs/recipes' },
       { label: 'Meal plan and grocery list', href: '/docs/meal-plan' },
       { label: 'Ask Dormo', href: '/docs/ask-dormo' },
-      { label: 'Today at a glance', href: '/docs/today' },
+      { label: 'Today screen', href: '/docs/today' },
     ],
   },
   {
@@ -38,7 +38,7 @@ const columns: { title: string; links: Link[] }[] = [
     ],
   },
   {
-    title: 'Trust',
+    title: 'Account and privacy',
     links: [
       { label: 'Privacy and data', href: '/docs/privacy' },
       { label: 'Permissions', href: '/docs/permissions' },
@@ -62,7 +62,7 @@ export function SiteFooter() {
               <Image src="/dormosaur-logo.png" alt="" width={36} height={36} className="rounded-[11px]" />
               <span className="text-[26px] font-bold tracking-[-0.04em]">Dormosaur</span>
             </Link>
-            <p className="mt-3 max-w-[26ch] text-[15px] leading-relaxed text-[#B8CCBD]">Your class schedule, alarms, and dorm meals, always with you.</p>
+            <p className="mt-3 max-w-[26ch] text-[15px] leading-relaxed text-[#B8CCBD]">Your class schedule, alarms, and dorm recipes in one Android app.</p>
             <Link href="/docs/contact" className={`${link} mt-3`}>Contact Dormosaur</Link>
           </div>
 
@@ -88,7 +88,7 @@ export function SiteFooter() {
 
         <div className="relative flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 py-6 text-sm text-[#8FA896]">
           <p>© {new Date().getFullYear()} Dormosaur</p>
-          <p>Free for Android · Zero ads</p>
+          <p>Free to download · No ads</p>
         </div>
       </div>
 

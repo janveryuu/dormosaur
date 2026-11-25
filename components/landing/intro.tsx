@@ -132,7 +132,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
             <span key={i} className={styles.letter} style={{ animationDelay: `${320 + i * 38}ms` }}>{ch}</span>
           ))}
         </p>
-        <p className={`${styles.caption} mt-2 text-[13px] text-[#48564D]`}>Snapping your week…</p>
+        <p className={`${styles.caption} mt-2 text-[13px] text-[#48564D]`}>Loading Dormosaur…</p>
       </motion.div>
 
       {phase === 'flash' && <span aria-hidden className={`${styles.flash} pointer-events-none absolute inset-0 bg-white`} />}

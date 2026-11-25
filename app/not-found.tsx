@@ -19,26 +19,26 @@ export default function NotFound() {
         </div>
 
         <p className="mb-2 text-xs font-bold tracking-widest text-primary uppercase">
-          404 &middot; Page not found
+          Error 404
         </p>
         <h1 className="text-[22px] font-bold tracking-tight text-foreground sm:text-[24px]">
-          This classroom doesn&apos;t exist
+          Page not found
         </h1>
         <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground sm:text-[15px]">
-          The link may have moved or retired. Head back to Dormosaur&apos;s home page or browse the help guides.
+          Check the address or use the links below.
         </p>
 
         <div className="mt-7 flex flex-col gap-3">
           <Link href="/" className="w-full">
             <PillButton size="lg" full>
               <Home className="mr-2 size-4" />
-              Go to Home
+              Go to homepage
             </PillButton>
           </Link>
           <Link href="/docs" className="w-full">
             <PillButton variant="secondary" size="lg" full>
               <BookOpen className="mr-2 size-4" />
-              Browse Help Docs
+              Browse help guides
             </PillButton>
           </Link>
         </div>

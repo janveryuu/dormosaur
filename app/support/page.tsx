@@ -17,25 +17,25 @@ const APK_URL = process.env.NEXT_PUBLIC_APK_URL || '/dormosaur.apk'
 const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@dormosaur.app'
 
 export const metadata: Metadata = {
-  title: 'Support · Dormosaur',
-  description: 'Find a quick answer in the Dormosaur help guides, troubleshoot an issue, or send us a message.',
+  title: 'Dormosaur: Support',
+  description: 'Get help installing Dormosaur, importing your schedule, or fixing class alarms. Contact support if you need a hand.',
   alternates: { canonical: '/support' },
 }
 
 const GUIDE_LINKS = [
   {
     title: 'Getting started',
-    description: 'Set up your first schedule, scan a timetable, and learn the basics.',
+    description: 'Install the app and import your first schedule.',
     href: '/docs/getting-started',
   },
   {
     title: 'Frequently asked questions',
-    description: 'Quick answers about importing, alarms, offline use, and Dormosaur Pro.',
+    description: 'Check what works offline and what’s included in each plan.',
     href: '/docs/faq',
   },
   {
     title: 'Troubleshooting',
-    description: 'Fix common APK install, scanning, sign-in, and notification problems.',
+    description: 'Fix problems with installation, scanning, signing in, or alarms.',
     href: '/docs/troubleshooting',
   },
 ] as const
@@ -57,7 +57,7 @@ export default function SupportPage() {
             How can we help?
           </h1>
           <p className="mt-5 max-w-[54ch] text-pretty text-[18px] leading-[1.68] text-[#4E5F55] sm:text-[19px]">
-            Find a quick answer in the guides, or tell us what went wrong. A real person will read your message.
+            Browse the help guides or send a message to the Dormosaur support team.
           </p>
         </header>
 
@@ -66,7 +66,7 @@ export default function SupportPage() {
         <section>
           <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#0A1710]">Start with a guide</h2>
           <p className="mt-2 max-w-[56ch] text-[15.5px] leading-[1.65] text-[#4E5F55]">
-            Most setup, scanning, and alarm questions can be solved in a couple of minutes.
+            Find steps for common setup, scanning, and alarm issues.
           </p>
 
           <ul className="mt-6 divide-y divide-black/[0.08] border-y border-black/[0.08]">

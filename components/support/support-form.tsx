@@ -18,23 +18,23 @@ const TOPICS = [
 const COMMON_ANSWERS = [
   {
     q: 'Do I have to type in my schedule?',
-    a: 'No. Take a photo of your printed registration form, upload a portal screenshot, import your official PDF, or paste plain text. Dormosaur extracts subjects, rooms, days, and times, and lets you review every class before saving.',
+    a: 'No. Use a photo of your registration form, a portal screenshot, a PDF, or pasted text. Check each class before saving.',
   },
   {
     q: 'Why is Dormosaur an Android APK right now?',
-    a: 'We ship the signed Android build directly while store listings are finalized. Allow your browser to install unknown apps once, tap Install, and future updates install cleanly right over your existing app without losing account data.',
+    a: 'You can download the signed APK directly from Dormosaur while we prepare store listings. If Android prompts you, allow installs from the app that opened the file. Install updates over your existing app to keep your data.',
   },
   {
     q: 'Why did my class alarm not ring?',
-    a: 'Make sure notifications are allowed for Dormosaur in Android settings and set Battery usage to Unrestricted so your phone does not pause background alerts. Alarms are scheduled locally on your device so they ring even offline.',
+    a: 'In Android settings, allow notifications for Dormosaur. If alarms still don’t ring, set Battery usage for Dormosaur to Unrestricted. Scheduled alarms work offline.',
   },
   {
     q: 'How do I activate or verify Dormosaur Pro?',
-    a: 'Start your 7-day free trial inside the app with no payment required, or choose a Monthly, Semester, or Lifetime plan payable via GCash, Maya, MariBank, or GoTyme. Payments are reviewed within 24 hours with zero auto-renewal.',
+    a: 'Start a free 7-day trial in the app. To buy a Monthly, Semester, or Lifetime plan, pay with GCash, Maya, MariBank, or GoTyme. We review payments within 24 hours. Plans do not renew automatically.',
   },
   {
     q: 'Can I reset my password or delete my account?',
-    a: 'Yes. Send us a message using the form above under "Account or data request" with the email address on your Dormosaur account and we will handle it promptly.',
+    a: 'Yes. Choose “Account or data request” in the form above. Include the email address you use for Dormosaur and tell us what you need.',
   },
 ] as const
 
@@ -112,7 +112,7 @@ export function SupportForm({ supportEmail }: { supportEmail: string }) {
             setDetails(e.target.value)
             if (sent) setSent(false)
           }}
-          placeholder="What happened, and what you expected instead."
+          placeholder="Tell us what you were doing and what happened."
           className="mt-2 w-full resize-y rounded-[14px] border border-black/[0.08] bg-[#F3F5F3] px-4 py-3 text-[15px] leading-relaxed text-[#0A1710] outline-none transition-colors placeholder:text-black/40 focus:border-[#0E7A4A] focus:bg-white"
         />
       </div>
@@ -124,7 +124,7 @@ export function SupportForm({ supportEmail }: { supportEmail: string }) {
           </label>
           <span className="text-[13px] text-black/45">Optional</span>
         </div>
-        <p className="mt-0.5 text-[13.5px] text-black/55">Add an email address if you would like a reply.</p>
+        <p className="mt-0.5 text-[13.5px] text-black/55">Leave your email if you’d like a reply.</p>
         <input
           id="support-email"
           type="email"
@@ -147,7 +147,7 @@ export function SupportForm({ supportEmail }: { supportEmail: string }) {
           className="flex items-center gap-2.5 rounded-[14px] border border-[#0E7A4A]/20 bg-[#EBF7F0] px-4 py-3 text-[14.5px] font-medium text-[#0B5E39]"
         >
           <Check className="size-4 shrink-0" strokeWidth={2.8} aria-hidden />
-          Message sent. Thank you — a real person will read it and follow up soon.
+          Message sent to Dormosaur support.
         </div>
       )}
 

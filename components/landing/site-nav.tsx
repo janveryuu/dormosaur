@@ -10,7 +10,7 @@ import { DownloadButton } from './download-button'
 import { spring } from './shared'
 
 const NAV_LINKS = [
-  { label: 'Docs', href: '/docs' },
+  { label: 'Help', href: '/docs' },
   { label: 'About', href: '/about' },
   { label: 'Support', href: '/support' },
 ] as const

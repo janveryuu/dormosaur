@@ -18,39 +18,39 @@ type ShowcaseItem = {
 const SHOWCASE_ROWS: ShowcaseItem[] = [
   {
     id: 'schedule',
-    title: 'Your whole week, laid out cleanly',
-    body: 'Switch between Week and Day views in one tap. Every class block keeps your course code, room number, and start time sharp and readable between buildings.',
+    title: 'Check your week or just today',
+    body: 'Switch between Week and Day. Tap a class to check the course code, room, or start time on your way across campus.',
     bullets: [
       'Full Week grid and Day list built for quick hallway checks',
       'Color-coded classes with rooms, online tags, and exact times',
       'Search any subject, room, or instructor in seconds',
     ],
     shot: '/landing/screens/app-schedule-v2.webp',
-    alt: 'Dormosaur Schedule week view showing 19 courses across Monday to Friday including FILI 102, CPE 414, CPE 410, ENGG 416, CPE 413, CPE 415, and CPE 411',
+    alt: 'Weekly timetable with classes arranged from Monday through Friday',
   },
   {
     id: 'tasks',
-    title: 'Never lose track of a deadline',
-    body: 'Keep problem sets, presentations, projects, and final exams out of your head. Scan a syllabus or add due dates yourself, sorted cleanly into Upcoming, Done, and All.',
+    title: 'See what’s due this week',
+    body: 'Scan a syllabus or add deadlines yourself. Check what’s coming up, then mark each task done as you finish it.',
     bullets: [
       'Live counters for this week, overdue items, and completion rate',
       'Scan syllabi or class posts to pull out every due date automatically',
       'Grouped by This Week and Later so priorities stay obvious',
     ],
     shot: '/landing/screens/app-tasks-v2.webp',
-    alt: 'Dormosaur Tasks deadline tracker showing 3 tasks this week, 0 overdue, and upcoming deadlines including Problem Set 4, Fili Presentation Research, DSA Application Presentation, Project ENGG 416, and Final Exam',
+    alt: 'Tasks screen with upcoming assignments and exams sorted by due date',
   },
   {
     id: 'kitchen',
-    title: 'Eat well in a tiny dorm',
-    body: 'Browse 200 budget-friendly recipes with prep times, appliances, and estimated cost. Filter by meal type, plan your week, and build your grocery list in one tap.',
+    title: 'Cook with what’s in your dorm',
+    body: 'Browse 200 recipes by meal type. Check the prep time, equipment, and estimated cost before adding a recipe to your meal plan. Build a grocery list from the ingredients you need.',
     bullets: [
       '200 dorm-tested recipes for rice cookers, hot plates, and no-cook meals',
       'Clear cook time and peso cost on every dish before you start',
       'Built-in Meal plan and Grocery tabs right beside your recipes',
     ],
     shot: '/landing/screens/app-kitchen-v2.webp',
-    alt: 'Dormosaur Kitchen screen showing dorm-budget meals including Tortang Patatas, Calamansi Sardine Pandesal, Tomato and Queso Pandesal, and Ginataang Mais Breakfast Bowl with prep times and prices',
+    alt: 'Kitchen recipe cards showing prep times and estimated prices',
   },
 ]
 

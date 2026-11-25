@@ -150,7 +150,7 @@ export function Hero({ apkUrl, apkVersion, animate, go }: { apkUrl: string; apkV
           Your class schedule, <span className="block text-[#0E7A4A]">from one photo.</span>
         </h1>
         <p className="mx-auto mt-5 max-w-[38rem] text-pretty text-[16px] leading-relaxed text-[#48564D] sm:mt-6 sm:text-lg">
-          Import a photo, screenshot, or PDF. Dormosaur builds your week and brings class alarms, deadlines, and dorm meals together.
+          Upload a photo, screenshot, or PDF of your timetable to build your weekly schedule. See when class starts, what’s due, and what you can cook in your dorm.
         </p>
         <div className="mt-7 flex flex-col items-center gap-3 sm:mt-8">
           <DownloadButton apkUrl={apkUrl} />

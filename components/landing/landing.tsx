@@ -96,22 +96,22 @@ function Bento({ animate }: { animate: boolean }) {
           <h2 className="text-balance text-[40px] font-bold leading-tight tracking-[-0.035em] sm:text-[52px]">Know what&apos;s next.</h2>
         </Reveal>
         <div className="grid gap-4 md:grid-cols-2">
-          <BentoCard bg="#FFF3B0" ink="#4A3B00" title="Plan your whole term" body="Classes, exams, assignments and meals — all lined up in one calm week view.">
+          <BentoCard bg="#FFF3B0" ink="#4A3B00" title="Plan your whole term" body="Check your classes, exams, assignments, and meals for the week.">
             <TermRails animate={animate} />
           </BentoCard>
-          <BentoCard bg="#D9E8FF" ink="#123A7A" title={<>Your schedule on<br />your Home Screen</>} body="See what's next, tomorrow's classes, and your whole week without opening the app." delay={0.08} className="md:row-span-2">
+          <BentoCard bg="#D9E8FF" ink="#123A7A" title={<>Your schedule on<br />your lock screen</>} body="Save your weekly schedule as a wallpaper so it’s easy to check between classes." delay={0.08} className="md:row-span-2">
             <div className="pt-4"><HomeScreenPhone /></div>
           </BentoCard>
           <BentoCard bg="#FFD9EC" ink="#7A1745" title={<>Today&apos;s classes<br />and deadlines</>} delay={0.12}>
             <StackedNotes />
           </BentoCard>
-          <BentoCard bg="#DCF5E7" ink="#0A4A2D" title="Alarms that never miss" body="Rings 15, 30 or 60 minutes before every class — even with no signal." className="md:col-span-2" delay={0.05}>
+          <BentoCard bg="#DCF5E7" ink="#0A4A2D" title="Class alarms that work offline" body="Get an alarm 15 minutes before class, even with no signal. Pro can remind you 30 or 60 minutes before class." className="md:col-span-2" delay={0.05}>
             <AlarmStrip />
           </BentoCard>
-          <BentoCard bg="#FFE8D6" ink="#6B2F05" title="Eat well on a dorm budget" body="200 rice-cooker, kettle and microwave recipes. Plan the week, auto-build the grocery list." delay={0.08}>
+          <BentoCard bg="#FFE8D6" ink="#6B2F05" title="Eat well on a dorm budget" body="Find 200 recipes for dorm appliances. Pick your meals and make a grocery list." delay={0.08}>
             <RecipeFan />
           </BentoCard>
-          <BentoCard bg="#ECE6FF" ink="#3E1D8F" title="Reminders before it's due" body="Exams, quizzes and projects sorted by when. Tick them off with a satisfying pop." delay={0.14}>
+          <BentoCard bg="#ECE6FF" ink="#3E1D8F" title="See what’s due next" body="See exams, quizzes, and projects in due date order. Mark each task done when you finish." delay={0.14}>
             <Notification />
           </BentoCard>
         </div>
@@ -267,45 +267,45 @@ type FaqItem = {
 const faqs: FaqItem[] = [
   {
     q: 'Can I import my class schedule from a photo?',
-    a: 'Yes. You can take a photo of a printed registration form, upload a screenshot from your student portal, import an official portal PDF (up to 3 MB), or paste plain timetable text. Dormosaur reads each subject name, course code, room, instructor, days, and start/end times automatically. Anything it is unsure about is flagged on a review screen before saving, duplicate scans skip already-saved classes, and every confirmed class gets an alarm right away.',
+    a: 'Yes. Use a photo of your registration form, a portal screenshot, a PDF up to 3 MB, or pasted text. Dormosaur pulls out class times and rooms and flags details to double check. Review the results before saving. Dormosaur skips duplicate classes and sets alarms for the classes you confirm.',
     docHref: '/docs/import',
     docLabel: 'Read the import guide',
   },
   {
     q: 'Is Dormosaur free?',
-    a: 'Yes. Dormosaur is completely free to download and has zero ads anywhere in the app. Your core class schedule, task and deadline tracker, 15-minute class alarms, today’s meal plan, and all 200 dorm-budget recipes are free, along with 1 free AI schedule scan, 1 syllabus scan, and 5 daily Ask Dormo chats. If you want unlimited scans, 100 daily Ask Dormo chats, 30 or 60 minute alarm lead times, full-week meal planning with grocery list export, and extra watermark-free wallpaper themes, Dormosaur Pro offers a 7-day free trial with no automatic renewal and affordable plans payable via GCash, Maya, MariBank, or GoTyme.',
+    a: 'Dormosaur is free to download and has no ads. The free plan includes your schedule, tasks, class alarms 15 minutes before class, today’s meal plan, and all 200 recipes. You also get one AI schedule scan, one syllabus scan, and five Ask Dormo messages a day. Dormosaur Pro includes unlimited scans, 100 Ask Dormo messages a day, alarms 30 or 60 minutes before class, weekly meal planning with grocery list export, and extra wallpaper themes without a watermark. You can try Pro free for 7 days. Plans do not renew automatically. Pay with GCash, Maya, MariBank, or GoTyme.',
   },
   {
     q: 'Why is it an APK and not on the Play Store?',
-    a: 'We ship Dormosaur directly as a signed Android APK while store listings are finalized. It is the exact same production build we run on our own phones, compatible with Android 8 or newer. Whenever a new version releases on this site, installing the update over your existing app preserves every class, deadline, and meal plan safely because your data stays tied to your account.',
+    a: 'While we prepare store listings, you can download the signed APK directly from Dormosaur. It works on Android 8 or later. Install updates over your existing app to keep your data.',
     docHref: '/docs/install',
     docLabel: 'Read the install guide',
   },
   {
     q: 'Does it work offline?',
-    a: 'Yes, for everything you rely on between classes. Your weekly timetable, open deadlines, saved recipes, and class alarms are cached locally on your phone, and alarms schedule as native Android notifications so they still ring on time even with zero signal or weak dorm Wi-Fi. An internet connection is only needed when running AI scans, chatting with Ask Dormo, or syncing changes across devices.',
+    a: 'Yes. You can check your saved timetable, tasks, and recipes offline. Scheduled class alarms still ring. Connect to the internet to sign in, run AI scans, use Ask Dormo, or sync changes.',
   },
   {
     q: 'Will it remind me before class?',
-    a: 'Yes. Every class you scan or add receives an automatic reminder before it starts, showing the exact ring time and room. Free accounts ring 15 minutes ahead of class, while Dormosaur Pro lets you choose 30-minute or 60-minute lead times when you have a longer commute. You can switch any individual class alarm off without deleting the class, and our help docs include quick battery settings tips for phones that pause background apps.',
+    a: 'Yes. Dormosaur sets an alarm for each class you add. On the free plan, it rings 15 minutes before class. With Pro, you can also choose 30 or 60 minutes. You can turn off an alarm for a single class and keep the class in your schedule.',
     docHref: '/docs/alarms',
     docLabel: 'Read the class alarms guide',
   },
   {
     q: 'Does it have home screen widgets?',
-    a: 'Right now you can generate a crisp, customized Schedule Wallpaper sized for your Lock Screen or Home Screen in seconds, choosing between List or Timetable layouts with optional room numbers, plus sharing your week as an image or plain text. Native live Android home screen widgets (which you can already preview inside the app) are actively planned for an upcoming update.',
+    a: 'You can preview upcoming live widgets in the app. For now, save your schedule as a wallpaper in List or Timetable view, with or without room numbers. You can also share your schedule as an image or text.',
     docHref: '/docs/wallpaper-widgets',
     docLabel: 'See wallpaper and widgets',
   },
   {
     q: 'Is my data private?',
-    a: 'Yes. Dormosaur never displays ads and never sells or shares student timetables with advertisers or data brokers. Your classes, alarms, tasks, and meal plans are stored under your account solely so everything stays backed up if you switch phones or reinstall. When you scan a schedule image or PDF, the file is processed securely only to extract your classes or due dates.',
+    a: 'Dormosaur never sells student timetables or shares them with advertisers or data brokers. Your account backs up your classes, alarms, tasks, and meal plans so you can recover them after reinstalling or switching phones. We process scan files to read your classes or due dates.',
     docHref: '/docs/privacy',
     docLabel: 'Read privacy and data details',
   },
   {
     q: 'Is there an iPhone version?',
-    a: 'Dormosaur launched Android-first to reach campus students quickly, and an iPhone (iOS) version is on our roadmap. Because your timetable, tasks, and meal plan stay synced to your Google or email account, signing in on a newer Android phone or future device restores your entire semester right away.',
+    a: 'Dormosaur is available on Android. An iPhone version is planned. If you switch Android phones, sign in with the same account to restore your timetable, tasks, and meal plan.',
   },
 ]
 
@@ -320,7 +320,7 @@ function Faq() {
               Frequently asked<br /><em className="text-[#0E7A4A]">questions</em>
             </h2>
             <p className="mt-4 max-w-[34ch] text-pretty text-[15.5px] leading-[1.6] text-[#35463C]">
-              Everything students usually ask before installing Dormosaur and scanning their first timetable.
+              What to know before you download Dormosaur or import your first schedule.
             </p>
             <Link
               href="/docs"

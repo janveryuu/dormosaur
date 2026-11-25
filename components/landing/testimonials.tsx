@@ -41,8 +41,8 @@ const QUOTES: Quote[] = RAW.map((q, i) => ({ kind: 'quote', tone: TONES[i % TONE
 /** In-app moments: what Dormosaur actually does for you during the week. Not quotes. */
 const MOMENTS: Moment[] = [
   { kind: 'moment', icon: 'alarm', title: 'CS 150 in 30 min', body: 'Tech 118 \u00b7 leave the dorm by 12:40' },
-  { kind: 'moment', icon: 'scan', title: '6 classes found', body: 'Your registration form is now a clean week' },
-  { kind: 'moment', icon: 'done', title: 'Lab report submitted', body: '3 tasks left this week. Nice pace.' },
+  { kind: 'moment', icon: 'scan', title: '6 classes found', body: 'Review your classes before saving' },
+  { kind: 'moment', icon: 'done', title: 'Lab report submitted', body: '3 tasks left this week' },
 ]
 
 /** Deal quotes round-robin into n columns, with one app moment after every few quotes. */
@@ -115,9 +115,9 @@ export function Testimonials({ animate = true }: { animate?: boolean }) {
       <div className="mx-auto max-w-[1100px]">
         <Reveal className="text-center">
           <h2 className="text-[clamp(2.75rem,5.5vw,4.25rem)] leading-none tracking-[-0.02em]" style={serif}>
-            What people say <em className="text-[#0E7A4A]">about Dormosaur.</em>
+            What students say <em className="text-[#0E7A4A]">about Dormosaur.</em>
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-[16px] text-black/55">From first-years to working students: how Dormosaur fits into their week.</p>
+          <p className="mx-auto mt-4 max-w-md text-[16px] text-black/55">Students share how they use Dormosaur to keep up with classes and deadlines.</p>
         </Reveal>
         {scrolling ? (
           <div className="mt-12 grid gap-4 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] md:grid-cols-3">

@@ -60,7 +60,7 @@ function SignInContent() {
       }
     } catch {
       console.warn('[Auth]', { category: 'signin_failed' })
-      setError('Something went wrong, please try again.')
+      setError('Could not sign in. Try again.')
       setLoading(false)
     }
   }
@@ -113,10 +113,10 @@ function SignInContent() {
           {/* Headline & Subhead */}
           <div className="flex flex-col gap-1.5 text-center lg:text-left">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              Welcome back
+              Staff sign-in
             </h1>
             <p className="text-sm font-medium text-muted-foreground">
-              Sign in to the Dormosaur admin console
+              Use your Dormosaur admin account.
             </p>
           </div>
 
@@ -237,7 +237,7 @@ function SignInContent() {
                         Signing in…
                       </span>
                     ) : (
-                      'Sign In'
+                      'Sign in'
                     )}
                   </PillButton>
                 </div>
@@ -258,7 +258,7 @@ function SignInContent() {
 
           {/* Terms Footer */}
           <p className="text-center text-[12px] text-muted-foreground/70">
-            By continuing you agree to Dormosaur&apos;s terms of service.
+            By continuing, you agree to Dormosaur&apos;s terms of service.
           </p>
         </motion.div>
       </div>

@@ -21,22 +21,22 @@ const STEPS: StepItem[] = [
   {
     stepNumber: 1,
     title: 'Download the APK',
-    summary: 'Grab the official signed Android build straight from Dormosaur.',
-    detail: 'Works on Android 8 or newer. Free forever with zero ads or trackers.',
+    summary: 'Download the signed Android app from Dormosaur.',
+    detail: 'Free to download on Android 8 or later. The app has no ads.',
     badge: 'Free · Signed APK',
   },
   {
     stepNumber: 2,
-    title: 'Allow browser installs once',
-    summary: 'Open the downloaded file from Chrome or your Files app and tap Install.',
-    detail: 'Android asks once per browser to enable "Install unknown apps" for direct releases.',
+    title: 'Allow the install',
+    summary: 'Open the file from your browser downloads or the Files app, then tap Install.',
+    detail: 'If Android prompts you, allow installs from the app you used to open the file.',
     badge: 'One-time Android prompt',
   },
   {
     stepNumber: 3,
-    title: 'Sign in and snap your schedule',
-    summary: 'Continue with Google or email, scan your schedule photo or PDF, and review.',
-    detail: 'Your whole week appears cleanly and class alarms arm offline automatically.',
+    title: 'Sign in and import your schedule',
+    summary: 'Sign in with Google or email, then scan your schedule photo or PDF.',
+    detail: 'Review your classes and save them to set up offline alarms.',
     badge: 'Under 2 min',
   },
 ]
@@ -85,7 +85,7 @@ export function InstallSteps({ apkUrl, apkVersion }: { apkUrl: string; apkVersio
             Install Dormosaur <em className="text-[#0E7A4A]">in three steps.</em>
           </h2>
           <p className="mt-4 max-w-[46ch] text-pretty text-[16px] leading-[1.65] text-[#35463C] sm:text-[17px]">
-            Direct signed Android release (v{apkVersion}). Go from tap to full weekly timetable with offline alarms in under two minutes.
+            Download version {apkVersion} for Android and set up your timetable and class alarms in under two minutes.
           </p>
         </div>
 
@@ -375,7 +375,7 @@ function PhoneStepReady() {
     <div className="relative h-full overflow-hidden">
       <Image
         src="/landing/screens/app-schedule-v2.webp"
-        alt="Dormosaur Schedule screen loaded with classes right after scanning"
+        alt="Weekly timetable in Dormosaur after importing classes"
         width={780}
         height={1688}
         sizes="272px"

@@ -38,7 +38,7 @@ export function BrandPanel() {
       <div className="relative z-10 flex flex-1 flex-col justify-center gap-8 max-w-md mx-auto">
         <div className="relative mx-auto flex items-center justify-center">
           <div className="auth-brand-mascot">
-            <DormosaurMascot variant="welcome" alt="Dormosaur welcoming you to campus" width={320} height={320} priority />
+            <DormosaurMascot variant="welcome" alt="Dormo waving" width={320} height={320} priority />
           </div>
           <div className="absolute -right-1 -top-1 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-ios-md ring-4 ring-background">
             <Bell
@@ -50,9 +50,9 @@ export function BrandPanel() {
         </div>
 
         <div className="flex flex-col gap-4 text-center">
-          <p className="route-label">Your campus companion</p>
+          <p className="route-label">Dormosaur for Android</p>
           <h2 className="auth-brand-title text-2xl font-extrabold leading-tight text-balance tracking-tight">
-            One route map for the semester scramble.
+            Class schedules, reminders, and dorm meals
           </h2>
           <ul className="mx-auto flex flex-col items-start gap-2.5 text-[14.5px] font-medium text-primary-foreground/72">
             {highlights.map((item) => (

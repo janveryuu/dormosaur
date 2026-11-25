@@ -16,8 +16,8 @@ import { spring } from './shared'
 const planFeatures: { icon: FeatureIconKey; title: string; detail: string }[] = [
   { icon: 'schedule', title: 'Schedule', detail: 'Classes, rooms & times' },
   { icon: 'tasks', title: 'Tasks', detail: 'Exams & due dates' },
-  { icon: 'scanner', title: 'Scanner', detail: 'Photo in, week out' },
-  { icon: 'alarms', title: 'Alarms', detail: '15–60 min heads-up' },
+  { icon: 'scanner', title: 'Scanner', detail: 'Import a timetable' },
+  { icon: 'alarms', title: 'Alarms', detail: 'Offline class reminders' },
   { icon: 'kitchen', title: 'Kitchen', detail: '200 dorm meals' },
   { icon: 'copilot', title: 'Copilot', detail: 'Ask about your week' },
 ]
@@ -128,7 +128,7 @@ export function HomeScreenPhone() {
               <div className="relative h-[565px] overflow-hidden rounded-[46px] bg-[#F6D9DF]">
                 <Image
                   src="/landing/home-widgets.webp"
-                  alt="Dormosaur widgets on a phone home screen: next class, classes left today, tomorrow, and this week"
+                  alt="Preview of Dormosaur home screen widgets for today, tomorrow, and the week"
                   fill
                   sizes="274px"
                   className="object-cover object-top"
@@ -167,7 +167,7 @@ const FEATURE_PILLS: FeaturePill[] = [
     bg: '#0E7A4A',
     fg: '#FFFFFF',
     spec: 'Week & Day views',
-    line: 'Every class, room number, and instructor color-coded in a calm weekly timetable.',
+    line: 'Check class times, rooms, and instructors in your weekly timetable.',
   },
   {
     id: 'scanner',
@@ -185,7 +185,7 @@ const FEATURE_PILLS: FeaturePill[] = [
     bg: '#FF6363',
     fg: '#240505',
     spec: '15, 30 or 60 min lead',
-    line: 'Automatic reminders before every class that fire locally even when dorm Wi-Fi drops.',
+    line: 'Class alarms ring on your Android phone even when you lose Wi-Fi or mobile data.',
   },
   {
     id: 'tasks',
@@ -193,7 +193,7 @@ const FEATURE_PILLS: FeaturePill[] = [
     label: 'Tasks',
     bg: '#1D64E8',
     fg: '#FFFFFF',
-    spec: 'Syllabus scan ready',
+    spec: 'Import syllabus dates',
     line: 'Exams, quizzes, lab reports, and projects sorted by due date with Open and Done tracking.',
   },
   {
@@ -203,7 +203,7 @@ const FEATURE_PILLS: FeaturePill[] = [
     bg: '#FF87BA',
     fg: '#2B0818',
     spec: 'Live Up Next card',
-    line: 'See at a glance how many minutes remain until your next class starts and which room to head to.',
+    line: 'See how soon your next class starts and which room to go to.',
   },
   // Row 2 (4)
   {
@@ -213,7 +213,7 @@ const FEATURE_PILLS: FeaturePill[] = [
     bg: '#FACC15',
     fg: '#241C00',
     spec: 'Lock Screen wallpaper',
-    line: 'Save a crisp timetable wallpaper sized for your Lock Screen today, with live widgets coming soon.',
+    line: 'Save your timetable as a lock screen wallpaper and preview upcoming home screen widgets.',
   },
   {
     id: 'kitchen',
@@ -222,7 +222,7 @@ const FEATURE_PILLS: FeaturePill[] = [
     bg: '#FB923C',
     fg: '#261102',
     spec: '200 dorm recipes',
-    line: 'Rice cooker, kettle, and microwave meals that turn missing ingredients into your grocery list.',
+    line: 'Find recipes for a rice cooker, kettle, or microwave. Add the ingredients you need to your grocery list.',
   },
   {
     id: 'copilot',
@@ -240,7 +240,7 @@ const FEATURE_PILLS: FeaturePill[] = [
     bg: '#0F766E',
     fg: '#FFFFFF',
     spec: 'Works without signal',
-    line: 'Your timetable, tasks, recipes, and scheduled class alarms stay available with zero data.',
+    line: 'Check your saved timetable, tasks, and recipes without an internet connection. Scheduled alarms still ring.',
   },
   // Row 3 (3)
   {
@@ -249,8 +249,8 @@ const FEATURE_PILLS: FeaturePill[] = [
     label: 'Private',
     bg: '#1E40AF',
     fg: '#FFFFFF',
-    spec: 'Zero ads or trackers',
-    line: 'No ads, ever. Your schedule and deadlines stay tied to your account and are never sold.',
+    spec: 'No ads or ad trackers',
+    line: 'Dormosaur never sells your schedule or deadlines.',
   },
   {
     id: 'pdf',
@@ -259,7 +259,7 @@ const FEATURE_PILLS: FeaturePill[] = [
     bg: '#4338CA',
     fg: '#FFFFFF',
     spec: 'Up to 3 MB portal PDF',
-    line: 'Drop your official school portal PDF straight in for the cleanest subject, day, and room extraction.',
+    line: 'Import a PDF from your school portal, then check the subjects, days, and rooms before saving.',
   },
   {
     id: 'darkmode',
@@ -268,7 +268,7 @@ const FEATURE_PILLS: FeaturePill[] = [
     bg: '#12231B',
     fg: '#E9F7EE',
     spec: 'System · Light · Dark',
-    line: 'Comfortable low-glare reading when checking early morning rooms or late-night deadlines.',
+    line: 'Choose light or dark mode, or match your phone’s settings.',
   },
 ]
 
@@ -325,7 +325,7 @@ export function FeatureTiles({ animate = true }: { animate?: boolean }) {
               <button
                 type="button"
                 aria-pressed={isOn}
-                aria-label={`${item.label} — ${item.spec}`}
+                aria-label={`${item.label}: ${item.spec}`}
                 onMouseEnter={() => { setHoverPaused(true); setActive(idx) }}
                 onFocus={() => { setHoverPaused(true); setActive(idx) }}
                 onBlur={() => setHoverPaused(false)}

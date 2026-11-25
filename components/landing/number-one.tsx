@@ -25,10 +25,10 @@ const RANKINGS: RankedItem[] = [
     rank: 1,
     placeLabel: '1st place',
     name: 'Dormosaur',
-    subtitle: 'Snap one photo & done',
+    subtitle: 'Scan a schedule photo',
     timeLabel: '5 sec',
     progressPct: 100,
-    takeaway: 'Finishes your full weekly timetable, rooms, and offline alarms in 5 seconds — before manual apps get past Monday.',
+    takeaway: 'Builds your weekly timetable in 5 seconds. Confirm your classes to set up offline alarms.',
   },
   {
     id: 'manual',
@@ -38,7 +38,7 @@ const RANKINGS: RankedItem[] = [
     subtitle: 'Typing every class by hand',
     timeLabel: '25 min',
     progressPct: 22,
-    takeaway: 'Still entering subjects, repeat days, and room numbers one by one — then setting separate morning alarms in another app.',
+    takeaway: 'Enter subjects, days, and rooms one class at a time. Set class alarms separately.',
   },
   {
     id: 'spreadsheet',
@@ -48,13 +48,13 @@ const RANKINGS: RankedItem[] = [
     subtitle: 'Formatting cell by cell',
     timeLabel: '40 min',
     progressPct: 12,
-    takeaway: 'Still merging time blocks and fixing column widths — with zero class alarms, countdowns, or deadline tracking.',
+    takeaway: 'Merge cells and adjust columns by hand. Track alarms and deadlines separately.',
   },
 ]
 
 const METRICS = [
-  { to: 200, suffix: '', label: 'Dorm-budget recipes' },
-  { to: 0, suffix: '', label: 'Ads or trackers, ever' },
+  { to: 200, suffix: '', label: 'Recipes for dorm cooking' },
+  { to: 0, suffix: '', label: 'Ads or ad trackers' },
   { to: 100, suffix: '%', label: 'Offline class alarms' },
 ] as const
 
@@ -114,7 +114,7 @@ export function NumberOne() {
               The No.&nbsp;1 schedule tracker for <em className="text-[#0E7A4A]">dorm life.</em>
             </h2>
             <p className="mt-5 max-w-[42ch] text-pretty text-[16px] leading-[1.65] text-[#354B3E] sm:text-[17px]">
-              Snap one photo and finish your whole term before other tools even get past Monday.
+              See how scanning a schedule compares with entering classes by hand.
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-4">

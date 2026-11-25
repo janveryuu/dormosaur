@@ -18,7 +18,7 @@ type SourceMode = {
 
 const SOURCE_MODES: SourceMode[] = [
   { id: 'screenshot', label: 'Screenshot', hint: 'Student portal table', fileName: 'portal-schedule.png', icon: ScanLine },
-  { id: 'pdf', label: 'PDF or image', hint: 'Official reg form PDF', fileName: 'COR_1stSem.pdf', icon: FileText },
+  { id: 'pdf', label: 'PDF or image', hint: 'Registration form PDF', fileName: 'COR_1stSem.pdf', icon: FileText },
   { id: 'photo', label: 'Take a photo', hint: 'Printed enrollment slip', fileName: 'enrollment-slip.jpg', icon: Camera },
   { id: 'text', label: 'Paste text', hint: 'Copied class list', fileName: 'pasted-schedule.txt', icon: ListChecks },
 ]
@@ -111,7 +111,7 @@ export function ScannerSection() {
               <span className="text-[#0E7A4A]">See your week.</span>
             </h2>
             <p className="mt-5 max-w-[46ch] text-pretty text-[16.5px] leading-[1.65] text-[#354B3E] sm:text-[17px]">
-              Registration forms, portal screenshots, blurry printouts, PDFs, or pasted text. Tap any format below to preview how Dormosaur turns raw schedules into a clean week with alarms.
+              Use a registration form, portal screenshot, PDF, or pasted class list. Pick a format below to see the original and the weekly timetable it produces.
             </p>
           </Reveal>
 
@@ -361,7 +361,7 @@ function SourcePreview({ mode }: { mode: SourceId }) {
             ))}
           </div>
         </div>
-        <p className="font-mono text-[10px] text-black/45">Total units: 19 · Verified registrar table</p>
+        <p className="font-mono text-[10px] text-black/45">Total units: 19 · Sample registration form</p>
       </div>
     )
   }
@@ -370,7 +370,7 @@ function SourcePreview({ mode }: { mode: SourceId }) {
     return (
       <div className="flex h-full items-center justify-center bg-[#182920] p-4">
         <div className="relative w-full -rotate-1 rounded-[14px] bg-[#F6F1E4] p-4 font-mono text-[11px] leading-[1.6] text-[#2B261C] shadow-lg">
-          <p className="font-bold">STUDENT REG FORM — 1ST SEM</p>
+          <p className="font-bold">STUDENT REG FORM: 1ST SEM</p>
           <div className="mt-2 space-y-1">
             <p>FILI102  TUE 0800-1000 RM202 CICS</p>
             <p>CPE414   WED 0800-1000 RM202 CICS</p>

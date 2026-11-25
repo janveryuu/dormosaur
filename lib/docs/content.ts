@@ -29,7 +29,7 @@ export const pages: DocPage[] = [
     slug: '',
     title: 'Dormosaur Help',
     group: 'Start here',
-    description: 'Set up your class schedule, learn the app, and fix common problems with scanning, alarms, tasks, and the dorm kitchen.',
+    description: 'Install Dormosaur, import your schedule, and get help with class alarms, tasks, and meal planning.',
     body: [
       { p: 'Dormosaur keeps your class schedule, class alarms, deadlines, and dorm meals together on your Android phone. Scan the timetable you already have, check every class, and let Dormo handle the reminders.' },
       { p: 'These guides explain the app in short, task-focused steps. Labels in **bold** match what you see on screen.' },
@@ -51,7 +51,7 @@ export const pages: DocPage[] = [
       { h2: 'App map' },
       { p: 'The tab bar has **Today**, **Schedule**, **Tasks**, and **Kitchen**, plus a separate **+** button. Use **+** to scan your schedule, paste text, import a file, add a class by hand, add a task, or scan a syllabus.' },
       { p: 'On **Today**, the **Settings** gear button in the top corner opens **Settings**, where you also find **Class alarms**, the **Schedule scanner**, and the **Schedule wallpaper**.' },
-      { callout: 'note', title: 'Free to start, zero ads', body: 'Dormosaur is free to download with zero ads. Core schedule, 15-min alarms, tasks, and all 200 recipes are free; Dormosaur Pro adds unlimited AI scans, 100 daily Dormo chats, 30/60-min alarms, full-week meal planning, and extra wallpaper themes.' },
+      { callout: 'note', title: 'Free download and optional Pro', body: 'Dormosaur is free to download and has no ads. Free accounts get one AI schedule scan and one syllabus scan. Dormosaur Pro includes unlimited scans. See the [FAQ](/docs/faq#is-dormosaur-free) for what each plan includes.' },
     ],
     next: ['getting-started'],
   },
@@ -59,7 +59,7 @@ export const pages: DocPage[] = [
     slug: 'getting-started',
     title: 'Getting started',
     group: 'Start here',
-    description: 'Install Dormosaur, create your account, scan your schedule, and check your alarms in a few minutes.',
+    description: 'Install Dormosaur, set up your account, and import your first class schedule.',
     body: [
       { p: 'You can go from install to a full week with alarms in about five minutes. You need your class schedule as a screenshot, photo, PDF, or text.' },
       { h2: 'Set up in five steps' },
@@ -71,7 +71,7 @@ export const pages: DocPage[] = [
         'Check every class on the review screen, fix anything marked **Time missing** or **Day missing**, then save.',
       ] },
       { p: 'Your classes now appear on **Today** and **Schedule**, and each class gets an alarm automatically.' },
-      { callout: 'tip', title: 'Best source for an exact read', body: 'If your school portal lets you download the schedule as a PDF, use that. A screenshot of the portal is the next best option.' },
+      { callout: 'tip', title: 'Use a PDF if you have one', body: 'If your school portal lets you download the schedule as a PDF, use that. A screenshot of the portal is the next best option.' },
       { h2: 'Allow notifications' },
       { p: 'Android asks for notification permission the first time Dormosaur sets your alarms. Allow it, or class alarms cannot ring. You can change this later in Android settings. See [Permissions](/docs/permissions).' },
       { h2: 'What to try next' },
@@ -87,7 +87,7 @@ export const pages: DocPage[] = [
     slug: 'install',
     title: 'Install the APK',
     group: 'Start here',
-    description: 'Download the Dormosaur APK from the website and install it on an Android phone.',
+    description: 'Download the Dormosaur APK and install it on Android 8 or later.',
     body: [
       { p: 'Dormosaur is shipped directly as an Android APK while store listings are prepared. The APK on the website is the same signed build we use ourselves.' },
       { h2: 'Requirements' },
@@ -111,7 +111,7 @@ export const pages: DocPage[] = [
     slug: 'import',
     title: 'Import your schedule',
     group: 'Start here',
-    description: 'Turn a screenshot, photo, PDF, or pasted text into a weekly schedule, then review every class before saving.',
+    description: 'Import a screenshot, photo, PDF, or pasted timetable. Check each class before saving.',
     body: [
       { p: 'The **Schedule scanner** reads subjects, codes, rooms, instructors, days, and times, then lays out your week. Nothing is saved until you confirm it.' },
       { p: 'Open the scanner from **Scan your schedule** on Today, from **Scan schedule** on an empty Schedule tab, from **+ ▸ Scan photo**, or from **Settings ▸ Schedule scanner**.' },
@@ -122,7 +122,7 @@ export const pages: DocPage[] = [
         '**Take a photo**: hold the phone level over the printed page.',
         '**Paste text**: lists like `MATH 101 MWF 8:30-9:50`.',
       ] },
-      { callout: 'tip', title: 'For the most exact read', body: 'Use the original PDF or a screenshot. Text copied from a timetable loses its columns, so days and times have to be guessed.' },
+      { callout: 'tip', title: 'Use the original layout', body: 'Use the original PDF or a screenshot. Text copied from a timetable loses its columns, so days and times have to be guessed.' },
       { h2: 'Limits' },
       { list: [
         'A PDF can be up to 3 MB. If yours is bigger, export only the schedule page.',
@@ -149,7 +149,7 @@ export const pages: DocPage[] = [
     slug: 'today',
     title: 'Today',
     group: 'Your day',
-    description: 'See the class happening now, your next class with a countdown, and the tasks due soon on one screen.',
+    description: 'Check what class is on now, how soon the next one starts, and which tasks are due soon.',
     body: [
       { p: '**Today** is the first tab. It answers one question: what do I need to do next?' },
       { h2: 'What you see' },
@@ -170,7 +170,7 @@ export const pages: DocPage[] = [
     slug: 'schedule',
     title: 'Schedule',
     group: 'Your day',
-    description: 'View your whole week or a single day, search your classes, and open any class to edit it.',
+    description: 'Switch between Week and Day views, find a class, or update its details.',
     body: [
       { p: 'The **Schedule** tab shows every saved class, coloured by subject.' },
       { h2: 'Week and Day views' },
@@ -187,7 +187,7 @@ export const pages: DocPage[] = [
     slug: 'classes',
     title: 'Classes',
     group: 'Your day',
-    description: 'Add a class by hand, edit its details and colour, or delete it.',
+    description: 'Add, edit, or remove classes in your schedule.',
     body: [
       { h2: 'Add a class' },
       { steps: [
@@ -208,7 +208,7 @@ export const pages: DocPage[] = [
     slug: 'alarms',
     title: 'Class alarms',
     group: 'Your day',
-    description: 'Get a reminder 15, 30, or 60 minutes before every class, even with no signal.',
+    description: 'Get class alarms even without a connection. Learn how to change the timing or turn an alarm off.',
     body: [
       { p: '**Class alarms** ring before every class, even offline. Each class gets an alarm automatically when you add it.' },
       { p: 'Open **Class alarms** from the alarm button on Today or from **Settings ▸ Class alarms**.' },
@@ -224,9 +224,9 @@ export const pages: DocPage[] = [
   },
   {
     slug: 'tasks',
-    title: 'Tasks & deadlines',
+    title: 'Tasks and deadlines',
     group: 'Your day',
-    description: 'Track exams, quizzes, assignments, and projects, or scan a syllabus to pull out every due date.',
+    description: 'Add deadlines for exams and assignments, or import due dates from a syllabus.',
     body: [
       { p: 'The **Tasks** tab is your **Deadline tracker**. It groups tasks by when they are due, shows what is overdue, and tracks how much you have finished.' },
       { h2: 'Add a task' },
@@ -251,22 +251,22 @@ export const pages: DocPage[] = [
     slug: 'recipes',
     title: 'Recipes',
     group: 'Dorm kitchen',
-    description: 'Browse dorm-budget recipes made for a rice cooker, kettle, or microwave.',
+    description: 'Find recipes you can make with a rice cooker, kettle, or microwave.',
     body: [
       { p: 'The **Kitchen** tab opens on **Recipes**: 200 dorm-budget meals built for small spaces and simple appliances.' },
       { h2: 'Find a recipe' },
       { p: 'Filter by **All**, **Breakfast**, **Lunch**, **Dinner**, **Snack**, **Drink**, or **Dessert**, then tap a recipe to see its **Ingredients** and **Steps**.' },
       { h2: 'Shop for what you are missing' },
       { p: 'On a recipe, tick the ingredients you already have, then tap **Add missing to grocery**. The rest go straight to your [grocery list](/docs/meal-plan).' },
-      { callout: 'tip', title: 'Tuned for dorms', body: 'If you said you live in a dorm during setup, the Kitchen favours recipes that fit dorm appliances.' },
+      { callout: 'tip', title: 'Recipes for your dorm setup', body: 'If you said you live in a dorm during setup, the Kitchen favours recipes that fit dorm appliances.' },
     ],
     next: ['meal-plan'],
   },
   {
     slug: 'meal-plan',
-    title: 'Meal plan & grocery list',
+    title: 'Meal plan and grocery list',
     group: 'Dorm kitchen',
-    description: 'Plan meals for the week and build a grocery list from them in one tap.',
+    description: 'Choose your meals and make a grocery list for the ingredients you need.',
     body: [
       { h2: 'Plan your meals' },
       { steps: ['Open **Kitchen ▸ Meal plan**.', 'Tap a meal slot on any day.', 'Pick a recipe. To empty a slot, choose **Clear this meal**.'] },
@@ -286,7 +286,7 @@ export const pages: DocPage[] = [
     slug: 'ask-dormo',
     title: 'Ask Dormo',
     group: 'Dormo',
-    description: 'Ask Dormo about your week, your free time, what is due, or what to cook.',
+    description: 'Ask Dormo when you’re free, what’s due, or what you can cook tonight.',
     body: [
       { p: 'Dormo is a chat assistant that knows your classes and deadlines. Open it from the Dormo button on Today or from **Settings**.' },
       { h2: 'Things to ask' },
@@ -300,9 +300,9 @@ export const pages: DocPage[] = [
   // ─── On your phone ─────────────────────────────────────────────────────
   {
     slug: 'wallpaper-widgets',
-    title: 'Wallpaper & widgets',
+    title: 'Wallpaper and widgets',
     group: 'On your phone',
-    description: 'Put your weekly schedule on your Lock Screen as a wallpaper, share it, and preview home screen widgets.',
+    description: 'Save your schedule as a lock screen wallpaper, share it, or preview upcoming widgets.',
     body: [
       { h2: 'Make a schedule wallpaper' },
       { p: 'A schedule wallpaper puts your week on your Lock Screen. It sits between the clock and the bottom buttons, and resizes to fit your week.' },
@@ -326,9 +326,9 @@ export const pages: DocPage[] = [
   // ─── Account & data ────────────────────────────────────────────────────
   {
     slug: 'account',
-    title: 'Account & sign-in',
+    title: 'Account and sign-in',
     group: 'Account & data',
-    description: 'Create an account with email or Google, confirm your email, sign in, and sign out.',
+    description: 'Create an account with email or Google and get help signing in.',
     body: [
       { p: 'Dormosaur needs an account so your schedule, tasks, and meals are saved and come back if you reinstall.' },
       { h2: 'Create an account' },
@@ -349,7 +349,7 @@ export const pages: DocPage[] = [
     slug: 'settings',
     title: 'Settings',
     group: 'Account & data',
-    description: 'Change your profile and appearance, and reach alarms, the scanner, wallpaper, and widgets.',
+    description: 'Update your profile or theme, and find the settings for alarms, scanning, and wallpaper.',
     body: [
       { p: 'Open **Settings** from the gear button on Today.' },
       { h2: 'Profile' },
@@ -365,7 +365,7 @@ export const pages: DocPage[] = [
     slug: 'permissions',
     title: 'Permissions',
     group: 'Account & data',
-    description: 'Why Dormosaur asks for each Android permission, and what still works if you decline.',
+    description: 'See which Android permissions Dormosaur needs and how to change them.',
     body: [
       { p: 'Dormosaur asks for a permission only when you use the feature that needs it.' },
       { h2: 'What each permission is for' },
@@ -381,9 +381,9 @@ export const pages: DocPage[] = [
   },
   {
     slug: 'privacy',
-    title: 'Privacy & data',
+    title: 'Privacy and data',
     group: 'Account & data',
-    description: 'What Dormosaur stores, what it sends when you scan, and what it never does.',
+    description: 'See what Dormosaur saves to your account and what it processes when you scan a file.',
     body: [
       { p: 'Dormosaur is private by design and has zero ads.' },
       { h2: 'What is stored' },
@@ -402,10 +402,10 @@ export const pages: DocPage[] = [
     slug: 'faq',
     title: 'FAQ',
     group: 'Help',
-    description: 'Quick answers about price, scanning, alarms, offline use, and devices.',
+    description: 'Check what’s free, what works offline, and which phones can run Dormosaur.',
     body: [
       { h2: 'Is Dormosaur free?' },
-      { p: 'Yes. Dormosaur is free to download and has zero ads. Your schedule, tasks, today’s meal plan, 15-min class alarms, and all 200 recipes are free; **Dormosaur Pro** adds unlimited scans, 100 daily Dormo chats, 30/60-min alarms, and full-week meal planning.' },
+      { p: 'Dormosaur is free to download and has no ads. The free plan includes your schedule, tasks, class alarms 15 minutes before class, today’s meal plan, and all 200 recipes. You also get one AI schedule scan, one syllabus scan, and five Ask Dormo messages a day. **Dormosaur Pro** includes unlimited scans, 100 Ask Dormo messages a day, alarms 30 or 60 minutes before class, weekly meal planning with grocery list export, and extra wallpaper themes without a watermark.' },
       { h2: 'Why is it an APK and not on the Play Store?' },
       { p: 'We ship the Android app directly while we prepare store listings. See [Install the APK](/docs/install).' },
       { h2: 'Can I import my schedule from a photo?' },
@@ -425,7 +425,7 @@ export const pages: DocPage[] = [
     slug: 'troubleshooting',
     title: 'Troubleshooting',
     group: 'Help',
-    description: 'Fix common problems with installing, scanning, alarms, and signing in.',
+    description: 'Follow these steps if the app won’t install, scans miss classes, alarms don’t ring, or you can’t sign in.',
     body: [
       { h2: 'The APK will not install' },
       { list: [
@@ -461,7 +461,7 @@ export const pages: DocPage[] = [
     slug: 'contact',
     title: 'Contact support',
     group: 'Help',
-    description: 'Get help with your account, a bug, or a schedule the scanner cannot read.',
+    description: 'Contact support for account help, a bug, or a schedule the scanner can’t read.',
     body: [
       { p: 'Most answers are in the [FAQ](/docs/faq) and [Troubleshooting](/docs/troubleshooting). If you are still stuck, write to us.' },
       { contact: true },

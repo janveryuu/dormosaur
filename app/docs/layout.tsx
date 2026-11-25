@@ -8,7 +8,7 @@ import './docs.css'
 const serif = Instrument_Serif({ subsets: ['latin'], weight: '400', variable: '--font-serif-display' })
 
 export const metadata: Metadata = {
-  title: { template: '%s · Dormosaur Help', default: 'Dormosaur Help' },
+  title: { template: 'Dormosaur Help: %s', default: 'Dormosaur Help' },
 }
 
 export default function DocsLayout({ children }: { children: ReactNode }) {

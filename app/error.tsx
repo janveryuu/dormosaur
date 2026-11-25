@@ -29,7 +29,7 @@ export default function RootErrorBoundary({
         <div className="mx-auto mb-5 relative size-32 sm:size-36 flex items-center justify-center">
           <DormosaurMascot
             variant="thinking"
-            alt="Dormosaur thinking through a small hiccup"
+            alt="Dormo thinking"
             width={144}
             height={144}
             priority
@@ -39,14 +39,14 @@ export default function RootErrorBoundary({
 
         <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/12 px-3 py-1 text-[12px] font-bold text-emerald-600 dark:text-emerald-400 mb-2">
           <Sparkles className="size-3.5" />
-          <span>Don&apos;t worry, your data is safe</span>
+          <span>Error loading page</span>
         </div>
 
         <h2 className="text-[22px] sm:text-[24px] font-bold tracking-tight text-foreground">
-          Just a small semester bump
+          This page couldn’t load
         </h2>
         <p className="mt-2 text-[14px] sm:text-[15px] leading-relaxed text-muted-foreground">
-          Dormosaur hit a temporary hiccup loading this view. Your classes, alarms, and student settings are securely stored.
+          Try loading the page again, or return to the Dormosaur homepage.
         </p>
 
         {process.env.NODE_ENV !== 'production' && error?.message && (
@@ -60,13 +60,13 @@ export default function RootErrorBoundary({
         <div className="mt-7 flex flex-col gap-3">
           <PillButton size="lg" full onClick={() => reset()}>
             <RotateCcw className="size-4 mr-2" />
-            Reload Screen
+            Try again
           </PillButton>
 
           <Link href="/" className="w-full">
             <PillButton variant="secondary" size="lg" full>
               <Home className="size-4 mr-2" />
-              Return to Home
+              Go to homepage
             </PillButton>
           </Link>
         </div>

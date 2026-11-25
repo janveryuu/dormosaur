@@ -55,7 +55,7 @@ export function DownloadButton({ apkUrl, size = 'lg', dark = false, onStart }: {
             {status === 'done' ? <Check className="size-5" strokeWidth={3} /> : <AndroidGlyph className="size-5" />}
           </span>
           <span className="flex flex-col items-start leading-none">
-            <span className={`text-[11px] font-medium ${dark ? 'text-black/55' : 'text-white/60'}`}>Free for Android</span>
+            <span className={`text-[11px] font-medium ${dark ? 'text-black/55' : 'text-white/60'}`}>Free Android download</span>
             <span className="mt-1" aria-live="polite">{title}</span>
           </span>
           {status === 'starting' ? (

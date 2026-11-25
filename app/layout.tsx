@@ -17,9 +17,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Dormosaur — Dorm life, decoded.',
+  title: 'Dormosaur: Your class schedule, from one photo',
   description:
-    'Dormosaur turns a messy pasted class schedule into a beautiful timetable with auto-synced alarms, plus dorm-friendly recipes for tiny kitchens.',
+    'Build your weekly timetable from a photo, screenshot, PDF, or pasted text. Get offline class alarms and recipes you can cook in your dorm.',
   applicationName: 'Dormosaur',
   appleWebApp: {
     capable: true,
