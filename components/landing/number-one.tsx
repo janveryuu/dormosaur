@@ -1,73 +1,54 @@
 'use client'
 
 import { AnimatePresence, motion, useInView, useReducedMotionConfig } from 'framer-motion'
-import { Check, Clock } from 'lucide-react'
-import { useRef, useState, type KeyboardEvent } from 'react'
+import { CalendarDays, Check, FileSpreadsheet, RotateCcw } from 'lucide-react'
+import Image from 'next/image'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Counter, serif } from './shared'
 
-type MethodId = 'dormosaur' | 'manual' | 'spreadsheet'
+type RankId = 'dormosaur' | 'manual' | 'spreadsheet'
 
-type MethodData = {
-  id: MethodId
+type RankedItem = {
+  id: RankId
   rank: 1 | 2 | 3
-  label: string
-  tabLabel: string
-  note: string
-  timeText: string
-  minutes: number
-  barPercent: number
-  summary: string
-  steps: { title: string; detail: string }[]
+  placeLabel: string
+  name: string
+  subtitle: string
+  timeLabel: string
+  progressPct: number
+  takeaway: string
 }
 
-const METHODS: MethodData[] = [
+const RANKINGS: RankedItem[] = [
   {
     id: 'dormosaur',
     rank: 1,
-    label: 'Dormosaur',
-    tabLabel: 'Dormosaur',
-    note: 'Snap & done',
-    timeText: '5 sec',
-    minutes: 0.08,
-    barPercent: 8,
-    summary: 'One photo, portal screenshot, or PDF becomes your full week with offline class alarms armed.',
-    steps: [
-      { title: 'Drop a photo, screenshot, or PDF', detail: 'Reads messy registration tables, room numbers, and multi-day codes.' },
-      { title: 'Review every class before saving', detail: 'Flags unclear slots so you confirm the whole term in seconds.' },
-      { title: 'Class alarms arm automatically', detail: 'Every saved subject gets a local offline reminder on Android.' },
-    ],
+    placeLabel: '1st place',
+    name: 'Dormosaur',
+    subtitle: 'Snap one photo & done',
+    timeLabel: '5 sec',
+    progressPct: 100,
+    takeaway: 'Finishes your full weekly timetable, rooms, and offline alarms in 5 seconds — before manual apps get past Monday.',
   },
   {
     id: 'manual',
     rank: 2,
-    label: 'Typing by hand',
-    tabLabel: 'Typing by hand',
-    note: 'Class by class',
-    timeText: '25 min',
-    minutes: 25,
-    barPercent: 64,
-    summary: 'Entering each subject, room, repeat rule, and phone alarm manually takes most of a study break.',
-    steps: [
-      { title: 'Key in every subject one by one', detail: 'Course codes, titles, rooms, and instructors typed on a phone keyboard.' },
-      { title: 'Configure repeat days carefully', detail: 'Easy to mistype MWF vs. TTh schedules or skip lab time blocks.' },
-      { title: 'Set separate morning alarms', detail: 'Built in another clock app with no awareness of schedule edits.' },
-    ],
+    placeLabel: '2nd place',
+    name: 'Manual calendar apps',
+    subtitle: 'Typing every class by hand',
+    timeLabel: '25 min',
+    progressPct: 22,
+    takeaway: 'Still entering subjects, repeat days, and room numbers one by one — then setting separate morning alarms in another app.',
   },
   {
     id: 'spreadsheet',
     rank: 3,
-    label: 'Building a spreadsheet',
-    tabLabel: 'Spreadsheet',
-    note: 'Cell by cell',
-    timeText: '40 min',
-    minutes: 40,
-    barPercent: 100,
-    summary: 'Formatting grids, merging cells, and screenshotting sheets still leaves you without reminders.',
-    steps: [
-      { title: 'Draw columns and merge time blocks', detail: 'Fiddly cell sizing for 90-minute labs and overlapping hours.' },
-      { title: 'Pinch-to-zoom between hallways', detail: 'Static screenshots blur and quickly fall behind room changes.' },
-      { title: 'Zero deadline or alarm sync', detail: 'No 15-minute class heads-up and no link to exams or tasks.' },
-    ],
+    placeLabel: '3rd place',
+    name: 'Spreadsheets & notes',
+    subtitle: 'Formatting cell by cell',
+    timeLabel: '40 min',
+    progressPct: 12,
+    takeaway: 'Still merging time blocks and fixing column widths — with zero class alarms, countdowns, or deadline tracking.',
   },
 ]
 
@@ -77,201 +58,239 @@ const METRICS = [
   { to: 100, suffix: '%', label: 'Offline class alarms' },
 ] as const
 
+const RACE_DURATION_MS = 1350
+
 /**
- * Editorial ranked comparison of term setup time.
- * Synchronizes the left segmented control with the 1-2-3 ranked leaderboard on the right.
+ * Clean 1st / 2nd / 3rd finish-line ranking board.
+ * Dormosaur reaches 100% in 5 sec with Dormo celebrating at 1st place while 2nd and 3rd trail behind.
  */
 export function NumberOne() {
-  const [selected, setSelected] = useState<MethodId>('dormosaur')
+  const boardRef = useRef<HTMLDivElement>(null)
+  const inView = useInView(boardRef, { once: true, amount: 0.35 })
   const reduce = useReducedMotionConfig()
-  const cardRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(cardRef, { once: true, amount: 0.3 })
-  const active = METHODS.find(m => m.id === selected) ?? METHODS[0]
-  const isDormosaur = active.id === 'dormosaur'
 
-  function handleKeyDown(e: KeyboardEvent<HTMLButtonElement>, idx: number) {
-    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
-    e.preventDefault()
-    const next = e.key === 'ArrowRight' ? (idx + 1) % METHODS.length : (idx - 1 + METHODS.length) % METHODS.length
-    const nextId = METHODS[next].id
-    setSelected(nextId)
-    document.getElementById(`setup-tab-${nextId}`)?.focus()
-  }
+  const [selected, setSelected] = useState<RankId>('dormosaur')
+  const [progress, setProgress] = useState(0)
+  const [runId, setRunId] = useState(0)
+
+  useEffect(() => {
+    if (!inView) return
+    if (reduce) {
+      setProgress(1)
+      return
+    }
+    let raf = 0
+    let start: number | null = null
+    setProgress(0)
+    const tick = (now: number) => {
+      if (start === null) start = now
+      const t = Math.min(1, (now - start) / RACE_DURATION_MS)
+      // Smooth ease-out cubic so Dormosaur snaps cleanly to 1st place.
+      const eased = 1 - Math.pow(1 - t, 3)
+      setProgress(eased)
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [inView, reduce, runId])
+
+  const replay = useCallback(() => {
+    setSelected('dormosaur')
+    setRunId(r => r + 1)
+  }, [])
+
+  const effectiveProgress = reduce && inView ? 1 : progress
+  const finished = effectiveProgress >= 0.995
+  const elapsedSec = effectiveProgress * 5
+  const activeItem = RANKINGS.find(r => r.id === selected) ?? RANKINGS[0]
 
   return (
     <section id="number-one" className="scroll-mt-24 border-b border-[#0A1710]/[0.07] bg-[#F4F7F4] px-4 py-16 sm:py-20">
       <div className="mx-auto max-w-[1100px]">
-        <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-12">
+        <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center lg:gap-12">
+          {/* Left column: clear headline + live race clock + replay */}
           <div>
             <h2 className="text-balance text-[42px] leading-[1.01] tracking-[-0.025em] text-[#0A1710] sm:text-[62px]" style={serif}>
               The No.&nbsp;1 schedule tracker for <em className="text-[#0E7A4A]">dorm life.</em>
             </h2>
-            <p className="mt-5 max-w-[44ch] text-pretty text-[16px] leading-[1.65] text-[#354B3E] sm:text-[17px]">
-              See how Dormosaur ranks against manual entry and spreadsheets from first scan to a working week.
+            <p className="mt-5 max-w-[42ch] text-pretty text-[16px] leading-[1.65] text-[#354B3E] sm:text-[17px]">
+              Snap one photo and finish your whole term before other tools even get past Monday.
             </p>
 
-            <div
-              role="tablist"
-              aria-label="Compare schedule setup methods"
-              className="mt-7 inline-flex flex-wrap gap-1.5 rounded-[20px] bg-[#E3EBE5] p-1.5"
-            >
-              {METHODS.map((m, idx) => {
-                const isSelected = m.id === selected
-                return (
-                  <button
-                    key={m.id}
-                    id={`setup-tab-${m.id}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={isSelected}
-                    aria-controls="setup-comparison-panel"
-                    onClick={() => setSelected(m.id)}
-                    onKeyDown={e => handleKeyDown(e, idx)}
-                    className={`relative min-h-[44px] cursor-pointer rounded-[14px] px-4 py-2 text-[14px] font-semibold transition-colors active:scale-[0.98] ${
-                      isSelected ? 'text-[#0A1710]' : 'text-[#314A3C] hover:text-[#0A1710]'
-                    }`}
-                  >
-                    {isSelected && (
-                      <motion.span
-                        layoutId="setup-method-pill"
-                        transition={reduce ? { duration: 0 } : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                        className="absolute inset-0 rounded-[14px] bg-white shadow-[0_2px_8px_-2px_rgba(10,23,16,0.14)]"
-                      />
-                    )}
-                    <span className="relative z-10">{m.tabLabel}</span>
-                  </button>
-                )
-              })}
+            <div className="mt-7 flex flex-wrap items-center gap-4">
+              <div className="rounded-[20px] border border-[#0A1710]/[0.07] bg-white px-5 py-3.5 shadow-[0_12px_28px_-20px_rgba(10,23,16,0.22)]">
+                <p className="text-[11.5px] font-semibold uppercase tracking-[0.12em] text-[#4C6456]">
+                  Full-term setup
+                </p>
+                <p className="mt-0.5 text-[34px] font-bold leading-none tabular-nums tracking-[-0.04em] text-[#0E7A4A] sm:text-[40px]">
+                  {finished ? '5.0 sec' : `${elapsedSec.toFixed(1)} sec`}
+                </p>
+              </div>
+
+              {!reduce && (
+                <button
+                  type="button"
+                  onClick={replay}
+                  className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full border border-[#0A1710]/[0.12] bg-white px-4 py-2 text-[14px] font-semibold text-[#0A1710] transition-colors hover:border-[#0E7A4A]/40 hover:text-[#0E7A4A] active:scale-[0.97]"
+                >
+                  <RotateCcw className="size-4" aria-hidden />
+                  Replay race
+                </button>
+              )}
             </div>
           </div>
 
+          {/* Right column: 1st / 2nd / 3rd ranked podium board */}
           <div
-            ref={cardRef}
-            id="setup-comparison-panel"
-            role="tabpanel"
-            aria-labelledby={`setup-tab-${active.id}`}
-            className="rounded-[24px] border border-[#0A1710]/[0.07] bg-white p-6 shadow-[0_20px_48px_-26px_rgba(10,23,16,0.18)] sm:p-8"
+            ref={boardRef}
+            className="rounded-[28px] border border-[#0A1710]/[0.08] bg-white p-5 shadow-[0_24px_52px_-28px_rgba(10,23,16,0.2)] sm:p-7"
           >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={active.id}
-                initial={reduce ? false : { opacity: 0, y: 6, filter: 'blur(2px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={reduce ? undefined : { opacity: 0, y: -6, filter: 'blur(2px)' }}
-                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="flex flex-wrap items-baseline justify-between gap-3">
-                  <div>
-                    <p className="text-[13px] font-semibold text-[#425B4D]">
-                      Rank #{active.rank} · {active.label}
-                    </p>
-                    <p className={`mt-0.5 text-[42px] font-bold leading-none tabular-nums tracking-[-0.04em] sm:text-[52px] ${isDormosaur ? 'text-[#0E7A4A]' : 'text-[#1D2D24]'}`}>
-                      {active.timeText}
-                    </p>
-                  </div>
-                  <span
-                    className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-semibold ${
-                      isDormosaur ? 'bg-[#E7F6EE] text-[#0B5E39]' : 'bg-[#EEF2EF] text-[#354B3E]'
-                    }`}
-                  >
-                    {isDormosaur ? <Check className="size-4" strokeWidth={2.6} aria-hidden /> : <Clock className="size-4" strokeWidth={2.2} aria-hidden />}
-                    {isDormosaur ? 'Fastest term setup' : `${active.minutes} minutes manual effort`}
-                  </span>
-                </div>
+            <div className="flex items-center justify-between gap-3 border-b border-[#0A1710]/[0.07] pb-4">
+              <p className="text-[13px] font-semibold text-[#3B5244]">Setup speed ranking</p>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#E7F6EE] px-3 py-1 text-[12.5px] font-semibold text-[#0B5E39]">
+                <Check className="size-3.5" strokeWidth={2.8} aria-hidden />
+                {finished ? 'Dormosaur finishes 1st' : 'Racing…'}
+              </span>
+            </div>
 
-                <p className="mt-3 text-pretty text-[15px] leading-[1.6] text-[#384F42]">{active.summary}</p>
-              </motion.div>
-            </AnimatePresence>
+            <ol className="mt-4 space-y-3" aria-label="Schedule setup ranking">
+              {RANKINGS.map(item => {
+                const isFirst = item.rank === 1
+                const isSelected = item.id === selected
+                const currentBarWidth = item.progressPct * effectiveProgress
 
-            {/* Ranked 1-2-3 leaderboard comparison */}
-            <ol className="mt-6 space-y-2 border-y border-[#0A1710]/[0.07] py-5" aria-label="Setup time ranking">
-              {METHODS.map((m, i) => {
-                const isCurrent = m.id === selected
-                const isFirst = m.rank === 1
                 return (
-                  <li key={m.id}>
+                  <li key={item.id}>
                     <button
                       type="button"
-                      onClick={() => setSelected(m.id)}
-                      aria-pressed={isCurrent}
-                      className={`group flex w-full cursor-pointer items-center gap-3 rounded-[14px] px-3 py-2.5 text-left transition-colors active:scale-[0.99] ${
-                        isCurrent
-                          ? isFirst
-                            ? 'bg-[#EEF8F2] ring-1 ring-[#0E7A4A]/20'
-                            : 'bg-[#F3F6F4] ring-1 ring-[#0A1710]/10'
-                          : 'hover:bg-[#F7FAF8]'
+                      onClick={() => setSelected(item.id)}
+                      aria-pressed={isSelected}
+                      className={`group relative w-full cursor-pointer rounded-[20px] p-4 text-left transition-all duration-200 active:scale-[0.99] ${
+                        isFirst
+                          ? isSelected
+                            ? 'border-2 border-[#0E7A4A] bg-[#EEF9F3] shadow-[0_14px_30px_-22px_rgba(14,122,74,0.55)]'
+                            : 'border border-[#0E7A4A]/35 bg-[#F2FAF5] hover:border-[#0E7A4A]/60'
+                          : isSelected
+                            ? 'border border-[#0A1710]/20 bg-[#F4F7F5]'
+                            : 'border border-[#0A1710]/[0.06] bg-[#F8FAF8] hover:border-[#0A1710]/15'
                       }`}
                     >
-                      <span
-                        className={`grid size-7 shrink-0 place-items-center rounded-full text-[13px] font-bold tabular-nums transition-colors ${
-                          isFirst
-                            ? 'bg-[#0E7A4A] text-white'
-                            : isCurrent
-                              ? 'bg-[#1D2D24] text-white'
-                              : 'bg-[#E8EFEA] text-[#354B3E]'
-                        }`}
-                      >
-                        {m.rank}
-                      </span>
-
-                      <div className="w-[144px] shrink-0 sm:w-[162px]">
-                        <p className={`truncate text-[14px] leading-tight ${isCurrent || isFirst ? 'font-semibold text-[#0A1710]' : 'font-medium text-[#3F5648]'}`}>
-                          {m.label}
-                        </p>
-                        <p className="mt-0.5 text-[12px] text-[#556C5F]">{m.note}</p>
-                      </div>
-
-                      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-[#E8EFEA]">
-                        <motion.div
-                          initial={reduce ? { scaleX: 1 } : { scaleX: 0 }}
-                          animate={inView || reduce ? { scaleX: 1 } : { scaleX: 0 }}
-                          transition={reduce ? { duration: 0 } : { duration: 0.55, delay: 0.08 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                          style={{ width: `${m.barPercent}%`, transformOrigin: 'left center' }}
-                          className={`h-full rounded-full transition-colors duration-300 ${
+                      <div className="flex items-center gap-3.5">
+                        {/* Rank medal */}
+                        <span
+                          className={`grid size-8 shrink-0 place-items-center rounded-full text-[13.5px] font-bold tabular-nums ${
                             isFirst
-                              ? 'bg-[#0E7A4A]'
-                              : isCurrent
-                                ? 'bg-[#4E685A]'
-                                : 'bg-[#A6B8AE]'
+                              ? 'bg-[#0E7A4A] text-white'
+                              : 'bg-[#E5ECE7] text-[#354B3E]'
                           }`}
-                        />
+                        >
+                          {item.rank}
+                        </span>
+
+                        {/* App / tool visual icon */}
+                        {isFirst ? (
+                          <Image
+                            src="/dormosaur-logo.png"
+                            alt="Dormosaur"
+                            width={40}
+                            height={40}
+                            className="size-10 shrink-0 rounded-[12px] shadow-sm"
+                          />
+                        ) : (
+                          <span
+                            aria-hidden
+                            className="grid size-10 shrink-0 place-items-center rounded-[12px] bg-white text-[#52695C] ring-1 ring-[#0A1710]/[0.07]"
+                          >
+                            {item.id === 'manual' ? (
+                              <CalendarDays className="size-5" strokeWidth={1.9} />
+                            ) : (
+                              <FileSpreadsheet className="size-5" strokeWidth={1.9} />
+                            )}
+                          </span>
+                        )}
+
+                        {/* Name + subtitle */}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className={`truncate text-[15.5px] leading-tight ${isFirst ? 'font-bold text-[#0A1710]' : 'font-semibold text-[#2B3E33]'}`}>
+                              {item.name}
+                            </span>
+                            {isFirst && (
+                              <span className="hidden rounded-full bg-[#0E7A4A]/12 px-2 py-0.5 text-[11px] font-bold text-[#0B5E39] sm:inline-block">
+                                1st
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-0.5 truncate text-[13px] text-[#4C6355]">{item.subtitle}</p>
+                        </div>
+
+                        {/* Time readout */}
+                        <div className="shrink-0 text-right">
+                          <p className={`text-[16px] font-bold leading-tight tabular-nums ${isFirst ? 'text-[#0E7A4A]' : 'text-[#395043]'}`}>
+                            {item.timeLabel}
+                          </p>
+                          <p className={`text-[11.5px] font-medium ${isFirst ? 'text-[#0B5E39]' : 'text-[#607568]'}`}>
+                            {isFirst ? (finished ? 'Done' : 'Scanning') : 'Still typing'}
+                          </p>
+                        </div>
                       </div>
 
-                      <span className={`w-[54px] shrink-0 text-right text-[13.5px] font-bold tabular-nums ${isFirst ? 'text-[#0E7A4A]' : 'text-[#31473A]'}`}>
-                        {m.timeText}
-                      </span>
+                      {/* Progress track */}
+                      <div className={`relative mt-3.5 ${isFirst ? 'pr-12' : ''}`}>
+                        <div className={`h-2.5 w-full overflow-hidden rounded-full ${isFirst ? 'bg-[#D5ECDF]' : 'bg-[#E6EDE8]'}`}>
+                          <div
+                            style={{ width: `${Math.max(currentBarWidth, isFirst ? 3 : 2)}%` }}
+                            className={`h-full rounded-full ${
+                              isFirst ? 'bg-[#0E7A4A]' : 'bg-[#9EB1A5]'
+                            }`}
+                          />
+                        </div>
+
+                        {/* Dormo celebrating at 1st place finish line */}
+                        {isFirst && (
+                          <AnimatePresence>
+                            {finished && (
+                              <motion.div
+                                initial={reduce ? false : { opacity: 0, y: 12, scale: 0.7 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 320, damping: 18 }}
+                                className="pointer-events-none absolute -top-6 right-0"
+                              >
+                                <Image
+                                  src="/dormo-jumping.png"
+                                  alt="Dormo celebrating in 1st place"
+                                  width={776}
+                                  height={934}
+                                  sizes="44px"
+                                  className="h-auto w-[44px] drop-shadow-[0_6px_10px_rgba(10,23,16,0.22)]"
+                                />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        )}
+                      </div>
                     </button>
                   </li>
                 )
               })}
             </ol>
 
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.ol
-                key={active.id}
-                initial={reduce ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={reduce ? undefined : { opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="mt-4 divide-y divide-[#0A1710]/[0.06]"
-              >
-                {active.steps.map((step, i) => (
-                  <li key={step.title} className="flex items-start gap-3 py-3 first:pt-1 last:pb-0">
-                    <span
-                      className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-full text-[12px] font-bold tabular-nums ${
-                        isDormosaur ? 'bg-[#E7F6EE] text-[#0E7A4A]' : 'bg-[#EEF2EF] text-[#354B3E]'
-                      }`}
-                    >
-                      {i + 1}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-[14.5px] font-semibold leading-snug text-[#0A1710]">{step.title}</p>
-                      <p className="mt-0.5 text-pretty text-[13.5px] leading-[1.55] text-[#455C4E]">{step.detail}</p>
-                    </div>
-                  </li>
-                ))}
-              </motion.ol>
-            </AnimatePresence>
+            {/* Concise single takeaway for whichever rank is selected */}
+            <div className="mt-4 rounded-[16px] bg-[#F4F7F4] px-4 py-3" aria-live="polite">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.p
+                  key={activeItem.id}
+                  initial={reduce ? false : { opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduce ? undefined : { opacity: 0, y: -4 }}
+                  transition={{ duration: 0.18 }}
+                  className="text-pretty text-[13.5px] leading-[1.55] text-[#2F4639]"
+                >
+                  <strong className="font-semibold text-[#0A1710]">{activeItem.placeLabel} · {activeItem.name}:</strong>{' '}
+                  {activeItem.takeaway}
+                </motion.p>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
