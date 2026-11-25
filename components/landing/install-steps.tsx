@@ -1,54 +1,277 @@
 'use client'
 
-import { motion, useScroll, useSpring } from 'framer-motion'
-import { Check, Download } from 'lucide-react'
+import { AnimatePresence, motion, useReducedMotionConfig } from 'framer-motion'
+import {
+  ArrowRight, Check, ChevronLeft, ChevronRight, Copy, Download, ShieldCheck, Smartphone,
+} from 'lucide-react'
 import Image from 'next/image'
-import { useRef, type ReactNode } from 'react'
-import { Reveal, serif, spring } from './shared'
+import Link from 'next/link'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { ease, serif } from './shared'
 
-/** Three install steps, each with a live looping demo, joined by a path drawn on scroll. */
-export function InstallSteps() {
-  const ref = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.8', 'end 0.7'] })
-  const draw = useSpring(scrollYProgress, { stiffness: 80, damping: 24 })
-  const steps: { n: string; t: string; b: string; demo: ReactNode }[] = [
-    { n: '01', t: 'Download the APK', b: 'Tap the button on your Android phone. It is free.', demo: <DemoDownload /> },
-    { n: '02', t: 'Allow the install', b: 'Open the file. If Android asks, allow installs from your browser.', demo: <DemoInstall /> },
-    { n: '03', t: 'Scan your schedule', b: 'Sign in, snap your schedule, and your whole term is set.', demo: <DemoScan /> },
-  ]
+type StepItem = {
+  stepNumber: number
+  title: string
+  summary: string
+  detail: string
+  badge: string
+}
+
+const STEPS: StepItem[] = [
+  {
+    stepNumber: 1,
+    title: 'Download the APK',
+    summary: 'Grab the official signed Android build straight from Dormosaur.',
+    detail: 'Works on Android 8 or newer. Free forever with zero ads or trackers.',
+    badge: 'Free · Signed APK',
+  },
+  {
+    stepNumber: 2,
+    title: 'Allow browser installs once',
+    summary: 'Open the downloaded file from Chrome or your Files app and tap Install.',
+    detail: 'Android asks once per browser to enable "Install unknown apps" for direct releases.',
+    badge: 'One-time Android prompt',
+  },
+  {
+    stepNumber: 3,
+    title: 'Sign in and snap your schedule',
+    summary: 'Continue with Google or email, scan your schedule photo or PDF, and review.',
+    detail: 'Your whole week appears cleanly and class alarms arm offline automatically.',
+    badge: 'Under 2 min',
+  },
+]
+
+/**
+ * Interactive 2-column Android installation walkthrough with synchronized device preview
+ * and a desktop link-copy helper for students sending the APK to their phone.
+ */
+export function InstallSteps({ apkUrl, apkVersion }: { apkUrl: string; apkVersion: string }) {
+  const [active, setActive] = useState(0)
+  const [copied, setCopied] = useState(false)
+  const copyTimer = useRef<number | null>(null)
+  const reduce = useReducedMotionConfig()
+
+  useEffect(() => {
+    return () => {
+      if (copyTimer.current !== null) window.clearTimeout(copyTimer.current)
+    }
+  }, [])
+
+  async function copyApkLink() {
+    const absoluteUrl = typeof window !== 'undefined' ? new URL(apkUrl, window.location.origin).toString() : apkUrl
+    try {
+      await navigator.clipboard.writeText(absoluteUrl)
+      setCopied(true)
+      if (copyTimer.current !== null) window.clearTimeout(copyTimer.current)
+      copyTimer.current = window.setTimeout(() => setCopied(false), 2400)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  function handleStepKeyDown(e: KeyboardEvent<HTMLButtonElement>, idx: number) {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
+    e.preventDefault()
+    const next = e.key === 'ArrowDown' ? (idx + 1) % STEPS.length : (idx - 1 + STEPS.length) % STEPS.length
+    setActive(next)
+    document.getElementById(`install-step-tab-${next}`)?.focus()
+  }
+
   return (
-    <section id="install" ref={ref} className="relative scroll-mt-24 overflow-hidden px-4 py-24">
-      <div aria-hidden className="absolute inset-x-0 top-1/2 -z-10 h-[560px] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(52,199,123,0.13),transparent_65%)]" />
+    <section id="install" className="scroll-mt-24 px-4 py-20 sm:py-24">
       <div className="mx-auto max-w-[1100px]">
-        <Reveal>
-          <h2 className="text-[44px] leading-[0.98] tracking-[-0.02em] sm:text-[68px]" style={serif}>
-            Install Dormosaur<br /><em className="text-[#0E7A4A]">in three steps.</em>
+        <div className="max-w-[560px]">
+          <h2 className="text-balance text-[42px] leading-[1.01] tracking-[-0.025em] text-[#0A1710] sm:text-[62px]" style={serif}>
+            Install Dormosaur <em className="text-[#0E7A4A]">in three steps.</em>
           </h2>
-        </Reveal>
+          <p className="mt-4 max-w-[46ch] text-pretty text-[16px] leading-[1.65] text-[#35463C] sm:text-[17px]">
+            Direct signed Android release (v{apkVersion}). Go from tap to full weekly timetable with offline alarms in under two minutes.
+          </p>
+        </div>
 
-        <div className="relative mt-16">
-          <svg aria-hidden className="absolute left-[16%] top-[46px] hidden h-6 w-[68%] md:block" viewBox="0 0 100 6" preserveAspectRatio="none">
-            <path d="M0 3 Q 25 0 50 3 T 100 3" fill="none" stroke="rgba(10,23,16,0.12)" strokeWidth="2" strokeDasharray="4 6" vectorEffect="non-scaling-stroke" />
-            <motion.path d="M0 3 Q 25 0 50 3 T 100 3" fill="none" stroke="#34C77B" strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" style={{ pathLength: draw }} />
-          </svg>
+        <div className="mt-12 grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+          {/* Left column: interactive stepper */}
+          <div>
+            <div className="relative space-y-3" role="tablist" aria-orientation="vertical" aria-label="Android install steps">
+              {STEPS.map((s, i) => {
+                const isActive = i === active
+                const isPast = i < active
+                return (
+                  <div
+                    key={s.stepNumber}
+                    className={`relative rounded-[24px] border transition-colors duration-200 ${
+                      isActive
+                        ? 'border-[#0E7A4A]/25 bg-[#F4F7F4]'
+                        : 'border-[#0A1710]/[0.07] bg-white hover:border-[#0A1710]/[0.15]'
+                    }`}
+                  >
+                    <button
+                      id={`install-step-tab-${i}`}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      aria-controls="install-phone-stage"
+                      onClick={() => setActive(i)}
+                      onKeyDown={e => handleStepKeyDown(e, i)}
+                      className="flex w-full cursor-pointer items-start gap-4 p-5 text-left sm:p-6"
+                    >
+                      <span
+                        className={`mt-0.5 grid size-9 shrink-0 place-items-center rounded-full text-[14px] font-bold tabular-nums transition-colors ${
+                          isActive
+                            ? 'bg-[#0E7A4A] text-white'
+                            : isPast
+                              ? 'bg-[#DFF2E7] text-[#0E7A4A]'
+                              : 'bg-[#EEF2EF] text-[#354B3E]'
+                        }`}
+                      >
+                        {isPast ? <Check className="size-4" strokeWidth={2.8} aria-hidden /> : s.stepNumber}
+                      </span>
 
-          <div className="grid gap-8 md:grid-cols-3 md:gap-6">
-            {steps.map((s, i) => (
-              <motion.div key={s.n} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }}
-                transition={{ ...spring, delay: i * 0.12 }} whileHover={{ y: -8 }} className="group relative">
-                <div className="relative z-10 mx-auto grid size-[100px] place-items-center">
-                  <motion.div aria-hidden className="absolute inset-0 rounded-full border border-dashed border-[#0E7A4A]/30" animate={{ rotate: 360 }} transition={{ duration: 18 + i * 4, repeat: Infinity, ease: 'linear' }} />
-                  <div className="grid size-[74px] place-items-center rounded-full bg-white shadow-[0_20px_40px_-18px_rgba(14,122,74,0.6)] ring-1 ring-black/[0.04] transition-transform duration-500 group-hover:scale-110">
-                    <span className="bg-gradient-to-br from-[#0E7A4A] to-[#34C77B] bg-clip-text text-[30px] font-black tracking-tight text-transparent">{s.n}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <h3 className="text-[19px] font-bold tracking-[-0.015em] text-[#0A1710] sm:text-[20px]">
+                            {s.title}
+                          </h3>
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-[12px] font-semibold ${
+                              isActive ? 'bg-white text-[#0B5E39]' : 'bg-[#F4F7F4] text-[#455C4E]'
+                            }`}
+                          >
+                            {s.badge}
+                          </span>
+                        </div>
+                        <p className="mt-1.5 text-pretty text-[15px] leading-[1.58] text-[#35463C]">{s.summary}</p>
+                      </div>
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {isActive && (
+                        <motion.div
+                          initial={reduce ? false : { height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={reduce ? undefined : { height: 0, opacity: 0 }}
+                          transition={{ duration: 0.26, ease }}
+                          className="overflow-hidden"
+                        >
+                          <div className="border-t border-[#0A1710]/[0.07] px-5 pb-5 pt-4 sm:px-6 sm:pb-6 sm:pl-[76px]">
+                            <p className="text-pretty text-[14.5px] leading-[1.6] text-[#3A5144]">{s.detail}</p>
+                            {i === 0 && (
+                              <div className="mt-4 flex flex-wrap items-center gap-2.5">
+                                <a
+                                  href={apkUrl}
+                                  download
+                                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[#0E7A4A] px-4 py-2 text-[14px] font-semibold text-white transition-colors hover:bg-[#0B633B] active:scale-[0.98]"
+                                >
+                                  <Download className="size-4" strokeWidth={2.4} aria-hidden />
+                                  Download v{apkVersion} APK
+                                </a>
+                                <button
+                                  type="button"
+                                  onClick={copyApkLink}
+                                  className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full border border-[#0A1710]/[0.12] bg-white px-4 py-2 text-[14px] font-semibold text-[#0A1710] transition-colors hover:border-[#0A1710]/30 active:scale-[0.98]"
+                                >
+                                  {copied ? (
+                                    <>
+                                      <Check className="size-4 text-[#0E7A4A]" strokeWidth={2.6} aria-hidden />
+                                      Link copied
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="size-4 text-[#43594C]" strokeWidth={2.2} aria-hidden />
+                                      Copy link for phone
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
+                )
+              })}
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setActive(a => (a - 1 + STEPS.length) % STEPS.length)}
+                  className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-full border border-[#0A1710]/[0.12] bg-white px-4 text-[14px] font-semibold text-[#0A1710] transition-colors hover:border-[#0A1710]/30 active:scale-[0.97]"
+                >
+                  <ChevronLeft className="size-4" aria-hidden />
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActive(a => (a + 1) % STEPS.length)}
+                  className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-full border border-[#0A1710]/[0.12] bg-white px-4 text-[14px] font-semibold text-[#0A1710] transition-colors hover:border-[#0A1710]/30 active:scale-[0.97]"
+                >
+                  Next step
+                  <ChevronRight className="size-4" aria-hidden />
+                </button>
+              </div>
+              <Link
+                href="/docs/install"
+                className="inline-flex min-h-[44px] items-center gap-1.5 text-[14.5px] font-semibold text-[#0E7A4A] underline-offset-4 hover:underline"
+              >
+                Read install guide
+                <ArrowRight className="size-4" aria-hidden />
+              </Link>
+            </div>
+          </div>
+
+          {/* Right column: synchronized Android device preview */}
+          <div
+            id="install-phone-stage"
+            role="tabpanel"
+            aria-labelledby={`install-step-tab-${active}`}
+            className="rounded-[32px] border border-[#0A1710]/[0.08] bg-[#F4F7F4] p-6 sm:p-10"
+          >
+            <div className="mx-auto w-full max-w-[288px] rounded-[40px] bg-[#141A17] p-[8px] shadow-[0_28px_56px_-22px_rgba(10,23,16,0.34)] ring-1 ring-black/15">
+              <div className="relative h-[452px] overflow-hidden rounded-[32px] bg-[#F7F8F5]">
+                {/* Clean Android status bar */}
+                <div className="relative z-20 flex h-8 items-center justify-between bg-[#F7F8F5]/95 px-5 text-[12px] font-semibold tabular-nums text-[#0A1710]">
+                  <span>9:41</span>
+                  <span aria-hidden className="size-[7px] rounded-full bg-[#1C2420]" />
+                  <span>5G</span>
                 </div>
-                <div className="relative -mt-9 overflow-hidden rounded-[32px] border border-black/[0.06] bg-white px-6 pb-7 pt-14 shadow-[0_30px_60px_-40px_rgba(10,23,16,0.35)] transition-shadow duration-500 group-hover:shadow-[0_40px_80px_-40px_rgba(14,122,74,0.55)]">
-                  <div className="relative h-[150px] w-full overflow-hidden rounded-[22px] bg-[#F2F6F3]">{s.demo}</div>
-                  <h3 className="mt-6 text-[22px] font-semibold tracking-tight">{s.t}</h3>
-                  <p className="mt-2 text-[15px] leading-relaxed text-black/55">{s.b}</p>
-                </div>
-              </motion.div>
-            ))}
+
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={active}
+                    initial={reduce ? false : { opacity: 0, scale: 0.96, filter: 'blur(2px)' }}
+                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                    exit={reduce ? undefined : { opacity: 0, scale: 0.96, filter: 'blur(2px)' }}
+                    transition={{ duration: 0.28, ease }}
+                    className="h-[calc(100%-32px)]"
+                  >
+                    {active === 0 && <PhoneStepDownload apkVersion={apkVersion} reduce={!!reduce} />}
+                    {active === 1 && <PhoneStepInstall reduce={!!reduce} />}
+                    {active === 2 && <PhoneStepReady />}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+
+            <div className="mt-6 flex items-center justify-center gap-2">
+              {STEPS.map((s, i) => (
+                <button
+                  key={s.stepNumber}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  aria-current={i === active ? 'step' : undefined}
+                  className={`min-h-[40px] cursor-pointer rounded-full px-3.5 text-[13px] font-semibold transition-colors ${
+                    i === active
+                      ? 'bg-[#0E7A4A] text-white'
+                      : 'bg-white text-[#354B3E] hover:bg-[#E7EFEA]'
+                  }`}
+                >
+                  Step {s.stepNumber}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -56,74 +279,116 @@ export function InstallSteps() {
   )
 }
 
-/** Progress ring fills, then flips to a check. */
-function DemoDownload() {
-  const loop = { duration: 3.2, repeat: Infinity }
+function PhoneStepDownload({ apkVersion, reduce }: { apkVersion: string; reduce: boolean }) {
   return (
-    <div className="grid h-full place-items-center">
-      <div className="relative size-[92px]">
-        <svg viewBox="0 0 100 100" className="size-full -rotate-90">
-          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(14,122,74,0.12)" strokeWidth="8" />
-          <motion.circle cx="50" cy="50" r="42" fill="none" stroke="#0E7A4A" strokeWidth="8" strokeLinecap="round"
-            animate={{ pathLength: [0, 1, 1] }} transition={{ ...loop, times: [0, 0.7, 1], ease: 'easeInOut' }} />
-        </svg>
-        <div className="absolute inset-0 grid place-items-center">
-          <motion.span className="absolute" animate={{ opacity: [1, 1, 0, 0] }} transition={{ ...loop, times: [0, 0.68, 0.72, 1] }}><Download className="size-7 text-[#0E7A4A]" /></motion.span>
-          <motion.span className="absolute grid size-11 place-items-center rounded-full bg-[#0E7A4A]" animate={{ opacity: [0, 0, 1, 1], scale: [0.5, 0.5, 1.1, 1] }} transition={{ ...loop, times: [0, 0.7, 0.8, 1] }}>
-            <Check className="size-6 text-white" strokeWidth={3} />
-          </motion.span>
+    <div className="flex h-full flex-col justify-between p-4">
+      <div className="rounded-[20px] bg-white p-4 shadow-[0_6px_18px_-10px_rgba(10,23,16,0.12)]">
+        <div className="flex items-center gap-3">
+          <Image src="/dormosaur-logo.png" alt="" width={40} height={40} className="rounded-[12px]" />
+          <div className="min-w-0">
+            <p className="text-[14px] font-bold text-[#0A1710]">dormosaur-v{apkVersion}.apk</p>
+            <p className="text-[12.5px] text-[#455C4E]">Signed Android build · Free</p>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <div className="flex items-center justify-between text-[12.5px] font-semibold text-[#0E7A4A]">
+            <span>Download complete</span>
+            <span className="tabular-nums">100%</span>
+          </div>
+          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#E6EFE9]">
+            <motion.div
+              initial={reduce ? { scaleX: 1 } : { scaleX: 0.15 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.75, ease }}
+              className="h-full origin-left rounded-full bg-[#0E7A4A]"
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center justify-between rounded-[14px] bg-[#F2F7F4] px-3.5 py-2.5">
+          <span className="flex items-center gap-2 text-[13px] font-semibold text-[#0B5E39]">
+            <ShieldCheck className="size-4" aria-hidden />
+            Official release verified
+          </span>
+          <span className="rounded-full bg-[#0E7A4A] px-3 py-1 text-[12px] font-semibold text-white">Open</span>
         </div>
       </div>
-      <span className="absolute bottom-3 rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-black/60 shadow-sm">dormosaur.apk</span>
+
+      <div className="rounded-[20px] bg-white/90 p-4">
+        <div className="flex items-start gap-2.5">
+          <Smartphone className="mt-0.5 size-4 shrink-0 text-[#0E7A4A]" aria-hidden />
+          <p className="text-[13px] leading-[1.5] text-[#35463C]">
+            Find the file anytime in your browser&apos;s <strong className="font-semibold text-[#0A1710]">Downloads</strong> folder if you close the prompt.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
 
-/** Android install sheet, with a finger tapping Install. */
-function DemoInstall() {
-  const loop = { duration: 2.6, repeat: Infinity }
+function PhoneStepInstall({ reduce }: { reduce: boolean }) {
   return (
-    <div className="relative grid h-full place-items-center px-5">
-      <div className="w-full max-w-[220px] rounded-2xl bg-white p-3.5 shadow-lg">
-        <div className="flex items-center gap-2.5">
-          <Image src="/dormosaur-logo.png" alt="" width={32} height={32} className="rounded-lg" />
-          <div className="leading-tight"><p className="text-[13px] font-bold">Dormosaur</p><p className="text-[10px] text-black/50">Do you want to install this app?</p></div>
+    <div className="flex h-full flex-col justify-between p-4">
+      {/* Android source permission card */}
+      <div className="rounded-[20px] bg-white p-4 shadow-[0_6px_18px_-10px_rgba(10,23,16,0.12)]">
+        <p className="text-[12.5px] font-semibold text-[#455C4E]">Install unknown apps</p>
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[14px] font-bold text-[#0A1710]">Allow from this source</p>
+            <p className="text-[12.5px] text-[#455C4E]">Chrome · Required once</p>
+          </div>
+          <div aria-hidden className="relative h-7 w-12 shrink-0 rounded-full bg-[#0E7A4A] p-1">
+            <motion.span
+              initial={reduce ? { x: 20 } : { x: 0 }}
+              animate={{ x: 20 }}
+              transition={{ duration: 0.45, ease, delay: 0.15 }}
+              className="block size-5 rounded-full bg-white shadow-sm"
+            />
+          </div>
         </div>
-        <div className="mt-3 flex justify-end gap-2 text-[12px] font-semibold">
-          <span className="rounded-full px-3 py-1.5 text-black/45">Cancel</span>
-          <motion.span className="relative overflow-hidden rounded-full bg-[#0E7A4A] px-3.5 py-1.5 text-white" animate={{ scale: [1, 1, 0.9, 1] }} transition={{ ...loop, times: [0, 0.5, 0.6, 0.7] }}>
+      </div>
+
+      {/* Android install confirmation dialog */}
+      <div className="rounded-[22px] bg-white p-4 shadow-[0_14px_30px_-18px_rgba(10,23,16,0.22)]">
+        <div className="flex items-center gap-3">
+          <Image src="/dormosaur-logo.png" alt="" width={40} height={40} className="rounded-[12px]" />
+          <div>
+            <p className="text-[15px] font-bold text-[#0A1710]">Dormosaur</p>
+            <p className="text-[12.5px] text-[#455C4E]">Do you want to install this app?</p>
+          </div>
+        </div>
+        <div className="mt-5 flex items-center justify-end gap-2">
+          <span className="rounded-full px-3.5 py-2 text-[13px] font-semibold text-[#455C4E]">Cancel</span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0E7A4A] px-4 py-2 text-[13px] font-semibold text-white">
+            <Check className="size-3.5" strokeWidth={2.8} aria-hidden />
             Install
-            <motion.span aria-hidden className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/50" animate={{ scale: [0, 0, 1.6], opacity: [0, 0.8, 0] }} transition={{ ...loop, times: [0, 0.55, 0.8] }} />
-          </motion.span>
+          </span>
         </div>
       </div>
-      <motion.div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 size-7 rounded-full border-2 border-black/30 bg-black/10"
-        animate={{ x: [70, 58, 58, 70], y: [50, 22, 22, 50], opacity: [0, 1, 1, 0] }} transition={{ ...loop, times: [0, 0.45, 0.65, 0.85] }} />
     </div>
   )
 }
 
-/** Laser sweeps; grey rows turn into colored classes. */
-function DemoScan() {
-  const rows = [['#3B82F6', '#E6F0FF'], ['#16A36A', '#E3F6EC'], ['#E0457B', '#FDEAF3'], ['#F08A24', '#FFF1E2']]
+function PhoneStepReady() {
   return (
-    <div className="relative h-full bg-[#04110A] p-4">
-      <div className="space-y-2">
-        {rows.map(([bar, bg], i) => {
-          const tr = { duration: 3, times: [0, 0.15 + i * 0.15, 0.2 + i * 0.15, 0.9, 1], repeat: Infinity }
-          return (
-            <motion.div key={bar} className="flex h-[22px] items-center gap-2 rounded-md px-2"
-              animate={{ backgroundColor: ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.08)', bg, bg, 'rgba(255,255,255,0.08)'] }} transition={tr}>
-              <motion.span className="h-3 w-1 rounded-full" style={{ background: bar }} animate={{ opacity: [0, 0, 1, 1, 0] }} transition={tr} />
-              <span className="h-1.5 rounded-full bg-black/25" style={{ width: `${40 + i * 9}%` }} />
-            </motion.div>
-          )
-        })}
+    <div className="relative h-full overflow-hidden">
+      <Image
+        src="/landing/screens/app-schedule-v2.webp"
+        alt="Dormosaur Schedule screen loaded with classes right after scanning"
+        width={780}
+        height={1688}
+        sizes="272px"
+        className="block h-auto w-full"
+      />
+      <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 rounded-[16px] bg-[#0B2A1C]/95 px-3.5 py-2.5 text-white shadow-lg">
+        <span className="flex items-center gap-2 text-[12.5px] font-semibold">
+          <span className="grid size-5 place-items-center rounded-full bg-[#34C77B] text-[#052414]">
+            <Check className="size-3" strokeWidth={3} aria-hidden />
+          </span>
+          Classes synced · Alarms on
+        </span>
       </div>
-      <motion.div aria-hidden className="absolute inset-x-0 h-10 bg-gradient-to-b from-transparent to-[#7DF0B5]/60"
-        animate={{ top: ['-20%', '85%'] }} transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}>
-        <div className="absolute inset-x-0 bottom-0 h-[2px] bg-[#B7FFD8] shadow-[0_0_14px_3px_#3DD68C]" />
-      </motion.div>
     </div>
   )
 }

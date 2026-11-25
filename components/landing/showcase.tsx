@@ -1,65 +1,69 @@
 'use client'
 
-import {
-  BellRingingIcon, CalendarDotsIcon, ChatCircleDotsIcon, CookingPotIcon, DeviceMobileIcon, FilePdfIcon,
-  ListChecksIcon, MoonStarsIcon, ScanIcon, ShieldCheckIcon, SparkleIcon, TimerIcon, WifiSlashIcon,
-  type Icon as PhosphorIcon,
-} from '@phosphor-icons/react'
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
+import {
+  BellRing, CalendarDays, CheckSquare, ChevronLeft, ChevronRight, FileText, Moon, Pause, Play,
+  ScanLine, ShieldCheck, Smartphone, Sparkles, Timer, UtensilsCrossed, WifiOff, type LucideIcon,
+} from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type KeyboardEvent } from 'react'
+import { FeatureBadgeIcon, type FeatureIconKey } from './feature-icons'
+import styles from './showcase.module.css'
 import { spring } from './shared'
 
-// ─── App-icon tile: gradient squircle, top sheen, soft colored shadow ───────
+// ─── "Plan your whole term": bespoke custom icons on smooth CSS rails ──────
 
-export function AppIcon({ icon: Icon, from, to, size = 44 }: { icon: PhosphorIcon; from: string; to: string; size?: number }) {
-  return (
-    <span
-      aria-hidden
-      style={{ width: size, height: size, background: `linear-gradient(145deg, ${from}, ${to})`, boxShadow: `0 8px 18px -8px ${to}, inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -2px 6px rgba(0,0,0,0.12)` }}
-      className="relative grid shrink-0 place-items-center overflow-hidden rounded-[30%]"
-    >
-      <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent" />
-      <Icon weight="fill" color="#fff" style={{ width: size * 0.52, height: size * 0.52 }} className="relative drop-shadow-[0_1px_1px_rgba(0,0,0,0.18)]" />
-    </span>
-  )
-}
-
-// ─── "Plan your whole term": two rails gliding in opposite directions ──────
-
-const planFeatures: { icon: PhosphorIcon; title: string; detail: string; from: string; to: string }[] = [
-  { icon: CalendarDotsIcon, title: 'Schedule', detail: 'Every class, room and time', from: '#60A5FA', to: '#2563EB' },
-  { icon: ListChecksIcon, title: 'Tasks', detail: 'Due dates and exams', from: '#A78BFA', to: '#7C3AED' },
-  { icon: ScanIcon, title: 'Scanner', detail: 'Photo in, week out', from: '#4ADE80', to: '#0E7A4A' },
-  { icon: BellRingingIcon, title: 'Alarms', detail: 'A heads-up before class', from: '#FB923C', to: '#EA580C' },
-  { icon: CookingPotIcon, title: 'Kitchen', detail: 'Cheap dorm meals', from: '#FBBF24', to: '#D97706' },
-  { icon: ChatCircleDotsIcon, title: 'Copilot', detail: 'Ask about your week', from: '#F472B6', to: '#DB2777' },
+const planFeatures: { icon: FeatureIconKey; title: string; detail: string }[] = [
+  { icon: 'schedule', title: 'Schedule', detail: 'Classes, rooms & times' },
+  { icon: 'tasks', title: 'Tasks', detail: 'Exams & due dates' },
+  { icon: 'scanner', title: 'Scanner', detail: 'Photo in, week out' },
+  { icon: 'alarms', title: 'Alarms', detail: '15–60 min heads-up' },
+  { icon: 'kitchen', title: 'Kitchen', detail: '200 dorm meals' },
+  { icon: 'copilot', title: 'Copilot', detail: 'Ask about your week' },
 ]
 
 function PlanCard({ f }: { f: (typeof planFeatures)[number] }) {
   return (
-    <div className="flex w-[218px] shrink-0 items-center gap-3 rounded-[20px] bg-white/85 p-3 pr-4 shadow-[0_10px_24px_-18px_rgba(74,59,0,0.6)] ring-1 ring-[#4A3B00]/[0.06] backdrop-blur">
-      <AppIcon icon={f.icon} from={f.from} to={f.to} />
+    <div className="flex w-[240px] shrink-0 items-center gap-3 rounded-[20px] border border-[#4A3B00]/[0.09] bg-white/95 p-2.5 pr-4 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] [@media(hover:hover)]:hover:-translate-y-0.5">
+      <FeatureBadgeIcon name={f.icon} size={46} />
       <div className="min-w-0">
         <p className="text-[15px] font-semibold leading-tight text-[#292515]">{f.title}</p>
-        <p className="mt-0.5 truncate text-[12.5px] text-[#6B5C2E]">{f.detail}</p>
+        <p className="mt-0.5 text-[13px] leading-snug text-[#6B5816]">{f.detail}</p>
       </div>
     </div>
   )
 }
 
-export function TermRails() {
+export function TermRails({ animate = true }: { animate?: boolean }) {
+  const reduceMotion = useReducedMotion()
+  const glide = animate && !reduceMotion
   const rows = [planFeatures, [...planFeatures.slice(3), ...planFeatures.slice(0, 3)]]
+
+  if (!glide) {
+    return (
+      <div className="grid gap-2.5 sm:grid-cols-2">
+        {planFeatures.map(f => (
+          <div key={f.title} className="flex items-center gap-3 rounded-[20px] border border-[#4A3B00]/[0.09] bg-white/95 p-2.5 pr-3.5">
+            <FeatureBadgeIcon name={f.icon} size={44} />
+            <div className="min-w-0">
+              <p className="text-[14.5px] font-semibold leading-tight text-[#292515]">{f.title}</p>
+              <p className="mt-0.5 text-[12.5px] leading-snug text-[#6B5816]">{f.detail}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
-    <div className="group/rails -mx-7 space-y-3 [mask-image:linear-gradient(to_right,transparent,black_9%,black_91%,transparent)] sm:-mx-8">
+    <div className={`${styles.railsWrap} -mx-7 space-y-3 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] sm:-mx-8`}>
       <ul className="sr-only">{planFeatures.map(f => <li key={f.title}>{f.title}: {f.detail}</li>)}</ul>
       {rows.map((row, r) => (
         <div key={r} aria-hidden className="flex overflow-hidden py-1">
           {[0, 1].map(k => (
-            <motion.div key={k} className="flex shrink-0 gap-3 pr-3"
-              animate={{ x: r ? ['-100%', '0%'] : ['0%', '-100%'] }} transition={{ duration: 26 + r * 4, repeat: Infinity, ease: 'linear' }}>
+            <div key={k} className={r ? styles.termTrackRight : styles.termTrackLeft}>
               {row.map(f => <PlanCard key={f.title} f={f} />)}
-            </motion.div>
+            </div>
           ))}
         </div>
       ))}
@@ -87,16 +91,13 @@ export function HomeScreenPhone() {
         style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}
         className="relative"
       >
-        {/* side buttons */}
         <span aria-hidden className="absolute -left-[3px] top-[110px] h-[26px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#6b6e70] to-[#3b3d3f]" />
         <span aria-hidden className="absolute -left-[3px] top-[152px] h-[52px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#6b6e70] to-[#3b3d3f]" />
         <span aria-hidden className="absolute -left-[3px] top-[214px] h-[52px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#6b6e70] to-[#3b3d3f]" />
         <span aria-hidden className="absolute -right-[3px] top-[170px] h-[78px] w-[4px] rounded-r-sm bg-gradient-to-l from-[#6b6e70] to-[#3b3d3f]" />
 
-        {/* titanium frame */}
         <div className="relative w-[300px] rounded-[58px] bg-[linear-gradient(145deg,#8d9093_0%,#4b4e51_22%,#2a2c2e_50%,#55585b_78%,#9a9da0_100%)] p-[3px] shadow-[0_60px_90px_-40px_rgba(18,58,122,0.55),0_30px_60px_-30px_rgba(0,0,0,0.6)]">
           <div className="rounded-[55px] bg-black p-[10px]">
-            {/* screen */}
             <div className="relative h-[565px] overflow-hidden rounded-[46px] bg-[#F6D9DF]">
               <Image
                 src="/landing/home-widgets.webp"
@@ -105,11 +106,9 @@ export function HomeScreenPhone() {
                 sizes="274px"
                 className="object-cover object-top"
               />
-              {/* dynamic island */}
               <div aria-hidden className="absolute left-1/2 top-[11px] z-20 flex h-[30px] w-[100px] -translate-x-1/2 items-center justify-end rounded-full bg-black pr-3">
                 <span className="size-[9px] rounded-full bg-[#1b1f2a] ring-1 ring-[#2c3346]" />
               </div>
-              {/* glass glare that follows tilt */}
               <motion.div aria-hidden style={{ left: glare }} className="pointer-events-none absolute -top-1/4 z-30 h-[150%] w-[40%] rotate-[20deg] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
             </div>
           </div>
@@ -119,77 +118,298 @@ export function HomeScreenPhone() {
   )
 }
 
-// ─── Feature tiles (replaces the pill cloud) ───────────────────────────────
+// ─── Feature cloud: Dual-capsule icon medallion + pill cluster ─────────────
 
-const tiles: { icon: PhosphorIcon; label: string; from: string; to: string; line: string }[] = [
-  { icon: CalendarDotsIcon, label: 'Schedule', from: '#60A5FA', to: '#2563EB', line: 'Every class, room and instructor in one clean week view.' },
-  { icon: ScanIcon, label: 'Scanner', from: '#4ADE80', to: '#0E7A4A', line: 'Snap your registration form. Dormosaur builds the week for you.' },
-  { icon: BellRingingIcon, label: 'Alarms', from: '#FB923C', to: '#EA580C', line: 'A heads-up 15, 30 or 60 minutes before every class.' },
-  { icon: ListChecksIcon, label: 'Tasks', from: '#A78BFA', to: '#7C3AED', line: 'Exams, quizzes and projects, sorted by what is due first.' },
-  { icon: TimerIcon, label: 'Countdowns', from: '#FB7185', to: '#E11D48', line: 'See exactly how long until your next class starts.' },
-  { icon: DeviceMobileIcon, label: 'Widgets', from: '#38BDF8', to: '#0284C7', line: 'Your schedule as a wallpaper on your home and lock screen.' },
-  { icon: CookingPotIcon, label: 'Kitchen', from: '#FBBF24', to: '#D97706', line: '25+ cheap recipes for a rice cooker, kettle or microwave.' },
-  { icon: SparkleIcon, label: 'Copilot', from: '#F472B6', to: '#DB2777', line: 'Ask when you are free this week, or what to cook tonight.' },
-  { icon: WifiSlashIcon, label: 'Offline', from: '#34D399', to: '#059669', line: 'Alarms and your schedule keep working with no signal.' },
-  { icon: ShieldCheckIcon, label: 'Private', from: '#94A3B8', to: '#475569', line: 'No ads, ever. Your schedule stays yours.' },
-  { icon: FilePdfIcon, label: 'PDF import', from: '#C084FC', to: '#9333EA', line: 'Got your schedule as a PDF? Drop it in, same result.' },
-  { icon: MoonStarsIcon, label: 'Dark mode', from: '#64748B', to: '#0F172A', line: 'Easy on the eyes for late-night study sessions.' },
+type FeaturePill = {
+  id: string
+  icon: LucideIcon
+  label: string
+  bg: string
+  fg: string
+  spec: string
+  line: string
+}
+
+const FEATURE_PILLS: FeaturePill[] = [
+  // Row 1 (5)
+  {
+    id: 'schedule',
+    icon: CalendarDays,
+    label: 'Schedule',
+    bg: '#0E7A4A',
+    fg: '#FFFFFF',
+    spec: 'Week & Day views',
+    line: 'Every class, room number, and instructor color-coded in a calm weekly timetable.',
+  },
+  {
+    id: 'scanner',
+    icon: ScanLine,
+    label: 'Scanner',
+    bg: '#34C77B',
+    fg: '#052414',
+    spec: 'Photo · Screenshot · PDF',
+    line: 'Snap your registration form or import a PDF. Dormosaur builds your week and lets you review first.',
+  },
+  {
+    id: 'alarms',
+    icon: BellRing,
+    label: 'Alarms',
+    bg: '#FF6363',
+    fg: '#240505',
+    spec: '15, 30 or 60 min lead',
+    line: 'Automatic reminders before every class that fire locally even when dorm Wi-Fi drops.',
+  },
+  {
+    id: 'tasks',
+    icon: CheckSquare,
+    label: 'Tasks',
+    bg: '#1D64E8',
+    fg: '#FFFFFF',
+    spec: 'Syllabus scan ready',
+    line: 'Exams, quizzes, lab reports, and projects sorted by due date with Open and Done tracking.',
+  },
+  {
+    id: 'countdowns',
+    icon: Timer,
+    label: 'Countdowns',
+    bg: '#FF87BA',
+    fg: '#2B0818',
+    spec: 'Live Up Next card',
+    line: 'See at a glance how many minutes remain until your next class starts and which room to head to.',
+  },
+  // Row 2 (4)
+  {
+    id: 'widgets',
+    icon: Smartphone,
+    label: 'Widgets',
+    bg: '#FACC15',
+    fg: '#241C00',
+    spec: 'Lock Screen wallpaper',
+    line: 'Save a crisp timetable wallpaper sized for your Lock Screen today, with live widgets coming soon.',
+  },
+  {
+    id: 'kitchen',
+    icon: UtensilsCrossed,
+    label: 'Kitchen',
+    bg: '#FB923C',
+    fg: '#261102',
+    spec: '200 dorm recipes',
+    line: 'Rice cooker, kettle, and microwave meals that turn missing ingredients into your grocery list.',
+  },
+  {
+    id: 'copilot',
+    icon: Sparkles,
+    label: 'Copilot',
+    bg: '#0275B8',
+    fg: '#FFFFFF',
+    spec: 'Ask Dormo chat',
+    line: 'Ask when you have free breaks between classes, what is due this week, or what to cook tonight.',
+  },
+  {
+    id: 'offline',
+    icon: WifiOff,
+    label: 'Offline',
+    bg: '#0F766E',
+    fg: '#FFFFFF',
+    spec: 'Works without signal',
+    line: 'Your timetable, tasks, recipes, and scheduled class alarms stay available with zero data.',
+  },
+  // Row 3 (3)
+  {
+    id: 'private',
+    icon: ShieldCheck,
+    label: 'Private',
+    bg: '#1E40AF',
+    fg: '#FFFFFF',
+    spec: 'Zero ads or trackers',
+    line: 'No ads, ever. Your schedule and deadlines stay tied to your account and are never sold.',
+  },
+  {
+    id: 'pdf',
+    icon: FileText,
+    label: 'PDF import',
+    bg: '#4338CA',
+    fg: '#FFFFFF',
+    spec: 'Up to 3 MB portal PDF',
+    line: 'Drop your official school portal PDF straight in for the cleanest subject, day, and room extraction.',
+  },
+  {
+    id: 'darkmode',
+    icon: Moon,
+    label: 'Dark mode',
+    bg: '#12231B',
+    fg: '#E9F7EE',
+    spec: 'System · Light · Dark',
+    line: 'Comfortable low-glare reading when checking early morning rooms or late-night deadlines.',
+  },
 ]
 
 /**
- * Spotlight grid: one icon at a time lifts, glows and explains itself.
- * Auto-advances every 2.4s; hovering or focusing a tile takes over and pauses the cycle.
+ * Interactive 3-row dual-capsule cluster ([Circle Icon] + [Label Pill]) with
+ * keyboard navigation, pause/play control, and connected feature spotlight below.
  */
 export function FeatureTiles({ animate = true }: { animate?: boolean }) {
   const [active, setActive] = useState(0)
-  const [paused, setPaused] = useState(false)
+  const [hoverPaused, setHoverPaused] = useState(false)
+  const [userPaused, setUserPaused] = useState(false)
   const reduceMotion = useReducedMotion()
-  const running = animate && !reduceMotion && !paused
+
+  const running = animate && !reduceMotion && !hoverPaused && !userPaused
+
   useEffect(() => {
     if (!running) return
-    const t = setInterval(() => setActive(a => (a + 1) % tiles.length), 2400)
-    return () => clearInterval(t)
+    const timer = window.setInterval(() => {
+      setActive(prev => (prev + 1) % FEATURE_PILLS.length)
+    }, 3000)
+    return () => window.clearInterval(timer)
   }, [running])
-  const current = tiles[active]
+
+  const current = FEATURE_PILLS[active]
+  const CurrentIcon = current.icon
+
+  function stepBy(delta: number) {
+    setActive(prev => (prev + delta + FEATURE_PILLS.length) % FEATURE_PILLS.length)
+  }
+
+  function handleKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.key === 'ArrowRight') {
+      e.preventDefault()
+      stepBy(1)
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault()
+      stepBy(-1)
+    }
+  }
 
   return (
-    <div className="mx-auto mt-12 max-w-[880px]" onMouseLeave={() => setPaused(false)}>
-      <ul className="grid grid-cols-3 gap-x-4 gap-y-7 sm:grid-cols-4 md:grid-cols-6">
-        {tiles.map((t, i) => {
-          const on = i === active
+    <div
+      className="mx-auto mt-12 max-w-[980px]"
+      onMouseLeave={() => setHoverPaused(false)}
+      onKeyDown={handleKeyDown}
+    >
+      <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3" role="group" aria-label="Dormosaur features">
+        {FEATURE_PILLS.map((item, idx) => {
+          const isOn = idx === active
+          const Icon = item.icon
+          const breakAfter = idx === 4 || idx === 8
           return (
-            <motion.li key={t.label}
-              initial={{ opacity: 0, y: 24, scale: 0.8 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true }}
-              transition={{ ...spring, delay: (i % 6) * 0.05 + Math.floor(i / 6) * 0.12 }}
-              className="flex justify-center">
-              <button type="button" aria-pressed={on} aria-label={`${t.label}: ${t.line}`}
-                onMouseEnter={() => { setPaused(true); setActive(i) }} onFocus={() => { setPaused(true); setActive(i) }} onClick={() => setActive(i)}
-                className="group flex flex-col items-center gap-2.5 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#0E7A4A]/50">
-                <motion.span className="relative" animate={{ y: on ? -10 : 0, scale: on ? 1.14 : 1, rotate: on ? (i % 2 ? 4 : -4) : 0 }} transition={spring}>
-                  {on && (
-                    <motion.span layoutId="tile-glow" aria-hidden transition={spring}
-                      style={{ background: `radial-gradient(closest-side, ${t.from}88, transparent)` }}
-                      className="absolute -inset-5 -z-10 rounded-full blur-md" />
-                  )}
-                  <AppIcon icon={t.icon} from={t.from} to={t.to} size={68} />
-                </motion.span>
-                <span className={`text-[14px] font-semibold tracking-tight transition-colors ${on ? 'text-[#0A1710]' : 'text-[#1C2A21]/55'}`}>{t.label}</span>
+            <span key={item.id} className="contents">
+              <button
+                type="button"
+                aria-pressed={isOn}
+                aria-label={`${item.label} — ${item.spec}`}
+                onMouseEnter={() => { setHoverPaused(true); setActive(idx) }}
+                onFocus={() => { setHoverPaused(true); setActive(idx) }}
+                onBlur={() => setHoverPaused(false)}
+                onClick={() => setActive(idx)}
+                className={`group inline-flex min-h-[44px] cursor-pointer items-center gap-[3px] rounded-full p-[3px] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.97] ${
+                  isOn
+                    ? '-translate-y-0.5 scale-[1.03] opacity-100 ring-2 ring-[#0A1710]'
+                    : 'opacity-85 ring-2 ring-transparent [@media(hover:hover)]:hover:-translate-y-0.5 [@media(hover:hover)]:hover:opacity-100'
+                }`}
+              >
+                <span
+                  aria-hidden
+                  style={{ backgroundColor: item.bg, color: item.fg }}
+                  className="grid size-11 shrink-0 place-items-center rounded-full lg:size-12"
+                >
+                  <Icon className="size-[19px] lg:size-[21px]" strokeWidth={2.2} />
+                </span>
+                <span
+                  style={{ backgroundColor: item.bg, color: item.fg }}
+                  className="inline-flex h-11 items-center whitespace-nowrap rounded-full px-4 text-[14.5px] font-bold tracking-[-0.015em] lg:h-12 lg:px-5 lg:text-[16px]"
+                >
+                  {item.label}
+                </span>
               </button>
-            </motion.li>
+              {breakAfter && <span aria-hidden className="hidden lg:block lg:h-0 lg:basis-full" />}
+            </span>
           )
         })}
-      </ul>
+      </div>
 
-      {/* caption for the spotlit feature, with a progress line while auto-playing */}
-      <div className="mx-auto mt-10 flex min-h-[64px] max-w-[520px] flex-col items-center gap-3 text-center" aria-live="polite">
-        <AnimatePresence mode="wait">
-          <motion.p key={current.label} initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
-            transition={{ duration: 0.35 }} className="text-[17px] text-[#1C2A21]">
-            <span style={{ color: current.to }} className="font-semibold">{current.label}.</span> {current.line}
-          </motion.p>
+      {/* Connected spotlight stage */}
+      <div
+        className="relative mx-auto mt-10 max-w-[660px] overflow-hidden rounded-[24px] border border-[#0A1710]/[0.08] bg-[#F4F7F4] p-5 text-left sm:p-6"
+        aria-live="polite"
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={current.id}
+            initial={reduceMotion ? false : { opacity: 0, y: 5, filter: 'blur(2px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -5, filter: 'blur(2px)' }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+          >
+            <div className="flex items-start gap-4">
+              <span
+                aria-hidden
+                style={{ backgroundColor: current.bg, color: current.fg }}
+                className="grid size-12 shrink-0 place-items-center rounded-full"
+              >
+                <CurrentIcon className="size-[22px]" strokeWidth={2.2} />
+              </span>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <h3 className="text-[19px] font-bold tracking-[-0.015em] text-[#0A1710]">{current.label}</h3>
+                  <span className="rounded-full border border-[#0A1710]/[0.08] bg-white px-3 py-0.5 text-[12.5px] font-semibold text-[#173526]">
+                    {current.spec}
+                  </span>
+                </div>
+                <p className="mt-1.5 max-w-[50ch] text-pretty text-[15px] leading-[1.62] text-[#2F473A]">
+                  {current.line}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex shrink-0 items-center justify-between gap-2 pt-1 sm:justify-end">
+              <span className="mr-1 text-[13px] font-semibold tabular-nums text-[#3E574A]">
+                {active + 1} / {FEATURE_PILLS.length}
+              </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => stepBy(-1)}
+                  aria-label="Previous feature"
+                  className="grid size-11 cursor-pointer place-items-center rounded-full border border-[#0A1710]/[0.1] bg-white text-[#0A1710] transition-colors hover:border-[#0A1710]/25 active:scale-[0.95]"
+                >
+                  <ChevronLeft className="size-4" strokeWidth={2.3} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUserPaused(p => !p)}
+                  aria-label={userPaused ? 'Resume feature cycle' : 'Pause feature cycle'}
+                  aria-pressed={userPaused}
+                  className="grid size-11 cursor-pointer place-items-center rounded-full border border-[#0A1710]/[0.1] bg-white text-[#0A1710] transition-colors hover:border-[#0A1710]/25 active:scale-[0.95]"
+                >
+                  {userPaused || !animate || reduceMotion ? <Play className="size-3.5" strokeWidth={2.4} /> : <Pause className="size-3.5" strokeWidth={2.4} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => stepBy(1)}
+                  aria-label="Next feature"
+                  className="grid size-11 cursor-pointer place-items-center rounded-full border border-[#0A1710]/[0.1] bg-white text-[#0A1710] transition-colors hover:border-[#0A1710]/25 active:scale-[0.95]"
+                >
+                  <ChevronRight className="size-4" strokeWidth={2.3} />
+                </button>
+              </div>
+            </div>
+          </motion.div>
         </AnimatePresence>
-        <div className="h-[3px] w-24 overflow-hidden rounded-full bg-black/[0.07]">
-          {running && <motion.div key={active} style={{ background: current.to }} className="h-full rounded-full" initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ duration: 2.4, ease: 'linear' }} />}
+
+        {/* Subtle progress rail along the bottom edge */}
+        <div className="absolute inset-x-0 bottom-0 h-[3px] bg-[#0A1710]/[0.06]">
+          {running && (
+            <motion.div
+              key={`${active}-${userPaused}`}
+              style={{ backgroundColor: current.bg }}
+              className="h-full origin-left"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 3, ease: 'linear' }}
+            />
+          )}
         </div>
       </div>
     </div>

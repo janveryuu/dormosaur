@@ -1,154 +1,291 @@
 'use client'
 
 import { AnimatePresence, motion, useInView, useReducedMotionConfig } from 'framer-motion'
-import { Check, RotateCcw } from 'lucide-react'
-import Image from 'next/image'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { Counter, Reveal, serif, spring } from './shared'
+import { Check, Clock } from 'lucide-react'
+import { useRef, useState, type KeyboardEvent } from 'react'
+import { Counter, serif } from './shared'
 
-/** Race clock runs faster than real time so the point lands in under two seconds. */
-const SPEED = 3
-const lanes = [
-  { label: 'Dormosaur', note: 'snap & done', finish: 5, win: true },
-  { label: 'Typing every class', note: 'by hand', finish: 25 * 60 },
-  { label: 'Building a spreadsheet', note: 'cell by cell', finish: 40 * 60 },
+type MethodId = 'dormosaur' | 'manual' | 'spreadsheet'
+
+type MethodData = {
+  id: MethodId
+  rank: 1 | 2 | 3
+  label: string
+  tabLabel: string
+  note: string
+  timeText: string
+  minutes: number
+  barPercent: number
+  summary: string
+  steps: { title: string; detail: string }[]
+}
+
+const METHODS: MethodData[] = [
+  {
+    id: 'dormosaur',
+    rank: 1,
+    label: 'Dormosaur',
+    tabLabel: 'Dormosaur',
+    note: 'Snap & done',
+    timeText: '5 sec',
+    minutes: 0.08,
+    barPercent: 8,
+    summary: 'One photo, portal screenshot, or PDF becomes your full week with offline class alarms armed.',
+    steps: [
+      { title: 'Drop a photo, screenshot, or PDF', detail: 'Reads messy registration tables, room numbers, and multi-day codes.' },
+      { title: 'Review every class before saving', detail: 'Flags unclear slots so you confirm the whole term in seconds.' },
+      { title: 'Class alarms arm automatically', detail: 'Every saved subject gets a local offline reminder on Android.' },
+    ],
+  },
+  {
+    id: 'manual',
+    rank: 2,
+    label: 'Typing by hand',
+    tabLabel: 'Typing by hand',
+    note: 'Class by class',
+    timeText: '25 min',
+    minutes: 25,
+    barPercent: 64,
+    summary: 'Entering each subject, room, repeat rule, and phone alarm manually takes most of a study break.',
+    steps: [
+      { title: 'Key in every subject one by one', detail: 'Course codes, titles, rooms, and instructors typed on a phone keyboard.' },
+      { title: 'Configure repeat days carefully', detail: 'Easy to mistype MWF vs. TTh schedules or skip lab time blocks.' },
+      { title: 'Set separate morning alarms', detail: 'Built in another clock app with no awareness of schedule edits.' },
+    ],
+  },
+  {
+    id: 'spreadsheet',
+    rank: 3,
+    label: 'Building a spreadsheet',
+    tabLabel: 'Spreadsheet',
+    note: 'Cell by cell',
+    timeText: '40 min',
+    minutes: 40,
+    barPercent: 100,
+    summary: 'Formatting grids, merging cells, and screenshotting sheets still leaves you without reminders.',
+    steps: [
+      { title: 'Draw columns and merge time blocks', detail: 'Fiddly cell sizing for 90-minute labs and overlapping hours.' },
+      { title: 'Pinch-to-zoom between hallways', detail: 'Static screenshots blur and quickly fall behind room changes.' },
+      { title: 'Zero deadline or alarm sync', detail: 'No 15-minute class heads-up and no link to exams or tasks.' },
+    ],
+  },
+]
+
+const METRICS = [
+  { to: 200, suffix: '', label: 'Dorm-budget recipes' },
+  { to: 0, suffix: '', label: 'Ads or trackers, ever' },
+  { to: 100, suffix: '%', label: 'Offline class alarms' },
 ] as const
 
-/** The "No. 1" claim, told by one idea: a stopwatch race Dormosaur wins before the others warm up. */
+/**
+ * Editorial ranked comparison of term setup time.
+ * Synchronizes the left segmented control with the 1-2-3 ranked leaderboard on the right.
+ */
 export function NumberOne() {
-  return (
-    <section id="number-one" className="px-4 py-16">
-      <Reveal>
-        <div className="relative mx-auto max-w-[1100px] overflow-hidden rounded-[44px] bg-[#04120B] text-white ring-1 ring-white/10">
-          <div aria-hidden className="pointer-events-none absolute -left-40 -top-40 size-[520px] rounded-full bg-[radial-gradient(circle,rgba(52,199,123,0.16),transparent_65%)]" />
-          <div className="relative px-6 pt-14 sm:px-14 sm:pt-16">
-            <h2 className="max-w-[820px] text-[46px] leading-[0.98] tracking-[-0.02em] sm:text-[78px]" style={serif}>
-              The <em className="text-[#F5C542]">No.&nbsp;1</em> schedule tracker for <em className="text-[#7DF0B5]">dorm life</em>.
-            </h2>
-          </div>
-          <Race />
-        </div>
-      </Reveal>
-    </section>
-  )
-}
-
-function fmt(sec: number) {
-  if (sec < 60) return `0:${sec.toFixed(1).padStart(4, '0')}`
-  const m = Math.floor(sec / 60)
-  const s = Math.floor(sec % 60)
-  return `${m}:${String(s).padStart(2, '0')}`
-}
-
-function Race() {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { amount: 0.5 })
+  const [selected, setSelected] = useState<MethodId>('dormosaur')
   const reduce = useReducedMotionConfig()
-  const [rawClock, setClock] = useState(0)
-  const [run, setRun] = useState(0)
-  const startRef = useRef<number | null>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const inView = useInView(cardRef, { once: true, amount: 0.3 })
+  const active = METHODS.find(m => m.id === selected) ?? METHODS[0]
+  const isDormosaur = active.id === 'dormosaur'
 
-  useEffect(() => {
-    if (!inView || reduce) return
-    let raf = 0
-    startRef.current = null
-    const tick = (t: number) => {
-      if (startRef.current === null) startRef.current = t
-      setClock(((t - startRef.current) / 1000) * SPEED)
-      raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [inView, reduce, run])
-
-  const replay = useCallback(() => {
-    setClock(0)
-    setRun(r => r + 1)
-  }, [])
-
-  // Reduced motion: skip the race and show the result.
-  const clock = reduce && inView ? lanes[0].finish : rawClock
-  const won = clock >= lanes[0].finish
-  const shown = Math.min(clock, lanes[0].finish)
+  function handleKeyDown(e: KeyboardEvent<HTMLButtonElement>, idx: number) {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+    e.preventDefault()
+    const next = e.key === 'ArrowRight' ? (idx + 1) % METHODS.length : (idx - 1 + METHODS.length) % METHODS.length
+    const nextId = METHODS[next].id
+    setSelected(nextId)
+    document.getElementById(`setup-tab-${nextId}`)?.focus()
+  }
 
   return (
-    <div ref={ref} className="relative grid gap-10 px-6 pb-10 pt-12 sm:px-14 sm:pb-14 md:grid-cols-[0.9fr_1.1fr] md:gap-x-14 md:gap-y-10">
-      <div>
-        <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-white/45">Time to set up a full term</p>
-        <p className="mt-3 flex items-baseline gap-3 font-semibold tabular-nums tracking-[-0.05em]">
-          <span className={`text-[88px] leading-none transition-colors duration-300 sm:text-[112px] ${won ? 'text-[#7DF0B5]' : 'text-white'}`}>{fmt(shown)}</span>
-        </p>
-        <div className="mt-4 flex h-8 items-center gap-3">
-          <AnimatePresence mode="wait">
-            {won ? (
-              <motion.p key="won" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={spring} className="flex items-center gap-2 text-[15px] font-semibold text-[#7DF0B5]">
-                <span className="grid size-6 place-items-center rounded-full bg-[#34C77B] text-[#04120B]"><Check className="size-3.5" strokeWidth={3.5} /></span>
-                Your whole week, set.
-              </motion.p>
-            ) : (
-              <motion.p key="go" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-[15px] text-white/50">Scanning one photo…</motion.p>
-            )}
-          </AnimatePresence>
-          {won && !reduce && (
-            <button type="button" onClick={replay} className="ml-auto inline-flex min-h-9 items-center gap-1.5 rounded-full border border-white/15 px-3 text-[13px] text-white/70 transition-colors hover:border-white/30 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7DF0B5]">
-              <RotateCcw className="size-3.5" aria-hidden /> Replay
-            </button>
-          )}
+    <section id="number-one" className="scroll-mt-24 border-b border-[#0A1710]/[0.07] bg-[#F4F7F4] px-4 py-16 sm:py-20">
+      <div className="mx-auto max-w-[1100px]">
+        <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-12">
+          <div>
+            <h2 className="text-balance text-[42px] leading-[1.01] tracking-[-0.025em] text-[#0A1710] sm:text-[62px]" style={serif}>
+              The No.&nbsp;1 schedule tracker for <em className="text-[#0E7A4A]">dorm life.</em>
+            </h2>
+            <p className="mt-5 max-w-[44ch] text-pretty text-[16px] leading-[1.65] text-[#354B3E] sm:text-[17px]">
+              See how Dormosaur ranks against manual entry and spreadsheets from first scan to a working week.
+            </p>
+
+            <div
+              role="tablist"
+              aria-label="Compare schedule setup methods"
+              className="mt-7 inline-flex flex-wrap gap-1.5 rounded-[20px] bg-[#E3EBE5] p-1.5"
+            >
+              {METHODS.map((m, idx) => {
+                const isSelected = m.id === selected
+                return (
+                  <button
+                    key={m.id}
+                    id={`setup-tab-${m.id}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={isSelected}
+                    aria-controls="setup-comparison-panel"
+                    onClick={() => setSelected(m.id)}
+                    onKeyDown={e => handleKeyDown(e, idx)}
+                    className={`relative min-h-[44px] cursor-pointer rounded-[14px] px-4 py-2 text-[14px] font-semibold transition-colors active:scale-[0.98] ${
+                      isSelected ? 'text-[#0A1710]' : 'text-[#314A3C] hover:text-[#0A1710]'
+                    }`}
+                  >
+                    {isSelected && (
+                      <motion.span
+                        layoutId="setup-method-pill"
+                        transition={reduce ? { duration: 0 } : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                        className="absolute inset-0 rounded-[14px] bg-white shadow-[0_2px_8px_-2px_rgba(10,23,16,0.14)]"
+                      />
+                    )}
+                    <span className="relative z-10">{m.tabLabel}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div
+            ref={cardRef}
+            id="setup-comparison-panel"
+            role="tabpanel"
+            aria-labelledby={`setup-tab-${active.id}`}
+            className="rounded-[24px] border border-[#0A1710]/[0.07] bg-white p-6 shadow-[0_20px_48px_-26px_rgba(10,23,16,0.18)] sm:p-8"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={active.id}
+                initial={reduce ? false : { opacity: 0, y: 6, filter: 'blur(2px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={reduce ? undefined : { opacity: 0, y: -6, filter: 'blur(2px)' }}
+                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-3">
+                  <div>
+                    <p className="text-[13px] font-semibold text-[#425B4D]">
+                      Rank #{active.rank} · {active.label}
+                    </p>
+                    <p className={`mt-0.5 text-[42px] font-bold leading-none tabular-nums tracking-[-0.04em] sm:text-[52px] ${isDormosaur ? 'text-[#0E7A4A]' : 'text-[#1D2D24]'}`}>
+                      {active.timeText}
+                    </p>
+                  </div>
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-semibold ${
+                      isDormosaur ? 'bg-[#E7F6EE] text-[#0B5E39]' : 'bg-[#EEF2EF] text-[#354B3E]'
+                    }`}
+                  >
+                    {isDormosaur ? <Check className="size-4" strokeWidth={2.6} aria-hidden /> : <Clock className="size-4" strokeWidth={2.2} aria-hidden />}
+                    {isDormosaur ? 'Fastest term setup' : `${active.minutes} minutes manual effort`}
+                  </span>
+                </div>
+
+                <p className="mt-3 text-pretty text-[15px] leading-[1.6] text-[#384F42]">{active.summary}</p>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Ranked 1-2-3 leaderboard comparison */}
+            <ol className="mt-6 space-y-2 border-y border-[#0A1710]/[0.07] py-5" aria-label="Setup time ranking">
+              {METHODS.map((m, i) => {
+                const isCurrent = m.id === selected
+                const isFirst = m.rank === 1
+                return (
+                  <li key={m.id}>
+                    <button
+                      type="button"
+                      onClick={() => setSelected(m.id)}
+                      aria-pressed={isCurrent}
+                      className={`group flex w-full cursor-pointer items-center gap-3 rounded-[14px] px-3 py-2.5 text-left transition-colors active:scale-[0.99] ${
+                        isCurrent
+                          ? isFirst
+                            ? 'bg-[#EEF8F2] ring-1 ring-[#0E7A4A]/20'
+                            : 'bg-[#F3F6F4] ring-1 ring-[#0A1710]/10'
+                          : 'hover:bg-[#F7FAF8]'
+                      }`}
+                    >
+                      <span
+                        className={`grid size-7 shrink-0 place-items-center rounded-full text-[13px] font-bold tabular-nums transition-colors ${
+                          isFirst
+                            ? 'bg-[#0E7A4A] text-white'
+                            : isCurrent
+                              ? 'bg-[#1D2D24] text-white'
+                              : 'bg-[#E8EFEA] text-[#354B3E]'
+                        }`}
+                      >
+                        {m.rank}
+                      </span>
+
+                      <div className="w-[144px] shrink-0 sm:w-[162px]">
+                        <p className={`truncate text-[14px] leading-tight ${isCurrent || isFirst ? 'font-semibold text-[#0A1710]' : 'font-medium text-[#3F5648]'}`}>
+                          {m.label}
+                        </p>
+                        <p className="mt-0.5 text-[12px] text-[#556C5F]">{m.note}</p>
+                      </div>
+
+                      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-[#E8EFEA]">
+                        <motion.div
+                          initial={reduce ? { scaleX: 1 } : { scaleX: 0 }}
+                          animate={inView || reduce ? { scaleX: 1 } : { scaleX: 0 }}
+                          transition={reduce ? { duration: 0 } : { duration: 0.55, delay: 0.08 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                          style={{ width: `${m.barPercent}%`, transformOrigin: 'left center' }}
+                          className={`h-full rounded-full transition-colors duration-300 ${
+                            isFirst
+                              ? 'bg-[#0E7A4A]'
+                              : isCurrent
+                                ? 'bg-[#4E685A]'
+                                : 'bg-[#A6B8AE]'
+                          }`}
+                        />
+                      </div>
+
+                      <span className={`w-[54px] shrink-0 text-right text-[13.5px] font-bold tabular-nums ${isFirst ? 'text-[#0E7A4A]' : 'text-[#31473A]'}`}>
+                        {m.timeText}
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ol>
+
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.ol
+                key={active.id}
+                initial={reduce ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={reduce ? undefined : { opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="mt-4 divide-y divide-[#0A1710]/[0.06]"
+              >
+                {active.steps.map((step, i) => (
+                  <li key={step.title} className="flex items-start gap-3 py-3 first:pt-1 last:pb-0">
+                    <span
+                      className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-full text-[12px] font-bold tabular-nums ${
+                        isDormosaur ? 'bg-[#E7F6EE] text-[#0E7A4A]' : 'bg-[#EEF2EF] text-[#354B3E]'
+                      }`}
+                    >
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[14.5px] font-semibold leading-snug text-[#0A1710]">{step.title}</p>
+                      <p className="mt-0.5 text-pretty text-[13.5px] leading-[1.55] text-[#455C4E]">{step.detail}</p>
+                    </div>
+                  </li>
+                ))}
+              </motion.ol>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        <div className="mt-10 grid gap-6 border-t border-[#0A1710]/[0.08] pt-8 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-[#0A1710]/[0.08]">
+          {METRICS.map((m, idx) => (
+            <div key={m.label} className={idx > 0 ? 'sm:pl-8' : ''}>
+              <p className="text-[36px] font-bold leading-none tracking-[-0.03em] text-[#0A1710] sm:text-[42px]">
+                <Counter to={m.to} suffix={m.suffix} />
+              </p>
+              <p className="mt-1.5 text-[14px] font-medium text-[#3B5144]">{m.label}</p>
+            </div>
+          ))}
         </div>
       </div>
-
-      <ol className="space-y-7 md:col-start-2 md:row-span-2 md:row-start-1 md:self-center" aria-label="Setup time compared">
-        {lanes.map(lane => {
-          const t = Math.min(clock, lane.finish)
-          const pct = (t / lane.finish) * 100
-          const done = clock >= lane.finish
-          const win = 'win' in lane && lane.win
-          return (
-            <li key={lane.label}>
-              <div className={`mb-2.5 flex items-baseline justify-between gap-3 text-[15px] ${win ? 'pr-16' : ''}`}>
-                <span className={win ? 'flex items-center gap-2 font-semibold text-white' : 'text-white/60'}>
-                  {win && <span className="grid size-5 place-items-center rounded-full bg-[#F5C542] text-[10px] font-black text-[#3B2A00]">1</span>}
-                  {lane.label}
-                  <span className="ml-1 hidden text-[12px] font-normal text-white/35 sm:inline">{lane.note}</span>
-                </span>
-                <span className={`shrink-0 tabular-nums ${win ? 'text-[17px] font-bold text-[#7DF0B5]' : 'text-[13px] text-white/45'}`}>
-                  {win ? (done ? '5 sec' : fmt(t)) : `${fmt(t)} of ~${Math.round(lane.finish / 60)} min`}
-                </span>
-              </div>
-              <div className="relative h-3 rounded-full bg-white/[0.06]">
-                <div
-                  style={{ width: `${Math.max(pct, win ? 0 : 0.6)}%` }}
-                  className={`h-full rounded-full ${win ? 'bg-gradient-to-r from-[#34C77B] to-[#7DF0B5] shadow-[0_0_20px_rgba(125,240,181,0.7)]' : 'bg-white/25'}`}
-                />
-                {!win && clock > 0 && <span aria-hidden className="absolute -top-[3px] size-[18px] animate-pulse rounded-full bg-white/10" style={{ left: `calc(${Math.max(pct, 0.6)}% - 9px)` }} />}
-                {win && (
-                  <AnimatePresence>
-                    {done && (
-                      <motion.div
-                        initial={{ y: 30, scale: 0.4, opacity: 0 }}
-                        animate={{ y: 0, scale: 1, opacity: 1 }}
-                        transition={{ type: 'spring', stiffness: 320, damping: 14 }}
-                        className="absolute -right-2 bottom-1 origin-bottom"
-                      >
-                        <Image src="/dormo-jumping.png" alt="Dormo celebrating at the finish line" width={776} height={934} sizes="64px" className="h-auto w-[64px] drop-shadow-[0_10px_16px_rgba(0,0,0,0.5)]" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                )}
-              </div>
-            </li>
-          )
-        })}
-        <li aria-live="polite" className={`text-[13px] text-white/40 transition-opacity duration-500 ${won ? 'opacity-100' : 'opacity-0'}`}>The others are still typing. You&apos;re already done.</li>
-      </ol>
-      <div className="grid grid-cols-3 gap-3 border-t border-white/10 pt-6 md:col-start-1 md:row-start-2 md:self-start">
-        {[{ n: 25, s: '+', l: 'dorm recipes' }, { n: 0, s: '', l: 'ads, ever' }, { n: 100, s: '%', l: 'offline alarms' }].map(x => (
-          <div key={x.l}>
-            <p className="text-[30px] font-bold tracking-tight"><Counter to={x.n} suffix={x.s} /></p>
-            <p className="text-[13px] text-white/50">{x.l}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+    </section>
   )
 }

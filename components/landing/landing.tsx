@@ -1,21 +1,23 @@
 'use client'
 
 import {
-  AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform,
+  AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useSpring,
 } from 'framer-motion'
 import {
-  Camera, Check, ChevronDown, FileText, ListChecks, Menu, Pause, Play, ScanLine, X, type LucideIcon,
+  ChevronDown, Menu, Pause, Play, X,
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { SiteFooter } from '@/components/site-footer'
+import { AppShowcase } from './app-showcase'
 import { DownloadButton } from './download-button'
 import { FinalCta } from './final-cta'
 import { Hero } from './hero'
 import { Intro } from './intro'
 import { InstallSteps } from './install-steps'
 import { NumberOne } from './number-one'
+import { ScannerSection } from './scanner-section'
 import { Schools } from './schools'
 import { FeatureTiles, HomeScreenPhone, TermRails } from './showcase'
 import { Testimonials } from './testimonials'
@@ -43,11 +45,12 @@ export function Landing({ apkUrl, apkVersion }: { apkUrl: string; apkVersion: st
           <Hero apkUrl={apkUrl} apkVersion={apkVersion} animate={animate} go={introDone} />
           <Schools animate={animations} />
           <NumberOne />
-          <Bento />
-          <Scanner />
+          <Bento animate={animate} />
+          <ScannerSection />
           <FeatureCloud animate={animate} />
+          <AppShowcase />
           <Testimonials animate={animate} />
-          <InstallSteps />
+          <InstallSteps apkUrl={apkUrl} apkVersion={apkVersion} />
           <Faq />
           <FinalCta apkUrl={apkUrl} apkVersion={apkVersion} />
         </main>
@@ -147,7 +150,7 @@ function BentoCard({ bg, ink, title, body, children, className = '', delay = 0 }
   )
 }
 
-function Bento() {
+function Bento({ animate }: { animate: boolean }) {
   return (
     <section id="features" className="scroll-mt-24 px-4 py-16">
       <div className="mx-auto max-w-[1100px]">
@@ -156,7 +159,7 @@ function Bento() {
         </Reveal>
         <div className="grid gap-4 md:grid-cols-2">
           <BentoCard bg="#FFF3B0" ink="#4A3B00" title="Plan your whole term" body="Classes, exams, assignments and meals — all lined up in one calm week view.">
-            <TermRails />
+            <TermRails animate={animate} />
           </BentoCard>
           <BentoCard bg="#D9E8FF" ink="#123A7A" title={<>Your schedule on<br />your Home Screen</>} body="See what's next, tomorrow's classes, and your whole week without opening the app." delay={0.08} className="md:row-span-2">
             <div className="pt-4"><HomeScreenPhone /></div>
@@ -167,7 +170,7 @@ function Bento() {
           <BentoCard bg="#DCF5E7" ink="#0A4A2D" title="Alarms that never miss" body="Rings 15, 30 or 60 minutes before every class — even with no signal." className="md:col-span-2" delay={0.05}>
             <AlarmStrip />
           </BentoCard>
-          <BentoCard bg="#FFE8D6" ink="#6B2F05" title="Eat well on a dorm budget" body="25+ rice-cooker, kettle and microwave recipes. Plan the week, auto-build the grocery list." delay={0.08}>
+          <BentoCard bg="#FFE8D6" ink="#6B2F05" title="Eat well on a dorm budget" body="200 rice-cooker, kettle and microwave recipes. Plan the week, auto-build the grocery list." delay={0.08}>
             <RecipeFan />
           </BentoCard>
           <BentoCard bg="#ECE6FF" ink="#3E1D8F" title="Reminders before it's due" body="Exams, quizzes and projects sorted by when. Tick them off with a satisfying pop." delay={0.14}>
@@ -264,75 +267,6 @@ function Notification() {
   )
 }
 
-// ─── Scanner demo (main feature) ──────────────────────────────────────────
-
-function Scanner() {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const p = useTransform(scrollYProgress, [0.2, 0.55], [0, 1])
-  const laser = useTransform(p, [0, 1], ['0%', '100%'])
-  const messyOpacity = useTransform(p, [0.4, 0.85], [1, 0.15])
-  const cleanOpacity = useTransform(p, [0.5, 1], [0, 1])
-  const cleanY = useTransform(p, [0.5, 1], [30, 0])
-  return (
-    <section id="scanner" ref={ref} className="scroll-mt-24 px-4 py-20">
-      <div className="mx-auto grid max-w-[1100px] items-center gap-14 md:grid-cols-2">
-        <div>
-          <Reveal>
-            <h2 className="text-[40px] font-bold leading-[1.05] tracking-[-0.035em] sm:text-[54px]">Scan your schedule.<br /><span className="text-[#0E7A4A]">See your week.</span></h2>
-            <p className="mt-5 max-w-md text-[17px] leading-relaxed text-black/60">Registration forms, portal screenshots, blurry printouts, PDFs or pasted text. Dormosaur reads subjects, rooms, days and times, then lays out your week in seconds.</p>
-          </Reveal>
-          <div className="mt-8 grid grid-cols-2 gap-3">
-            {([[Camera, 'Take a photo'], [ScanLine, 'Screenshot'], [FileText, 'PDF or image'], [ListChecks, 'Paste text']] as [LucideIcon, string][]).map(([Icon, l], i) => (
-              <Reveal key={l} delay={0.1 + i * 0.06}>
-                <div className={`flex items-center gap-3 rounded-2xl p-4 ${i === 0 ? 'bg-[#0E7A4A] text-white' : 'bg-[#F4F6F4]'}`}>
-                  <Icon className={`size-5 ${i === 0 ? '' : 'text-[#0E7A4A]'}`} /> <span className="font-semibold">{l}</span>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-
-        <div className="relative mx-auto h-[520px] w-full max-w-[420px]">
-          <div className="absolute inset-0 overflow-hidden rounded-[36px] bg-[#04110A] p-6 shadow-[0_40px_80px_-30px_rgba(4,17,10,0.8)]">
-            {/* messy input */}
-            <motion.div style={{ opacity: messyOpacity }} className="absolute inset-6 rotate-[-2deg] rounded-xl bg-[#F7F3E8] p-4 font-mono text-[11px] leading-5 text-black/70">
-              <p className="font-bold">STUDENT REG FORM — 1ST SEM</p>
-              <p>MATH101  CALC I   MWF 0830-0950 SCI204</p>
-              <p>CHEM120 GEN CHEM  MW  1015-1200 LAB B12</p>
-              <p className="line-through">ENG 205  MOD LIT TTH 9-1020 HUM310</p>
-              <p>ENG205  MOD LIT  TTH 0900-1020 HUM 310</p>
-              <p>CS150   PROG     TTHF 1300-1440 TECH118</p>
-              <p>PSY110  PSYCH    MFS 1500-1620 WW22</p>
-              <p className="mt-3 text-black/40">units: 17 · adviser: ____ · OR#: 00213</p>
-              <div className="absolute bottom-6 right-6 rotate-12 rounded border-2 border-red-500/60 px-2 py-1 text-xs font-bold text-red-500/70">ENROLLED</div>
-            </motion.div>
-            {/* clean output */}
-            <motion.div style={{ opacity: cleanOpacity, y: cleanY }} className="absolute inset-6 space-y-2.5">
-              {[['MATH 101', 'Mon Wed Fri · 8:30 AM', '#E6F0FF', '#3B82F6'], ['CHEM 120', 'Mon Wed · 10:15 AM', '#E3F6EC', '#16A36A'], ['ENG 205', 'Tue Thu · 9:00 AM', '#FDEAF3', '#E0457B'], ['CS 150', 'Tue Thu Fri · 1:00 PM', '#FFF1E2', '#F08A24'], ['PSY 110', 'Mon Fri Sat · 3:00 PM', '#EFEAFE', '#8B5CF6']].map(([c, d, bg, bar]) => (
-                <div key={c} style={{ background: bg }} className="flex items-center gap-3 rounded-2xl p-3.5">
-                  <span style={{ background: bar }} className="h-9 w-1 rounded-full" />
-                  <div className="flex-1"><p className="text-[15px] font-bold">{c}</p><p className="text-xs opacity-60">{d}</p></div>
-                  <span style={{ background: bar }} className="grid size-6 place-items-center rounded-full text-white"><Check className="size-3.5" strokeWidth={3} /></span>
-                </div>
-              ))}
-              <p className="pt-2 text-center text-sm font-semibold text-[#7DF0B5]">5 classes found · alarms set</p>
-            </motion.div>
-            {/* laser */}
-            <motion.div style={{ top: laser }} className="pointer-events-none absolute inset-x-0 -mt-16 h-16 bg-gradient-to-b from-transparent via-[#3DD68C]/25 to-[#7DF0B5]/70">
-              <div className="absolute inset-x-0 bottom-0 h-[2px] bg-[#B7FFD8] shadow-[0_0_18px_4px_#3DD68C]" />
-            </motion.div>
-            {['left-3 top-3 border-l-[3px] border-t-[3px]', 'right-3 top-3 border-r-[3px] border-t-[3px]', 'bottom-3 left-3 border-b-[3px] border-l-[3px]', 'bottom-3 right-3 border-b-[3px] border-r-[3px]'].map(k => (
-              <span key={k} className={`absolute size-7 rounded-md border-[#7DF0B5] ${k}`} />
-            ))}
-          </div>
-          <Image src="/mascots/dormosaur-thinking.png" alt="" width={130} height={130} className="absolute -bottom-10 -right-6 drop-shadow-xl" />
-        </div>
-      </div>
-    </section>
-  )
-}
-
 // ─── Feature cloud ────────────────────────────────────────────────────────
 
 function FeatureCloud({ animate }: { animate: boolean }) {
@@ -351,39 +285,120 @@ function FeatureCloud({ animate }: { animate: boolean }) {
 
 // ─── FAQ ─────────────────────────────────────────────────────────────────
 
-const faqs = [
-  ['Can I import my class schedule from a photo?', 'Yes. Take a photo, pick a screenshot, choose a PDF, or paste text. Dormosaur reads subjects, rooms, days and times, and you review everything before saving.'],
-  ['Is Dormosaur free?', 'Yes. Dormosaur is free to download and has zero ads.'],
-  ['Why is it an APK and not on the Play Store?', 'We ship the Android app directly while we prepare store listings. The APK is signed and the same build we use ourselves.'],
-  ['Does it work offline?', 'Your schedule, alarms and tasks live on your phone. Class alarms ring even with no signal. Scanning needs a connection.'],
-  ['Will it remind me before class?', 'Yes. Each class gets an alarm 15, 30 or 60 minutes before it starts. You can turn any of them off.'],
-  ['Does it have home screen widgets?', 'You can save a schedule wallpaper for your home or lock screen today. Live widgets are coming in a future update.'],
-  ['Is my data private?', 'Your data is tied to your account and never sold or shown to advertisers. There are no ads at all.'],
-  ['Is there an iPhone version?', 'iPhone is on the roadmap. For now, Dormosaur is available for Android.'],
+type FaqItem = {
+  q: string
+  a: string
+  docHref?: string
+  docLabel?: string
+}
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Can I import my class schedule from a photo?',
+    a: 'Yes. You can take a photo of a printed registration form, upload a screenshot from your student portal, import an official portal PDF (up to 3 MB), or paste plain timetable text. Dormosaur reads each subject name, course code, room, instructor, days, and start/end times automatically. Anything it is unsure about is flagged on a review screen before saving, duplicate scans skip already-saved classes, and every confirmed class gets an alarm right away.',
+    docHref: '/docs/import',
+    docLabel: 'Read the import guide',
+  },
+  {
+    q: 'Is Dormosaur free?',
+    a: 'Yes. Dormosaur is completely free to download and has zero ads anywhere in the app. Your core class schedule, task and deadline tracker, 15-minute class alarms, today’s meal plan, and all 200 dorm-budget recipes are free, along with 1 free AI schedule scan, 1 syllabus scan, and 5 daily Ask Dormo chats. If you want unlimited scans, 100 daily Ask Dormo chats, 30 or 60 minute alarm lead times, full-week meal planning with grocery list export, and extra watermark-free wallpaper themes, Dormosaur Pro offers a 7-day free trial with no automatic renewal and affordable plans payable via GCash, Maya, MariBank, or GoTyme.',
+  },
+  {
+    q: 'Why is it an APK and not on the Play Store?',
+    a: 'We ship Dormosaur directly as a signed Android APK while store listings are finalized. It is the exact same production build we run on our own phones, compatible with Android 8 or newer. Whenever a new version releases on this site, installing the update over your existing app preserves every class, deadline, and meal plan safely because your data stays tied to your account.',
+    docHref: '/docs/install',
+    docLabel: 'Read the install guide',
+  },
+  {
+    q: 'Does it work offline?',
+    a: 'Yes, for everything you rely on between classes. Your weekly timetable, open deadlines, saved recipes, and class alarms are cached locally on your phone, and alarms schedule as native Android notifications so they still ring on time even with zero signal or weak dorm Wi-Fi. An internet connection is only needed when running AI scans, chatting with Ask Dormo, or syncing changes across devices.',
+  },
+  {
+    q: 'Will it remind me before class?',
+    a: 'Yes. Every class you scan or add receives an automatic reminder before it starts, showing the exact ring time and room. Free accounts ring 15 minutes ahead of class, while Dormosaur Pro lets you choose 30-minute or 60-minute lead times when you have a longer commute. You can switch any individual class alarm off without deleting the class, and our help docs include quick battery settings tips for phones that pause background apps.',
+    docHref: '/docs/alarms',
+    docLabel: 'Read the class alarms guide',
+  },
+  {
+    q: 'Does it have home screen widgets?',
+    a: 'Right now you can generate a crisp, customized Schedule Wallpaper sized for your Lock Screen or Home Screen in seconds, choosing between List or Timetable layouts with optional room numbers, plus sharing your week as an image or plain text. Native live Android home screen widgets (which you can already preview inside the app) are actively planned for an upcoming update.',
+    docHref: '/docs/wallpaper-widgets',
+    docLabel: 'See wallpaper and widgets',
+  },
+  {
+    q: 'Is my data private?',
+    a: 'Yes. Dormosaur never displays ads and never sells or shares student timetables with advertisers or data brokers. Your classes, alarms, tasks, and meal plans are stored under your account solely so everything stays backed up if you switch phones or reinstall. When you scan a schedule image or PDF, the file is processed securely only to extract your classes or due dates.',
+    docHref: '/docs/privacy',
+    docLabel: 'Read privacy and data details',
+  },
+  {
+    q: 'Is there an iPhone version?',
+    a: 'Dormosaur launched Android-first to reach campus students quickly, and an iPhone (iOS) version is on our roadmap. Because your timetable, tasks, and meal plan stay synced to your Google or email account, signing in on a newer Android phone or future device restores your entire semester right away.',
+  },
 ]
 
 function Faq() {
   const [open, setOpen] = useState<number | null>(0)
   return (
     <section id="faq" className="scroll-mt-24 px-4 py-20">
-      <div className="mx-auto grid max-w-[1100px] gap-10 md:grid-cols-[1fr_1.6fr]">
+      <div className="mx-auto grid max-w-[1100px] gap-10 md:grid-cols-[0.95fr_1.55fr] md:gap-14">
         <Reveal>
-          <h2 className="text-[40px] leading-[1.05] tracking-tight sm:text-[52px]" style={serif}>Frequently asked<br /><em className="text-[#0E7A4A]">questions</em></h2>
-          <Image src="/supportive-dormosaur.png" alt="" width={1036} height={1149} sizes="150px" className="mt-6 hidden h-auto w-[150px] md:block" />
+          <div className="md:sticky md:top-28">
+            <h2 className="text-balance text-[40px] leading-[1.05] tracking-tight sm:text-[52px]" style={serif}>
+              Frequently asked<br /><em className="text-[#0E7A4A]">questions</em>
+            </h2>
+            <p className="mt-4 max-w-[34ch] text-pretty text-[15.5px] leading-[1.6] text-[#35463C]">
+              Everything students usually ask before installing Dormosaur and scanning their first timetable.
+            </p>
+            <Link
+              href="/docs"
+              className="mt-4 inline-flex min-h-[44px] items-center gap-1.5 text-[14.5px] font-semibold text-[#0E7A4A] underline-offset-4 hover:underline"
+            >
+              Browse all Help Docs →
+            </Link>
+            <Image src="/supportive-dormosaur.png" alt="" width={1036} height={1149} sizes="150px" className="mt-6 hidden h-auto w-[150px] md:block" />
+          </div>
         </Reveal>
-        <div className="divide-y divide-black/[0.07]">
-          {faqs.map(([q, a], i) => {
+        <div className="divide-y divide-black/[0.08]">
+          {faqs.map((item, i) => {
             const on = open === i
             return (
-              <div key={q}>
-                <button type="button" onClick={() => setOpen(on ? null : i)} aria-expanded={on} className="flex w-full items-center gap-4 py-5 text-left text-[17px] font-medium">
-                  <span className="flex-1">{q}</span>
-                  <motion.span animate={{ rotate: on ? 180 : 0 }} transition={spring} className={`grid size-8 shrink-0 place-items-center rounded-full ${on ? 'bg-[#0E7A4A] text-white' : 'bg-black/[0.05]'}`}><ChevronDown className="size-4" /></motion.span>
+              <div key={item.q}>
+                <button
+                  type="button"
+                  onClick={() => setOpen(on ? null : i)}
+                  aria-expanded={on}
+                  className="flex min-h-[60px] w-full cursor-pointer items-center gap-4 py-5 text-left text-[17px] font-semibold text-[#0A1710] transition-colors hover:text-[#0E7A4A]"
+                >
+                  <span className="flex-1">{item.q}</span>
+                  <motion.span
+                    animate={{ rotate: on ? 180 : 0 }}
+                    transition={spring}
+                    className={`grid size-9 shrink-0 place-items-center rounded-full transition-colors ${on ? 'bg-[#0E7A4A] text-white' : 'bg-[#EEF2EF] text-[#1D3528]'}`}
+                  >
+                    <ChevronDown className="size-4" />
+                  </motion.span>
                 </button>
                 <AnimatePresence initial={false}>
                   {on && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35, ease }} className="overflow-hidden">
-                      <p className="pb-5 pr-12 text-black/60">{a}</p>
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pb-6 pr-8 sm:pr-12">
+                        <p className="max-w-[62ch] text-pretty text-[15.5px] leading-[1.72] text-[#35463C]">{item.a}</p>
+                        {item.docHref && item.docLabel && (
+                          <Link
+                            href={item.docHref}
+                            className="mt-3 inline-flex min-h-[36px] items-center text-[14px] font-semibold text-[#0E7A4A] underline-offset-4 hover:underline"
+                          >
+                            {item.docLabel} →
+                          </Link>
+                        )}
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>

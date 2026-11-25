@@ -1,0 +1,43 @@
+.termTrackLeft,
+.termTrackRight {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.75rem;
+  padding-right: 0.75rem;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .termTrackLeft {
+    animation: term-glide-left 28s linear infinite;
+  }
+
+  .termTrackRight {
+    animation: term-glide-right 32s linear infinite;
+  }
+
+  .railsWrap:hover .termTrackLeft,
+  .railsWrap:hover .termTrackRight,
+  .railsWrap:focus-within .termTrackLeft,
+  .railsWrap:focus-within .termTrackRight {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes term-glide-left {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+@keyframes term-glide-right {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
