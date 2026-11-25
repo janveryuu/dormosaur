@@ -1,12 +1,12 @@
 'use client'
 
-import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import {
   BellRing, CalendarDays, CheckSquare, ChevronLeft, ChevronRight, FileText, Moon, Pause, Play,
   ScanLine, ShieldCheck, Smartphone, Sparkles, Timer, UtensilsCrossed, WifiOff, type LucideIcon,
 } from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useState, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { FeatureBadgeIcon, type FeatureIconKey } from './feature-icons'
 import styles from './showcase.module.css'
 import { spring } from './shared'
@@ -74,6 +74,21 @@ export function TermRails({ animate = true }: { animate?: boolean }) {
 // ─── Realistic phone showing Home Screen widgets ───────────────────────────
 
 export function HomeScreenPhone() {
+  const stageRef = useRef<HTMLDivElement>(null)
+  const reduceMotion = useReducedMotion()
+  const { scrollYProgress } = useScroll({
+    target: stageRef,
+    offset: ['start end', 'center center'],
+  })
+
+  const rawRiseY = useTransform(scrollYProgress, [0, 1], [135, 0])
+  const rawScale = useTransform(scrollYProgress, [0, 1], [0.94, 1])
+  const rawScrollTilt = useTransform(scrollYProgress, [0, 1], [12, 0])
+
+  const riseY = useSpring(rawRiseY, { stiffness: 120, damping: 24, mass: 0.9 })
+  const riseScale = useSpring(rawScale, { stiffness: 120, damping: 24, mass: 0.9 })
+  const scrollTilt = useSpring(rawScrollTilt, { stiffness: 120, damping: 24, mass: 0.9 })
+
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
   const rx = useSpring(useTransform(my, [-0.5, 0.5], [7, -7]), { stiffness: 120, damping: 18 })
@@ -82,37 +97,50 @@ export function HomeScreenPhone() {
 
   return (
     <div
+      ref={stageRef}
       className="relative flex justify-center [perspective:1400px]"
-      onMouseMove={e => { const r = e.currentTarget.getBoundingClientRect(); mx.set((e.clientX - r.left) / r.width - 0.5); my.set((e.clientY - r.top) / r.height - 0.5) }}
+      onMouseMove={e => {
+        if (reduceMotion) return
+        const r = e.currentTarget.getBoundingClientRect()
+        mx.set((e.clientX - r.left) / r.width - 0.5)
+        my.set((e.clientY - r.top) / r.height - 0.5)
+      }}
       onMouseLeave={() => { mx.set(0); my.set(0) }}
     >
       <motion.div
-        initial={{ y: 60, opacity: 0, rotateX: 18 }} whileInView={{ y: 0, opacity: 1, rotateX: 0 }} viewport={{ once: true }} transition={{ ...spring, delay: 0.1 }}
-        style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}
-        className="relative"
+        style={
+          reduceMotion
+            ? undefined
+            : { y: riseY, scale: riseScale, rotateX: scrollTilt, transformStyle: 'preserve-3d' }
+        }
       >
-        <span aria-hidden className="absolute -left-[3px] top-[110px] h-[26px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#6b6e70] to-[#3b3d3f]" />
-        <span aria-hidden className="absolute -left-[3px] top-[152px] h-[52px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#6b6e70] to-[#3b3d3f]" />
-        <span aria-hidden className="absolute -left-[3px] top-[214px] h-[52px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#6b6e70] to-[#3b3d3f]" />
-        <span aria-hidden className="absolute -right-[3px] top-[170px] h-[78px] w-[4px] rounded-r-sm bg-gradient-to-l from-[#6b6e70] to-[#3b3d3f]" />
+        <motion.div
+          style={reduceMotion ? undefined : { rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}
+          className="relative"
+        >
+          <span aria-hidden className="absolute -left-[3px] top-[110px] h-[26px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#6b6e70] to-[#3b3d3f]" />
+          <span aria-hidden className="absolute -left-[3px] top-[152px] h-[52px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#6b6e70] to-[#3b3d3f]" />
+          <span aria-hidden className="absolute -left-[3px] top-[214px] h-[52px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#6b6e70] to-[#3b3d3f]" />
+          <span aria-hidden className="absolute -right-[3px] top-[170px] h-[78px] w-[4px] rounded-r-sm bg-gradient-to-l from-[#6b6e70] to-[#3b3d3f]" />
 
-        <div className="relative w-[300px] rounded-[58px] bg-[linear-gradient(145deg,#8d9093_0%,#4b4e51_22%,#2a2c2e_50%,#55585b_78%,#9a9da0_100%)] p-[3px] shadow-[0_60px_90px_-40px_rgba(18,58,122,0.55),0_30px_60px_-30px_rgba(0,0,0,0.6)]">
-          <div className="rounded-[55px] bg-black p-[10px]">
-            <div className="relative h-[565px] overflow-hidden rounded-[46px] bg-[#F6D9DF]">
-              <Image
-                src="/landing/home-widgets.webp"
-                alt="Dormosaur widgets on a phone home screen: next class, classes left today, tomorrow, and this week"
-                fill
-                sizes="274px"
-                className="object-cover object-top"
-              />
-              <div aria-hidden className="absolute left-1/2 top-[11px] z-20 flex h-[30px] w-[100px] -translate-x-1/2 items-center justify-end rounded-full bg-black pr-3">
-                <span className="size-[9px] rounded-full bg-[#1b1f2a] ring-1 ring-[#2c3346]" />
+          <div className="relative w-[300px] rounded-[58px] bg-[linear-gradient(145deg,#8d9093_0%,#4b4e51_22%,#2a2c2e_50%,#55585b_78%,#9a9da0_100%)] p-[3px] shadow-[0_60px_90px_-40px_rgba(18,58,122,0.55),0_30px_60px_-30px_rgba(0,0,0,0.6)]">
+            <div className="rounded-[55px] bg-black p-[10px]">
+              <div className="relative h-[565px] overflow-hidden rounded-[46px] bg-[#F6D9DF]">
+                <Image
+                  src="/landing/home-widgets.webp"
+                  alt="Dormosaur widgets on a phone home screen: next class, classes left today, tomorrow, and this week"
+                  fill
+                  sizes="274px"
+                  className="object-cover object-top"
+                />
+                <div aria-hidden className="absolute left-1/2 top-[11px] z-20 flex h-[30px] w-[100px] -translate-x-1/2 items-center justify-end rounded-full bg-black pr-3">
+                  <span className="size-[9px] rounded-full bg-[#1b1f2a] ring-1 ring-[#2c3346]" />
+                </div>
+                <motion.div aria-hidden style={{ left: glare }} className="pointer-events-none absolute -top-1/4 z-30 h-[150%] w-[40%] rotate-[20deg] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
               </div>
-              <motion.div aria-hidden style={{ left: glare }} className="pointer-events-none absolute -top-1/4 z-30 h-[150%] w-[40%] rotate-[20deg] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
             </div>
           </div>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   )

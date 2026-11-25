@@ -4,14 +4,13 @@ import {
   AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useSpring,
 } from 'framer-motion'
 import {
-  ChevronDown, Menu, Pause, Play, X,
+  ChevronDown, Pause, Play,
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useState, type ReactNode } from 'react'
 import { SiteFooter } from '@/components/site-footer'
 import { AppShowcase } from './app-showcase'
-import { DownloadButton } from './download-button'
 import { FinalCta } from './final-cta'
 import { Hero } from './hero'
 import { Intro } from './intro'
@@ -20,6 +19,7 @@ import { NumberOne } from './number-one'
 import { ScannerSection } from './scanner-section'
 import { Schools } from './schools'
 import { FeatureTiles, HomeScreenPhone, TermRails } from './showcase'
+import { SiteNav } from './site-nav'
 import { Testimonials } from './testimonials'
 import { Reveal, ease, serif, spring } from './shared'
 
@@ -40,7 +40,7 @@ export function Landing({ apkUrl, apkVersion }: { apkUrl: string; apkVersion: st
           Skip to content
         </a>
         <ScrollProgress />
-        <Nav apkUrl={apkUrl} />
+        <SiteNav apkUrl={apkUrl} />
         <main id="landing-main">
           <Hero apkUrl={apkUrl} apkVersion={apkVersion} animate={animate} go={introDone} />
           <Schools animate={animations} />
@@ -66,68 +66,6 @@ function ScrollProgress() {
   const { scrollYProgress } = useScroll()
   const x = useSpring(scrollYProgress, { stiffness: 200, damping: 30 })
   return <motion.div aria-hidden style={{ scaleX: x }} className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-gradient-to-r from-[#0E7A4A] via-[#34C77B] to-[#7DF0B5]" />
-}
-
-// ─── Nav: full-width, collapses into a floating glass pill on scroll ─────
-
-function Nav({ apkUrl }: { apkUrl: string }) {
-  const { scrollY } = useScroll()
-  const [pill, setPill] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-  useEffect(() => scrollY.on('change', v => setPill(v > 40)), [scrollY])
-  useEffect(() => {
-    if (!menuOpen) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenuOpen(false) }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [menuOpen])
-  const links = [['Features', '#features'], ['Scanner', '#scanner'], ['Reviews', '#reviews'], ['FAQ', '#faq']]
-  return (
-    <div className="fixed inset-x-0 top-3 z-50 flex flex-col items-center px-4">
-      <motion.nav
-        layout
-        transition={spring}
-        className={`flex w-full items-center gap-3 sm:gap-6 rounded-full border transition-colors duration-300 ${
-          pill ? 'max-w-[680px] border-black/[0.07] bg-white/75 py-2 pl-3 pr-2 shadow-[0_10px_40px_-12px_rgba(10,23,16,0.25)] backdrop-blur-xl' : 'max-w-[1100px] border-transparent bg-transparent py-3 pl-2 pr-2'
-        }`}
-        aria-label="Main"
-      >
-        <a href="#top" className="flex items-center gap-2 font-semibold tracking-tight">
-          <Image src="/dormosaur-logo.png" alt="" width={32} height={32} className="rounded-[10px]" />
-          Dormosaur
-        </a>
-        <div className="ml-auto hidden items-center gap-1 sm:flex">
-          {links.map(([label, href]) => (
-            <a key={href} href={href} className="rounded-full px-3 py-1.5 text-sm text-black/60 transition-colors hover:bg-black/[0.04] hover:text-black">{label}</a>
-          ))}
-        </div>
-        <div className="ml-auto flex items-center gap-1.5 sm:ml-0">
-          <DownloadButton apkUrl={apkUrl} size="sm" />
-          <button
-            type="button"
-            onClick={() => setMenuOpen(o => !o)}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-            className="grid size-10 place-items-center rounded-full border border-black/[0.08] bg-white/80 text-black/80 sm:hidden"
-          >
-            {menuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-          </button>
-        </div>
-      </motion.nav>
-      {menuOpen && (
-        <div role="region" aria-label="Mobile navigation" className="mt-2 flex w-full max-w-[420px] flex-col gap-1 rounded-3xl border border-black/[0.08] bg-white/95 p-3 shadow-xl backdrop-blur-xl sm:hidden">
-          {links.map(([label, href]) => (
-            <a key={href} href={href} onClick={() => setMenuOpen(false)} className="rounded-2xl px-4 py-2.5 text-sm font-medium text-black/80 hover:bg-black/[0.04]">
-              {label}
-            </a>
-          ))}
-          <Link href="/docs" onClick={() => setMenuOpen(false)} className="rounded-2xl px-4 py-2.5 text-sm font-medium text-[#0E7A4A] hover:bg-black/[0.04]">
-            Help Docs
-          </Link>
-        </div>
-      )}
-    </div>
-  )
 }
 
 // ─── Bento ──────────────────────────────────────────────────────────────
@@ -184,24 +122,58 @@ function Bento({ animate }: { animate: boolean }) {
 
 
 function StackedNotes() {
+  const [organized, setOrganized] = useState(false)
   const notes = [
-    { t: '8:30 AM', c: 'Calculus I', r: 'Sci 204', bg: '#FFE0CC', rot: -6 },
-    { t: '10:15 AM', c: 'Chemistry', r: 'Lab B-12', bg: '#C9F2EC', rot: -3 },
-    { t: '1:00 PM', c: 'Programming', r: 'Tech 118', bg: '#DCD3FF', rot: -5 },
+    { t: '8:30 AM', c: 'Calculus I', r: 'Sci 204', bg: '#FFE0CC', rot: -5, z: 3 },
+    { t: '10:15 AM', c: 'Chemistry', r: 'Lab B-12', bg: '#C9F2EC', rot: -2.5, z: 2 },
+    { t: '1:00 PM', c: 'Programming', r: 'Tech 118', bg: '#DCD3FF', rot: -4, z: 1 },
   ]
   return (
-    <div className="relative h-[230px]">
+    <div
+      onMouseEnter={() => setOrganized(true)}
+      onMouseLeave={() => setOrganized(false)}
+      onClick={() => setOrganized(o => !o)}
+      className="relative h-[234px] cursor-pointer select-none"
+    >
       {notes.map((n, i) => (
-        <motion.div key={n.c} style={{ background: n.bg, rotate: n.rot, top: i * 56 }} initial={{ x: -40, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} viewport={{ once: true }} transition={{ ...spring, delay: 0.15 + i * 0.1 }}
-          whileHover={{ rotate: 0, x: 8 }} className="absolute left-0 flex w-[62%] gap-4 rounded-2xl px-4 py-3 shadow-[0_12px_30px_-14px_rgba(0,0,0,0.35)]">
-          <span className="text-[13px] font-semibold">{n.t}</span><span className="text-[13px]"><b>{n.c}</b><br /><span className="opacity-60">{n.r}</span></span>
+        <motion.div
+          key={n.c}
+          style={{ background: n.bg, zIndex: n.z }}
+          initial={{ y: -95 - i * 18, x: -12, opacity: 0, rotate: n.rot * 2.2, scale: 0.94 }}
+          whileInView={{
+            y: i * 62,
+            x: organized ? 4 : 0,
+            opacity: 1,
+            rotate: organized ? 0 : n.rot,
+            scale: 1,
+          }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{
+            type: 'spring',
+            stiffness: 340,
+            damping: 23,
+            mass: 0.72,
+            delay: organized ? i * 0.035 : 0.06 + i * 0.095,
+          }}
+          className="absolute left-0 top-1 flex w-[62%] gap-3.5 rounded-2xl px-4 py-3 shadow-[0_14px_28px_-16px_rgba(68,14,38,0.34)] ring-1 ring-black/[0.04]"
+        >
+          <span className="shrink-0 text-[13px] font-semibold tabular-nums">{n.t}</span>
+          <span className="min-w-0 text-[13px]">
+            <b className="block truncate">{n.c}</b>
+            <span className="opacity-65">{n.r}</span>
+          </span>
         </motion.div>
       ))}
-      <motion.div initial={{ rotate: 14, scale: 0.8, opacity: 0 }} whileInView={{ rotate: 5, scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ ...spring, delay: 0.5 }}
-        className="absolute right-0 top-2 w-[42%] rounded-2xl border-2 border-dashed border-[#E0457B]/40 bg-white p-4 text-[#B0124F] shadow-lg">
+      <motion.div
+        initial={{ y: -80, rotate: 16, scale: 0.88, opacity: 0 }}
+        whileInView={{ y: 0, rotate: organized ? 0 : 4.5, scale: 1, opacity: 1 }}
+        viewport={{ once: true, amount: 0.35 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 22, mass: 0.78, delay: organized ? 0.1 : 0.38 }}
+        className="absolute right-0 top-3 z-10 w-[41%] rounded-2xl border-2 border-dashed border-[#E0457B]/40 bg-white p-4 text-[#B0124F] shadow-[0_18px_36px_-20px_rgba(122,23,69,0.45)]"
+      >
         <p className="text-xs font-semibold">Due this week</p>
-        <p className="mt-2 text-[26px] font-bold leading-none">3 tasks</p>
-        <p className="mt-1 text-[22px] font-bold leading-none">1 exam</p>
+        <p className="mt-2 text-[26px] font-bold leading-none tabular-nums">3 tasks</p>
+        <p className="mt-1 text-[22px] font-bold leading-none tabular-nums">1 exam</p>
       </motion.div>
     </div>
   )

@@ -29,9 +29,9 @@ const columns: { title: string; links: Link[] }[] = [
   {
     title: 'Dormosaur',
     links: [
+      { label: 'About', href: '/about' },
       { label: 'Features', href: '/#features' },
       { label: 'Schedule scanner', href: '/#scanner' },
-      { label: 'Student reviews', href: '/#reviews' },
       { label: 'Install the APK', href: '/docs/install' },
       { label: 'FAQ', href: '/docs/faq' },
       { label: 'Download for Android', href: APK_URL, download: true },
@@ -43,7 +43,7 @@ const columns: { title: string; links: Link[] }[] = [
       { label: 'Privacy and data', href: '/docs/privacy' },
       { label: 'Permissions', href: '/docs/permissions' },
       { label: 'Account and sign-in', href: '/docs/account' },
-      { label: 'Contact support', href: '/docs/contact' },
+      { label: 'Support', href: '/support' },
     ],
   },
 ]
