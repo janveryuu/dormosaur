@@ -89,7 +89,7 @@ function ShowcaseRow({ row, phoneFirstOnDesktop }: { row: ShowcaseItem; phoneFir
     <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-14 lg:gap-20">
       <div className={`order-1 ${phoneFirstOnDesktop ? 'md:order-2' : 'md:order-1'}`}>
         <h2
-          style={{ ...serif, color: '#0F5BB5' }}
+          style={{ ...serif, color: '#0E7A4A' }}
           className="text-balance text-[36px] leading-[1.06] tracking-[-0.025em] sm:text-[46px]"
         >
           {row.title}
@@ -102,7 +102,7 @@ function ShowcaseRow({ row, phoneFirstOnDesktop }: { row: ShowcaseItem; phoneFir
             <li key={bullet} className="flex items-start gap-3">
               <span
                 aria-hidden
-                className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[#E7F3FF] text-[#0F5BB5]"
+                className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[#E6F6EE] text-[#0B663E]"
               >
                 <Check className="size-3.5" strokeWidth={2.75} />
               </span>
@@ -117,9 +117,9 @@ function ShowcaseRow({ row, phoneFirstOnDesktop }: { row: ShowcaseItem; phoneFir
           ref={stageRef}
           style={{
             background:
-              'linear-gradient(168deg, #4AB2FF 0%, #248AF4 46%, #1264D0 100%)',
+              'linear-gradient(168deg, #32C67E 0%, #149158 48%, #0A5E37 100%)',
           }}
-          className="group relative overflow-hidden rounded-[34px] px-6 pt-10 ring-1 ring-[#0F5BB5]/15 sm:px-10 sm:pt-12"
+          className="group relative overflow-hidden rounded-t-[34px] px-6 pt-10 sm:px-10 sm:pt-12"
         >
           {/* Daylight sky atmospheric radiance */}
           <div
@@ -166,7 +166,7 @@ function ShowcaseRow({ row, phoneFirstOnDesktop }: { row: ShowcaseItem; phoneFir
           {/* Phone rising smoothly from bottom on scroll */}
           <motion.div
             style={reduce ? undefined : { y: phoneY }}
-            className="relative z-10 mx-auto -mb-8 w-[244px] rounded-t-[40px] bg-[#141A17] p-[7px] pb-0 shadow-[0_32px_60px_-20px_rgba(7,37,84,0.52)] ring-1 ring-white/30 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [@media(hover:hover)]:group-hover:-translate-y-1.5 sm:-mb-9 sm:w-[272px]"
+            className="relative z-10 mx-auto -mb-8 w-[244px] rounded-t-[40px] bg-[#141A17] p-[7px] pb-0 shadow-[0_32px_60px_-20px_rgba(6,46,26,0.48)] ring-1 ring-white/30 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [@media(hover:hover)]:group-hover:-translate-y-1.5 sm:-mb-9 sm:w-[272px]"
           >
             <div className="overflow-hidden rounded-t-[33px] bg-[#F7F8F5]">
               <Image
@@ -180,12 +180,12 @@ function ShowcaseRow({ row, phoneFirstOnDesktop }: { row: ShowcaseItem; phoneFir
             </div>
           </motion.div>
 
-          {/* Multi-layered fluffy white clouds blending into the page */}
+          {/* Multi-layered fluffy white clouds blending seamlessly into the page */}
           <svg
             viewBox="0 0 640 96"
             preserveAspectRatio="none"
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 -bottom-px z-20 h-[72px] w-full sm:h-[84px]"
+            className="pointer-events-none absolute -inset-x-0.5 -bottom-0.5 z-20 h-[74px] w-[calc(100%+4px)] sm:h-[86px]"
           >
             <path
               d="M0 96V36C44 10 98 12 144 36C192 8 256 6 308 34C358 10 416 12 464 36C514 8 574 10 614 34C626 28 634 30 640 36V96H0Z"
